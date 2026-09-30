@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "candidate": "stock-geralt-bare-dry",
+  "method": "Local native resource references, technical item definitions, WCC FBX export and raw geometry inspection",
+  "resources": {
+    "lower_body": {
+      "path": "characters/models/geralt/body/model/l_01_mg__body.w2mesh",
+      "sha256": "67e6e7485bd4eac0eae83d9119b19d8a0894ce1d8809c0928e618508f9dc42db"
+    },
+    "lower_underwear": {
+      "path": "characters/models/geralt/body/model/l_01_mg__body_underwear.w2mesh",
+      "sha256": "7f9d9e5a1058028f9a03aba4e22f0e02dc39af760a461ca382d8055b8ed358b0"
+    },
+    "upper_body": {
+      "path": "characters/models/geralt/body/model/t_01_mg__body_hires.w2mesh",
+      "sha256": "1ce4ccd0e07f7729e7e2d78755ab791892e18d48d1678c7b1f4b0b2a7f96dbd6"
+    },
+    "feet_hires": {
+      "path": "characters/models/geralt/body/model/s_01_mg__body_hires.w2mesh",
+      "sha256": "d9c464289ab21c96571b6f6c477e17ab4f4548b2130a654dc1d337dbc974c33a"
+    },
+    "hands": {
+      "path": "characters/models/geralt/body/model/g_01_mg__body.w2mesh",
+      "sha256": "596c8528fb397e1b4e73f9e550d463c5f2665c6c30f6b1d5aec3aa7c37850993"
+    },
+    "lower_body_wet": {
+      "path": "characters/models/geralt/body/model/l_01_mg__body_wet.w2mesh",
+      "sha256": "13682e4938cf4f06ef0904c1a33f53202eec376875cf715ac1f19fe38390f23c"
+    },
+    "upper_body_wet": {
+      "path": "characters/models/geralt/body/model/t_01_mg__body_wet_hires.w2mesh",
+      "sha256": "1ad4abe018a3dbe8a0df2a965166f508caaf6e06ce10a227e6c2315b252d76de"
+    }
+  },
+  "itemDefinitionSHA256": "b1263f14c9db74dbd380538ed17318311047ec01d1bef8d6447679fce66b768a",
+  "openingCutsceneSHA256": "90792adbae7fc58ec7ed7477bf81f2e186c19e94ef7559f6c32f254948dabe21",
+  "geometry": {
+    "dry_lower": {
+      "fbxVersion": 7300,
+      "fbxSHA256": "486dcf786c56068a54625eaa4a7d1527e9dd3cf721b52a52a838f141cd5ad51d",
+      "materials": [
+        "Material0",
+        "Material0"
+      ],
+      "geometries": [
+        {
+          "vertices": 951,
+          "triangles": 1650,
+          "minimum": [
+            -20.638212203979492,
+            -16.102066040039062,
+            17.968168258666992
+          ],
+          "maximum": [
+            20.637266159057617,
+            9.52120304107666,
+            109.03231811523438
+          ]
+        },
+        {
+          "vertices": 504,
+          "triangles": 822,
+          "minimum": [
+            -20.662195205688477,
+            -16.102458953857422,
+            17.968168258666992
+          ],
+          "maximum": [
+            20.698486328125,
+            9.578023910522461,
+            108.94478607177734
+          ]
+        }
+      ]
+    },
+    "wet_lower": {
+      "fbxVersion": 7300,
+      "fbxSHA256": "8294a60f3ebe7242a8a91b62ace7960bd9482d5949db948da7a604a01eb10ea9",
+      "materials": [
+        "Material0",
+        "Material0"
+      ],
+      "geometries": [
+        {
+          "vertices": 951,
+          "triangles": 1650,
+          "minimum": [
+            -20.638212203979492,
+            -16.102066040039062,
+            17.968168258666992
+          ],
+          "maximum": [
+            20.637266159057617,
+            9.52120304107666,
+            109.03231811523438
+          ]
+        },
+        {
+          "vertices": 504,
+          "triangles": 822,
+          "minimum": [
+            -20.662195205688477,
+            -16.102458953857422,
+            17.968168258666992
+          ],
+          "maximum": [
+            20.698486328125,
+            9.578023910522461,
+            108.94478607177734
+          ]
+        }
+      ]
+    },
+    "dry_torso": {
+      "fbxVersion": 7300,
+      "fbxSHA256": "db2d5d6357a671b083cb9b3acc192c4814f289d38291fd670b37049466d2f4b8",
+      "materials": [
+        "Material0",
+        "Material0"
+      ],
+      "geometries": [
+        {
+          "vertices": 4268,
+          "triangles": 8098,
+          "minimum": [
+            -61.982208251953125,
+            -19.168550491333008,
+            104.68470001220703
+          ],
+          "maximum": [
+            61.14619445800781,
+            16.75193977355957,
+            164.89898681640625
+          ]
+        },
+        {
+          "vertices": 2193,
+          "triangles": 4046,
+          "minimum": [
+            -61.982208251953125,
+            -19.168550491333008,
+            104.68470001220703
+          ],
+          "maximum": [
+            61.14619445800781,
+            16.755775451660156,
+            164.89898681640625
+          ]
+        }
+      ]
+    },
+    "feet": {
+      "fbxVersion": 7300,
+      "fbxSHA256": "104a32375c2127cbeb163d91ee1eb28a77032b1dc3b2d1be1f5bf41bb975d75c",
+      "materials": [
+        "Material0",
+        "Material0"
+      ],
+      "geometries": [
+        {
+          "vertices": 2378,
+          "triangles": 4188,
+          "minimum": [
+            -23.077953338623047,
+            -15.769545555114746,
+            -1.1620838642120361
+          ],
+          "maximum": [
+            23.077953338623047,
+            14.088561058044434,
+            18.58749008178711
+          ]
+        },
+        {
+          "vertices": 1301,
+          "triangles": 2094,
+          "minimum": [
+            -23.061050415039062,
+            -15.794624328613281,
+            -1.1620838642120361
+          ],
+          "maximum": [
+            23.060344696044922,
+            14.088561058044434,
+            18.588695526123047
+          ]
+        }
+      ]
+    }
+  },
+  "wetLowerMatchesDryRawArrays": true,
+  "selectionStatus": "Ready as a source candidate; fitting and gameplay not tested",
+  "preview": "Ignored local build/inspection/geralt-base-candidate.png"
+}

@@ -77,7 +77,7 @@
   "checks": {
     "unitTests": 9,
     "baseRevisionCheck": "passed",
-    "stockMeshExport": "passed: upper and lower Geralt body",
+    "stockMeshExport": "passed: lower Geralt body and high-quality feet; the earlier upper-body label referred to feet",
     "fbxImport": "passed: lower Geralt body at custom resource path",
     "scriptCompilation": "passed: full installed baseline plus authored diagnostic",
     "cooking": "passed: imported mesh",
@@ -87,5 +87,8 @@
     "liveBodyEditor": "not implemented",
     "nativeBundleRoundtrip": "passed: mesh and buffer SHA256 match cooked inputs"
   },
-  "nativeUnbundleLogSHA256": "6abc818e1be489d52e73bd59e71ab7aa430a732f89e9a7ea60ae76f75845e65a"
+  "nativeUnbundleLogSHA256": "6abc818e1be489d52e73bd59e71ab7aa430a732f89e9a7ea60ae76f75845e65a",
+  "corrections": [
+    "Body discovery identified t_01_mg__body_hires as the actual torso; it was subsequently exported and inspected. See docs/GERALT-BODY-CANDIDATE.md."
+  ]
 }

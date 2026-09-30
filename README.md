@@ -51,3 +51,7 @@ See [headless workflow](docs/HEADLESS-WORKFLOW.md) for native command signatures
 the confirmed REDkit 5.0 path-parser/importer behavior, source ownership and
 remaining runtime gates. Shared changes go into Base; engine translation stays
 here, as described in [AGENTS.md](AGENTS.md).
+
+The selected blank-body starting point is Geralt's stock dry bare torso, pelvis,
+legs, hands and feet. See [body candidate](docs/GERALT-BODY-CANDIDATE.md) for the
+exact item/template/mesh mappings and comparison with the opening bath scene.

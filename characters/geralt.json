@@ -7,9 +7,27 @@
   "resources": {
     "lower_body": "characters/models/geralt/body/model/l_01_mg__body.w2mesh",
     "lower_underwear": "characters/models/geralt/body/model/l_01_mg__body_underwear.w2mesh",
-    "upper_body": "characters/models/geralt/body/model/s_01_mg__body_hires.w2mesh"
+    "upper_body": "characters/models/geralt/body/model/t_01_mg__body_hires.w2mesh",
+    "feet_hires": "characters/models/geralt/body/model/s_01_mg__body_hires.w2mesh",
+    "hands": "characters/models/geralt/body/model/g_01_mg__body.w2mesh",
+    "lower_body_wet": "characters/models/geralt/body/model/l_01_mg__body_wet.w2mesh",
+    "upper_body_wet": "characters/models/geralt/body/model/t_01_mg__body_wet_hires.w2mesh"
   },
-  "observations": "Resources observed in the local uncooked depot. Native upper/lower body FBX export and lower-body FBX-to-w2mesh import succeeded. The imported probe cooks successfully. This proves toolchain operation, not skin/LOD fidelity or gameplay. Unit calibration, native joints, skinning and appearance selection still require inspection.",
+  "observations": "Dry bare torso, lower body, high quality feet and wet lower body exported. Rendered raw LOD0 torso/legs/feet show the stock anatomically blank pelvis. Dry and wet lower-body vertices and triangles match exactly in both exported LODs. Item definitions identify t_01 as torso and s_01 as feet, correcting the previous upper_body label. Lower-body import and cooking succeeded; deformation, unit calibration and gameplay still require verification.",
+  "bodyCandidate": {
+    "status": "selected for fitting; not activated in game",
+    "id": "stock-geralt-bare-dry",
+    "reason": "Existing bare pelvis and legs, stock skin material and character rig; avoids removing boxer geometry",
+    "items": {
+      "torso": "Body torso 01",
+      "legs": "Body legs 01",
+      "hands": "Body palms 01",
+      "feet": "Body feet HighQuality"
+    },
+    "evidence": "docs/GERALT-BODY-CANDIDATE.md",
+    "wetLowerMatchesDryRawGeometry": true,
+    "headAndHair": "retain Geralt's existing appearance; separate from these body parts"
+  },
   "capabilities": {
     "assetExport": "verified",
     "assetImport": "verified",
