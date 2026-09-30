@@ -30,6 +30,17 @@ def fixture(path,version):
 
 
 class FbxTests(unittest.TestCase):
+    def test_authored_joint_property_types_survive_binary_roundtrip(self):
+        with tempfile.TemporaryDirectory() as temp:
+            source=Path(temp)/'source.fbx';output=Path(temp)/'new.fbx';fixture(source,7300)
+            d=Document(source)
+            d.root('Objects').children.append(Node('Authored',[
+                Property('L',1234567890123),Property('S','mm_joint\x00\x01Model'),
+                Property('C',True),Property('I',232),Property('D',-1.25),Property('R',b'\x00\xff')]))
+            d.save(output)
+            self.assertEqual(Document(output).root('Objects').children[-1].values,
+                             [1234567890123,'mm_joint\x00\x01Model',True,232,-1.25,b'\x00\xff'])
+
     def test_lossless_roundtrip_and_resized_array_keeps_opaque_data(self):
         for version in [7300,7500]:
             with tempfile.TemporaryDirectory() as temp:

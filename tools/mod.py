@@ -164,6 +164,14 @@ def readthrough_depot(stock, workspace):
     return view
 
 
+def native_failure(text, returncode):
+    # The cooker can return zero after dropping an entity or corrupting names.
+    # Known startup configuration warnings are separate from resource failures.
+    return bool(returncode or re.search(
+        r'\[Error\]\[(WCC|Script)\]|\[Fatal\]|TEMPLATE COOKING FAILED|'
+        r'Unable to create uncached entity|Invalid name index|\[resource load failed\]', text))
+
+
 def run_wcc(cfg, command, options, workspace, label):
     required_file(cfg['wcc'])
     workspace = Path(workspace).absolute()
@@ -188,7 +196,7 @@ def run_wcc(cfg, command, options, workspace, label):
               'logPath': log.relative_to(ROOT).as_posix(),
               'wccSHA256': digest(cfg['wcc'])}
     write_json(log.with_suffix('.json'), record)
-    if result.returncode or re.search(r'\[Error\]\[(WCC|Script)\]|\[Fatal\]', text):
+    if native_failure(text, result.returncode):
         raise RuntimeError('Native REDkit command failed; inspect ' + str(log) + '\n' + text[-3500:])
     print('Native command succeeded.', flush=True)
     return record

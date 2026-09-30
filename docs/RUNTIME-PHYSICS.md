@@ -1,5 +1,10 @@
 # Runtime physics investigation
 
+Continuation: `MOTION-CANDIDATE.md` records the authored native cage, successful
+mesh/rig resource verification, compiled panel and unresolved custom-item cook.
+`NATIVE-CONVERTER.md` explains the version-159 transform-buffer compatibility
+fix. The earlier declaration-only probe below is a historical checkpoint.
+
 The user supplied a game screenshot on 2026-09-30 showing the fitted 0.3.0
 attachment. This confirms appearance only. A still image does not verify
 independent motion, live controls, body contact, moving seams or performance.

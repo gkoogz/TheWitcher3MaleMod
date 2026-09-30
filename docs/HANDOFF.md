@@ -17,6 +17,14 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
+Latest continuation: read `MOTION-CANDIDATE.md` and `NATIVE-CONVERTER.md` before
+repeating earlier probes. A 10-joint native cage now passes official mesh
+round-trip in both LODs and the stock-class resource set cooks. The candidate
+hotkey panel compiles, but custom script-item cooking/binding remains unresolved.
+No physics/menu package was installed. See `provenance/motion-candidate.json`
+and local `build/motion/latest.json` for the latest source/tool identities.
+Shared cage authoring lives in Base; the adapter lock records its exact revision.
+
 Runtime pass in progress: read `docs/RUNTIME-PHYSICS.md`. The user supplied a
 screenshot showing the fitted attachment in game, confirming appearance only.
 Base now owns the 18 rest-shape/mechanical control catalog. An isolated native
@@ -121,8 +129,8 @@ Offer the new shared fitting/verification tools back to Wolverine for future
 authoring; its authoritative runtime remains unchanged. Test maximum expansion
 and moving poses with normals/contact before claiming live support.
 
-Current source now pins Base `db3ec9d64f68b478d6bae76d0680108539a9eb0c`
-for the shared control contract. Latest checks: 27 Base and 16 adapter tests.
+The earlier declaration-probe checkpoint pinned Base `db3ec9d64f68b478d6bae76d0680108539a9eb0c`
+for the shared control contract. Its checks were 27 Base and 16 adapter tests.
 The installed package remains pinned to the older revision recorded above.
 The new native constraint declaration probe compiled successfully; it has not
 been bound to the render mesh. See `provenance/runtime-probe.json`.
@@ -130,6 +138,15 @@ The rest attachment was regenerated under this pin and again passed official
 native import/export checks. Its authoring FBX matches the previous fit byte
 for byte; installed package files were verified unchanged. Generated manifest:
 `generated/attachment.json`; local job `build/attachment/fit-20260930-070708-d52066`.
+
+Latest source pin: `ca78de046a7be63ccb316c7a9b9c12bc7ce3293f` (shared cage authoring).
+Checks: 31 Base tests, 19 adapter tests, Base provenance and official native
+motion mesh round-trip. Current isolated job: `build/motion/cage-ec7d87338fd8`.
+Stock-class cage resources cook; custom controller-item cook fails with
+`Unable to create uncached entity`. No deployment was attempted. The current
+rest attachment was also regenerated and reverified under the new pin at
+`build/attachment/fit-20260930-075013-7ae7f2`, keeping the normal 0.3 build usable.
+All five installed 0.3.0 file hashes were rechecked unchanged.
 
 At handoff update this document, feature status, provenance and the dependency
 lock for any intentional adoption. Keep installed build provenance unchanged

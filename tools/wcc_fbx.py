@@ -25,7 +25,13 @@ class Property:
             a = np.asarray(self.value, dtype=dtype).reshape(-1)
             compressed = zlib.compress(a.tobytes())
             return self.tag.encode() + struct.pack('<III', len(a), 1, len(compressed)) + compressed
-        raise ValueError('Only array mutations are supported')
+        if self.tag in ('S', 'R'):
+            raw = self.value.encode() if self.tag == 'S' else self.value
+            return self.tag.encode() + struct.pack('<I', len(raw)) + raw
+        scalar = {'Y':'h','C':'?','I':'i','F':'f','D':'d','L':'q'}
+        if self.tag in scalar:
+            return self.tag.encode() + struct.pack('<'+scalar[self.tag], self.value)
+        raise ValueError('Unsupported property mutation')
 
 
 @dataclass

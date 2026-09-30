@@ -1,0 +1,547 @@
+{
+  "baseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+  "job": "build/motion/cage-ec7d87338fd8",
+  "meshVerification": {
+    "sourceSHA256": "6cbac2720c25e3d9181ca6181d3551d285670519f287565dbbba8605fdce3d66",
+    "nativeSHA256": "e3d8efa727c2901cdc586416a068b7e07c83ec2dba01735fde6fd8b22dbae4e1",
+    "lods": [
+      {
+        "lod": 0,
+        "bones": [
+          "r_thigh",
+          "r_shin",
+          "r_kneeRoll",
+          "pelvis",
+          "r_legRoll",
+          "r_legRoll2",
+          "l_thigh",
+          "torso",
+          "l_legRoll",
+          "r_foot",
+          "l_shin",
+          "l_kneeRoll",
+          "l_legRoll2",
+          "mm_shaft_00",
+          "mm_shaft_01",
+          "mm_shaft_02",
+          "mm_shaft_03",
+          "mm_shaft_04",
+          "mm_shaft_05",
+          "mm_shaft_06",
+          "mm_shaft_07",
+          "mm_scrotum_l",
+          "mm_scrotum_r"
+        ],
+        "maximumPositionError": 1.260878376390602e-05,
+        "maximumBindError": 1.52587890625e-05,
+        "maximumWeightError": 2.9802322387695312e-08,
+        "maximumSeamPositionError": 0.0,
+        "maximumSeamWeightError": 0.0
+      },
+      {
+        "lod": 1,
+        "bones": [
+          "r_thigh",
+          "r_shin",
+          "r_kneeRoll",
+          "pelvis",
+          "r_legRoll",
+          "r_legRoll2",
+          "l_thigh",
+          "torso",
+          "l_legRoll",
+          "r_foot",
+          "l_shin",
+          "l_kneeRoll",
+          "l_legRoll2",
+          "mm_shaft_00",
+          "mm_shaft_01",
+          "mm_shaft_02",
+          "mm_shaft_03",
+          "mm_shaft_04",
+          "mm_shaft_05",
+          "mm_shaft_06",
+          "mm_shaft_07",
+          "mm_scrotum_l",
+          "mm_scrotum_r"
+        ],
+        "maximumPositionError": 1.260878376390602e-05,
+        "maximumBindError": 1.52587890625e-05,
+        "maximumWeightError": 2.9802322387695312e-08,
+        "maximumSeamPositionError": 0.0,
+        "maximumSeamWeightError": 0.0
+      }
+    ],
+    "nativeMeshRoundtripVerified": true,
+    "nativeDynamicsVerified": false,
+    "observedGameplay": false
+  },
+  "nativeCook": {
+    "command": "cook",
+    "exitCode": 0,
+    "seconds": 21.156,
+    "logSHA256": "0a042c9ec283799c52966454118170dfafb8abff8c8e717c9daf9321f8c43546",
+    "logPath": "build/logs/20260930-074922-motion-cage-d46040.log",
+    "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e"
+  },
+  "menuCompilation": {
+    "command": "compilescripts",
+    "exitCode": 0,
+    "seconds": 26.125,
+    "logSHA256": "9d9ea1348d063c2028a04537ec7291f6950d0d5f9899f41ecebc5716a54f714a",
+    "logPath": "build/logs/20260930-073429-scripts-27fe6c.log",
+    "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e",
+    "reused": true
+  },
+  "customItemCookSucceeded": false,
+  "customItemCook": null,
+  "customItemCookFailure": "TEMPLATE COOKING FAILED: unable to create uncached entity; custom class not established by this cooker path",
+  "runtimeHandleBindingVerified": false,
+  "observedGameplay": false,
+  "liveSizeVerified": false,
+  "installed": false,
+  "toolchain": {
+    "converter": "d08b285a05550941d9b205c47da5802b47447b27b304cf40022f693196bed0ad",
+    "library": "3205c70e35f71033062b89b41edbcb16c50fef2ef8e702ffbb66cd53c8c86539"
+  },
+  "resources": [
+    {
+      "path": "characters/malemod/body/geralt_motion.w2mesh",
+      "sha256": "68c3dfabe92c56831e34aba1eab37cd1f971361e4ecad20b017790b9c1e5364f"
+    },
+    {
+      "path": "items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent",
+      "sha256": "a292cd712793503063cc4f2e7cdfcd7f256d4d03e25c0518a9db0b6dcc27c72f"
+    },
+    {
+      "path": "characters/malemod/physics/geralt_motion.w3dyng",
+      "sha256": "62fc28e923da37d41b64e97440e47fd52825989810d06e065196155795139f36"
+    }
+  ],
+  "failedCustomCook": {
+    "logPath": "build/logs/20260930-074944-scripted-motion-9bd545.log",
+    "logSHA256": "29c40a628f41316dadb218150001ce6358b87a39b761bcdad8290760fa4726e3",
+    "exitCode": 0,
+    "resourceGatePassed": false
+  },
+  "schemaVersion": 1,
+  "status": "native mesh/resource authoring verified; runtime binding, menu, dimensions and gameplay unresolved",
+  "sourceFiles": [
+    {
+      "path": "tools/prepare_motion.py",
+      "sha256": "6aa5e01ef642e1c28e680fa08ca8273fde67cc680248f816886ec23716f80162"
+    },
+    {
+      "path": "tools/motion_entity.py",
+      "sha256": "d0923a7b6a2bcac7e1f875056b12cdfea4eaae913ad955540e8966af53a9e666"
+    },
+    {
+      "path": "tools/verify_motion.py",
+      "sha256": "d1cceba188860b106e3e163e59a4c1f39e59c47fa0b8a9af11548c01070a2eae"
+    },
+    {
+      "path": "tools/probe_runtime.py",
+      "sha256": "4386ebf7faefb625ce39b3b2215ad6d0c14c9935334b4168fd0a9f17c09d67ba"
+    },
+    {
+      "path": "tools/build_native_converter.py",
+      "sha256": "2d3fb2c4e40580db61d1df3fc3683c5886d0acf9b198b5b1caba01d2967b945a"
+    },
+    {
+      "path": "tools/native/Cr2wBridge.cs",
+      "sha256": "f9e958a6a89220baf37571429c448a246f449c6a23d1cbbda1c1fc4fedd53e2c"
+    },
+    {
+      "path": "tools/native/MaleModPhysicsItem.cs",
+      "sha256": "bd9b6ab601406e4ec8890add1ae1527d91706513909988720d05af5726aba7b4"
+    },
+    {
+      "path": "probes/runtime/maleModPhysics.ws",
+      "sha256": "10f2124f90e5b32887596b9ac655e932c09b7089d4528a89d35f060cfacc7543"
+    },
+    {
+      "path": "tools/wcc_fbx.py",
+      "sha256": "38ea570877938d240e5c75f4fa0895beb169f7719635792d369223ffeadb2529"
+    },
+    {
+      "path": "tools/mod.py",
+      "sha256": "fa0587a07b54a320851ab020930451c593cbe9c854edf6d63a63562cadd8cb08"
+    },
+    {
+      "path": "tools/verify_attachment.py",
+      "sha256": "a80e0c598147633ad633f043712a13d708ddce1677799dcce82b4ba74a082b3d"
+    }
+  ],
+  "tests": {
+    "base": 31,
+    "adapter": 19
+  },
+  "installedVersion": "0.3.0-anatomy-skin-test",
+  "deferred": [
+    "sequence animation",
+    "fluid",
+    "audio"
+  ],
+  "authoring": {
+    "baseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+    "nativeRigSHA256": "a127b0b3ae7beb84d14bc940a2198a93b31d333397f5c4f59cf452cd5d29be1d",
+    "sourceFBXSHA256": "98d0bdd204a6945628a61a741e08818dc88f273d2b76523b477597e122856b0a",
+    "nativeToFBXTranslationScale": 100,
+    "maximumBindPositionError": 5.389515814435697e-05,
+    "maximumBindRotationError": 0.00014067964110692222,
+    "lods": [
+      {
+        "lod": 0,
+        "sourceBindingSHA256": "859cf2b936182a710bbe68860981a06016ed8a8408ac2128cec3a1cc240db530",
+        "maximumDiscardedWeight": 0.1178304116709005,
+        "originalBones": [
+          "r_thigh",
+          "r_shin",
+          "r_kneeRoll",
+          "pelvis",
+          "r_legRoll",
+          "r_legRoll2",
+          "l_thigh",
+          "torso",
+          "l_legRoll",
+          "r_foot",
+          "l_shin",
+          "l_kneeRoll",
+          "l_legRoll2"
+        ],
+        "newBones": [
+          "mm_shaft_00",
+          "mm_shaft_01",
+          "mm_shaft_02",
+          "mm_shaft_03",
+          "mm_shaft_04",
+          "mm_shaft_05",
+          "mm_shaft_06",
+          "mm_shaft_07",
+          "mm_scrotum_l",
+          "mm_scrotum_r"
+        ]
+      },
+      {
+        "lod": 1,
+        "sourceBindingSHA256": "3ee7c5821024aae1b549032cc49fbb54521858d827f132e43a152e8747acf340",
+        "maximumDiscardedWeight": 0.12441187792441952,
+        "originalBones": [
+          "r_thigh",
+          "r_shin",
+          "r_kneeRoll",
+          "pelvis",
+          "r_legRoll",
+          "r_legRoll2",
+          "l_thigh",
+          "torso",
+          "l_legRoll",
+          "r_foot",
+          "l_shin",
+          "l_kneeRoll",
+          "l_legRoll2"
+        ],
+        "newBones": [
+          "mm_shaft_00",
+          "mm_shaft_01",
+          "mm_shaft_02",
+          "mm_shaft_03",
+          "mm_shaft_04",
+          "mm_shaft_05",
+          "mm_shaft_06",
+          "mm_shaft_07",
+          "mm_scrotum_l",
+          "mm_scrotum_r"
+        ]
+      }
+    ],
+    "newBones": [
+      "mm_shaft_00",
+      "mm_shaft_01",
+      "mm_shaft_02",
+      "mm_shaft_03",
+      "mm_shaft_04",
+      "mm_shaft_05",
+      "mm_shaft_06",
+      "mm_shaft_07",
+      "mm_scrotum_l",
+      "mm_scrotum_r"
+    ],
+    "authoredWorldRestFBX": [
+      [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.1458648228460692
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          5.171746122675239
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          96.03110936723856
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.1039021735364492
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          18.715704143564228
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          98.4411252293878
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.03906190736489305
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          23.703392885685286
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          101.77801952574954
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.12523604248875583
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          27.027032592883256
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          106.2947877265129
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.052485713164574836
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          30.630549659392802
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          108.53928475759459
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.07791997372987812
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          33.22833308462246
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          114.62365723723096
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.10247713253142421
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          35.88413779703916
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          117.27540728363228
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0967085992405615
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          40.98466389690912
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          118.71226423036074
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -5.0241956219772375
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          19.41820710167624
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          75.52852690748898
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      [
+        [
+          1.0,
+          0.0,
+          0.0,
+          5.181742403959724
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          19.347049849073223
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          75.3038911875171
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    ],
+    "nativeVerified": false,
+    "observedGameplay": false,
+    "limitations": [
+      "native secondary-motion approximation; no XPBD parity",
+      "body contacts not calibrated",
+      "live rest shape bridge pending"
+    ]
+  },
+  "restAssetReverification": {
+    "baseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+    "nativeVerified": true,
+    "fitReport": "build/attachment/fit-20260930-075013-7ae7f2/geralt-anatomy.fit.json",
+    "nativeReport": "build/attachment/fit-20260930-075013-7ae7f2/native-verification.json"
+  },
+  "installedFilesReverifiedUnchanged": 5
+}

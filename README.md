@@ -15,7 +15,10 @@ its tracked provenance for build, installation and observed-gameplay status.
 Version 0.3.0 is installed locally and its file hashes are verified. A user
 screenshot confirms the fitted model's appearance. Movement and secondary
 motion remain unverified. See [runtime work](docs/RUNTIME-PHYSICS.md) for the
-shared control catalog, isolated compiler probe and unfinished native bridge.
+shared control catalog and unfinished native bridge. The newer
+[motion candidate](docs/MOTION-CANDIDATE.md) adds a verified 10-joint mesh/rig
+export and compiled panel prototype; custom script-item cooking still fails,
+so this candidate has not been installed.
 
 Version 0.2.0 redirects Geralt's default underwear entity to his stock bare
 lower body. It has been cooked, verified and installed locally for user testing.
