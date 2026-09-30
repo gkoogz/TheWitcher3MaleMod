@@ -1,0 +1,15 @@
+{
+  "previousPin": "33c74afc4e0184bab19cf775fda93711d63d9432",
+  "newPin": "26944f8b5b1216db70cb053c397bb2c758c496a7",
+  "scope": "offline authored shape and fitted collar domain",
+  "runtimeInstalledChanged": false,
+  "installedVersion": "0.4.4-native-sliders-test",
+  "installedNativeSourceBase": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+  "oldCageRebound": false,
+  "requiredBeforeRelease": "fresh cage verification against pin or explicit source-hash adoption proof; never relabel old runtime evidence",
+  "deferred": [
+    "animation",
+    "fluid",
+    "audio"
+  ]
+}

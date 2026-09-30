@@ -1,0 +1,34 @@
+{
+  "stockResource": "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3 REDkit\\r4data\\gameplay\\behaviors\\pc\\behaviorgraph\\pc_scabbards.w2beh",
+  "stockSHA256": "faf2ae13f8dff61d0542dce69e4671eb879a7435351b3af2646f4078d4c4f5d3",
+  "templateSHA256": "5544940ee652433d5674372ec859e979043f6e76d181cc9e5bfe9295304854e4",
+  "recipeSHA256": "6a9a0419910b58a35bbad08c8088a4327dd4be63849d3910f2745740a60f9123",
+  "resourceSHA256": "aabdfa7fcca44f5f37c9b4189d0b758ba0c15266196de637ab5bf928be5fd58b",
+  "nativeCook": {
+    "command": "cook",
+    "args": [
+      "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3 REDkit\\bin\\x64_RedKit\\wcc_lite.exe",
+      "cook",
+      "-platform=pc",
+      "-mod=C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\control-graph\\a8d64e222852\\intake",
+      "-outdir=C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\control-graph\\a8d64e222852\\cooked\\",
+      "-uncookDir",
+      "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\depot-a255d71baaf2\\",
+      "-workspaceDir",
+      "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\control-graph\\a8d64e222852\\",
+      "-noninteractivecrash"
+    ],
+    "exitCode": 0,
+    "seconds": 20.125,
+    "logSHA256": "cd2e853668a93fc93a35356651a77acaebbcb9b55c055137086c243c990e7cfd",
+    "logPath": "build/logs/20260930-193613-control-graph-7b9ae0.log",
+    "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e"
+  },
+  "cookedResourceSHA256": "ea7c42fed7ec09950ec8b9d86d62244b1ec023d7be138ced1ba3f8d63d3a6f4f",
+  "observedGameplay": false,
+  "poseInheritanceVerified": false,
+  "dynamicConstraintCompatibilityVerified": false,
+  "installed": false,
+  "localReport": "build/control-graph/a8d64e222852/probe.json.report.json",
+  "sourceReportSHA256": "6fd381fa99aa2c0aff68d058ea3777d327fcee7f589a34bed196dc9ea47eb0e7"
+}

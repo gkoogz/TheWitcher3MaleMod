@@ -29,5 +29,9 @@
       "sha256": "7ff28bec9cea34b55364160df7f2929dcee0aa2e7a5c7530cc77449405e50516"
     }
   ],
-  "sharedAdoption": "No numerical or preference contract changed. Other spokes retain their native UI; preserve the Base control/backend distinction."
+  "sharedAdoption": "No numerical or preference contract changed. Other spokes retain their native UI; preserve the Base control/backend distinction.",
+  "menuVisibilityObserved": true,
+  "userObservation": "User reports native pause-menu category visible; prefers live editing.",
+  "tuningEffectVerified": false,
+  "persistenceVerified": false
 }

@@ -6,18 +6,19 @@
   "contract": "modules/pelvic-collar.json",
   "dependency": "dependencies/base.lock.json",
   "character": "geralt",
-  "status": "shared collar evaluator available; rest graft and seam native round-trip verified; dynamic collar bridge pending",
+  "status": "shared fitted dynamic domain with protected part boundaries and checked correction; native output and full control envelope pending",
   "calibration": null,
   "seamBindings": {
     "restBindings": "generated/attachment.json",
-    "dynamicCollarDomain": null
+    "dynamicCollarDomain": "Base malemod_base/graft_collar.py via tools/probe_pelvic_domain.py"
   },
   "nativeDeformationBridge": null,
   "verification": {
     "sourceMath": "shared fixtures passed",
-    "targetOfflineFit": "rest-graft reference fit passed; maximum-radius collar fit pending",
+    "targetOfflineFit": "both fitted LODs: synthetic correction has zero inversions/seam/boundary drift; original donor error below 1.5e-14; only 17-36 percent correction accepted; full shape envelope pending",
     "nativeRuntime": "pending",
-    "observedGameplay": "pending"
+    "observedGameplay": "pending",
+    "nativeGraphResource": "isolated scale graph accepted by WCC; not installed or runtime verified"
   },
   "next": [
     "derive actual source collar root/guide frame separately from rest boundary alignment",
@@ -26,5 +27,6 @@
     "coordinate torso/legs boundary if recruitment reaches waist",
     "test maximum-radius and moving poses including normals and contacts"
   ],
-  "restGraftFeature": "features/rest-graft.json"
+  "restGraftFeature": "features/rest-graft.json",
+  "probeProvenance": "provenance/pelvic-domain-probe.json"
 }

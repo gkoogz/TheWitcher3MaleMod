@@ -17,6 +17,15 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
+Latest user observation: **the 0.4.4 native pause-menu category is visible**.
+Actual tuning effects/persistence remain unconfirmed. The next request is the
+full 18-control port with a dynamic coupled pelvis; read `SLIDER-PORT.md` first.
+Base `26944f8` now supplies an original-code-verified early shape stage and a
+protected fitted-graft collar domain. Both Geralt LODs pass synthetic seam/area
+checks, but the limited correction does not establish the full shape envelope.
+An isolated native scale graph cooks successfully; runtime pose and physics
+compatibility remain unverified. No new package was installed in this pass.
+
 Current installed test: **0.4.4-native-sliders-test**, local package
 `publish/20260930-183505-9d2838`, Base
 `ca78de046a7be63ccb316c7a9b9c12bc7ce3293f`. Read `LIVE-MOTION-TEST.md` and
@@ -73,8 +82,8 @@ fields were retained for compatibility with the unchanged cooked entity.
 
 Full official compilation, 26 adapter tests, unchanged-field checks, native
 unbundle verification and all five installed hashes passed. Native bundle/cache
-bytes match 0.4.2/0.4.3 exactly. Current gameplay is pending; do not claim sliders
-render or alter live physics without the user's test. Read
+bytes match 0.4.2/0.4.3 exactly. The user confirms the native menu is now visible;
+actual tuning effects and persistence remain pending. Read
 `provenance/native-slider-menu.json` for the stock interface evidence. No shared
 Base algorithm changed. The installer still retains historical arrow/F8 bindings;
 this UI no longer uses them. Future cleanup should remove only owned bindings.
