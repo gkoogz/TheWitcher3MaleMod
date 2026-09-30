@@ -27,9 +27,9 @@ def main():
         target=inside(ws,r['path']);target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,target)
     scripts=ws/'scripts/local';scripts.mkdir(parents=True)
     shutil.copy2(ROOT/'probes/runtime/maleModPhysics.ws',scripts/'maleModPhysics.ws')
-    project={'name':'modMaleMod','version':'0.4.3-controller-input-test','platform':'pc',
+    project={'name':'modMaleMod','version':'0.4.4-native-sliders-test','platform':'pc',
              'cacheBuilders':['textures','physics'],'scriptedCook':True,'motionEntity':entity,
-             'scope':'Native secondary motion with F6 tuning panel: gravity, damping, simulation speed. Live size and Wolverine solver parity remain pending.'}
+             'scope':'Native secondary motion with F6 pause-menu sliders: gravity, damping, simulation speed. Live size and Wolverine solver parity remain pending.'}
     write_json(authored/'profile-verification.json',profile)
     package=build(cfg,project,ws);verify_package(package)
     return package

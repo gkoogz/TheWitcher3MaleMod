@@ -38,7 +38,7 @@ def install(directory):
     try:
         install_package(cfg,directory);bindings=input_bindings.install(input_path)
         print('Installed motion test and hotkeys; previous build archived at:',backup)
-        print('F6 opens/closes. Arrows select/adjust native tuning. F8 resets.')
+        print('F6 opens the native pause menu; select MaleMod - motion controls. Escape returns to gameplay.')
         return bindings
     except Exception:
         current=read_json(ROOT/'local/installation.json')

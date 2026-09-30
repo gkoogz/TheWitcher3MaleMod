@@ -8,16 +8,13 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-The installed test is **0.4.3-controller-input-test**: a native motion cage and
-F6 tuning panel for gravity, momentum retention and simulation speed. The custom controller
-now passes native cooking and reference verification; the package was unpacked
-and installed with matching hashes. Both 0.4.0 and 0.4.1 were rejected in gameplay: deformation and F6 failure
-remained. The 0.4.2 candidate aligns native joint/skin bind frames and registers
-F6 through the player input lifecycle. The user confirmed the repaired shape and
-load toast, but F6 still failed. 0.4.3 registers F6 directly on the initialized
-controller and adds input/HUD diagnostics; native assets are unchanged.
-**0.4.3 gameplay feedback is pending.** Live size
-sliders and the complete Wolverine control set remain unfinished.
+The installed test is **0.4.4-native-sliders-test**. F6 opens the native pause
+menu; select **MaleMod - motion controls** for three physics sliders. Escape
+resumes gameplay. This replaces the failed debug HUD and repeated toasts in
+0.4.3. The working model/physics assets are unchanged. Compilation and package
+verification passed; **visible sliders and tuning still need gameplay confirmation**.
+The unpaused corner overlay, live size controls and full Wolverine parity remain
+unfinished. These native physics parameters do not represent Base solver parity.
 
 Read [test and rollback instructions](docs/LIVE-MOTION-TEST.md). The previous
 0.3 static appearance test is preserved for rollback. The user confirmed its

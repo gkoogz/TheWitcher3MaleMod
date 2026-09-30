@@ -1,0 +1,33 @@
+{
+  "version": "0.4.4-native-sliders-test",
+  "engineSpecific": true,
+  "rendering": "Existing native pause-menu Scaleform sliders; no custom movie or XML config registration",
+  "entry": "F6 opens CommonIngameMenu; select MaleMod - motion controls",
+  "controls": [
+    "gravity",
+    "momentum retention",
+    "simulation speed"
+  ],
+  "notImplemented": [
+    "live unpaused corner overlay",
+    "size deformation controls",
+    "full Wolverine control parity"
+  ],
+  "serializedControllerFieldsUnchanged": true,
+  "gameplayVerified": false,
+  "nativeInterfaces": [
+    {
+      "path": "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3\\content\\content0\\scripts\\game\\gui\\main_menu\\ingamemenu\\igmOptions.ws",
+      "sha256": "00e9cc8ff44bfef7f446417fbd2edae8739e4ae56f594eb6a419a48ea636524c"
+    },
+    {
+      "path": "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3\\content\\content0\\scripts\\game\\gui\\main_menu\\ingamemenu\\igmStructureCreator.ws",
+      "sha256": "b4828cb254bc4fcdcf690b8487959bb7154675976e10446b08f976718ab15bc4"
+    },
+    {
+      "path": "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3\\content\\content0\\scripts\\game\\gui\\main_menu\\ingameMenu.ws",
+      "sha256": "7ff28bec9cea34b55364160df7f2929dcee0aa2e7a5c7530cc77449405e50516"
+    }
+  ],
+  "sharedAdoption": "No numerical or preference contract changed. Other spokes retain their native UI; preserve the Base control/backend distinction."
+}

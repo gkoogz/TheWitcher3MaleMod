@@ -44,7 +44,6 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
 
     public function InitializeController() : bool
     {
-        var keys : array<EInputKey>;
         if (listening) { return true; }
         if (!IsPlayerOwner() || !dynamicConstraint) { return false; }
         gravityValue = dynamicConstraint.gravity;
@@ -52,13 +51,9 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         speedValue = dynamicConstraint.speed;
         LoadTuning();
         ApplyTuning();
-        // Register where gameplay has confirmed this component initializes.
-        // One owner, one listener: no player wrapper or per-frame key polling.
         theInput.RegisterListener(this, 'OnMaleModInput', 'MaleModToggle');
         listening = true;
         StopTicking();
-        theInput.GetPCKeysForAction('MaleModToggle', keys);
-        thePlayer.DisplayHudMessage("MaleMod 0.4.3 ready: F6 | bound keys: " + keys.Size());
         return true;
     }
 
@@ -68,40 +63,52 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         {
             startupElapsed += dt;
             if (!InitializeController() && startupElapsed > 5.0) { StopTicking(); }
-            return false;
         }
-        if (!IsPlayerOwner()) { StopPanel(); return false; }
-        if (!panelOpen) { StopTicking(); return false; }
-        panelElapsed += dt;
-        if (panelElapsed >= 0.1) { panelElapsed = 0.0; DrawPanel(); }
+        else { StopTicking(); }
     }
 
     private function StopPanel()
     {
-        panelOpen = false;
         StopTicking();
-        if (listening)
-        {
-            theInput.UnregisterListener(this, 'MaleModToggle');
-            theInput.UnregisterListener(this, 'MaleModPrevious');
-            theInput.UnregisterListener(this, 'MaleModNext');
-            theInput.UnregisterListener(this, 'MaleModDecrease');
-            theInput.UnregisterListener(this, 'MaleModIncrease');
-            theInput.UnregisterListener(this, 'MaleModReset');
-        }
+        if (listening) { theInput.UnregisterListener(this, 'MaleModToggle'); }
         listening = false;
-        ClearPanel();
-        if (preferencesDirty && theGame) { theGame.SaveUserSettings(); preferencesDirty = false; }
+        SaveTuning();
     }
 
     event OnDestroyed() { StopPanel(); }
 
     public function OpenPanel()
     {
-        var action : SInputAction;
+        var data : MaleModMenuData;
         if (!InitializeController()) { MaleModShowStatus(); return; }
-        action.aName = 'MaleModToggle'; action.value = 1.0; action.lastFrameValue = 0.0;
-        OnMaleModInput(action);
+        if (theGame.GetGuiManager().GetRootMenu()) { return; }
+        data = new MaleModMenuData in theGame;
+        data.controller = this;
+        data.setDefaultState('MaleModMotion');
+        theGame.RequestMenu('CommonIngameMenu', data);
+    }
+
+    public function SaveTuning()
+    {
+        if (preferencesDirty && theGame) { theGame.SaveUserSettings(); preferencesDirty = false; }
+    }
+
+    public function GetTuning(control : name) : float
+    {
+        if (control == 'MaleModGravity') { return gravityValue; }
+        if (control == 'MaleModDamping') { return dampingValue; }
+        return speedValue;
+    }
+
+    public function SetTuning(control : name, value : float)
+    {
+        if (!InitializeController()) { return; }
+        if (control == 'MaleModGravity') { gravityValue = ClampF(value,0.0,2.0); }
+        else if (control == 'MaleModDamping') { dampingValue = ClampF(value,0.0,1.0); }
+        else if (control == 'MaleModSpeed') { speedValue = ClampF(value,0.05,2.0); }
+        else { return; }
+        ApplyTuning();
+        StoreTuning();
     }
 
     public function ConfirmPlayerInventoryOwner()
@@ -119,58 +126,10 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
 
     event OnMaleModInput(action : SInputAction)
     {
-        if (!IsPressed(action)) { return false; }
+        if (!IsPressed(action) || action.aName != 'MaleModToggle') { return false; }
         if (!IsPlayerOwner()) { StopPanel(); return false; }
-        if (action.aName == 'MaleModToggle')
-        {
-            panelOpen = !panelOpen;
-            if (panelOpen)
-            {
-                theInput.RegisterListener(this, 'OnMaleModInput', 'MaleModPrevious');
-                theInput.RegisterListener(this, 'OnMaleModInput', 'MaleModNext');
-                theInput.RegisterListener(this, 'OnMaleModInput', 'MaleModDecrease');
-                theInput.RegisterListener(this, 'OnMaleModInput', 'MaleModIncrease');
-                theInput.RegisterListener(this, 'OnMaleModInput', 'MaleModReset');
-                thePlayer.DisplayHudMessage("MaleMod: panel opened");
-                panelElapsed = 0.0; StartTicking();
-                DrawPanel();
-            }
-            else
-            {
-                thePlayer.DisplayHudMessage("MaleMod: panel closed and saved");
-                StopTicking();
-                theInput.UnregisterListener(this, 'MaleModPrevious');
-                theInput.UnregisterListener(this, 'MaleModNext');
-                theInput.UnregisterListener(this, 'MaleModDecrease');
-                theInput.UnregisterListener(this, 'MaleModIncrease');
-                theInput.UnregisterListener(this, 'MaleModReset');
-                ClearPanel();
-                if (preferencesDirty) { theGame.SaveUserSettings(); preferencesDirty = false; }
-            }
-            return true;
-        }
-        if (!panelOpen) { return false; }
-        if (action.aName == 'MaleModPrevious') { selected = (selected+2)%3; }
-        if (action.aName == 'MaleModNext') { selected = (selected+1)%3; }
-        if (action.aName == 'MaleModDecrease') { Adjust(-1.0); }
-        if (action.aName == 'MaleModIncrease') { Adjust(1.0); }
-        if (action.aName == 'MaleModReset')
-        {
-            gravityValue = 0.15; dampingValue = 0.65; speedValue = 0.3;
-            ApplyTuning();
-            StoreTuning();
-            thePlayer.ResetClothAndDangleSimulation();
-        }
-        DrawPanel();
-    }
-
-    private function Adjust(direction : float)
-    {
-        if (selected == 0) { gravityValue = ClampF(gravityValue+direction*0.05,0.0,2.0); }
-        if (selected == 1) { dampingValue = ClampF(dampingValue+direction*0.01,0.0,1.0); }
-        if (selected == 2) { speedValue = ClampF(speedValue+direction*0.05,0.05,2.0); }
-        ApplyTuning();
-        StoreTuning();
+        OpenPanel();
+        return true;
     }
 
     private function ApplyTuning()
@@ -202,66 +161,6 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         preferencesDirty = true;
     }
 
-    private function DrawPanel()
-    {
-        var color : Color;
-        var prefix : string;
-        var hud : CR4ScriptedHud;
-        var module : CR4HudModuleDebugText;
-        var label : string;
-        if (!thePlayer) { return; }
-        hud = (CR4ScriptedHud)theGame.GetHud();
-        if (hud) { module = (CR4HudModuleDebugText)hud.GetHudModule("DebugTextModule"); }
-        if (module && (hudOwned || !module.bCurrentShowState))
-        {
-            if (!hudOwned)
-            {
-                hudX = module.GetModuleFlash().GetX(); hudY = module.GetModuleFlash().GetY(); hudOwned = true;
-            }
-            label = "MALEMOD | Native motion\n";
-            prefix = "  "; if (selected==0) { prefix = "> "; }
-            label += prefix + "Gravity  " + gravityValue + "\n";
-            prefix = "  "; if (selected==1) { prefix = "> "; }
-            label += prefix + "Momentum retention  " + dampingValue + "\n";
-            prefix = "  "; if (selected==2) { prefix = "> "; }
-            label += prefix + "Speed    " + speedValue + "\n\n";
-            label += "Arrows: select / adjust\nF8: reset | F6: close and save";
-            module.ShowDebugText(label);
-            module.GetModuleFlash().SetPosition(30.0,240.0);
-            return;
-        }
-        color = Color(210,220,230,255);
-        thePlayer.GetVisualDebug().AddBar('MaleModTitle',24,230,340,24,0.0,color,"MaleMod native motion test - F6 close",0.3);
-        prefix = "  "; if (selected==0) { prefix = "> "; }
-        thePlayer.GetVisualDebug().AddBar('MaleModGravity',24,258,340,22,gravityValue/2,color,prefix+"Gravity: "+gravityValue,0.3);
-        prefix = "  "; if (selected==1) { prefix = "> "; }
-        thePlayer.GetVisualDebug().AddBar('MaleModDamping',24,282,340,22,dampingValue,color,prefix+"Momentum retention: "+dampingValue,0.3);
-        prefix = "  "; if (selected==2) { prefix = "> "; }
-        thePlayer.GetVisualDebug().AddBar('MaleModSpeed',24,306,340,22,speedValue/2,color,prefix+"Simulation speed: "+speedValue,0.3);
-        thePlayer.GetVisualDebug().AddBar('MaleModHelp',24,334,340,24,0.0,color,"Arrows select/adjust | F8 reset",0.3);
-    }
-
-    private function ClearPanel()
-    {
-        var hud : CR4ScriptedHud;
-        var module : CR4HudModuleDebugText;
-        if (hudOwned && theGame)
-        {
-            hud = (CR4ScriptedHud)theGame.GetHud();
-            if (hud) { module = (CR4HudModuleDebugText)hud.GetHudModule("DebugTextModule"); }
-            if (module)
-            {
-                module.HideDebugText(); module.GetModuleFlash().SetPosition(hudX,hudY);
-            }
-            hudOwned = false;
-        }
-        if (!thePlayer) { return; }
-        thePlayer.GetVisualDebug().RemoveBar('MaleModTitle');
-        thePlayer.GetVisualDebug().RemoveBar('MaleModGravity');
-        thePlayer.GetVisualDebug().RemoveBar('MaleModDamping');
-        thePlayer.GetVisualDebug().RemoveBar('MaleModSpeed');
-        thePlayer.GetVisualDebug().RemoveBar('MaleModHelp');
-    }
 }
 
 function MaleModFindController() : MaleModMotionComponent
@@ -302,7 +201,7 @@ function MaleModShowStatus()
     var components : array<CComponent>;
     var i : int;
     controller = MaleModFindController();
-    status = "F6 input reached MaleMod 0.4.3. No active controller was found. Equip/remove trousers.\n";
+    status = "F6 input reached MaleMod 0.4.4. No active controller was found. Equip/remove trousers.\n";
     if (controller) { status = controller.Status(); }
     else if (thePlayer)
     {
@@ -315,3 +214,97 @@ function MaleModShowStatus()
 
 exec function MaleModMenu() { MaleModTogglePanel(); }
 exec function MaleModPhysicsStatus() { MaleModShowStatus(); }
+
+// Native Scaleform menu objects follow igmOptions.ws. No debug HUD, XML file-list
+// edits, global polling, or independent copy of a stock script is needed.
+class MaleModMenuData extends W3MenuInitData
+{
+    var controller : MaleModMotionComponent;
+}
+
+function MaleModMenuController(menu : CR4IngameMenu) : MaleModMotionComponent
+{
+    var data : MaleModMenuData;
+    data = (MaleModMenuData)menu.GetMenuInitData();
+    if (data && data.controller) { return data.controller; }
+    return MaleModFindController();
+}
+
+function MaleModSlider(storage : CScriptedFlashValueStorage, control : name, label : string,
+    value : float, minimum : float, maximum : float, steps : int) : CScriptedFlashObject
+{
+    var row : CScriptedFlashObject;
+    var range : CScriptedFlashArray;
+    row = storage.CreateTempFlashObject();
+    row.SetMemberFlashString("id", "" + control);
+    row.SetMemberFlashString("label", label);
+    row.SetMemberFlashUInt("type", IGMActionType_Slider);
+    row.SetMemberFlashUInt("tag", NameToFlashUInt(control));
+    row.SetMemberFlashInt("groupID", NameToFlashUInt('MaleModNativeSliderGroup'));
+    row.SetMemberFlashString("current", FloatToString(value));
+    row.SetMemberFlashString("startingValue", FloatToString(value));
+    row.SetMemberFlashBool("disabled", false);
+    range = storage.CreateTempFlashArray();
+    range.PushBackFlashString(FloatToString(minimum));
+    range.PushBackFlashString(FloatToString(maximum));
+    range.PushBackFlashString(IntToString(steps));
+    row.SetMemberFlashArray("subElements", range);
+    return row;
+}
+
+@wrapMethod(IngameMenuStructureCreator)
+function PopulateMenuData() : CScriptedFlashArray
+{
+    var entries : CScriptedFlashArray;
+    var controls : CScriptedFlashArray;
+    var group : CScriptedFlashObject;
+    var controller : MaleModMotionComponent;
+    entries = wrappedMethod();
+    controller = MaleModMenuController(parentMenu);
+    if (!controller || !controller.InitializeController()) { return entries; }
+    controls = m_flashValueStorage.CreateTempFlashArray();
+    controls.PushBackFlashObject(MaleModSlider(m_flashValueStorage, 'MaleModGravity',
+        "Gravity", controller.GetTuning('MaleModGravity'),0.0,2.0,40));
+    controls.PushBackFlashObject(MaleModSlider(m_flashValueStorage, 'MaleModDamping',
+        "Momentum retention", controller.GetTuning('MaleModDamping'),0.0,1.0,100));
+    controls.PushBackFlashObject(MaleModSlider(m_flashValueStorage, 'MaleModSpeed',
+        "Simulation speed", controller.GetTuning('MaleModSpeed'),0.05,2.0,39));
+    group = m_flashValueStorage.CreateTempFlashObject();
+    group.SetMemberFlashString("id", "MaleModMotion");
+    group.SetMemberFlashString("label", "MaleMod - motion controls");
+    group.SetMemberFlashString("listTitle", "MaleMod - motion controls");
+    group.SetMemberFlashUInt("tag", NameToFlashUInt('MenuSelector'));
+    group.SetMemberFlashUInt("type", IGMActionType_MenuLastHolder);
+    group.SetMemberFlashArray("subElements", controls);
+    entries.PushBackFlashObject(group);
+    return entries;
+}
+
+@wrapMethod(CR4IngameMenu)
+function OnOptionValueChanged(groupId : int, optionName : name, optionValue : string)
+{
+    var controller : MaleModMotionComponent;
+    if (groupId == NameToFlashUInt('MaleModNativeSliderGroup'))
+    {
+        controller = MaleModMenuController(this);
+        if (controller) { controller.SetTuning(optionName, StringToFloat(optionValue)); }
+        return true;
+    }
+    wrappedMethod(groupId, optionName, optionValue);
+}
+
+@wrapMethod(CR4IngameMenu)
+function OnCancelOptionValueChange(groupId : int, optionName : name)
+{
+    if (groupId == NameToFlashUInt('MaleModNativeSliderGroup')) { return true; }
+    wrappedMethod(groupId, optionName);
+}
+
+@wrapMethod(CR4IngameMenu)
+function OnClosingMenu()
+{
+    var controller : MaleModMotionComponent;
+    controller = MaleModMenuController(this);
+    if (controller) { controller.SaveTuning(); }
+    wrappedMethod();
+}

@@ -17,8 +17,8 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
-Current installed test: **0.4.3-controller-input-test**, local package
-`publish/20260930-180412-505185`, Base
+Current installed test: **0.4.4-native-sliders-test**, local package
+`publish/20260930-183505-9d2838`, Base
 `ca78de046a7be63ccb316c7a9b9c12bc7ce3293f`. Read `LIVE-MOTION-TEST.md` and
 `WCC-SCRIPTED-COOK.md`. The custom-class cooking blocker is resolved by running
 compilation and native cooking in one version-pinned WCC process. Native dump
@@ -49,7 +49,9 @@ and its skin inverse binds together; the native export verifies the alignment.
 Controller lookup checks the player and mounted inventory entities. Missing
 controllers produce a diagnostic dialog instead of a silent F6 failure.
 
-**0.4.3 is a script-only repair awaiting gameplay.** It registers F6 directly in
+**0.4.3 failed the visible-menu test:** the user reported multiple toasts but
+no visible menu or sliders. Exact toast text was not supplied. Its earlier
+implementation: It registers F6 directly in
 that observed component initialization and removes the separate CPlayerInput
 wrapper. It unregisters on detach/destruction, leaves no closed-panel polling,
 and adds bound-key-count and panel-open/closed toasts to separate input failures
@@ -59,6 +61,23 @@ fields and physics settings are unchanged. Full REDkit script compilation,
 native unbundle verification, 26 adapter tests and all five installed hashes
 passed. See `scriptPatch` in the release provenance for inherited native cook
 evidence versus newly compiled script evidence. Live F6/HUD remains unverified.
+
+**0.4.4 replaces the debug HUD with native Scaleform slider rows.** F6 requests
+the standard CommonIngameMenu carrying the active controller reference. Select
+**MaleMod - motion controls** for gravity, momentum retention and speed. Menu
+callbacks clamp/apply values and persist on close. Escape resumes gameplay;
+this is a paused native menu, not the requested unpaused corner overlay. It
+contains no size sliders and does not claim Wolverine parity. Startup/open/close
+toasts, debug HUD drawing and panel ticking were removed. Serialized component
+fields were retained for compatibility with the unchanged cooked entity.
+
+Full official compilation, 26 adapter tests, unchanged-field checks, native
+unbundle verification and all five installed hashes passed. Native bundle/cache
+bytes match 0.4.2/0.4.3 exactly. Current gameplay is pending; do not claim sliders
+render or alter live physics without the user's test. Read
+`provenance/native-slider-menu.json` for the stock interface evidence. No shared
+Base algorithm changed. The installer still retains historical arrow/F8 bindings;
+this UI no longer uses them. Future cleanup should remove only owned bindings.
 
 The installed package was built against Base `ca78de0`. The current lock adopts
 `33c74af` for durable context documentation only; all runtime source/assets are

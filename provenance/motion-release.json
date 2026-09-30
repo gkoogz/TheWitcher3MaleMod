@@ -1,5 +1,5 @@
 {
-  "version": "0.4.3-controller-input-test",
+  "version": "0.4.4-native-sliders-test",
   "baseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
   "files": [
     {
@@ -24,8 +24,8 @@
     },
     {
       "path": "Mods/modMaleMod/content/scripts/local/maleModPhysics.ws",
-      "sha256": "d5d7376b7a0253ef0afbe38b4fd1850e0da624dca3361df0839979a43b790a1e",
-      "bytes": 13628
+      "sha256": "ca21259c376eb51c82bc478a6b467e720e2d440929401f8a840bd642bec5372f",
+      "bytes": 11905
     }
   ],
   "motionBinding": {
@@ -36,10 +36,10 @@
     "runtimeHandleBindingVerified": false,
     "observedGameplay": false
   },
-  "package": "publish/20260930-180412-505185",
+  "package": "publish/20260930-183505-9d2838",
   "installedFileHashesVerified": true,
   "adapterTestsPassed": 26,
-  "status": "installed script-only F6 repair; awaiting gameplay feedback",
+  "status": "installed native slider candidate; gameplay confirmation pending",
   "gameplay": {
     "startup": null,
     "secondaryMotion": null,
@@ -82,6 +82,13 @@
       "userReport": "The shape is good. F6 does nothing. A toast about F6 appears on load.",
       "stableMotion": null,
       "liveTuning": null
+    },
+    {
+      "version": "0.4.3-controller-input-test",
+      "package": "publish/20260930-180412-505185",
+      "userReport": "Seeing all sorts of toast messages but no visible mod menu like Wolverine with sliders",
+      "visibleMenu": false,
+      "exactToastTextProvided": false
     }
   ],
   "meshVerification": {
@@ -265,24 +272,24 @@
     }
   ],
   "nativePackedRoundTrip": {
-    "package": "publish/20260930-180412-505185",
+    "package": "publish/20260930-183505-9d2838",
     "native": {
       "command": "unbundle",
       "args": [
         "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3 REDkit\\bin\\x64_RedKit\\wcc_lite.exe",
         "unbundle",
-        "-dir=C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\publish\\20260930-180412-505185\\Mods\\modMaleMod\\content\\bundles",
-        "-outdir=C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\unbundle-motion-c6f63f4fd269\\unpacked",
+        "-dir=C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\publish\\20260930-183505-9d2838\\Mods\\modMaleMod\\content\\bundles",
+        "-outdir=C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\unbundle-motion-a8f5ad498a1c\\unpacked",
         "-uncookDir",
-        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\depot-54c0330a4431\\",
+        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\depot-517f1739bb4e\\",
         "-workspaceDir",
-        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\unbundle-motion-c6f63f4fd269\\workspace\\",
+        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\unbundle-motion-a8f5ad498a1c\\workspace\\",
         "-noninteractivecrash"
       ],
       "exitCode": 0,
-      "seconds": 18.25,
-      "logSHA256": "78d536ac717f7f8502a88032604de93cb528311fd6a9d25e7a2ed3af5f4b47c0",
-      "logPath": "build/logs/20260930-180431-unbundle-motion-b14978.log",
+      "seconds": 17.531,
+      "logSHA256": "d22bc2e6211ec82c4e6d4f1880c40aea9a0adb585a82afcc1de36911a94a9de3",
+      "logPath": "build/logs/20260930-183525-unbundle-motion-f54b56.log",
       "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e"
     },
     "files": [
@@ -307,7 +314,7 @@
   "authoredSources": [
     {
       "path": "probes/runtime/maleModPhysics.ws",
-      "sha256": "d5d7376b7a0253ef0afbe38b4fd1850e0da624dca3361df0839979a43b790a1e"
+      "sha256": "ca21259c376eb51c82bc478a6b467e720e2d440929401f8a840bd642bec5372f"
     },
     {
       "path": "tools/native_joint_frames.py",
@@ -323,7 +330,7 @@
     },
     {
       "path": "tools/build_motion_release.py",
-      "sha256": "078b643f8305913cd616986ecb2c8fc22c39f27fe7461c1890350fa3a1df3239"
+      "sha256": "0a0bf338d20af317b55bb140ccbd2b645dab8102ceaff8bfc91cc0b0fc768751"
     },
     {
       "path": "tools/motion_entity.py",
@@ -339,9 +346,9 @@
     }
   ],
   "scriptPatch": {
-    "sourcePackage": "publish/20260930-174655-f7a8ff",
-    "sourceManifestSHA256": "ca4d1c0b31a7c3707c6c4e4cc20f56f500c67a067feb69de76dd087ae648ee31",
-    "sourceScriptSHA256": "d5d7376b7a0253ef0afbe38b4fd1850e0da624dca3361df0839979a43b790a1e",
+    "sourcePackage": "publish/20260930-180412-505185",
+    "sourceManifestSHA256": "caad3164ee5d9ea018b6eab920f502303acd4537519b1c29f50b3a43cb6f3d8f",
+    "sourceScriptSHA256": "ca21259c376eb51c82bc478a6b467e720e2d440929401f8a840bd642bec5372f",
     "nativeFilesPreserved": [
       {
         "path": "Mods/modMaleMod/content/bundles/blob0.bundle",
@@ -370,18 +377,18 @@
       "args": [
         "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3 REDkit\\bin\\x64_RedKit\\wcc_lite.exe",
         "compilescripts",
-        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\scripts-7895d357fd93",
-        "-out=C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\scripts-7895d357fd93-compiled",
+        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\scripts-abe1e73e2eb0",
+        "-out=C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\scripts-abe1e73e2eb0-compiled",
         "-uncookDir",
-        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\depot-3690021a9185\\",
+        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\depot-94aae6d948e5\\",
         "-workspaceDir",
-        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\script-patch-cc3b56c51ba5\\",
+        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\script-patch-8b98a7f9191a\\",
         "-noninteractivecrash"
       ],
       "exitCode": 0,
-      "seconds": 26.297,
-      "logSHA256": "c9a3d70b5a167226d5f0a419a10fdf550a73621d216a0817d29dc284576ce06d",
-      "logPath": "build/logs/20260930-180346-scripts-0551d5.log",
+      "seconds": 27.5,
+      "logSHA256": "4dbfd47b94fcf4ae36ba928442ff3e8f9f90b689717aeaa3588417d26b3a0edb",
+      "logPath": "build/logs/20260930-183438-scripts-8fe0de.log",
       "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e"
     }
   }

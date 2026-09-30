@@ -1,60 +1,30 @@
-# Installed native motion test
+# Installed native slider test
 
-Checkpoint: September 30, 2026. Version `0.4.3-controller-input-test` is installed
-locally from `publish/20260930-180412-505185`. This is not completed 1.0 or
-Wolverine runtime parity. Check `local/installation.json` before changing files.
+Checkpoint: September 30, 2026. Version `0.4.4-native-sliders-test`, installed
+from `publish/20260930-183505-9d2838`. Inspect `local/installation.json` before changing files.
+This is not a completed 1.0 or Wolverine runtime parity.
 
-0.4.0 loaded and produced motion, but the user reported severe undulation
-and an unresponsive F6 key. It is a failed gameplay test, not a working release.
-0.4.1 also failed gameplay testing. 0.4.2 aligns native joint frames and skin
-binds, and registers F6 at player-input initialization. The component remains
-the tuning backend; missing controllers now produce a diagnostic dialog. `provenance/motion-release.json` tracks it.
-
-0.4.2 feedback: shape repaired and startup toast visible, F6 unresponsive.
-0.4.3 binds F6 directly on the confirmed active controller, with no player
-wrapper. Native assets are byte-identical to 0.4.2. This remains a candidate
-until the user confirms F6 and the panel. No per-frame closed-panel polling.
+0.4.2 restored the shape per user feedback. 0.4.3 produced toasts but no visible
+menu. 0.4.4 removes that debug HUD and uses the native pause-menu Scaleform slider
+controls. The cooked mesh, dynamic rig, entity and caches remain unchanged.
 
 ## User test
 
-1. Restart Witcher 3 and load a save. If script compilation fails, capture the
-   error before doing anything else.
-2. Equip and remove trousers to recreate the bare lower-body item.
-3. Look for **MaleMod 0.4.3 ready: F6 | bound keys: ...**. Walk, turn, stop, and
-   confirm secondary motion without body/seam distortion.
-4. Press **F6**. Report whether **MaleMod: panel opened** appears and whether
-   the corner panel is visible. If neither appears, report the startup bound-key
-   count. If the toast appears without the panel, input works and HUD rendering
-   needs repair. Use **Up/Down** to select gravity, momentum retention or simulation speed;
-   **Left/Right** to adjust. **F8** resets tuning and requests a native simulation
-   reset. **F6** closes the panel and requests saving user settings.
-5. Check equipping trousers, loading a save, and reopening the panel. Record
-   HUD visibility, tuning effect and persistence separately.
+1. Restart Witcher 3, load a save and equip/remove trousers if needed.
+2. Press **F6**, then select **MaleMod - motion controls** in the native menu.
+3. Check the **Gravity**, **Momentum retention**, and **Simulation speed** sliders.
+   Use the game's normal mouse/controller controls. Historical arrow/F8 tuning
+   handlers are no longer used. There should be no recurring MaleMod toast.
+4. Change a value slightly, press **Escape** to return to gameplay, and observe
+   the motion. This native menu pauses gameplay; it is not an unpaused overlay.
+5. Reopen the menu and reload a save to check persistence. Report menu rendering,
+   actual tuning effects and shape stability separately; send errors/screenshots.
 
-The panel uses the stock `DebugTextModule` positioned in a corner, falling back
-to native visual-debug bars if that module is unavailable or already occupied.
-The component initializes on attachment, with a bounded five-second startup
-retry. It stops ticking when the panel is closed; display refresh is capped
-at 10 Hz while open. Numerical simulation uses the
-native small rig, not a per-vertex script loop. Actual FPS remains unmeasured.
-
-For an already enabled console, `MaleModPhysicsStatus()` reports the active
-controller/constraint, and `MaleModMenu()` opens its panel. The installer does
-not enable the console. These diagnostics do not establish motion by themselves.
-
-## Verified versus pending
-
-Verified: original two-LOD seam/weight/native import checks; script compilation;
-custom-class native cook; the controller handle and component reference the
-same constraint in the native dump; mesh skinning attachment; four cooked
-resources/buffers survive native pack/unpack byte-for-byte; installed file hashes;
-26 adapter tests; Base source/provenance verification.
-
-Pending for 0.4.2: observed game startup/motion/HUD, tuning response, preference persistence,
-contacts, equipment/load transitions and performance. Live size, the full 18
-Wolverine controls, official settings-menu integration, animation sequences,
-fluid and audio are not implemented in this package. The three controls are
-REDengine parameters, not mapped substitutes for the shared Wolverine controls.
+Safe authored reference values: gravity 0.15, momentum retention 0.65, speed 0.30.
+Ranges remain 0-2, 0-1 and 0.05-2 respectively; they are native backend values.
+No live size slider or anatomy deformation bridge is implemented by this UI.
+The full shared control catalog, corner overlay, calibrated contacts and measured
+performance remain unfinished. Animation sequences, fluid and audio are deferred.
 
 ## Build and deployment
 
@@ -71,7 +41,7 @@ python tools/deploy_motion.py install
 For this script-only patch (serialized fields must remain unchanged):
 
 ```powershell
-python tools/build_motion_script_patch.py --source publish/20260930-174655-f7a8ff --version 0.4.3-controller-input-test
+python tools/build_motion_script_patch.py --source publish/20260930-180412-505185 --version 0.4.4-native-sliders-test
 python tools/verify_motion_package.py
 python tools/deploy_motion.py install
 ```
