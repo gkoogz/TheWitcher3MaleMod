@@ -4,6 +4,9 @@ Translation layer from [MaleModBase](https://github.com/gkoogz/MaleModBase) into
 REDengine. This repository can be developed from chat and built with the
 **official REDkit command-line tools**, without operating its editor.
 
+**Resuming without chat history? Start with [the handoff](docs/HANDOFF.md)**
+and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
+
 The current version is a **bare-body test**, not anatomy release 1.0.
 Geralt fitting, gameplay attachments and the requested live body editor/hotkey
 are still pending. The authored diagnostic script opens a standard game popup
@@ -18,9 +21,10 @@ movement, seams and armor transitions still need confirmation.
 Verified locally with the installed official tools: stock mesh export, FBX
 import, full script compilation, cooking, dependency cache, bundle packing,
 metadata generation and native unbundle recovery of the mesh plus buffer.
-Package/ZIP integrity and nine adapter tests passed. Texture/physics builders
+Package/ZIP integrity and eleven adapter tests passed. Texture/physics builders
 were exercised; this probe needs neither custom texture nor collision caches.
-See [native evidence](provenance/native-toolchain.json). Gameplay is untested.
+See [native evidence](provenance/native-toolchain.json). Broader gameplay remains
+unverified; bare appearance is the only user-confirmed result so far.
 
 ## Structure
 

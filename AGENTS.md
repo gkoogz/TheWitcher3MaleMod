@@ -1,6 +1,6 @@
 # Witcher adapter
 
-Read README.md and docs/HEADLESS-WORKFLOW.md first. MaleModBase is the core;
+Read docs/HANDOFF.md, README.md and docs/HEADLESS-WORKFLOW.md first. MaleModBase is the core;
 this repository translates its data into REDengine formats. Resolve the Base
 commit through dependencies/base.lock.json. Do not silently build against a
 different revision or maintain another copy of shared geometry/physics code.
