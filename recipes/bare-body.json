@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "feature": "appearance.bare-body",
+  "character": "geralt",
+  "nativeItem": "Body underwear 01",
+  "strategy": "Override its existing entity resource with the stock bare legs entity; retain item ID, equipment handling and stock skinning",
+  "overrides": [
+    {
+      "sourceLayer": "redkit",
+      "source": "items/bodyparts/geralt_items/legs/bare/l_01_mg__body.w2ent",
+      "sourceSHA256": "318064fb9825cff7fadb65d228649a49a14f88a086d5ddb00bd9f38e9d7002c0",
+      "destination": "items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent",
+      "expectedMesh": "characters/models/geralt/body/model/l_01_mg__body.w2mesh",
+      "excludedMesh": "characters/models/geralt/body/model/l_01_mg__underwear.w2mesh"
+    }
+  ]
+}

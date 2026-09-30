@@ -6,6 +6,7 @@ import os
 from pathlib import Path, PureWindowsPath
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import time
@@ -202,12 +203,44 @@ def copy_tree(source, destination):
                 shutil.copy2(path, target)
 
 
-def overlay():
+def overlay(generated_resources=None):
     destination = ROOT / 'build/jobs' / ('workspace-' + uuid.uuid4().hex[:12])
     destination.mkdir(parents=True)
     copy_tree(ROOT / 'workspace', destination)
-    copy_tree(ROOT / 'generated/workspace', destination)
+    if generated_resources is None:
+        copy_tree(ROOT / 'generated/workspace', destination)
+    else:
+        for resource in generated_resources:
+            source = required_file(inside(ROOT / 'generated/workspace', resource))
+            target = inside(destination, resource)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
     return destination
+
+
+def prepare_overrides(cfg, recipe):
+    records = []
+    for override in recipe['overrides']:
+        root = {'redkit': cfg['redkit'] / 'r4data', 'depot': cfg['depot']}[override['sourceLayer']]
+        source = required_file(inside(root, override['source']))
+        if digest(source) != override['sourceSHA256']:
+            raise RuntimeError('Stock source changed; inspect and update recipe intentionally: ' + str(source))
+        data = source.read_bytes()
+        if not data.startswith(b'CR2W'):
+            raise ValueError('Expected native CR2W entity')
+        expected = override['expectedMesh'].replace('/', '\\').encode()
+        excluded = override['excludedMesh'].replace('/', '\\').encode()
+        if expected not in data or excluded in data:
+            raise RuntimeError('Entity recipe references unexpected meshes')
+        target = inside(ROOT / 'generated/workspace', override['destination'])
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.exists() and digest(target) != override['sourceSHA256']:
+            raise RuntimeError('Generated override has edits; preserve before rebuilding: ' + str(target))
+        shutil.copy2(source, target)
+        records.append({'source': override['source'], 'destination': override['destination'],
+                        'sha256': digest(target)})
+    write_json(ROOT / 'generated/override-provenance.json', {'feature': recipe['feature'], 'files': records})
+    return records
 
 
 def export_resource(cfg, resource, output):
@@ -301,7 +334,10 @@ def build(cfg):
     project = read_json(ROOT / 'project.json')
     if not re.fullmatch(r'mod[A-Za-z0-9_]+', project['name']):
         raise ValueError('Invalid mod directory name')
-    workspace = overlay()
+    override_records = []
+    if project.get('overrideRecipe'):
+        override_records = prepare_overrides(cfg, read_json(inside(ROOT, project['overrideRecipe'])))
+    workspace = overlay(project.get('generatedResources'))
     job = workspace.parent / ('package-' + uuid.uuid4().hex[:12])
     job.mkdir()
     records = []
@@ -342,6 +378,11 @@ def build(cfg):
                     out.unlink()  # Empty artifact owned by this fresh build job.
             else:
                 required_file(out)
+            temporary = Path(str(out) + '.tmp')
+            if temporary.exists():
+                if temporary.stat().st_size:
+                    raise RuntimeError('Native builder left an unfinished cache: ' + str(temporary))
+                temporary.unlink()  # Empty temporary owned by this successful cache job.
             records.append(record)
         dep = content / 'dep.cache'
         records.append(run_wcc(cfg, 'dependencies', ['-db=' + str(db), '-out=' + str(dep)], workspace, 'dependencies'))
@@ -371,7 +412,8 @@ def build(cfg):
              for p in sorted(publish.rglob('*')) if p.is_file()]
     manifest = {'project': project['name'], 'version': project['version'], 'baseCommit': lock['commit'],
                 'files': files, 'nativeCommands': records, 'gameplayTested': False,
-                'scope': 'native build foundation; no fitted anatomy or live body editor'}
+                'scope': project.get('scope', 'native build foundation; no fitted anatomy or live body editor'),
+                'nativeOverrides': override_records}
     write_json(publish / 'build-manifest.json', manifest)
     archive = publish.with_suffix('.zip')
     with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as package:
@@ -419,6 +461,75 @@ def verify_package(directory):
     return manifest
 
 
+def install_package(cfg, directory):
+    directory = Path(directory).resolve()
+    manifest = verify_package(directory)
+    name = manifest['project']
+    if not re.fullmatch(r'mod[A-Za-z0-9_]+', name):
+        raise ValueError('Invalid installation mod name')
+    version, base_commit = manifest['version'], manifest['baseCommit']
+    relative_package = directory.relative_to(ROOT.resolve()).as_posix()
+    mods_root = cfg['game'].resolve() / 'Mods'
+    mods_root.mkdir(exist_ok=True)
+    if mods_root.is_symlink() or not mods_root.resolve().is_relative_to(cfg['game'].resolve()):
+        raise ValueError('Mods directory leaves the declared game')
+    target = inside(mods_root, name)
+    if target.exists():
+        raise RuntimeError('Mod already exists; preserve or uninstall the managed version before replacing it')
+    source = inside(directory, 'Mods/' + name)
+    if not source.is_dir():
+        raise RuntimeError('Package has no declared mod tree')
+    reject_reparse_tree(source)
+    staging = inside(mods_root, '.malemod-staging-' + uuid.uuid4().hex[:12])
+    shutil.copytree(source, staging)
+    installed = []
+    for record in manifest['files']:
+        relative = Path(record['path']).relative_to(Path('Mods') / name)
+        path = inside(staging, relative)
+        if digest(required_file(path)) != record['sha256']:
+            raise RuntimeError('Installation copy verification failed')
+        installed.append({'path': relative.as_posix(), 'sha256': record['sha256']})
+    staging.rename(target)
+    write_json(ROOT / 'local/installation.json', {'target': str(target), 'project': name,
+               'version': version, 'baseCommit': base_commit,
+               'package': relative_package, 'files': installed,
+               'gameplayTested': False})
+    print('Installed verified mod files:', target)
+    print('Restart the game, then re-equip and remove trousers if the current outfit is cached.')
+
+
+def reject_reparse_tree(root):
+    def paths():
+        yield root
+        yield from root.rglob('*')
+    for path in paths():
+        attributes = getattr(path.lstat(), 'st_file_attributes', 0)
+        if path.is_symlink() or attributes & getattr(stat, 'FILE_ATTRIBUTE_REPARSE_POINT', 0x400):
+            raise RuntimeError('Managed mod tree contains a link/junction; preserve it before deployment: ' + str(path))
+
+
+def uninstall_package(cfg):
+    receipt = read_json(ROOT / 'local/installation.json')
+    root = cfg['game'].resolve() / 'Mods'
+    target = inside(root, receipt['project'])
+    if target != Path(receipt['target']).resolve() or not target.is_dir():
+        raise ValueError('Installation receipt does not match the declared game mod')
+    reject_reparse_tree(target)
+    expected = {x['path']: x['sha256'] for x in receipt['files']}
+    actual = {p.relative_to(target).as_posix(): digest(p) for p in target.rglob('*') if p.is_file()}
+    if expected != actual:
+        raise RuntimeError('Installed files have edits or additions; preserve them before uninstalling')
+    backup = ROOT / 'local/uninstalled' / (receipt['project'] + '-' + uuid.uuid4().hex[:12])
+    backup.parent.mkdir(parents=True, exist_ok=True)
+    if not backup.resolve().is_relative_to((ROOT / 'local').resolve()):
+        raise ValueError('Rollback path leaves local storage')
+    # Both final absolute targets have been checked before this cross-volume move.
+    shutil.move(str(target), str(backup))
+    receipt['uninstalledTo'] = str(backup)
+    write_json(ROOT / 'local/installation.json', receipt)
+    print('Removed managed mod from the game; preserved files:', backup)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='command', required=True)
@@ -433,6 +544,9 @@ def main():
     importer.add_argument('resource')
     commands.add_parser('compile')
     commands.add_parser('build')
+    installer = commands.add_parser('install')
+    installer.add_argument('--directory', type=Path)
+    commands.add_parser('uninstall')
     verifier = commands.add_parser('verify')
     verifier.add_argument('--directory', type=Path)
     args = parser.parse_args()
@@ -453,6 +567,11 @@ def main():
             compile_scripts(cfg)
         elif args.command == 'build':
             build(cfg)
+        elif args.command == 'install':
+            directory = args.directory or ROOT / read_json(ROOT / 'publish/latest.json')['directory']
+            install_package(cfg, directory)
+        elif args.command == 'uninstall':
+            uninstall_package(cfg)
         elif args.command == 'verify':
             directory = args.directory or ROOT / read_json(ROOT / 'publish/latest.json')['directory']
             verify_package(directory)

@@ -22,3 +22,10 @@ Use tools/mod.py rather than ad hoc shell-built commands. Check native success
 and output artifacts. Do not mask failures with -noerrors. A compiled/cooked
 package is not observed gameplay; record those results separately. No anatomy,
 fluid or live body control is supported merely because a menu describes it.
+
+For pelvic expansion consume Base's surface.pelvic-collar contract; read its
+PELVIC-COLLAR.md and record verification in features/pelvic-collar.json. Numerical
+changes belong in Base with an adoption path back to Wolverine and all spokes.
+Only calibrated target bindings, native deformation/input and packaging belong
+here. A body socket alone is not a welded seam. The bare-body test is installed;
+require actual observed evidence before reporting gameplay or live dilation.

@@ -1,10 +1,13 @@
 {
   "format": "malemod-witcher-cli-1",
   "name": "modMaleMod",
-  "version": "0.1.0-framework",
+  "version": "0.2.0-bare-body-test",
   "workspace": "workspace",
   "generatedWorkspace": "generated/workspace",
   "platform": "pc",
   "cacheBuilders": ["textures", "physics"],
-  "status": "build foundation; fitted anatomy and live body editor pending"
+  "generatedResources": ["items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent"],
+  "overrideRecipe": "recipes/bare-body.json",
+  "scope": "Bare lower-body override for default unequipped underwear item; anatomy attachment and live controls pending",
+  "status": "bare appearance user-confirmed; movement/seams and anatomy pending"
 }

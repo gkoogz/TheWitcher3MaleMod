@@ -155,6 +155,12 @@ The diagnostic `MaleModInfo()` console function is the only authored runtime
 behavior in this foundation. It opens the game's standard message popup. It
 does not provide body edits, hook F8 or run the shared C++ solver.
 
+The subsequent 0.2.0 bare-body test adds the native entity recipe in
+`recipes/bare-body.json`, installed at the user's request. `generatedResources`
+in `project.json` restricts cooking to the intended override and excludes the
+earlier imported probe. See BARE-BODY-TEST.md for deployment, rollback and the
+distinction between installed assets and observed gameplay.
+
 The first local end-to-end test packaged an imported stock lower-body probe
 at `characters/malemod/probes/geralt_lower.w2mesh`, plus the diagnostic script.
 It does not replace Geralt's active appearance. The official unbundler recovered

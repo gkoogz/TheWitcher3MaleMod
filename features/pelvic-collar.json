@@ -1,0 +1,20 @@
+{
+  "feature": "surface.pelvic-collar",
+  "contractVersion": 1,
+  "algorithmRevision": 1,
+  "owner": "MaleModBase",
+  "contract": "modules/pelvic-collar.json",
+  "dependency": "dependencies/base.lock.json",
+  "character": "geralt",
+  "status": "shared source-derived offline evaluator available; target fit/runtime pending",
+  "calibration": null,
+  "seamBindings": null,
+  "nativeDeformationBridge": null,
+  "verification": {
+    "sourceMath": "shared fixtures passed",
+    "targetOfflineFit": "pending",
+    "nativeRuntime": "pending",
+    "observedGameplay": "pending"
+  },
+  "next": ["measure module-to-character frame and scale", "fit an actual opening and exact seam donor constraints", "refine and transfer support loops with UV/skin lineage", "export fitted native morphs or implement a verified live bridge", "test maximum-radius and moving poses including normals and contacts"]
+}

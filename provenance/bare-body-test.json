@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "version": "0.2.0-bare-body-test",
+  "buildBaseCommit": "414823b08ee3340755afcee502a16869a512c6c0",
+  "nativeEntity": "items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent",
+  "bareMeshReferenced": true,
+  "underwearMeshReferenced": false,
+  "cookedEntitySHA256": "f5a898ea94182820d27c7ae7255347687ccf9b259ef3fa979bd5932754ebd452",
+  "unbundleLogSHA256": "c97d1db16eecae981dd0fceb999d51c0a6d306389780c6b880e8379447e9106c",
+  "installStatus": "Installed at explicit user request; all installed hashes verified",
+  "gameplayObserved": false,
+  "bareAppearanceObserved": true,
+  "observationScope": "User confirmed the bare state after deployment; movement, seams and armor re-equipping remain unverified",
+  "adapterTests": 11,
+  "resourceRecipe": "recipes/bare-body.json",
+  "scope": "Default underwear entity appearance only; anatomy/live dilation not wired"
+}

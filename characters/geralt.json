@@ -15,7 +15,7 @@
   },
   "observations": "Dry bare torso, lower body, high quality feet and wet lower body exported. Rendered raw LOD0 torso/legs/feet show the stock anatomically blank pelvis. Dry and wet lower-body vertices and triangles match exactly in both exported LODs. Item definitions identify t_01 as torso and s_01 as feet, correcting the previous upper_body label. Lower-body import and cooking succeeded; deformation, unit calibration and gameplay still require verification.",
   "bodyCandidate": {
-    "status": "selected for fitting; not activated in game",
+    "status": "default underwear override installed; user confirmed bare appearance; movement/seam validation pending",
     "id": "stock-geralt-bare-dry",
     "reason": "Existing bare pelvis and legs, stock skin material and character rig; avoids removing boxer geometry",
     "items": {
@@ -32,6 +32,7 @@
     "assetExport": "verified",
     "assetImport": "verified",
     "assetCooking": "verified",
+    "defaultUnderwearOverride": "bare appearance confirmed by user; movement/seams not yet confirmed",
     "gameplayAttachment": "unknown",
     "liveBodyMorphs": "unknown",
     "sharedPhysicsRuntime": "unknown",

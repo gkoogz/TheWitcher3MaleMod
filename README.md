@@ -4,10 +4,16 @@ Translation layer from [MaleModBase](https://github.com/gkoogz/MaleModBase) into
 REDengine. This repository can be developed from chat and built with the
 **official REDkit command-line tools**, without operating its editor.
 
-The current version is a build foundation, **not anatomy release 1.0**.
+The current version is a **bare-body test**, not anatomy release 1.0.
 Geralt fitting, gameplay attachments and the requested live body editor/hotkey
 are still pending. The authored diagnostic script opens a standard game popup
 when `MaleModInfo()` is invoked from the console; it does not change the body.
+
+Version 0.2.0 redirects Geralt's default underwear entity to his stock bare
+lower body. It has been cooked, verified and installed locally for user testing.
+Restart the game and equip/remove trousers to refresh cached equipment. See
+[bare-body test](docs/BARE-BODY-TEST.md). The user confirmed the bare appearance;
+movement, seams and armor transitions still need confirmation.
 
 Verified locally with the installed official tools: stock mesh export, FBX
 import, full script compilation, cooking, dependency cache, bundle packing,
@@ -39,13 +45,17 @@ python tools/mod.py import-mesh build/exports/geralt-lower.fbx characters/malemo
 python tools/mod.py compile
 python tools/mod.py build
 python tools/mod.py verify
+python tools/mod.py install
+python tools/mod.py uninstall
 python -m unittest discover -s tests -v
 ```
 
 Packages contain `Mods/modMaleMod/content/` with native bundles, caches,
 metadata and authored scripts. They are generated in `publish/` alongside a
-hash manifest and ZIP. Building does not activate the mod in the game or publish
-it online. The stock depot remains external; it is not copied into Git.
+hash manifest and ZIP. Building does not activate the mod; `install` is the
+separate deployment command. The stock depot remains external; it is not copied
+into Git. `recipes/` pins native source overrides; `features/` tracks consumption
+of Base contracts and keeps target runtime support explicit.
 
 See [headless workflow](docs/HEADLESS-WORKFLOW.md) for native command signatures,
 the confirmed REDkit 5.0 path-parser/importer behavior, source ownership and

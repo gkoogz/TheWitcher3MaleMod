@@ -13,6 +13,57 @@ SPEC.loader.exec_module(adapter)
 
 
 class BuildTests(unittest.TestCase):
+    def test_override_recipe_rejects_changed_stock_and_existing_edits(self):
+        with tempfile.TemporaryDirectory() as temp, patch.object(adapter, 'ROOT', Path(temp)):
+            root = Path(temp)
+            source = root / 'redkit/r4data/items/bare.w2ent'
+            source.parent.mkdir(parents=True)
+            data = b'CR2W fixture characters\\bare.w2mesh'
+            source.write_bytes(data)
+            recipe = {'feature': 'appearance.bare-body', 'overrides': [{'sourceLayer': 'redkit',
+                      'source': 'items/bare.w2ent', 'sourceSHA256': hashlib.sha256(data).hexdigest(),
+                      'destination': 'items/underwear.w2ent', 'expectedMesh': 'characters/bare.w2mesh',
+                      'excludedMesh': 'characters/boxers.w2mesh'}]}
+            cfg = {'redkit': root / 'redkit', 'depot': root / 'depot'}
+            adapter.prepare_overrides(cfg, recipe)
+            output = root / 'generated/workspace/items/underwear.w2ent'
+            self.assertEqual(output.read_bytes(), data)
+            source.write_bytes(b'changed SDK source')
+            with self.assertRaises(RuntimeError):
+                adapter.prepare_overrides(cfg, recipe)
+            self.assertEqual(output.read_bytes(), data)
+            source.write_bytes(data); output.write_bytes(b'local sculpt')
+            with self.assertRaises(RuntimeError):
+                adapter.prepare_overrides(cfg, recipe)
+            self.assertEqual(output.read_bytes(), b'local sculpt')
+
+    def test_install_refuses_overwrite_and_uninstall_preserves_owned_files(self):
+        with tempfile.TemporaryDirectory() as temp, patch.object(adapter, 'ROOT', Path(temp)):
+            root = Path(temp).resolve()
+            game = root / 'game'; game.mkdir()
+            package = root / 'publish/fixture'
+            resource = package / 'Mods/modMaleMod/content/bundles/body.bundle'
+            resource.parent.mkdir(parents=True); resource.write_bytes(b'bundle fixture')
+            manifest = {'project': 'modMaleMod', 'version': 'test', 'baseCommit': 'pinned',
+                        'gameplayTested': False, 'files': [{'path': resource.relative_to(package).as_posix(),
+                        'sha256': adapter.digest(resource), 'bytes': resource.stat().st_size}]}
+            adapter.write_json(package / 'build-manifest.json', manifest)
+            cfg = {'game': game}
+            adapter.install_package(cfg, package)
+            installed = game / 'Mods/modMaleMod'
+            with self.assertRaises(RuntimeError):
+                adapter.install_package(cfg, package)
+            extra = installed / 'user-added.txt'; extra.write_text('preserve this')
+            with self.assertRaises(RuntimeError):
+                adapter.uninstall_package(cfg)
+            self.assertTrue(extra.exists())
+            extra.unlink()
+            adapter.uninstall_package(cfg)
+            self.assertFalse(installed.exists())
+            receipt = adapter.read_json(root / 'local/installation.json')
+            backup = Path(receipt['uninstalledTo']) / 'content/bundles/body.bundle'
+            self.assertEqual(backup.read_bytes(), b'bundle fixture')
+
     def test_empty_cache_requires_native_evidence_for_every_input(self):
         self.assertTrue(adapter.empty_cache_expected('textures', 'Found 0 files to process'))
         self.assertFalse(adapter.empty_cache_expected('textures', 'Found 1 files to process'))
