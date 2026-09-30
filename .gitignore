@@ -1,0 +1,6 @@
+__pycache__/
+*.blend1
+*.blend2
+build/
+captures/
+local/

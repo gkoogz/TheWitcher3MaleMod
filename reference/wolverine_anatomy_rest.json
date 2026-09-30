@@ -1,0 +1,12 @@
+{
+  "purpose": "Unrigged source reference for manual retopology and REDkit fitting",
+  "vertex_count": 2388,
+  "triangle_count": 4596,
+  "uv_count": 2388,
+  "coordinates": "Original Wolverine model space; units and axes not converted",
+  "source_sha256": {
+    "morph_targets.h": "84c9f91e3f627fa79df76d303c678527275af756493f896940b52e3117dbd072",
+    "graft_normals.h": "831ce043d071b831c6fdef6775e5216c19a0f59dfbc356aeb96dd49f61560783"
+  },
+  "obj_sha256": "01c207d61d422d46bac06156e553803779d8da1324d34ec77cbefce3e5cb4cf1"
+}
