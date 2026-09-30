@@ -1,0 +1,59 @@
+{
+  "baseCommit": "db3ec9d64f68b478d6bae76d0680108539a9eb0c",
+  "sourceSHA256": "94d7d0cadceeb276d9c941eb78f3ed2ac4a472be11780f9fff0a05963f57558f",
+  "source": "probes/dynamic_constraint.ws",
+  "scriptImportsVerified": true,
+  "nativeHandleBindingVerified": false,
+  "meshDeformationVerified": false,
+  "observedGameplay": false,
+  "schemaVersion": 1,
+  "status": "compiler probe; independent deformation and menu not implemented",
+  "nativeCompiler": {
+    "command": "compilescripts",
+    "exitCode": 0,
+    "seconds": 27.578,
+    "logSHA256": "6057102d71cada4347732da41ed4d416529b683d912accdb64acf779258fd63d",
+    "logPath": "build/logs/20260930-070631-scripts-e1f08f.log",
+    "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e"
+  },
+  "nativeInspection": {
+    "resource": "characters/base_entities/man_base/player_base_m/player_base_m.w2ent",
+    "sourceSHA256": "430f88397bede2acd001f8699ca36144a895713f5d1e23c328b6afc37ebcb362",
+    "outputSHA256": "945b0d3f033c8788dcc4dd5cfdd4addc7636c8cf7f56a46d4e90ceccd5dee16d",
+    "native": {
+      "command": "dumpfile",
+      "exitCode": 0,
+      "seconds": 19.016,
+      "logSHA256": "c03d3071f0e7570f651ee37cd0b6b662e22fb4be312b1a5d90c6da68cf9b82e2",
+      "logPath": "build/logs/20260930-065926-inspect-native-f1c910.log",
+      "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e"
+    }
+  },
+  "research": {
+    "repository": "https://github.com/WolvenKit/WolvenKit-7",
+    "commit": "c3c1c2028177de37c97a2706412b499a5c04cbf4",
+    "localReadOnlyProbePatch": "permit native version 164 for inspection; not a verified writer",
+    "releaseArchiveSHA256": "d68d6b04d1bafefd962bb03d784df3784b7ee30744a38349b3769e7496e7d29e"
+  },
+  "observations": {
+    "source": "user-provided game screenshot, 2026-09-30",
+    "fittedAppearance": true,
+    "independentMotion": false,
+    "liveSize": false,
+    "liveMenu": false
+  },
+  "installedVersion": "0.3.0-anatomy-skin-test",
+  "installedBase": "abfbc54f3d178a5f05477df9cb506fe1cf3f36ee",
+  "deferred": [
+    "sequence animation",
+    "fluid",
+    "audio"
+  ],
+  "restAssetReverification": {
+    "baseCommit": "db3ec9d64f68b478d6bae76d0680108539a9eb0c",
+    "nativeVerified": true,
+    "fitReport": "build/attachment/fit-20260930-070708-d52066/geralt-anatomy.fit.json",
+    "nativeReport": "build/attachment/fit-20260930-070708-d52066/native-verification.json",
+    "note": "offline/native rebuild under new Base pin; installed package unchanged"
+  }
+}

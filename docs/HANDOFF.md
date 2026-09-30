@@ -17,6 +17,14 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
+Runtime pass in progress: read `docs/RUNTIME-PHYSICS.md`. The user supplied a
+screenshot showing the fitted attachment in game, confirming appearance only.
+Base now owns the 18 rest-shape/mechanical control catalog. An isolated native
+script probe accepts a handle to a dynamic constraint and its tuning fields;
+serialization, native deformation, live menu and observed dynamics remain
+pending. `probes/` is excluded from the installed mod. No physics update has
+been installed; animation sequences, fluids and audio remain deferred.
+
 Installed checkpoint: **0.3.0-anatomy-skin-test**, local package
 `publish/20260930-061425-92ce53`. All five installed files matched the verified
 package. The official unbundler recovered the mesh, external vertex buffer and
@@ -24,7 +32,7 @@ underwear entity byte-identically to cooked inputs. Previous version retained
 under `local/uninstalled/modMaleMod-a23481b8b7f8`. Installation receipt and
 packages remain local; tracked evidence is `provenance/anatomy-test.json`.
 
-Version 0.3.0 is the first fitted anatomy skinning test. Base is pinned to
+Version 0.3.0 is the first fitted anatomy skinning test. Its installed Base was
 `abfbc54f3d178a5f05477df9cb506fe1cf3f36ee`. Read `docs/ANATOMY-TEST.md` and
 `features/rest-graft.json`. Native preparation is reproducible through
 `python tools/mod.py attachment`; packaging refuses stale Base/profile/artifact
@@ -37,7 +45,7 @@ position/weight differences. Original waist/ankle positions and attributes were
 preserved. Source unit calibration is an explicit authored reference-width fit,
 not inferred physical source units. See `provenance/anatomy-test.json` for the
 latest build/deployment record; inspect the local receipt before changing the
-installation. The new anatomy's observed gameplay remains pending user testing.
+installation. Appearance is user-confirmed; motion remains pending user testing.
 
 Geralt's torso and legs are separate resources sharing the native rig. Their
 existing waist join is retained. Expansion reaching it requires both resources
@@ -112,6 +120,16 @@ bridge. Preserve the shared collar law, exact seam bindings and protected waist.
 Offer the new shared fitting/verification tools back to Wolverine for future
 authoring; its authoritative runtime remains unchanged. Test maximum expansion
 and moving poses with normals/contact before claiming live support.
+
+Current source now pins Base `db3ec9d64f68b478d6bae76d0680108539a9eb0c`
+for the shared control contract. Latest checks: 27 Base and 16 adapter tests.
+The installed package remains pinned to the older revision recorded above.
+The new native constraint declaration probe compiled successfully; it has not
+been bound to the render mesh. See `provenance/runtime-probe.json`.
+The rest attachment was regenerated under this pin and again passed official
+native import/export checks. Its authoring FBX matches the previous fit byte
+for byte; installed package files were verified unchanged. Generated manifest:
+`generated/attachment.json`; local job `build/attachment/fit-20260930-070708-d52066`.
 
 At handoff update this document, feature status, provenance and the dependency
 lock for any intentional adoption. Keep installed build provenance unchanged

@@ -12,9 +12,10 @@
     "sharedFixtures": "passed",
     "targetOfflineFit": "passed for both LODs; exact seam and positive face orientation",
     "nativeImportExport": "passed; topology, bone transforms, weights and seam aliases",
-    "observedGameplay": "pending user test",
+    "observedGameplay": "motion, seams under motion and transitions pending",
     "packaging": "native cook, unbundle and 5 installed file hashes passed",
-    "installation": "0.3.0-anatomy-skin-test installed; prior version retained"
+    "installation": "0.3.0-anatomy-skin-test installed; prior version retained",
+    "observedAppearance": "confirmed in user screenshot, 2026-09-30"
   },
   "runtime": "native stock skeleton skinning; rest shape only",
   "bodyPartBoundary": "waist and ankle locked to stock; coordinated runtime cross-part deformation pending",

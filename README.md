@@ -12,9 +12,10 @@ is fitted into Geralt's stock bare lower body, with a continuous pelvic seam and
 native skin weights in both LODs. Live dilation, secondary motion and the body
 editor/hotkey remain pending. Read [the anatomy test](docs/ANATOMY-TEST.md) and
 its tracked provenance for build, installation and observed-gameplay status.
-Version 0.3.0 is installed locally and its file hashes are verified. The new
-anatomy's appearance and movement still await user testing; the previous bare
-body confirmation does not count as a test of this fitted model.
+Version 0.3.0 is installed locally and its file hashes are verified. A user
+screenshot confirms the fitted model's appearance. Movement and secondary
+motion remain unverified. See [runtime work](docs/RUNTIME-PHYSICS.md) for the
+shared control catalog, isolated compiler probe and unfinished native bridge.
 
 Version 0.2.0 redirects Geralt's default underwear entity to his stock bare
 lower body. It has been cooked, verified and installed locally for user testing.

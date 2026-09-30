@@ -172,6 +172,12 @@ script alone, then add native imports using the documented commands.
 
 ## Fitted anatomy and remaining live editing
 
+For native dynamic-bone and control investigation, read
+[runtime physics](RUNTIME-PHYSICS.md). `tools/inspect_native.py` wraps the official
+native resource dump safely in an owned job. `tools/probe_physics.py` compiles
+isolated declarations and exports the pinned Base control catalog; its output
+does not enter a game package or enable deformation.
+
 The 0.3.0 attachment pipeline now runs through `python tools/mod.py attachment`.
 It imports Base's shared rest-graft fitter, keeps native rig/material metadata,
 and validates an official native round-trip before allowing packaging. Read

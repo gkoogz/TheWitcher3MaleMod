@@ -16,5 +16,5 @@
   "attachmentManifest": "generated/attachment.json",
   "overrideRecipe": "recipes/bare-body.json",
   "scope": "Fitted shared anatomy on native skinned bare lower body; static reference shape, no live dilation or secondary motion",
-  "status": "native fit, cooking, bundle recovery and installation verified; anatomy appearance/movement awaiting user test"
+  "status": "native fit and installation verified; appearance confirmed in user screenshot; movement and independent physics pending"
 }
