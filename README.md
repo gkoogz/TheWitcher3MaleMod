@@ -7,10 +7,14 @@ REDengine. This repository can be developed from chat and built with the
 **Resuming without chat history? Start with [the handoff](docs/HANDOFF.md)**
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-The current version is a **bare-body test**, not anatomy release 1.0.
-Geralt fitting, gameplay attachments and the requested live body editor/hotkey
-are still pending. The authored diagnostic script opens a standard game popup
-when `MaleModInfo()` is invoked from the console; it does not change the body.
+The current version is **0.3.0, an anatomy skinning test**. Base's source module
+is fitted into Geralt's stock bare lower body, with a continuous pelvic seam and
+native skin weights in both LODs. Live dilation, secondary motion and the body
+editor/hotkey remain pending. Read [the anatomy test](docs/ANATOMY-TEST.md) and
+its tracked provenance for build, installation and observed-gameplay status.
+Version 0.3.0 is installed locally and its file hashes are verified. The new
+anatomy's appearance and movement still await user testing; the previous bare
+body confirmation does not count as a test of this fitted model.
 
 Version 0.2.0 redirects Geralt's default underwear entity to his stock bare
 lower body. It has been cooked, verified and installed locally for user testing.
@@ -21,7 +25,7 @@ movement, seams and armor transitions still need confirmation.
 Verified locally with the installed official tools: stock mesh export, FBX
 import, full script compilation, cooking, dependency cache, bundle packing,
 metadata generation and native unbundle recovery of the mesh plus buffer.
-Package/ZIP integrity and eleven adapter tests passed. Texture/physics builders
+Package/ZIP integrity and fourteen adapter tests passed. Texture/physics builders
 were exercised; this probe needs neither custom texture nor collision caches.
 See [native evidence](provenance/native-toolchain.json). Broader gameplay remains
 unverified; bare appearance is the only user-confirmed result so far.
@@ -44,6 +48,7 @@ using `config/local.example.json` as the template.
 ```powershell
 python tools/mod.py doctor
 python tools/mod.py base
+python tools/mod.py attachment
 python tools/mod.py export characters/models/geralt/body/model/l_01_mg__body.w2mesh build/exports/geralt-lower.fbx
 python tools/mod.py import-mesh build/exports/geralt-lower.fbx characters/malemod/body/geralt-lower.w2mesh
 python tools/mod.py compile

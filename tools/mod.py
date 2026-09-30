@@ -243,10 +243,12 @@ def prepare_overrides(cfg, recipe):
     return records
 
 
-def export_resource(cfg, resource, output):
+def export_resource(cfg, resource, output, stock=False):
     relative = relative_resource(resource)
     candidates = [inside(ROOT / 'generated/workspace', relative), inside(ROOT / 'workspace', relative),
                   inside(cfg['depot'], relative), inside(cfg['redkit'] / 'r4data', relative)]
+    if stock:
+        candidates=candidates[2:]
     source = next((p for p in candidates if p.is_file()), candidates[-1])
     required_file(source)
     output = Path(output).resolve()
@@ -257,8 +259,9 @@ def export_resource(cfg, resource, output):
     output.parent.mkdir(parents=True, exist_ok=True)
     if output.exists():
         raise ValueError('Export output already exists; choose a new filename')
+    workspace=ROOT/'build/jobs'/('stock-export-'+uuid.uuid4().hex[:12]) if stock else overlay()
     record = run_wcc(cfg, 'export', ['-depot=local', '-file=' + str(relative), '-out=' + str(output)],
-                     overlay(), 'export')
+                     workspace, 'export')
     required_file(output)
     write_json(output.with_suffix('.provenance.json'), {'resource': relative.as_posix(),
                'sourceSHA256': digest(source), 'outputSHA256': digest(output), 'native': record})
@@ -332,6 +335,9 @@ def empty_cache_expected(builder, log):
 def build(cfg):
     lock = base_checkout(cfg)
     project = read_json(ROOT / 'project.json')
+    attachment_record=None
+    if project.get('attachmentManifest'):
+        attachment_record=validate_attachment(cfg,project['attachmentManifest'])
     if not re.fullmatch(r'mod[A-Za-z0-9_]+', project['name']):
         raise ValueError('Invalid mod directory name')
     override_records = []
@@ -413,7 +419,7 @@ def build(cfg):
     manifest = {'project': project['name'], 'version': project['version'], 'baseCommit': lock['commit'],
                 'files': files, 'nativeCommands': records, 'gameplayTested': False,
                 'scope': project.get('scope', 'native build foundation; no fitted anatomy or live body editor'),
-                'nativeOverrides': override_records}
+                'nativeOverrides': override_records,'attachment':attachment_record}
     write_json(publish / 'build-manifest.json', manifest)
     archive = publish.with_suffix('.zip')
     with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as package:
@@ -424,6 +430,22 @@ def build(cfg):
                                             'archive': archive.relative_to(ROOT).as_posix(), 'sha256': digest(archive)})
     print('Built game-format package:', archive)
     return publish
+
+
+def validate_attachment(cfg,manifest_path):
+    record=read_json(required_file(inside(ROOT,manifest_path)))
+    lock=base_checkout(cfg)
+    if record['baseCommit']!=lock['commit']:
+        raise RuntimeError('Attachment was built against another Base revision; run tools/mod.py attachment')
+    for item in record['files']:
+        if digest(required_file(inside(ROOT,item['path'])))!=item['sha256']:
+            raise RuntimeError('Attachment input/output changed; rebuild explicitly: '+item['path'])
+    if record.get('nativeVerified') is not True:
+        raise RuntimeError('Attachment has not passed native round-trip verification')
+    fit_report=read_json(required_file(inside(ROOT,record['fitReport'])))
+    if fit_report['baseCommit']!=lock['commit'] or fit_report['profileSHA256']!=digest(ROOT/'characters/geralt-attachment.json'):
+        raise RuntimeError('Attachment fit provenance does not match the active Base/profile')
+    return record
 
 
 def doctor(cfg):
@@ -539,11 +561,13 @@ def main():
     export = commands.add_parser('export')
     export.add_argument('resource')
     export.add_argument('output', type=Path)
+    export.add_argument('--stock',action='store_true')
     importer = commands.add_parser('import-mesh')
     importer.add_argument('source', type=Path)
     importer.add_argument('resource')
     commands.add_parser('compile')
     commands.add_parser('build')
+    commands.add_parser('attachment')
     installer = commands.add_parser('install')
     installer.add_argument('--directory', type=Path)
     commands.add_parser('uninstall')
@@ -560,7 +584,10 @@ def main():
             subprocess.run([sys.executable, str(cfg['base'] / 'tools/build_generic.py'),
                             '--preferences', str(profile), '--output', str(ROOT / 'build/shared/generic-male')], check=True)
         elif args.command == 'export':
-            export_resource(cfg, args.resource, args.output)
+            export_resource(cfg, args.resource, args.output,stock=args.stock)
+        elif args.command == 'attachment':
+            from build_attachment import build_attachment
+            build_attachment()
         elif args.command == 'import-mesh':
             import_mesh(cfg, args.source, args.resource)
         elif args.command == 'compile':

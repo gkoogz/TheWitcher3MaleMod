@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "version": "0.3.0-anatomy-skin-test",
+  "baseCommit": "abfbc54f3d178a5f05477df9cb506fe1cf3f36ee",
+  "feature": "surface.rest-graft",
+  "nativeResource": "characters/models/geralt/body/model/l_01_mg__body.w2mesh",
+  "sourceBankSHA256": "435cb9b391e6bf1ee76a09524b075bfc356230920b30e523bac90448961b2f30",
+  "sourceFBXSHA256": "486dcf786c56068a54625eaa4a7d1527e9dd3cf721b52a52a838f141cd5ad51d",
+  "fittedFBXSHA256": "98d0bdd204a6945628a61a741e08818dc88f273d2b76523b477597e122856b0a",
+  "profileSHA256": "30f0faf1eff86c9bf08ad3cd485b3645da9985df15b4a547170cbb4ec41afc93",
+  "sourceToFBXScale": 1.0255218584141075,
+  "fitLODs": [
+    {
+      "lod": 0,
+      "vertices": 18582,
+      "triangles": 36738,
+      "seamSamples": 71,
+      "removedFaces": 47,
+      "bones": [
+        "r_thigh",
+        "r_shin",
+        "r_kneeRoll",
+        "pelvis",
+        "r_legRoll",
+        "r_legRoll2",
+        "l_thigh",
+        "torso",
+        "l_legRoll",
+        "r_foot",
+        "l_shin",
+        "l_kneeRoll",
+        "l_legRoll2"
+      ],
+      "minimumTriangleArea": 5.346317842294173e-07,
+      "invertedAttachmentTriangles": 0,
+      "maximumDiscardedSkinWeight": 0.0387598295818792,
+      "offlinePoseSeamError": 0.0,
+      "stockWeightSumRange": [
+        0.9882353190332651,
+        1.0
+      ],
+      "orientationRepair": {
+        "repairedFaces": 37,
+        "maximumMove": 0.22450650338956002,
+        "minimumAreaRatio": 0.017858564255732942
+      },
+      "bindings": "geralt-anatomy-lod0.bindings.npz",
+      "bindingsSHA256": "859cf2b936182a710bbe68860981a06016ed8a8408ac2128cec3a1cc240db530",
+      "moduleLOD": "full reference topology retained; dedicated reduction remains future work"
+    },
+    {
+      "lod": 1,
+      "vertices": 18125,
+      "triangles": 35926,
+      "seamSamples": 67,
+      "removedFaces": 15,
+      "bones": [
+        "r_thigh",
+        "r_shin",
+        "r_kneeRoll",
+        "pelvis",
+        "r_legRoll",
+        "r_legRoll2",
+        "l_thigh",
+        "torso",
+        "l_legRoll",
+        "r_foot",
+        "l_shin",
+        "l_kneeRoll",
+        "l_legRoll2"
+      ],
+      "minimumTriangleArea": 5.346317842294173e-07,
+      "invertedAttachmentTriangles": 0,
+      "maximumDiscardedSkinWeight": 0.07180793455102073,
+      "offlinePoseSeamError": 0.0,
+      "stockWeightSumRange": [
+        0.9882353246212006,
+        1.0
+      ],
+      "orientationRepair": {
+        "repairedFaces": 41,
+        "maximumMove": 1.022721623023904,
+        "minimumAreaRatio": 0.04553022131814169
+      },
+      "bindings": "geralt-anatomy-lod1.bindings.npz",
+      "bindingsSHA256": "3ee7c5821024aae1b549032cc49fbb54521858d827f132e43a152e8747acf340",
+      "moduleLOD": "full reference topology retained; dedicated reduction remains future work"
+    }
+  ],
+  "nativeRoundTrip": {
+    "schemaVersion": 1,
+    "sourceFBXSHA256": "98d0bdd204a6945628a61a741e08818dc88f273d2b76523b477597e122856b0a",
+    "nativeExportSHA256": "c7006a904f8531328edc92c675e017aac6067af9d679c5d98779850d8826d11c",
+    "verification": "official WCC import/export; not observed gameplay",
+    "lods": [
+      {
+        "lod": 0,
+        "nativeVertices": 18495,
+        "triangles": 36738,
+        "maximumPositionError": 1.260878376390602e-05,
+        "maximumBindTransformError": 1.52587890625e-05,
+        "maximumSkinWeightError": 2.9754752550736896e-08,
+        "maximumSeamAliasPositionError": 0.0,
+        "maximumSeamAliasWeightError": 0.0,
+        "outerBoundaryUnchanged": true,
+        "stockWaistNearestVertexMaximumDistance": 0.1283749917002765,
+        "stockWaistNearestVertexMaximumWeightDifference": 0.0,
+        "stockWaistVertices": 34
+      },
+      {
+        "lod": 1,
+        "nativeVertices": 18056,
+        "triangles": 35926,
+        "maximumPositionError": 1.260878376390602e-05,
+        "maximumBindTransformError": 1.52587890625e-05,
+        "maximumSkinWeightError": 2.9787623034849275e-08,
+        "maximumSeamAliasPositionError": 0.0,
+        "maximumSeamAliasWeightError": 0.0,
+        "outerBoundaryUnchanged": true,
+        "stockWaistNearestVertexMaximumDistance": 1.6634312405245428,
+        "stockWaistNearestVertexMaximumWeightDifference": 0.0470588244497776,
+        "stockWaistVertices": 22
+      }
+    ]
+  },
+  "packageFiles": [
+    {
+      "path": "Mods/modMaleMod/content/bundles/blob0.bundle",
+      "sha256": "c980606922e183104618ac270ef46b6f721b326dac6f09ecdc33984d73864e97",
+      "bytes": 5097
+    },
+    {
+      "path": "Mods/modMaleMod/content/bundles/buffers0.bundle",
+      "sha256": "a39c6b5a55b4cb1c0db925dd09a833b3c27b034c3193aff21ac6df73ad624ff6",
+      "bytes": 1167438
+    },
+    {
+      "path": "Mods/modMaleMod/content/dep.cache",
+      "sha256": "c49f9caf28555520e482fcfb1cc0158784182d1bed68dd93ac97f8ea99709bfe",
+      "bytes": 88
+    },
+    {
+      "path": "Mods/modMaleMod/content/metadata.store",
+      "sha256": "150cd02306a8845f087e47d082eacbc38963aec73e2cb42a0ee9b00bd1a1d40b",
+      "bytes": 783
+    },
+    {
+      "path": "Mods/modMaleMod/content/scripts/local/maleModInfo.ws",
+      "sha256": "9f32cb31fcb62689afa5152e674d510b997270ece1455b46dc8218116ac87ff7",
+      "bytes": 379
+    }
+  ],
+  "packageSHA256": "ce188579216bb2a4e279581d6775aa8233c737c80053282e5ab7810b62bb9d7c",
+  "nativeBundleRecovery": {
+    "equalToCookedInputs": true,
+    "files": {
+      "characters/models/geralt/body/model/l_01_mg__body.w2mesh": "926be612d4b653a04009eb3260c4ec179341b940fac12724960f2a5430552ad7",
+      "characters/models/geralt/body/model/l_01_mg__body.w2mesh.1.buffer": "66c4dc21de4c3b10ff7e9f074be9f2530ece7556f7241f8a0fa9478c8b5a4d1c",
+      "items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent": "f5a898ea94182820d27c7ae7255347687ccf9b259ef3fa979bd5932754ebd452"
+    },
+    "logSHA256": "ed1370c45fc62a92985b1fe0a88f1d4c7f9e0824a748e360a7f3fe634387213b"
+  },
+  "nativeCommands": [
+    {
+      "command": "compilescripts",
+      "exitCode": 0,
+      "logSHA256": "f6b00704a67398dec76a8915125d600f476c6dd82e7329179c2b4614d9256955",
+      "seconds": 27.031
+    },
+    {
+      "command": "cook",
+      "exitCode": 0,
+      "logSHA256": "1807bbcab1e9b2ce513a91c1bd97c001b98cc407cc87445b25dcf444bb9ad01d",
+      "seconds": 21.765
+    },
+    {
+      "command": "buildcache",
+      "exitCode": 0,
+      "logSHA256": "c1d6cc7ccdf69b1a08d9334a4220347f6348a908dba7948af298c898743b1532",
+      "seconds": 17.5
+    },
+    {
+      "command": "buildcache",
+      "exitCode": 0,
+      "logSHA256": "1216cc68e1a69c63cef224e245b6a6256ce0bc535b088cb4fb371e1d111c6d42",
+      "seconds": 18.453
+    },
+    {
+      "command": "dependencies",
+      "exitCode": 0,
+      "logSHA256": "093176d869693dd04ff53cbe427b410b3276bd1e86f7315fe18f68ea35b5cb79",
+      "seconds": 21.203
+    },
+    {
+      "command": "pack",
+      "exitCode": 0,
+      "logSHA256": "bbc4be98826450e273b596a408a7eede28a5fc28d907a0f0246d0924493aaa0d",
+      "seconds": 17.046
+    },
+    {
+      "command": "metadatastore",
+      "exitCode": 0,
+      "logSHA256": "2a77a16ed5ecddeb821a8575ca28bd337ba673a1b3b5c18d502bc37f3270ece5",
+      "seconds": 18.235
+    }
+  ],
+  "checks": {
+    "basePythonTests": 23,
+    "adapterPythonTests": 14,
+    "importProvenance": "passed",
+    "offlinePoseSeamError": 0.0,
+    "outerBodyAttributesUnchanged": "positions, normals, both UV/color channels and original skin weights verified",
+    "installedFileHashes": "all 5 matched",
+    "gameplayObserved": false
+  },
+  "installation": {
+    "status": "installed and hashes verified",
+    "directory": "Mods/modMaleMod",
+    "previousVersion": "0.2.0-bare-body-test",
+    "previousVersionRetained": true
+  },
+  "limitations": [
+    "rest reference pose with native skinning",
+    "no secondary motion or live dilation",
+    "stock skin atlas detail; source anatomical material transfer pending",
+    "module geometry has not been reduced for distant LOD",
+    "user appearance and movement test pending",
+    "global self-intersections and collision behavior not established",
+    "shared dynamic pelvic collar has no native bridge yet"
+  ],
+  "backportCandidate": "Shared rest fitter and seam/skin/orientation validation for Wolverine authoring; original runtime unchanged"
+}

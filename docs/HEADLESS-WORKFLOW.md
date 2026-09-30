@@ -170,7 +170,14 @@ are recorded in `provenance/native-toolchain.json`; the game-derived test data,
 full logs and package itself stay local. A fresh clone can build the diagnostic
 script alone, then add native imports using the documented commands.
 
-## Next: playable anatomy and live editing
+## Fitted anatomy and remaining live editing
+
+The 0.3.0 attachment pipeline now runs through `python tools/mod.py attachment`.
+It imports Base's shared rest-graft fitter, keeps native rig/material metadata,
+and validates an official native round-trip before allowing packaging. Read
+[the anatomy test](ANATOMY-TEST.md) for exact scope, reproduction and limits.
+The next paragraph describes remaining runtime/control gates; fitting itself
+is now implemented for the first Geralt reference shape.
 
 The exported Geralt data makes the next steps scriptable, but they remain
 distinct gates: inspect native rig/units, fit the shared module and body seam,

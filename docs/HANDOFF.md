@@ -15,14 +15,45 @@ WitcherScript, engine materials, input/menu, cooking and deployment belong here.
 Changes in Base require deliberate adoption and testing in each spoke.
 Wolverine has not yet migrated its authoritative runtime to consume Base.
 
-## Implementation versus installed state
+## Current implementation
+
+Installed checkpoint: **0.3.0-anatomy-skin-test**, local package
+`publish/20260930-061425-92ce53`. All five installed files matched the verified
+package. The official unbundler recovered the mesh, external vertex buffer and
+underwear entity byte-identically to cooked inputs. Previous version retained
+under `local/uninstalled/modMaleMod-a23481b8b7f8`. Installation receipt and
+packages remain local; tracked evidence is `provenance/anatomy-test.json`.
+
+Version 0.3.0 is the first fitted anatomy skinning test. Base is pinned to
+`abfbc54f3d178a5f05477df9cb506fe1cf3f36ee`. Read `docs/ANATOMY-TEST.md` and
+`features/rest-graft.json`. Native preparation is reproducible through
+`python tools/mod.py attachment`; packaging refuses stale Base/profile/artifact
+hashes. Shared rest fitting and lineage are in Base; native FBX, observed Geralt
+bones, skin atlas mapping and cooking remain here.
+
+Official import/export preserved both LOD triangle sets, all 13 skinning bones,
+bind matrices and weights within numerical tolerance. Seam aliases have zero
+position/weight differences. Original waist/ankle positions and attributes were
+preserved. Source unit calibration is an explicit authored reference-width fit,
+not inferred physical source units. See `provenance/anatomy-test.json` for the
+latest build/deployment record; inspect the local receipt before changing the
+installation. The new anatomy's observed gameplay remains pending user testing.
+
+Geralt's torso and legs are separate resources sharing the native rig. Their
+existing waist join is retained. Expansion reaching it requires both resources
+to use shared boundary constraints; that live bridge is still future work.
+The fitted shape follows stock skinning. No secondary motion, live dilation,
+fluid runtime, hotkey or live editor is claimed. Source material transfer and
+module LOD reduction are also follow-ups.
+
+## Previous installed checkpoint
 
 Implementation checkpoint: `93ade78d5749917bfa787c4b8267c2ff4cf31fd7`.
 Subsequent documentation/pin commits may exist. Current source contains the
 official headless pipeline, managed install/uninstall and the bare-body recipe.
 The current Base dependency adds the offline collar contract for future fitting.
 
-The installed **0.2.0-bare-body-test** was built against Base
+The previous **0.2.0-bare-body-test** was built against Base
 `414823b08ee3340755afcee502a16869a512c6c0`, not the newer collar revision.
 Its recorded local package is `publish/20260930-042903-749fcb`; receipt:
 `local/installation.json`; target:
@@ -37,9 +68,9 @@ feedback: "we get a barbie state. Half way there". Bare appearance is confirmed;
 movement, seams, inventory and armor transitions are not. It is an item-template
 override, not a check that every armor slot is empty.
 
-There is no attached anatomy or working live body editor/hotkey yet. The console
-function `MaleModInfo()` only opens a diagnostic popup. Collar target calibration,
-seams and native deformation remain null in `features/pelvic-collar.json`.
+That earlier version had no attached anatomy. Version 0.3.0 adds the fitted
+rest surface. `MaleModInfo()` remains only a diagnostic popup; dynamic collar
+integration is still tracked separately in `features/pelvic-collar.json`.
 
 ## Local prerequisites and recovery
 
@@ -65,7 +96,7 @@ No save/settings files need to be copied into Git to resume development.
 
 ## Evidence and next work
 
-Historical verification: 11 adapter tests; official native export/import, full
+Historical bare-body verification: 11 adapter tests; official native export/import, full
 script compile, cook, pack, metadata, unbundle and package integrity passed.
 See `provenance/native-toolchain.json` and `provenance/bare-body-test.json` for
 different build scopes. Bare appearance is the only observed game result.
@@ -74,12 +105,13 @@ Read `GERALT-BODY-CANDIDATE.md` before fitting: `t_01_mg__body_hires` is torso;
 `s_01_mg__body_hires` is feet. The historical export `geralt-upper.fbx` was feet,
 not torso. Raw FBX coordinates do not establish native units or bone mappings.
 
-Next: measure actual Geralt frame/scale/rig, fit opening and exact seam donors,
-refine support while preserving UV/skin lineage, then export verified morphs or
-implement a real runtime deformation bridge. Develop reusable math in Base and
-pin its tested revision here. Test maximum expansion and moving poses with
-normals/contact before claiming live support. Hotkey/menu integration follows a
-working native control path; the menu itself cannot establish deformation.
+Current checks: 14 adapter tests and 23 shared Base tests pass. Next, collect the
+user's observed appearance/moving-pose results, then improve materials and module
+LOD where needed. Live controls require authored morphs or a verified deformation
+bridge. Preserve the shared collar law, exact seam bindings and protected waist.
+Offer the new shared fitting/verification tools back to Wolverine for future
+authoring; its authoritative runtime remains unchanged. Test maximum expansion
+and moving poses with normals/contact before claiming live support.
 
 At handoff update this document, feature status, provenance and the dependency
 lock for any intentional adoption. Keep installed build provenance unchanged

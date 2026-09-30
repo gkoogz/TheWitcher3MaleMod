@@ -2,8 +2,24 @@
   "contractVersion": 1,
   "id": "geralt",
   "metersPerUnit": null,
-  "observedNativeJoints": [],
-  "jointMapping": {},
+  "observedNativeJoints": [
+    "r_thigh",
+    "r_shin",
+    "r_kneeRoll",
+    "pelvis",
+    "r_legRoll",
+    "r_legRoll2",
+    "l_thigh",
+    "torso",
+    "l_legRoll",
+    "r_foot",
+    "l_shin",
+    "l_kneeRoll",
+    "l_legRoll2"
+  ],
+  "jointMapping": {
+    "pelvis": "pelvis"
+  },
   "resources": {
     "lower_body": "characters/models/geralt/body/model/l_01_mg__body.w2mesh",
     "lower_underwear": "characters/models/geralt/body/model/l_01_mg__body_underwear.w2mesh",
@@ -13,7 +29,7 @@
     "lower_body_wet": "characters/models/geralt/body/model/l_01_mg__body_wet.w2mesh",
     "upper_body_wet": "characters/models/geralt/body/model/t_01_mg__body_wet_hires.w2mesh"
   },
-  "observations": "Dry bare torso, lower body, high quality feet and wet lower body exported. Rendered raw LOD0 torso/legs/feet show the stock anatomically blank pelvis. Dry and wet lower-body vertices and triangles match exactly in both exported LODs. Item definitions identify t_01 as torso and s_01 as feet, correcting the previous upper_body label. Lower-body import and cooking succeeded; deformation, unit calibration and gameplay still require verification.",
+  "observations": "Official WCC FBX exposes the listed lower-body skinning bones and bind matrices. The fitted Base rest reference preserves the original rig, waist/ankle boundaries and skin weights. Both LODs passed native import/export topology and seam checks. The authored reference-width fit is in geralt-attachment.json; physical source units and live physics remain unresolved.",
   "bodyCandidate": {
     "status": "default underwear override installed; user confirmed bare appearance; movement/seam validation pending",
     "id": "stock-geralt-bare-dry",
@@ -33,9 +49,10 @@
     "assetImport": "verified",
     "assetCooking": "verified",
     "defaultUnderwearOverride": "bare appearance confirmed by user; movement/seams not yet confirmed",
-    "gameplayAttachment": "unknown",
+    "gameplayAttachment": "native fitted skinned mesh verified offline and through official import/export; observed game appearance/animation pending",
     "liveBodyMorphs": "unknown",
     "sharedPhysicsRuntime": "unknown",
     "clinicalFluidRuntime": "unknown"
-  }
+  },
+  "attachmentProfile": "characters/geralt-attachment.json"
 }

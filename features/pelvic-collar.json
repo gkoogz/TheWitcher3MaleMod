@@ -6,15 +6,25 @@
   "contract": "modules/pelvic-collar.json",
   "dependency": "dependencies/base.lock.json",
   "character": "geralt",
-  "status": "shared source-derived offline evaluator available; target fit/runtime pending",
+  "status": "shared collar evaluator available; rest graft and seam native round-trip verified; dynamic collar bridge pending",
   "calibration": null,
-  "seamBindings": null,
+  "seamBindings": {
+    "restBindings": "generated/attachment.json",
+    "dynamicCollarDomain": null
+  },
   "nativeDeformationBridge": null,
   "verification": {
     "sourceMath": "shared fixtures passed",
-    "targetOfflineFit": "pending",
+    "targetOfflineFit": "rest-graft reference fit passed; maximum-radius collar fit pending",
     "nativeRuntime": "pending",
     "observedGameplay": "pending"
   },
-  "next": ["measure module-to-character frame and scale", "fit an actual opening and exact seam donor constraints", "refine and transfer support loops with UV/skin lineage", "export fitted native morphs or implement a verified live bridge", "test maximum-radius and moving poses including normals and contacts"]
+  "next": [
+    "derive actual source collar root/guide frame separately from rest boundary alignment",
+    "build target dynamic support domain from preserved rest lineage",
+    "implement verified native deformation or morph bridge",
+    "coordinate torso/legs boundary if recruitment reaches waist",
+    "test maximum-radius and moving poses including normals and contacts"
+  ],
+  "restGraftFeature": "features/rest-graft.json"
 }

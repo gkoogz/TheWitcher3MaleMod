@@ -1,13 +1,20 @@
 {
   "format": "malemod-witcher-cli-1",
   "name": "modMaleMod",
-  "version": "0.2.0-bare-body-test",
+  "version": "0.3.0-anatomy-skin-test",
   "workspace": "workspace",
   "generatedWorkspace": "generated/workspace",
   "platform": "pc",
-  "cacheBuilders": ["textures", "physics"],
-  "generatedResources": ["items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent"],
+  "cacheBuilders": [
+    "textures",
+    "physics"
+  ],
+  "generatedResources": [
+    "items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent",
+    "characters/models/geralt/body/model/l_01_mg__body.w2mesh"
+  ],
+  "attachmentManifest": "generated/attachment.json",
   "overrideRecipe": "recipes/bare-body.json",
-  "scope": "Bare lower-body override for default unequipped underwear item; anatomy attachment and live controls pending",
-  "status": "bare appearance user-confirmed; movement/seams and anatomy pending"
+  "scope": "Fitted shared anatomy on native skinned bare lower body; static reference shape, no live dilation or secondary motion",
+  "status": "native fit, cooking, bundle recovery and installation verified; anatomy appearance/movement awaiting user test"
 }

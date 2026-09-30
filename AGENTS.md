@@ -29,3 +29,8 @@ changes belong in Base with an adoption path back to Wolverine and all spokes.
 Only calibrated target bindings, native deformation/input and packaging belong
 here. A body socket alone is not a welded seam. The bare-body test is installed;
 require actual observed evidence before reporting gameplay or live dilation.
+Read docs/ANATOMY-TEST.md before editing the fitted attachment. `tools/mod.py
+attachment` consumes the pinned Base rest-graft fitter, preserves stock outer
+boundaries and verifies official import/export. Its generated manifest must
+match the Base pin, profile and artifacts before packaging. Geralt's separate
+torso/legs share a native waist join; do not deform only one side of that join.

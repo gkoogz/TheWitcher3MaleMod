@@ -13,6 +13,19 @@ SPEC.loader.exec_module(adapter)
 
 
 class BuildTests(unittest.TestCase):
+    def test_attachment_build_requires_matching_pin_and_unchanged_evidence(self):
+        with tempfile.TemporaryDirectory() as temp, patch.object(adapter,'ROOT',Path(temp)), patch.object(adapter,'base_checkout',return_value={'commit':'current'}):
+            root=Path(temp);asset=root/'generated/mesh.w2mesh';asset.parent.mkdir();asset.write_bytes(b'verified native mesh')
+            profile=root/'characters/geralt-attachment.json';profile.parent.mkdir();profile.write_text('{}')
+            adapter.write_json(root/'generated/fit.json',{'baseCommit':'current','profileSHA256':adapter.digest(profile)})
+            record={'baseCommit':'current','nativeVerified':True,'fitReport':'generated/fit.json','files':[{'path':'generated/mesh.w2mesh','sha256':adapter.digest(asset)}]}
+            adapter.write_json(root/'generated/attachment.json',record)
+            adapter.validate_attachment({},'generated/attachment.json')
+            asset.write_bytes(b'changed')
+            with self.assertRaises(RuntimeError):adapter.validate_attachment({},'generated/attachment.json')
+            record['baseCommit']='old';adapter.write_json(root/'generated/attachment.json',record)
+            with self.assertRaises(RuntimeError):adapter.validate_attachment({},'generated/attachment.json')
+
     def test_override_recipe_rejects_changed_stock_and_existing_edits(self):
         with tempfile.TemporaryDirectory() as temp, patch.object(adapter, 'ROOT', Path(temp)):
             root = Path(temp)
