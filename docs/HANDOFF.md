@@ -17,8 +17,8 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
-Current installed test: **0.4.2-rest-frame-input-test**, local package
-`publish/20260930-174655-f7a8ff`, Base
+Current installed test: **0.4.3-controller-input-test**, local package
+`publish/20260930-180412-505185`, Base
 `ca78de046a7be63ccb316c7a9b9c12bc7ce3293f`. Read `LIVE-MOTION-TEST.md` and
 `WCC-SCRIPTED-COOK.md`. The custom-class cooking blocker is resolved by running
 compilation and native cooking in one version-pinned WCC process. Native dump
@@ -36,13 +36,29 @@ The native component and its constraint reference survived cooking.
 **0.4.1 was also rejected:** user screenshots show crushing/twisting and F6
 remained unresponsive. Tuning limits alone did not solve the problem.
 
-**0.4.2 is now installed, awaiting feedback.** Native EvaluateTransforms aims a
+**0.4.2 restored the shape, per user feedback; F6 still failed.** The user also
+confirmed the controller-ready load toast, establishing that the loose script
+and component initialization run in this installation. Do not pursue a missing
+compiled-script package as the explanation for this observed F6 failure.
+
+Historical 0.4.2 implementation: Native EvaluateTransforms aims a
 joint's positive X axis at its single child. The old authored frames were about
 88-92 degrees out of alignment even at rest. The new cage orients those frames
 and its skin inverse binds together; the native export verifies the alignment.
 `CPlayerInput.Initialize` now registers F6 using an official wrapper annotation.
 Controller lookup checks the player and mounted inventory entities. Missing
 controllers produce a diagnostic dialog instead of a silent F6 failure.
+
+**0.4.3 is a script-only repair awaiting gameplay.** It registers F6 directly in
+that observed component initialization and removes the separate CPlayerInput
+wrapper. It unregisters on detach/destruction, leaves no closed-panel polling,
+and adds bound-key-count and panel-open/closed toasts to separate input failures
+from HUD failures. The exact earlier failure location is not yet proven.
+Four native bundle/cache files are byte-identical to 0.4.2; serialized controller
+fields and physics settings are unchanged. Full REDkit script compilation,
+native unbundle verification, 26 adapter tests and all five installed hashes
+passed. See `scriptPatch` in the release provenance for inherited native cook
+evidence versus newly compiled script evidence. Live F6/HUD remains unverified.
 
 The installed package was built against Base `ca78de0`. The current lock adopts
 `33c74af` for durable context documentation only; all runtime source/assets are

@@ -1,5 +1,5 @@
 {
-  "version": "0.4.2-rest-frame-input-test",
+  "version": "0.4.3-controller-input-test",
   "baseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
   "files": [
     {
@@ -24,8 +24,8 @@
     },
     {
       "path": "Mods/modMaleMod/content/scripts/local/maleModPhysics.ws",
-      "sha256": "86527b9212cdaae85994bbf306a78af4c512e9b6cffafae08446778fbc8fef61",
-      "bytes": 13298
+      "sha256": "d5d7376b7a0253ef0afbe38b4fd1850e0da624dca3361df0839979a43b790a1e",
+      "bytes": 13628
     }
   ],
   "motionBinding": {
@@ -36,17 +36,18 @@
     "runtimeHandleBindingVerified": false,
     "observedGameplay": false
   },
-  "package": "publish/20260930-174655-f7a8ff",
+  "package": "publish/20260930-180412-505185",
   "installedFileHashesVerified": true,
   "adapterTestsPassed": 26,
-  "status": "installed 0.4.2 candidate; awaiting observed gameplay",
+  "status": "installed script-only F6 repair; awaiting gameplay feedback",
   "gameplay": {
     "startup": null,
     "secondaryMotion": null,
     "stableMotion": null,
     "F6Menu": null,
     "liveTuning": null,
-    "persistence": null
+    "persistence": null,
+    "controllerReadyToast": null
   },
   "previousTests": [
     {
@@ -70,6 +71,17 @@
         "persistence": null
       },
       "status": "0.4.1 rejected by user screenshots and gameplay report on 2026-09-30"
+    },
+    {
+      "version": "0.4.2-rest-frame-input-test",
+      "package": "publish/20260930-174655-f7a8ff",
+      "gameLoads": true,
+      "shapeGood": true,
+      "controllerReadyToastObserved": true,
+      "F6Menu": false,
+      "userReport": "The shape is good. F6 does nothing. A toast about F6 appears on load.",
+      "stableMotion": null,
+      "liveTuning": null
     }
   ],
   "meshVerification": {
@@ -253,13 +265,24 @@
     }
   ],
   "nativePackedRoundTrip": {
-    "package": "publish/20260930-174655-f7a8ff",
+    "package": "publish/20260930-180412-505185",
     "native": {
       "command": "unbundle",
+      "args": [
+        "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3 REDkit\\bin\\x64_RedKit\\wcc_lite.exe",
+        "unbundle",
+        "-dir=C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\publish\\20260930-180412-505185\\Mods\\modMaleMod\\content\\bundles",
+        "-outdir=C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\unbundle-motion-c6f63f4fd269\\unpacked",
+        "-uncookDir",
+        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\depot-54c0330a4431\\",
+        "-workspaceDir",
+        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\unbundle-motion-c6f63f4fd269\\workspace\\",
+        "-noninteractivecrash"
+      ],
       "exitCode": 0,
-      "seconds": 18.359,
-      "logSHA256": "5648ac23c6f321e4489309acc77ae06e4a4923ccebc36a1f09c3d2c082d8e084",
-      "logPath": "build/logs/20260930-174837-unbundle-motion-f8e6e8.log",
+      "seconds": 18.25,
+      "logSHA256": "78d536ac717f7f8502a88032604de93cb528311fd6a9d25e7a2ed3af5f4b47c0",
+      "logPath": "build/logs/20260930-180431-unbundle-motion-b14978.log",
       "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e"
     },
     "files": [
@@ -284,7 +307,7 @@
   "authoredSources": [
     {
       "path": "probes/runtime/maleModPhysics.ws",
-      "sha256": "86527b9212cdaae85994bbf306a78af4c512e9b6cffafae08446778fbc8fef61"
+      "sha256": "d5d7376b7a0253ef0afbe38b4fd1850e0da624dca3361df0839979a43b790a1e"
     },
     {
       "path": "tools/native_joint_frames.py",
@@ -300,7 +323,7 @@
     },
     {
       "path": "tools/build_motion_release.py",
-      "sha256": "cea0303e58ddc681250c47facd4921a07a2b9aee61becee34e7d6e0b85603339"
+      "sha256": "078b643f8305913cd616986ecb2c8fc22c39f27fe7461c1890350fa3a1df3239"
     },
     {
       "path": "tools/motion_entity.py",
@@ -309,6 +332,57 @@
     {
       "path": "tools/probe_runtime.py",
       "sha256": "3094af05c1b6a1841081ff0b4d927333e8bcc10d086844b3f9592f10b08a1ce0"
+    },
+    {
+      "path": "tools/build_motion_script_patch.py",
+      "sha256": "a3ed26213aa3fabcc2120be63fd18c4fe23f6b9c1dfad7d963a032e757db9d97"
     }
-  ]
+  ],
+  "scriptPatch": {
+    "sourcePackage": "publish/20260930-174655-f7a8ff",
+    "sourceManifestSHA256": "ca4d1c0b31a7c3707c6c4e4cc20f56f500c67a067feb69de76dd087ae648ee31",
+    "sourceScriptSHA256": "d5d7376b7a0253ef0afbe38b4fd1850e0da624dca3361df0839979a43b790a1e",
+    "nativeFilesPreserved": [
+      {
+        "path": "Mods/modMaleMod/content/bundles/blob0.bundle",
+        "sha256": "82c97b7ede500333e6eb6bc8cb29d4b521c6b82cd3a74d9e5be4beff57e4eab2",
+        "bytes": 22449
+      },
+      {
+        "path": "Mods/modMaleMod/content/bundles/buffers0.bundle",
+        "sha256": "bf0922ec3e788954d82f0b3f5a8f1749ee4c1fdc7561194b78ff5b7b39ceab61",
+        "bytes": 1255955
+      },
+      {
+        "path": "Mods/modMaleMod/content/dep.cache",
+        "sha256": "2804d39bd867d516141f0ad20a4609342afd0676dce352d92046f98a4d914ee7",
+        "bytes": 112
+      },
+      {
+        "path": "Mods/modMaleMod/content/metadata.store",
+        "sha256": "a244cabff13cbc36c61f25196bba0cbbe95c8c918d8bf79ee4518867797f9265",
+        "bytes": 879
+      }
+    ],
+    "serializedControllerLayoutChanged": false,
+    "compilation": {
+      "command": "compilescripts",
+      "args": [
+        "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3 REDkit\\bin\\x64_RedKit\\wcc_lite.exe",
+        "compilescripts",
+        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\scripts-7895d357fd93",
+        "-out=C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\scripts-7895d357fd93-compiled",
+        "-uncookDir",
+        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\depot-3690021a9185\\",
+        "-workspaceDir",
+        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\script-patch-cc3b56c51ba5\\",
+        "-noninteractivecrash"
+      ],
+      "exitCode": 0,
+      "seconds": 26.297,
+      "logSHA256": "c9a3d70b5a167226d5f0a419a10fdf550a73621d216a0817d29dc284576ce06d",
+      "logPath": "build/logs/20260930-180346-scripts-0551d5.log",
+      "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e"
+    }
+  }
 }

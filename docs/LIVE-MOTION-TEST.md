@@ -1,7 +1,7 @@
 # Installed native motion test
 
-Checkpoint: September 30, 2026. Version `0.4.2-rest-frame-input-test` is installed
-locally from `publish/20260930-174655-f7a8ff`. This is not completed 1.0 or
+Checkpoint: September 30, 2026. Version `0.4.3-controller-input-test` is installed
+locally from `publish/20260930-180412-505185`. This is not completed 1.0 or
 Wolverine runtime parity. Check `local/installation.json` before changing files.
 
 0.4.0 loaded and produced motion, but the user reported severe undulation
@@ -10,14 +10,22 @@ and an unresponsive F6 key. It is a failed gameplay test, not a working release.
 binds, and registers F6 at player-input initialization. The component remains
 the tuning backend; missing controllers now produce a diagnostic dialog. `provenance/motion-release.json` tracks it.
 
+0.4.2 feedback: shape repaired and startup toast visible, F6 unresponsive.
+0.4.3 binds F6 directly on the confirmed active controller, with no player
+wrapper. Native assets are byte-identical to 0.4.2. This remains a candidate
+until the user confirms F6 and the panel. No per-frame closed-panel polling.
+
 ## User test
 
 1. Restart Witcher 3 and load a save. If script compilation fails, capture the
    error before doing anything else.
 2. Equip and remove trousers to recreate the bare lower-body item.
-3. Look for **MaleMod motion controls ready: F6**. Walk, turn, stop, and
+3. Look for **MaleMod 0.4.3 ready: F6 | bound keys: ...**. Walk, turn, stop, and
    confirm secondary motion without body/seam distortion.
-4. Press **F6**. Use **Up/Down** to select gravity, momentum retention or simulation speed;
+4. Press **F6**. Report whether **MaleMod: panel opened** appears and whether
+   the corner panel is visible. If neither appears, report the startup bound-key
+   count. If the toast appears without the panel, input works and HUD rendering
+   needs repair. Use **Up/Down** to select gravity, momentum retention or simulation speed;
    **Left/Right** to adjust. **F8** resets tuning and requests a native simulation
    reset. **F6** closes the panel and requests saving user settings.
 5. Check equipping trousers, loading a save, and reopening the panel. Record
@@ -56,6 +64,14 @@ From this repository with the exact Base pin and local native prerequisites:
 python tools/build_native_converter.py
 python tools/probe_runtime.py
 python tools/build_motion_release.py
+python tools/verify_motion_package.py
+python tools/deploy_motion.py install
+```
+
+For this script-only patch (serialized fields must remain unchanged):
+
+```powershell
+python tools/build_motion_script_patch.py --source publish/20260930-174655-f7a8ff --version 0.4.3-controller-input-test
 python tools/verify_motion_package.py
 python tools/deploy_motion.py install
 ```

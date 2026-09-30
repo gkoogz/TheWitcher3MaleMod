@@ -8,12 +8,15 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-The installed test is **0.4.2-rest-frame-input-test**: a native motion cage and
+The installed test is **0.4.3-controller-input-test**: a native motion cage and
 F6 tuning panel for gravity, momentum retention and simulation speed. The custom controller
 now passes native cooking and reference verification; the package was unpacked
 and installed with matching hashes. Both 0.4.0 and 0.4.1 were rejected in gameplay: deformation and F6 failure
 remained. The 0.4.2 candidate aligns native joint/skin bind frames and registers
-F6 through the player input lifecycle. **Gameplay feedback is pending.** Live size
+F6 through the player input lifecycle. The user confirmed the repaired shape and
+load toast, but F6 still failed. 0.4.3 registers F6 directly on the initialized
+controller and adds input/HUD diagnostics; native assets are unchanged.
+**0.4.3 gameplay feedback is pending.** Live size
 sliders and the complete Wolverine control set remain unfinished.
 
 Read [test and rollback instructions](docs/LIVE-MOTION-TEST.md). The previous

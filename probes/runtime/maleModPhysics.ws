@@ -44,6 +44,7 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
 
     public function InitializeController() : bool
     {
+        var keys : array<EInputKey>;
         if (listening) { return true; }
         if (!IsPlayerOwner() || !dynamicConstraint) { return false; }
         gravityValue = dynamicConstraint.gravity;
@@ -51,9 +52,13 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         speedValue = dynamicConstraint.speed;
         LoadTuning();
         ApplyTuning();
+        // Register where gameplay has confirmed this component initializes.
+        // One owner, one listener: no player wrapper or per-frame key polling.
+        theInput.RegisterListener(this, 'OnMaleModInput', 'MaleModToggle');
         listening = true;
         StopTicking();
-        thePlayer.DisplayHudMessage("MaleMod motion controls ready: F6");
+        theInput.GetPCKeysForAction('MaleModToggle', keys);
+        thePlayer.DisplayHudMessage("MaleMod 0.4.3 ready: F6 | bound keys: " + keys.Size());
         return true;
     }
 
@@ -77,6 +82,7 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         StopTicking();
         if (listening)
         {
+            theInput.UnregisterListener(this, 'MaleModToggle');
             theInput.UnregisterListener(this, 'MaleModPrevious');
             theInput.UnregisterListener(this, 'MaleModNext');
             theInput.UnregisterListener(this, 'MaleModDecrease');
@@ -125,11 +131,13 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
                 theInput.RegisterListener(this, 'OnMaleModInput', 'MaleModDecrease');
                 theInput.RegisterListener(this, 'OnMaleModInput', 'MaleModIncrease');
                 theInput.RegisterListener(this, 'OnMaleModInput', 'MaleModReset');
+                thePlayer.DisplayHudMessage("MaleMod: panel opened");
                 panelElapsed = 0.0; StartTicking();
                 DrawPanel();
             }
             else
             {
+                thePlayer.DisplayHudMessage("MaleMod: panel closed and saved");
                 StopTicking();
                 theInput.UnregisterListener(this, 'MaleModPrevious');
                 theInput.UnregisterListener(this, 'MaleModNext');
@@ -256,23 +264,6 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     }
 }
 
-// Register at the established player input lifecycle, independently of body
-// appearance attachment events. Official annotations avoid copying stock files.
-@wrapMethod(CPlayerInput)
-function Initialize(isFromLoad : bool, optional previousInput : CPlayerInput)
-{
-    wrappedMethod(isFromLoad, previousInput);
-    theInput.RegisterListener(this, 'OnMaleModToggle', 'MaleModToggle');
-}
-
-@addMethod(CPlayerInput)
-event OnMaleModToggle(action : SInputAction)
-{
-    if (!IsPressed(action)) { return false; }
-    MaleModTogglePanel();
-    return true;
-}
-
 function MaleModFindController() : MaleModMotionComponent
 {
     var controller : MaleModMotionComponent;
@@ -311,7 +302,7 @@ function MaleModShowStatus()
     var components : array<CComponent>;
     var i : int;
     controller = MaleModFindController();
-    status = "F6 input reached MaleMod 0.4.2. No active controller was found. Equip/remove trousers.\n";
+    status = "F6 input reached MaleMod 0.4.3. No active controller was found. Equip/remove trousers.\n";
     if (controller) { status = controller.Status(); }
     else if (thePlayer)
     {
