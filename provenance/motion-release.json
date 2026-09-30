@@ -1,0 +1,202 @@
+{
+  "baseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+  "version": "0.4.1-component-motion-test",
+  "package": "publish/20260930-085405-ea0d8e",
+  "files": [
+    {
+      "path": "Mods/modMaleMod/content/bundles/blob0.bundle",
+      "sha256": "a9f510c44b9f25969d40d19e29a18c549d90ceb93b9f1d65a20b0935594d2106",
+      "bytes": 21681
+    },
+    {
+      "path": "Mods/modMaleMod/content/bundles/buffers0.bundle",
+      "sha256": "bf0922ec3e788954d82f0b3f5a8f1749ee4c1fdc7561194b78ff5b7b39ceab61",
+      "bytes": 1255955
+    },
+    {
+      "path": "Mods/modMaleMod/content/dep.cache",
+      "sha256": "2804d39bd867d516141f0ad20a4609342afd0676dce352d92046f98a4d914ee7",
+      "bytes": 112
+    },
+    {
+      "path": "Mods/modMaleMod/content/metadata.store",
+      "sha256": "4dd843e08809b6eba177098a55843a07674372bbde8dbe9434a0e15227c2ec8a",
+      "bytes": 879
+    },
+    {
+      "path": "Mods/modMaleMod/content/scripts/local/maleModPhysics.ws",
+      "sha256": "4149e43911a3b512973a572ae30bf5422da17582320c0fff8d474f665974371d",
+      "bytes": 11537
+    }
+  ],
+  "motionBinding": {
+    "cookedControllerBindingVerified": true,
+    "dumpSHA256": "635963baacdc7562867dbb38d71129e1cfb99f6d4aee9879515d4b4b329b8820",
+    "sameConstraintReference": true,
+    "meshSkinningAttachmentVerified": true,
+    "runtimeHandleBindingVerified": false,
+    "observedGameplay": false
+  },
+  "nativeCommands": [
+    {
+      "command": "scripted-cook",
+      "exitCode": 0,
+      "seconds": 30.985,
+      "logPath": "build/logs/20260930-085208-scripted-cook-6c569e.log",
+      "logSHA256": "2c3b794778a5a32fec556b1b7d723629411b682c025b80f5551767ce26119a01",
+      "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e",
+      "wrapperSHA256": "c77a7bbba628d0c8443b5a0cd633962b0b765ca10e329fe78d42b3060dbbb744",
+      "sourceSignature": "b1f9b2433f12071bbe27e8c61c98670dccbfb7682f96da20e331b3ae86e5cd74",
+      "compiledSHA256": "b8a7b2c9079bfdab0d0bdc28797fd04c21be8449cfd4fd8217309e545099e1dd",
+      "sdkModified": false,
+      "runtimeHookRequired": false
+    },
+    {
+      "command": "buildcache",
+      "exitCode": 0,
+      "seconds": 16.328,
+      "logSHA256": "16593af55af5206604d794b8da773fe97edb2eca2f0796971b915e81e5ac7350",
+      "logPath": "build/logs/20260930-085239-textures-184840.log",
+      "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e",
+      "cacheStatus": "no eligible resources; no cache emitted"
+    },
+    {
+      "command": "buildcache",
+      "exitCode": 0,
+      "seconds": 16.375,
+      "logSHA256": "f52781c06a491061d62302b3a3bcbe6577d46789439098bee8b4c62053f70202",
+      "logPath": "build/logs/20260930-085256-physics-d3310a.log",
+      "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e",
+      "cacheStatus": "no eligible resources; no cache emitted"
+    },
+    {
+      "command": "dependencies",
+      "exitCode": 0,
+      "seconds": 18.672,
+      "logSHA256": "f06c8c745aaf54f16a2d03bbcb390629e1ed68ce64b1892e5357ef773a05225c",
+      "logPath": "build/logs/20260930-085313-dependencies-7982ae.log",
+      "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e"
+    },
+    {
+      "command": "pack",
+      "exitCode": 0,
+      "seconds": 16.313,
+      "logSHA256": "93b358b059c219f0332bb336be6d1659295695144d59f569e9dbec19491065c3",
+      "logPath": "build/logs/20260930-085332-pack-89f943.log",
+      "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e"
+    },
+    {
+      "command": "metadatastore",
+      "exitCode": 0,
+      "seconds": 16.391,
+      "logSHA256": "fc8f4e8de1bc6a859cec3c25dad09b17de278e5ac3e0f4b4b4ba2f3e331d6e4b",
+      "logPath": "build/logs/20260930-085349-metadata-2400fd.log",
+      "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e"
+    }
+  ],
+  "nativeEnvelope": {
+    "profile": "bounded-native-v2",
+    "maximumDisplacement": 0.015,
+    "shortestShaftSegment": 0.03753089398499931,
+    "links": 13,
+    "stockJointsKinematic": true,
+    "observedStableGameplay": false
+  },
+  "nativePackedRoundTrip": {
+    "package": "publish/20260930-085405-ea0d8e",
+    "native": {
+      "command": "unbundle",
+      "exitCode": 0,
+      "seconds": 16.39,
+      "logSHA256": "047b09d33bb0280ace9c327113617445aeafde8135026887234fd8172c972081",
+      "logPath": "build/logs/20260930-085421-unbundle-motion-5353c5.log",
+      "wccSHA256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e"
+    },
+    "files": [
+      {
+        "path": "characters/malemod/body/geralt_motion.w2mesh",
+        "sha256": "6a7bf18564bd052b47c27a7a8c1f4bf020806c0a75b85bb6e637c5962bf7947e"
+      },
+      {
+        "path": "characters/malemod/body/geralt_motion.w2mesh.1.buffer",
+        "sha256": "c7445bafcb5309c559088019f7e26e72ec8b0feceb4d7887b07bf21770fb4983"
+      },
+      {
+        "path": "characters/malemod/physics/geralt_motion.w3dyng",
+        "sha256": "07482f306aaba2a30e7007ca049729ea3147bf54bb159941dbb1c5c895a6a0f6"
+      },
+      {
+        "path": "items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent",
+        "sha256": "6eddffb5d56d6424e380d8df305352b25da7003eff6bb8e7d91e119edd9adb88"
+      }
+    ]
+  },
+  "installedFileHashesVerified": true,
+  "adapterTestsPassed": 25,
+  "gameplay": {
+    "startup": null,
+    "secondaryMotion": null,
+    "stableMotion": null,
+    "F6Menu": null,
+    "liveTuning": null,
+    "persistence": null
+  },
+  "previousTest": {
+    "version": "0.4.0-native-motion-test",
+    "package": "publish/20260930-083337-3d6072",
+    "gameLoads": true,
+    "someSecondaryMotion": true,
+    "motionStable": false,
+    "F6MenuResponsive": false,
+    "status": "rejected by user gameplay test"
+  },
+  "scope": [
+    "REDengine component lifecycle and input/HUD bridge",
+    "bounded native secondary motion approximation",
+    "gravity, momentum retention and simulation speed"
+  ],
+  "notImplemented": [
+    "live size outputs",
+    "18-control Wolverine parity",
+    "calibrated body contacts",
+    "official settings menu"
+  ],
+  "deferred": [
+    "animation sequences",
+    "fluid",
+    "audio"
+  ],
+  "baseCodeChanged": false,
+  "wolverineRuntimeChanged": false,
+  "adoption": "The Base cage/control contracts remain pinned. Component lifecycle and native calibration belong to this spoke; future shared deformation must ship through Base and be deliberately adopted by Wolverine.",
+  "authoredSources": [
+    {
+      "path": "probes/runtime/maleModPhysics.ws",
+      "sha256": "ce5e3e7d95e7c3082ffcbe020330aa60596885adc9a0b01a5c86b6b25338a40b"
+    },
+    {
+      "path": "tools/build_motion_release.py",
+      "sha256": "230df9b860976d52317ce52e512b9ad53ff77a260174e35b41efe95013e93ec1"
+    },
+    {
+      "path": "tools/native_motion_profile.py",
+      "sha256": "b68b7085c61c0322036ba4c5b6d579f882f6ae12aeb9d1efca91b0b2a1c92be6"
+    },
+    {
+      "path": "tools/motion_entity.py",
+      "sha256": "2acfef87dc210465687415cb8bbb108a70da5f821f6a2465f444272733662064"
+    },
+    {
+      "path": "tools/native/MaleModPhysicsItem.cs",
+      "sha256": "627129365f4fd854b3e508d1dd22fd913b02e385788380c86551c8d791dd3aef"
+    },
+    {
+      "path": "tools/wcc_scripted.py",
+      "sha256": "c77a7bbba628d0c8443b5a0cd633962b0b765ca10e329fe78d42b3060dbbb744"
+    },
+    {
+      "path": "tools/verify_cooked_motion.py",
+      "sha256": "9fd4665344aa7ee9308f00f51dfc741ef2ceb4536c4e03a6bc8a0cfb8bf421cd"
+    }
+  ]
+}

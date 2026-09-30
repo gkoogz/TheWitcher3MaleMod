@@ -5,6 +5,8 @@ from mod import ROOT,settings,base_checkout,digest,write_json,run_wcc,compile_sc
 from prepare_motion import prepare
 from motion_entity import make_entity
 from verify_motion import verify
+from wcc_scripted import run_scripted_cook
+from verify_cooked_motion import verify_binding
 
 
 def main():
@@ -28,8 +30,7 @@ def main():
     log=(ROOT/native['logPath']).read_text()
     for kind in ['CMeshSkinningAttachment','CAnimDangleComponent','CAnimDangleConstraint_Dyng','CDyngResource','CSkeleton']:
         if ': '+kind+' (' not in log:raise RuntimeError('Native cooker did not retain '+kind)
-    # Custom script classes are tested in a separate input/output tree. Failure
-    # is recorded as an unresolved gate; it never enters a production package.
+    # Keep compiler class definitions alive for the custom entity's native cook.
     scripted=job/'scripted-intake'/entity.relative_to(job);scripted.parent.mkdir(parents=True)
     shutil.copy2(job/'scripted-motion-entity.w2ent',scripted)
     scripted_workspace=job/'scripted-workspace'
@@ -38,15 +39,18 @@ def main():
         shutil.copy2(job/'scripted-motion-entity.w2ent' if source==entity else source,target)
     shutil.copytree(job/'scripts',scripted_workspace/'scripts')
     try:
-        scripted_native=run_wcc(cfg,'cook',['-platform=pc','-mod='+str(job/'scripted-intake'),
-                               '-outdir='+str(job/'scripted-cooked')+'\\'],scripted_workspace,'scripted-motion')
+        cooked_entity=job/'scripted-cooked'/entity.relative_to(job)
+        scripted_native=run_scripted_cook(cfg,['-platform=pc','-mod='+str(job/'scripted-intake'),
+                               '-outdir='+str(job/'scripted-cooked')+'\\'],scripted_workspace,'scripted-motion',[cooked_entity])
+        binding=verify_binding(str(cooked_entity)+'.xml')
         script_cook_succeeded=True;script_error=None
     except RuntimeError as error:
-        scripted_native=None;script_cook_succeeded=False;script_error=str(error).splitlines()[0]
+        scripted_native=None;script_cook_succeeded=False;script_error=str(error).splitlines()[0];binding=None
     report={'baseCommit':pin['commit'],'job':job.relative_to(ROOT).as_posix(),
             'meshVerification':mesh_verification,'nativeCook':native,'menuCompilation':compilation,
             'customItemCookSucceeded':script_cook_succeeded,'customItemCook':scripted_native,
             'customItemCookFailure':script_error,'runtimeHandleBindingVerified':False,
+            'cookedControllerBinding':binding,
             'observedGameplay':False,'liveSizeVerified':False,'installed':False,
             'toolchain':{'converter':digest(ROOT/'build/research/wkit-current/MaleModCR2W.exe'),
                          'library':digest(ROOT/'build/research/wkit-current/WolvenKit.CR2W.dll')},

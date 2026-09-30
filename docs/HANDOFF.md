@@ -17,21 +17,43 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
-Latest continuation: read `MOTION-CANDIDATE.md` and `NATIVE-CONVERTER.md` before
-repeating earlier probes. A 10-joint native cage now passes official mesh
-round-trip in both LODs and the stock-class resource set cooks. The candidate
-hotkey panel compiles, but custom script-item cooking/binding remains unresolved.
-No physics/menu package was installed. See `provenance/motion-candidate.json`
-and local `build/motion/latest.json` for the latest source/tool identities.
-Shared cage authoring lives in Base; the adapter lock records its exact revision.
+Current installed test: **0.4.1-component-motion-test**, local package
+`publish/20260930-085405-ea0d8e`, Base
+`ca78de046a7be63ccb316c7a9b9c12bc7ce3293f`. Read `LIVE-MOTION-TEST.md` and
+`WCC-SCRIPTED-COOK.md`. The custom-class cooking blocker is resolved by running
+compilation and native cooking in one version-pinned WCC process. Native dump
+verifies that the script handle and dangle component reference the same constraint.
+All four packed native resources/buffers match their cooked bytes. Five installed
+files are receipt-verified. F6/arrow/F8 input bindings were added with a backup.
 
-Runtime pass in progress: read `docs/RUNTIME-PHYSICS.md`. The user supplied a
-screenshot showing the fitted attachment in game, confirming appearance only.
-Base now owns the 18 rest-shape/mechanical control catalog. An isolated native
-script probe accepts a handle to a dynamic constraint and its tuning fields;
-serialization, native deformation, live menu and observed dynamics remain
-pending. `probes/` is excluded from the installed mod. No physics update has
-been installed; animation sequences, fluids and audio remain deferred.
+**0.4.0 was rejected by gameplay testing:** it loaded and produced motion,
+but undulated badly and F6 was unresponsive. 0.4.1 replaces the item callback
+with `MaleModMotionComponent` lifecycle initialization (including a ready HUD
+message), a bounded startup retry, no closed-panel ticking, lower momentum
+retention, motion envelopes capped at 0.015 native units and 13 structural links.
+The native component and its constraint reference survived cooking.
+
+**Awaiting 0.4.1 feedback:** restart, equip/remove trousers, check the ready
+message, walk, F6. See `provenance/motion-release.json`.
+The installed backend has gravity, damping and simulation-speed tuning. It does
+not yet implement live size, the full 18 Wolverine controls, calibrated contacts,
+or verified FPS. Appearance was observed for 0.3; some unstable motion was
+observed for 0.4.0. Corrected 0.4.1 motion, corner HUD and saved tuning are
+not yet observed. Never label this test a completed 1.0.
+
+The runtime code is `probes/runtime/maleModPhysics.ws`, explicitly consumed by
+`tools/build_motion_release.py`; ordinary `tools/mod.py build` still rebuilds the
+static 0.3 baseline. Use `tools/deploy_motion.py` for managed test install/revert.
+Do not replace the test with that baseline accidentally. The previous static
+installation is preserved at `local/uninstalled/modMaleMod-1291bcd1ecb4`, with
+`local/motion-rollback.json` and `local/input-bindings.json` recording recovery.
+
+Shared cage authoring and the 18-control catalog remain in pinned Base. This
+continuation changed only REDengine tooling, native resource verification,
+WitcherScript HUD/input, and deployment. No shared algorithms were forked.
+Animation sequences, fluids and audio remain deferred.
+
+## Historical 0.3 appearance checkpoint
 
 Installed checkpoint: **0.3.0-anatomy-skin-test**, local package
 `publish/20260930-061425-92ce53`. All five installed files matched the verified

@@ -16,4 +16,15 @@ namespace WolvenKit.CR2W.Types
         public static new CVariable Create(CR2WFile file, CVariable parent, string name)
             => new MaleModPhysicsItem(file, parent, name);
     }
+    [DataContract(Namespace = "")]
+    [REDMeta]
+    public class MaleModMotionComponent : CSelfUpdatingComponent
+    {
+        [Ordinal(1)] [RED("dynamicConstraint")]
+        public CHandle<CAnimDangleConstraint_Dyng> DynamicConstraint { get; set; }
+        public MaleModMotionComponent(CR2WFile file, CVariable parent, string name)
+            : base(file, parent, name) { }
+        public static new CVariable Create(CR2WFile file, CVariable parent, string name)
+            => new MaleModMotionComponent(file, parent, name);
+    }
 }

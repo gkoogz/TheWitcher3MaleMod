@@ -206,13 +206,15 @@ def prepare():
         dyng[key]['_elements']=[scalar(native_kind,x) for x in items]
     for key in list(dyng):
         if key.startswith('collision'):dyng[key]['_elements']=[]
+    from native_motion_profile import apply_profile
+    native_profile=apply_profile(source,names,native_world)
     dyng_json=job/'motion-dyng.json';write_json(dyng_json,source)
     dyng_out=job/'characters/malemod/physics/geralt_motion.w3dyng';dyng_out.parent.mkdir(parents=True)
     subprocess.run([str(converter),'import',str(dyng_json),str(dyng_out)],check=True,capture_output=True)
     report={'baseCommit':pin['commit'],'nativeRigSHA256':digest(rig_source),'sourceFBXSHA256':digest(fbx),
             'nativeToFBXTranslationScale':100,'maximumBindPositionError':position_error,
             'maximumBindRotationError':rotation_error,'lods':lods,'newBones':names,
-            'authoredWorldRestFBX':worlds.tolist(),'nativeVerified':False,'observedGameplay':False,
+            'authoredWorldRestFBX':worlds.tolist(),'nativeProfile':native_profile,'nativeVerified':False,'observedGameplay':False,
             'limitations':['native secondary-motion approximation; no XPBD parity','body contacts not calibrated',
                            'live rest shape bridge pending'],'fbx':str(output),'dyng':str(dyng_out)}
     write_json(job/'motion.json',report);print(job);return job

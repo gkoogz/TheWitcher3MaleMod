@@ -1,5 +1,10 @@
 # Narrow native resource authoring
 
+> Updated checkpoint: `LIVE-MOTION-TEST.md` and `WCC-SCRIPTED-COOK.md` supersede
+> the custom-class cooking failure described below. The 0.4 motion/menu test is
+> installed; native binding is verified and gameplay feedback remains pending.
+> Earlier probe results below are historical, not the current installation.
+
 `python tools/build_native_converter.py` builds an ignored local converter.
 It requires these existing local vendor inputs under `build/research/`:
 

@@ -44,7 +44,8 @@ def make_entity(job):
         constraint=copy.deepcopy(templates['CAnimDangleConstraint_Dyng #10'])
         constraint.update(_key=constraint_key,_parentKey=dangle_key)
         v=constraint['_vars'];v['dyng']['_vars']['_depotPath']['_value']='characters\\malemod\\physics\\geralt_motion.w3dyng'
-        v['gravity']=scalar('Float',.3);v['dampening']=scalar('Float',.95);v['speed']=scalar('Float',.4)
+        v['gravity']=scalar('Float',.15);v['dampening']=scalar('Float',.65);v['speed']=scalar('Float',.3)
+        v['shake']=scalar('Float',0.);v['wind']=scalar('Float',0.)
         v['planeCollision']=scalar('Bool',False);v['max_links_iterations']=scalar('Int32',12)
         chunks.update({dangle_key:dangle,skin_key:skin,constraint_key:constraint})
         chunks[item_key]['_vars']['Components']['_elements'].append(reference('ptr:CComponent',dangle_key))
@@ -58,14 +59,17 @@ def make_entity(job):
     subprocess.run([str(converter),'import',str(recipe),str(output)],check=True,capture_output=True)
     # Keep the custom-class candidate separate from the stock-class cook input.
     def script_binding(resource):
-        old=next(k for k,c in resource['_chunks'].items() if c['_type']=='CItemEntity')
-        new=old.replace('CItemEntity','MaleModPhysicsItem')
-        text=json.dumps(resource).replace(old,new)
-        resource=json.loads(text);item=resource['_chunks'][new];item['_type']='MaleModPhysicsItem'
+        item_key=next(k for k,c in resource['_chunks'].items() if c['_type']=='CItemEntity')
+        item=resource['_chunks'][item_key]
         target=next(k for k,c in resource['_chunks'].items() if c['_type']=='CAnimDangleConstraint_Dyng')
-        item['_vars']['dynamicConstraint']=handle('CAnimDangleConstraint_Dyng',target)
-        for c in resource['_chunks'].values():
-            if c['_type']=='CEntityTemplate':c['_vars']['entityClass']=scalar('CName','MaleModPhysicsItem')
+        key=resource['_extension']+'MaleModMotionComponent #'+str(len(resource['_chunks']))
+        resource['_chunks'][key]={'_type':'MaleModMotionComponent','_key':key,
+            '_parentKey':item_key,'_flags':0,'_vars':{
+                'name':scalar('String','MaleModController'),
+                'tickedByDefault':scalar('Bool',True),
+                'dynamicConstraint':handle('CAnimDangleConstraint_Dyng',target)}}
+        item['_vars']['Components']['_elements'].append(reference('ptr:CComponent',key))
+        for c in list(resource['_chunks'].values()):
             for key,value in list(c['_vars'].items()):
                 if value.get('_type')=='CR2W':c['_vars'][key]=script_binding(value)
         return resource

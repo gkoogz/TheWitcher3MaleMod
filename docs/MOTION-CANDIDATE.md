@@ -1,5 +1,10 @@
 # Native motion candidate: not installed
 
+> Updated checkpoint: `LIVE-MOTION-TEST.md` and `WCC-SCRIPTED-COOK.md` supersede
+> the custom-class cooking failure described below. The 0.4 motion/menu test is
+> installed; native binding is verified and gameplay feedback remains pending.
+> Earlier probe results below are historical, not the current installation.
+
 Run `python tools/probe_runtime.py` after building the converter described in
 `NATIVE-CONVERTER.md`. The probe creates a fresh ignored job, prepares a cage,
 imports/exports the mesh through official REDkit, checks both LODs, compiles the

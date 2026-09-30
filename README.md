@@ -7,18 +7,20 @@ REDengine. This repository can be developed from chat and built with the
 **Resuming without chat history? Start with [the handoff](docs/HANDOFF.md)**
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-The current version is **0.3.0, an anatomy skinning test**. Base's source module
-is fitted into Geralt's stock bare lower body, with a continuous pelvic seam and
-native skin weights in both LODs. Live dilation, secondary motion and the body
-editor/hotkey remain pending. Read [the anatomy test](docs/ANATOMY-TEST.md) and
-its tracked provenance for build, installation and observed-gameplay status.
-Version 0.3.0 is installed locally and its file hashes are verified. A user
-screenshot confirms the fitted model's appearance. Movement and secondary
-motion remain unverified. See [runtime work](docs/RUNTIME-PHYSICS.md) for the
-shared control catalog and unfinished native bridge. The newer
-[motion candidate](docs/MOTION-CANDIDATE.md) adds a verified 10-joint mesh/rig
-export and compiled panel prototype; custom script-item cooking still fails,
-so this candidate has not been installed.
+The installed test is **0.4.1-component-motion-test**: a native motion cage and
+F6 tuning panel for gravity, momentum retention and simulation speed. The custom controller
+now passes native cooking and reference verification; the package was unpacked
+and installed with matching hashes. The prior 0.4.0 test loaded and moved, but
+had broken undulation and an unresponsive F6 menu. **The corrected 0.4.1 test
+awaits gameplay feedback.** Live size
+sliders and the complete Wolverine control set remain unfinished.
+
+Read [test and rollback instructions](docs/LIVE-MOTION-TEST.md). The previous
+0.3 static appearance test is preserved for rollback. The user confirmed its
+appearance, but that is not evidence for the new dynamic build. Shared anatomy,
+weights and control contracts stay in Base; this repository owns REDengine
+translation. [Script-aware cooking](docs/WCC-SCRIPTED-COOK.md) needs the exact
+verified local REDkit build and adds no runtime hook to the game.
 
 Version 0.2.0 redirects Geralt's default underwear entity to his stock bare
 lower body. It has been cooked, verified and installed locally for user testing.
@@ -32,7 +34,7 @@ metadata generation and native unbundle recovery of the mesh plus buffer.
 Package/ZIP integrity and fourteen adapter tests passed. Texture/physics builders
 were exercised; this probe needs neither custom texture nor collision caches.
 See [native evidence](provenance/native-toolchain.json). Broader gameplay remains
-unverified; bare appearance is the only user-confirmed result so far.
+unverified. See the current checkpoint above for subsequent gameplay feedback.
 
 ## Structure
 

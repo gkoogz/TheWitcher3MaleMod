@@ -1,5 +1,10 @@
 # Runtime physics investigation
 
+> Updated checkpoint: `LIVE-MOTION-TEST.md` and `WCC-SCRIPTED-COOK.md` supersede
+> the custom-class cooking failure described below. The 0.4 motion/menu test is
+> installed; native binding is verified and gameplay feedback remains pending.
+> Earlier probe results below are historical, not the current installation.
+
 Continuation: `MOTION-CANDIDATE.md` records the authored native cage, successful
 mesh/rig resource verification, compiled panel and unresolved custom-item cook.
 `NATIVE-CONVERTER.md` explains the version-159 transform-buffer compatibility

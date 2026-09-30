@@ -340,9 +340,9 @@ def empty_cache_expected(builder, log):
             int(count.group(1)) == len(re.findall(r"Mesh '[^'\r\n]+' does not contain collision", log)))
 
 
-def build(cfg):
+def build(cfg, project_override=None, workspace_override=None):
     lock = base_checkout(cfg)
-    project = read_json(ROOT / 'project.json')
+    project = project_override or read_json(ROOT / 'project.json')
     attachment_record=None
     if project.get('attachmentManifest'):
         attachment_record=validate_attachment(cfg,project['attachmentManifest'])
@@ -351,12 +351,14 @@ def build(cfg):
     override_records = []
     if project.get('overrideRecipe'):
         override_records = prepare_overrides(cfg, read_json(inside(ROOT, project['overrideRecipe'])))
-    workspace = overlay(project.get('generatedResources'))
+    workspace = Path(workspace_override).resolve() if workspace_override else overlay(project.get('generatedResources'))
+    if not workspace.is_relative_to(ROOT/'build'):
+        raise ValueError('Package workspace must be an owned build directory')
     job = workspace.parent / ('package-' + uuid.uuid4().hex[:12])
     job.mkdir()
     records = []
     scripts = workspace / 'scripts'
-    if scripts.exists():
+    if scripts.exists() and not project.get('scriptedCook'):
         records.append(compile_scripts(cfg, workspace))
     resource_types = {'.xbm', '.redcloth', '.redfur', '.reddlc', '.redgame', '.redswf', '.swf', '.csv', '.xml'}
     resources = [p for p in workspace.rglob('*') if p.is_file() and
@@ -376,8 +378,17 @@ def build(cfg):
             shutil.copy2(path, target)
         cooked = job / 'cooked'
         cooked.mkdir()
-        records.append(run_wcc(cfg, 'cook', ['-platform=' + project['platform'],
-                       '-mod=' + str(native_input), '-outdir=' + str(cooked) + os.sep], workspace, 'cook'))
+        cook_options=['-platform=' + project['platform'], '-mod=' + str(native_input),
+                      '-outdir=' + str(cooked) + os.sep]
+        if project.get('scriptedCook'):
+            from wcc_scripted import run_scripted_cook
+            from verify_cooked_motion import verify_binding
+            entity=inside(cooked,project['motionEntity'])
+            records.append(run_scripted_cook(cfg,cook_options,workspace,'scripted-cook',[entity]))
+            binding=verify_binding(Path(str(entity)+'.xml'))
+            write_json(job/'motion-binding-verification.json',binding)
+        else:
+            records.append(run_wcc(cfg,'cook',cook_options,workspace,'cook'))
         db = required_file(cooked / 'cook.db')
         for builder in project['cacheBuilders']:
             name = {'textures': 'texture.cache', 'physics': 'collision.cache'}[builder]
@@ -404,7 +415,7 @@ def build(cfg):
         bundle_input = job / 'bundle-input'
         bundle_input.mkdir()
         for path in cooked.rglob('*'):
-            if path.is_file() and path.suffix not in ('.db', '.cache', '.log'):
+            if path.is_file() and path.suffix not in ('.db', '.cache', '.log') and not path.name.endswith('.w2ent.xml'):
                 target = inside(bundle_input, path.relative_to(cooked))
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(path, target)
@@ -427,7 +438,8 @@ def build(cfg):
     manifest = {'project': project['name'], 'version': project['version'], 'baseCommit': lock['commit'],
                 'files': files, 'nativeCommands': records, 'gameplayTested': False,
                 'scope': project.get('scope', 'native build foundation; no fitted anatomy or live body editor'),
-                'nativeOverrides': override_records,'attachment':attachment_record}
+                'nativeOverrides': override_records,'attachment':attachment_record,
+                'motionBinding':binding if project.get('scriptedCook') else None}
     write_json(publish / 'build-manifest.json', manifest)
     archive = publish.with_suffix('.zip')
     with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as package:
