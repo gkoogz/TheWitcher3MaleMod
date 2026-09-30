@@ -17,8 +17,8 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
-Current installed test: **0.4.1-component-motion-test**, local package
-`publish/20260930-085405-ea0d8e`, Base
+Current installed test: **0.4.2-rest-frame-input-test**, local package
+`publish/20260930-174655-f7a8ff`, Base
 `ca78de046a7be63ccb316c7a9b9c12bc7ce3293f`. Read `LIVE-MOTION-TEST.md` and
 `WCC-SCRIPTED-COOK.md`. The custom-class cooking blocker is resolved by running
 compilation and native cooking in one version-pinned WCC process. Native dump
@@ -33,13 +33,27 @@ message), a bounded startup retry, no closed-panel ticking, lower momentum
 retention, motion envelopes capped at 0.015 native units and 13 structural links.
 The native component and its constraint reference survived cooking.
 
-**Awaiting 0.4.1 feedback:** restart, equip/remove trousers, check the ready
-message, walk, F6. See `provenance/motion-release.json`.
-The installed backend has gravity, damping and simulation-speed tuning. It does
-not yet implement live size, the full 18 Wolverine controls, calibrated contacts,
-or verified FPS. Appearance was observed for 0.3; some unstable motion was
-observed for 0.4.0. Corrected 0.4.1 motion, corner HUD and saved tuning are
-not yet observed. Never label this test a completed 1.0.
+**0.4.1 was also rejected:** user screenshots show crushing/twisting and F6
+remained unresponsive. Tuning limits alone did not solve the problem.
+
+**0.4.2 is now installed, awaiting feedback.** Native EvaluateTransforms aims a
+joint's positive X axis at its single child. The old authored frames were about
+88-92 degrees out of alignment even at rest. The new cage orients those frames
+and its skin inverse binds together; the native export verifies the alignment.
+`CPlayerInput.Initialize` now registers F6 using an official wrapper annotation.
+Controller lookup checks the player and mounted inventory entities. Missing
+controllers produce a diagnostic dialog instead of a silent F6 failure.
+
+The installed package was built against Base `ca78de0`. The current lock adopts
+`33c74af` for durable context documentation only; all runtime source/assets are
+identical. `provenance/base-context-adoption.json` records the exact changes.
+Read [PROJECT-CONTEXT.md](PROJECT-CONTEXT.md) for the user's educational purpose,
+phase scope and deferrals. No Wolverine runtime or Base algorithm changed.
+
+The backend still exposes only gravity, momentum retention and simulation speed.
+Live size, full Wolverine controls, calibrated contacts, tuning persistence and
+measured FPS remain unfinished/unverified. Do not label this a completed 1.0.
+See `provenance/motion-release.json` for native and installed-file evidence.
 
 The runtime code is `probes/runtime/maleModPhysics.ws`, explicitly consumed by
 `tools/build_motion_release.py`; ordinary `tools/mod.py build` still rebuilds the

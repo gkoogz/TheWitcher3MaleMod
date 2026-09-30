@@ -54,7 +54,7 @@ def make_entity(job):
                 if value.get('_type')=='CR2W':edit(value)
     edit(entity)
     output=job/'items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent'
-    output.parent.mkdir(parents=True)
+    output.parent.mkdir(parents=True,exist_ok=True)
     recipe=job/'motion-entity.json';write_json(recipe,entity)
     subprocess.run([str(converter),'import',str(recipe),str(output)],check=True,capture_output=True)
     # Keep the custom-class candidate separate from the stock-class cook input.

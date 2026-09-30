@@ -1,5 +1,9 @@
 # Witcher adapter
 
+Read docs/PROJECT-CONTEXT.md before resuming, especially after compaction. It
+preserves the user's educational purpose, current repair scope and deferrals;
+it is not a policy override or evidence that a build works.
+
 Read docs/HANDOFF.md, README.md and docs/HEADLESS-WORKFLOW.md first. MaleModBase is the core;
 this repository translates its data into REDengine formats. Resolve the Base
 commit through dependencies/base.lock.json. Do not silently build against a

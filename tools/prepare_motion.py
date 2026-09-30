@@ -16,6 +16,7 @@ from scipy.spatial import cKDTree
 from scipy.spatial.transform import Rotation
 from mod import ROOT, settings, base_checkout, digest, write_json
 from wcc_fbx import Document, Node, Property
+from native_joint_frames import orient_chain,verify_rest_axes
 
 
 def scalar(kind, value): return {'_type': kind, '_value': value}
@@ -146,6 +147,7 @@ def prepare():
         if worlds is None:
             centres=reference_cage_centres(module,mf,points[b['body_seam']].mean(0),module[:,0],1.)
             worlds=np.tile(np.eye(4),(len(names),1,1));worlds[:,:3,3]=centres
+            worlds=orient_chain(worlds)
         distance=cKDTree(points[b['body_seam']]).query(module)[0]
         # Authored Geralt envelope in observed FBX units: 2-unit lateral blend,
         # 5-unit seam transition. The anatomy binding law itself lives in Base.
@@ -214,7 +216,7 @@ def prepare():
     report={'baseCommit':pin['commit'],'nativeRigSHA256':digest(rig_source),'sourceFBXSHA256':digest(fbx),
             'nativeToFBXTranslationScale':100,'maximumBindPositionError':position_error,
             'maximumBindRotationError':rotation_error,'lods':lods,'newBones':names,
-            'authoredWorldRestFBX':worlds.tolist(),'nativeProfile':native_profile,'nativeVerified':False,'observedGameplay':False,
+            'authoredWorldRestFBX':worlds.tolist(),'nativeRestAxes':verify_rest_axes(worlds),'nativeProfile':native_profile,'nativeVerified':False,'observedGameplay':False,
             'limitations':['native secondary-motion approximation; no XPBD parity','body contacts not calibrated',
                            'live rest shape bridge pending'],'fbx':str(output),'dyng':str(dyng_out)}
     write_json(job/'motion.json',report);print(job);return job

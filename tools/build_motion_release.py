@@ -27,7 +27,7 @@ def main():
         target=inside(ws,r['path']);target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,target)
     scripts=ws/'scripts/local';scripts.mkdir(parents=True)
     shutil.copy2(ROOT/'probes/runtime/maleModPhysics.ws',scripts/'maleModPhysics.ws')
-    project={'name':'modMaleMod','version':'0.4.1-component-motion-test','platform':'pc',
+    project={'name':'modMaleMod','version':'0.4.2-rest-frame-input-test','platform':'pc',
              'cacheBuilders':['textures','physics'],'scriptedCook':True,'motionEntity':entity,
              'scope':'Native secondary motion with F6 tuning panel: gravity, damping, simulation speed. Live size and Wolverine solver parity remain pending.'}
     write_json(authored/'profile-verification.json',profile)

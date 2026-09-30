@@ -5,14 +5,15 @@ REDengine. This repository can be developed from chat and built with the
 **official REDkit command-line tools**, without operating its editor.
 
 **Resuming without chat history? Start with [the handoff](docs/HANDOFF.md)**
+Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-The installed test is **0.4.1-component-motion-test**: a native motion cage and
+The installed test is **0.4.2-rest-frame-input-test**: a native motion cage and
 F6 tuning panel for gravity, momentum retention and simulation speed. The custom controller
 now passes native cooking and reference verification; the package was unpacked
-and installed with matching hashes. The prior 0.4.0 test loaded and moved, but
-had broken undulation and an unresponsive F6 menu. **The corrected 0.4.1 test
-awaits gameplay feedback.** Live size
+and installed with matching hashes. Both 0.4.0 and 0.4.1 were rejected in gameplay: deformation and F6 failure
+remained. The 0.4.2 candidate aligns native joint/skin bind frames and registers
+F6 through the player input lifecycle. **Gameplay feedback is pending.** Live size
 sliders and the complete Wolverine control set remain unfinished.
 
 Read [test and rollback instructions](docs/LIVE-MOTION-TEST.md). The previous

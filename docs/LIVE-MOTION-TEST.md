@@ -1,13 +1,14 @@
 # Installed native motion test
 
-Checkpoint: September 30, 2026. Version `0.4.1-component-motion-test` is installed
-locally from `publish/20260930-085405-ea0d8e`. This is not completed 1.0 or
+Checkpoint: September 30, 2026. Version `0.4.2-rest-frame-input-test` is installed
+locally from `publish/20260930-174655-f7a8ff`. This is not completed 1.0 or
 Wolverine runtime parity. Check `local/installation.json` before changing files.
 
 0.4.0 loaded and produced motion, but the user reported severe undulation
 and an unresponsive F6 key. It is a failed gameplay test, not a working release.
-0.4.1 uses a scripted component instead of relying on an item attachment event,
-and a conservative native envelope. `provenance/motion-release.json` tracks it.
+0.4.1 also failed gameplay testing. 0.4.2 aligns native joint frames and skin
+binds, and registers F6 at player-input initialization. The component remains
+the tuning backend; missing controllers now produce a diagnostic dialog. `provenance/motion-release.json` tracks it.
 
 ## User test
 
@@ -39,9 +40,9 @@ Verified: original two-LOD seam/weight/native import checks; script compilation;
 custom-class native cook; the controller handle and component reference the
 same constraint in the native dump; mesh skinning attachment; four cooked
 resources/buffers survive native pack/unpack byte-for-byte; installed file hashes;
-25 adapter tests; Base source/provenance verification.
+26 adapter tests; Base source/provenance verification.
 
-Pending for 0.4.1: observed game startup/motion/HUD, tuning response, preference persistence,
+Pending for 0.4.2: observed game startup/motion/HUD, tuning response, preference persistence,
 contacts, equipment/load transitions and performance. Live size, the full 18
 Wolverine controls, official settings-menu integration, animation sequences,
 fluid and audio are not implemented in this package. The three controls are
@@ -95,7 +96,7 @@ scale the whole lower-body component or claim a stored slider is deformation.
 
 ## Native calibration correction
 
-The original 0.12 tip envelope exceeded several 0.0375–0.0662 native-unit
+The original 0.12 tip envelope exceeded several 0.0375â€“0.0662 native-unit
 segments. The revised envelope is at most 0.015, each limit below half the
 shortest shaft segment; stock body joints and the root remain pinned. Thirteen
 links preserve adjacent and next-neighbor rest distances. Shake and wind are
@@ -108,3 +109,18 @@ The pose envelope and links are validated against the measured native cage.
 Mesh geometry, original body boundaries and skin weights were not changed by
 this correction. A future native calibration must not silently change shared
 Wolverine parameter meaning.
+
+## Rest-frame and input repair, 0.4.2
+
+The native solver aims each single-child joint along its positive X axis. The
+old identity rest frames differed by approximately 88-92 degrees, so native
+evaluation could rotate the skin before any secondary displacement. Joint
+frames and inverse skin binds are now rebuilt together. Official FBX export
+checks both LODs, named bones, weights, seams and the aligned axes. This is an
+offline/native consistency check; stable gameplay still needs observation.
+
+F6 registration now wraps `CPlayerInput.Initialize`, following the installed
+stock input lifecycle and CDPR's [annotation documentation](https://cdprojektred.atlassian.net/wiki/spaces/W3REDkit/pages/36241598).
+No stock player script is copied or replaced. Console entry points call normal
+helper functions, since exec-only functions cannot be called from scripts.
+If no controller is found, F6 displays a diagnostic rather than silently failing.

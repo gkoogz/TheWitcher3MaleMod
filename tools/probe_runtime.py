@@ -1,6 +1,7 @@
 """Build and verify an isolated native cage/menu candidate. Never installs."""
 from pathlib import Path
 import shutil
+import uuid
 from mod import ROOT,settings,base_checkout,digest,write_json,run_wcc,compile_scripts,import_mesh,export_resource,required_file
 from prepare_motion import prepare
 from motion_entity import make_entity
@@ -9,16 +10,23 @@ from wcc_scripted import run_scripted_cook
 from verify_cooked_motion import verify_binding
 
 
-def main():
-    cfg=settings();pin=base_checkout(cfg);job=prepare()
+def main(resume=None):
+    cfg=settings();pin=base_checkout(cfg);job=Path(resume).resolve() if resume else prepare()
+    if not job.is_relative_to(ROOT/'build/motion'):raise ValueError('Probe must stay in owned motion jobs')
+    if resume and (job/'runtime-probe.json').exists():raise ValueError('Completed probes are immutable; prepare a new cage')
     resource='characters/malemod/probes/'+job.name+'/geralt_motion.w2mesh'
-    import_mesh(cfg,job/'geralt-motion.fbx',resource)
-    export_resource(cfg,resource,job/'native-motion.fbx')
+    if not resume:
+        import_mesh(cfg,job/'geralt-motion.fbx',resource)
+        export_resource(cfg,resource,job/'native-motion.fbx')
     mesh_verification=verify(job)
     mesh=job/'characters/malemod/body/geralt_motion.w2mesh';mesh.parent.mkdir(parents=True,exist_ok=True)
     shutil.copy2(ROOT/'generated/workspace'/resource,mesh)
-    entity=make_entity(job)
-    scripts=job/'scripts/local';scripts.mkdir(parents=True)
+    authoring=job/('entity-authoring-'+uuid.uuid4().hex[:8]);authoring.mkdir()
+    authored_entity=make_entity(authoring)
+    entity=job/authored_entity.relative_to(authoring);entity.parent.mkdir(parents=True,exist_ok=True)
+    shutil.copy2(authored_entity,entity)
+    shutil.copy2(authoring/'scripted-motion-entity.w2ent',job/'scripted-motion-entity.w2ent')
+    scripts=job/'scripts/local';scripts.mkdir(parents=True,exist_ok=True)
     shutil.copy2(ROOT/'probes/runtime/maleModPhysics.ws',scripts/'maleModPhysics.ws')
     compilation=compile_scripts(cfg,job)
     inputs=[mesh,entity,job/'characters/malemod/physics/geralt_motion.w3dyng']
@@ -31,13 +39,13 @@ def main():
     for kind in ['CMeshSkinningAttachment','CAnimDangleComponent','CAnimDangleConstraint_Dyng','CDyngResource','CSkeleton']:
         if ': '+kind+' (' not in log:raise RuntimeError('Native cooker did not retain '+kind)
     # Keep compiler class definitions alive for the custom entity's native cook.
-    scripted=job/'scripted-intake'/entity.relative_to(job);scripted.parent.mkdir(parents=True)
+    scripted=job/'scripted-intake'/entity.relative_to(job);scripted.parent.mkdir(parents=True,exist_ok=True)
     shutil.copy2(job/'scripted-motion-entity.w2ent',scripted)
     scripted_workspace=job/'scripted-workspace'
     for source in inputs:
         target=scripted_workspace/source.relative_to(job);target.parent.mkdir(parents=True,exist_ok=True)
         shutil.copy2(job/'scripted-motion-entity.w2ent' if source==entity else source,target)
-    shutil.copytree(job/'scripts',scripted_workspace/'scripts')
+    shutil.copytree(job/'scripts',scripted_workspace/'scripts',dirs_exist_ok=True)
     try:
         cooked_entity=job/'scripted-cooked'/entity.relative_to(job)
         scripted_native=run_scripted_cook(cfg,['-platform=pc','-mod='+str(job/'scripted-intake'),
@@ -60,4 +68,8 @@ def main():
     return report
 
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--resume-mesh',type=Path,help='Resume an incomplete job after a script correction; reverify its existing native mesh')
+    main(parser.parse_args().resume_mesh)

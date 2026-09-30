@@ -25,23 +25,24 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
 
     private var startupElapsed : float;
     private var panelElapsed : float;
+    private var playerInventoryOwner : bool;
 
     // Body-part appearances may transplant components into the player. They do
     // not guarantee a separate CItemEntity or its attachment callback.
     event OnComponentAttached() { startupElapsed = 0.0; StartTicking(); }
     event OnComponentAttachFinished() { InitializeController(); }
-    event OnComponentDetached() { StopPanel(); }
+    event OnComponentDetached() { StopPanel(); playerInventoryOwner = false; }
 
     private function IsPlayerOwner() : bool
     {
         var item : CItemEntity;
         if (!thePlayer) { return false; }
-        if (GetEntity() == thePlayer) { return true; }
+        if (GetEntity() == thePlayer || playerInventoryOwner) { return true; }
         item = (CItemEntity)GetEntity();
         return item && item.GetParentEntity() == thePlayer;
     }
 
-    private function InitializeController() : bool
+    public function InitializeController() : bool
     {
         if (listening) { return true; }
         if (!IsPlayerOwner() || !dynamicConstraint) { return false; }
@@ -50,7 +51,6 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         speedValue = dynamicConstraint.speed;
         LoadTuning();
         ApplyTuning();
-        theInput.RegisterListener(this, 'OnMaleModInput', 'MaleModToggle');
         listening = true;
         StopTicking();
         thePlayer.DisplayHudMessage("MaleMod motion controls ready: F6");
@@ -77,7 +77,6 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         StopTicking();
         if (listening)
         {
-            theInput.UnregisterListener(this, 'MaleModToggle');
             theInput.UnregisterListener(this, 'MaleModPrevious');
             theInput.UnregisterListener(this, 'MaleModNext');
             theInput.UnregisterListener(this, 'MaleModDecrease');
@@ -94,9 +93,16 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     public function OpenPanel()
     {
         var action : SInputAction;
-        if (panelOpen) { return; }
+        if (!InitializeController()) { MaleModShowStatus(); return; }
         action.aName = 'MaleModToggle'; action.value = 1.0; action.lastFrameValue = 0.0;
         OnMaleModInput(action);
+    }
+
+    public function ConfirmPlayerInventoryOwner()
+    {
+        // Called only after resolving this exact component through the player's
+        // mounted inventory item. Some appearance entities have no item parent.
+        playerInventoryOwner = true;
     }
 
     public function Status() : string
@@ -250,19 +256,71 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     }
 }
 
-exec function MaleModMenu()
+// Register at the established player input lifecycle, independently of body
+// appearance attachment events. Official annotations avoid copying stock files.
+@wrapMethod(CPlayerInput)
+function Initialize(isFromLoad : bool, optional previousInput : CPlayerInput)
 {
-    var controller : MaleModMotionComponent;
-    if (thePlayer) { controller = (MaleModMotionComponent)thePlayer.GetComponent("MaleModController"); }
-    if (controller) { controller.OpenPanel(); }
+    wrappedMethod(isFromLoad, previousInput);
+    theInput.RegisterListener(this, 'OnMaleModToggle', 'MaleModToggle');
 }
 
-exec function MaleModPhysicsStatus()
+@addMethod(CPlayerInput)
+event OnMaleModToggle(action : SInputAction)
+{
+    if (!IsPressed(action)) { return false; }
+    MaleModTogglePanel();
+    return true;
+}
+
+function MaleModFindController() : MaleModMotionComponent
+{
+    var controller : MaleModMotionComponent;
+    var inventory : CInventoryComponent;
+    var items : array<SItemUniqueId>;
+    var entity : CItemEntity;
+    var i : int;
+    if (!thePlayer) { return NULL; }
+    controller = (MaleModMotionComponent)thePlayer.GetComponent("MaleModController");
+    if (controller) { return controller; }
+    inventory = thePlayer.GetInventory();
+    inventory.GetAllItems(items);
+    for (i=0; i<items.Size(); i+=1)
+    {
+        if (!inventory.IsItemMounted(items[i])) { continue; }
+        entity = inventory.GetItemEntityUnsafe(items[i]);
+        if (!entity) { continue; }
+        controller = (MaleModMotionComponent)entity.GetComponent("MaleModController");
+        if (controller) { controller.ConfirmPlayerInventoryOwner(); return controller; }
+    }
+    return NULL;
+}
+
+function MaleModTogglePanel()
+{
+    var controller : MaleModMotionComponent;
+    controller = MaleModFindController();
+    if (controller) { controller.OpenPanel(); }
+    else { MaleModShowStatus(); }
+}
+
+function MaleModShowStatus()
 {
     var controller : MaleModMotionComponent;
     var status : string;
-    if (thePlayer) { controller = (MaleModMotionComponent)thePlayer.GetComponent("MaleModController"); }
-    status = "No active MaleMod component. Equip then remove trousers to refresh the bare outfit.";
+    var components : array<CComponent>;
+    var i : int;
+    controller = MaleModFindController();
+    status = "F6 input reached MaleMod 0.4.2. No active controller was found. Equip/remove trousers.\n";
     if (controller) { status = controller.Status(); }
+    else if (thePlayer)
+    {
+        components = thePlayer.GetComponentsByClassName('CComponent');
+        status += "Player component count: " + components.Size() + "\n";
+        for (i=0; i<components.Size(); i+=1) { status += components[i].GetName() + "\n"; }
+    }
     theGame.GetGuiManager().ShowUserDialogAdv(90260931,"MaleMod motion status",status,false,UDB_Ok);
 }
+
+exec function MaleModMenu() { MaleModTogglePanel(); }
+exec function MaleModPhysicsStatus() { MaleModShowStatus(); }
