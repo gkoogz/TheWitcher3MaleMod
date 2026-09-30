@@ -1,0 +1,7 @@
+{
+  "redkit": "E:/SteamLibrary/steamapps/common/The Witcher 3 REDkit",
+  "depot": "E:/SteamLibrary/steamapps/common/Witcher 3 Mod Depot",
+  "game": "E:/SteamLibrary/steamapps/common/The Witcher 3",
+  "base": "../MaleMod",
+  "timeoutSeconds": 600
+}

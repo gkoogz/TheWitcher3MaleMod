@@ -1,0 +1,466 @@
+"""Build REDengine resources with the installed official REDkit, without the editor."""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path, PureWindowsPath
+import re
+import shutil
+import subprocess
+import sys
+import time
+import uuid
+import zipfile
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def read_json(path):
+    return json.loads(Path(path).read_text(encoding='utf-8'))
+
+
+def write_json(path, value):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2) + '\n', encoding='utf-8', newline='\n')
+
+
+def digest(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def relative_resource(value):
+    """Reject Windows drives/UNC paths and traversal before joining engine paths."""
+    native = PureWindowsPath(value)
+    parts = value.replace('\\', '/').split('/')
+    if native.is_absolute() or native.drive or not value or any(x in ('', '.', '..') for x in parts):
+        raise ValueError('Expected a depot-relative resource path: ' + value)
+    if any(':' in x for x in parts):
+        raise ValueError('Resource path may not contain a stream or drive')
+    return Path(*parts)
+
+
+def inside(root, relative):
+    root = Path(root).resolve()
+    result = (root / relative_resource(str(relative))).resolve()
+    if not result.is_relative_to(root):
+        raise ValueError('Path leaves its declared root')
+    return result
+
+
+def required_file(path):
+    path = Path(path)
+    if not path.is_file() or not path.stat().st_size:
+        raise RuntimeError('Missing or empty native output: ' + str(path))
+    return path
+
+
+def settings():
+    path = ROOT / 'local/config.json'
+    data = read_json(path if path.exists() else ROOT / 'config/local.example.json')
+    for key in ('redkit', 'depot', 'game', 'base'):
+        candidate = Path(data[key])
+        data[key] = (ROOT / candidate).resolve() if not candidate.is_absolute() else candidate.resolve()
+    data['wcc'] = data['redkit'] / 'bin/x64_RedKit/wcc_lite.exe'
+    data['timeoutSeconds'] = int(data.get('timeoutSeconds', 600))
+    if data['timeoutSeconds'] <= 0:
+        raise ValueError('Native timeout must be positive')
+    return data
+
+
+def base_checkout(cfg):
+    lock = read_json(ROOT / 'dependencies/base.lock.json')
+    result = subprocess.run(['git', '-C', str(cfg['base']), 'rev-parse', 'HEAD'],
+                            check=True, text=True, capture_output=True)
+    if result.stdout.strip() != lock['commit']:
+        raise RuntimeError('Base HEAD differs from dependencies/base.lock.json; update the lock intentionally')
+    dirty = subprocess.run(['git', '-C', str(cfg['base']), 'status', '--porcelain', '--untracked-files=no'],
+                           check=True, text=True, capture_output=True)
+    if dirty.stdout.strip():
+        raise RuntimeError('Pinned Base has tracked edits; commit and update its lock before building')
+    required_file(cfg['base'] / lock['referenceAsset'])
+    return lock
+
+
+def directory_alias(alias, target):
+    """WCC 5.0 startup flags misparse quoted paths; use checked local junctions."""
+    alias = Path(alias).absolute()  # Do not resolve the alias back into a path with spaces.
+    target = Path(target).resolve()
+    if ' ' in str(alias):
+        raise RuntimeError('REDkit startup alias must have no spaces; place this checkout in a path without spaces')
+    if not target.is_dir():
+        raise ValueError('Alias target is not a directory: ' + str(target))
+    alias.parent.mkdir(parents=True, exist_ok=True)
+    if alias.exists():
+        if not os.path.samefile(alias, target):
+            raise RuntimeError('Existing build alias points somewhere else: ' + str(alias))
+        return alias
+    if os.name != 'nt':
+        raise RuntimeError('Installed REDkit commands require Windows')
+    script = ('$taskAliasData = [Console]::In.ReadToEnd() | ConvertFrom-Json; '
+              'New-Item -ItemType Junction -Path $taskAliasData[0] -Target $taskAliasData[1] | Out-Null')
+    subprocess.run(['powershell', '-NoProfile', '-NonInteractive', '-Command', script],
+                   input=json.dumps([str(alias), str(target)]), text=True, check=True, capture_output=True)
+    if not os.path.samefile(alias, target):
+        raise RuntimeError('Directory alias was not created correctly')
+    return alias
+
+
+def native_args(cfg, command, options, workspace, depot_alias):
+    # -depot=local uses the split virtual depot. An absolute -depot remap aborts in REDkit 5.0.
+    return [str(cfg['wcc']), command, *options,
+            '-uncookDir', str(depot_alias) + os.sep,
+            '-workspaceDir', str(workspace) + os.sep, '-noninteractivecrash']
+
+
+def readthrough_depot(stock, workspace):
+    """Expose overrides to WCC commandlets that ignore the writable layer.
+
+    Only overridden branches become real directories. Untouched stock folders
+    are junctions; never write or recursively clean this read-through tree.
+    """
+    view = ROOT / 'build/jobs' / ('depot-' + uuid.uuid4().hex[:12])
+    view.mkdir(parents=True)
+    links = []
+
+    def merge(stock_dir, custom_dir, destination):
+        stock_items = {p.name.casefold(): p for p in stock_dir.iterdir()} if stock_dir and stock_dir.is_dir() else {}
+        custom_items = {p.name.casefold(): p for p in custom_dir.iterdir()
+                        if p.suffix not in ('.db', '.db-shm', '.db-wal')} if custom_dir.is_dir() else {}
+        for key in sorted(stock_items.keys() | custom_items.keys()):
+            original, custom = stock_items.get(key), custom_items.get(key)
+            chosen = custom or original
+            target = destination / chosen.name
+            if custom and custom.is_dir():
+                if original and not original.is_dir():
+                    raise ValueError('Workspace directory replaces a stock file: ' + str(custom))
+                target.mkdir()
+                merge(original, custom, target)
+            elif custom:
+                if original and original.is_dir():
+                    raise ValueError('Workspace file replaces a stock directory: ' + str(custom))
+                shutil.copy2(custom, target)
+            elif original.is_dir():
+                links.append([str(target.absolute()), str(original.resolve())])
+            else:
+                shutil.copy2(original, target)
+
+    merge(Path(stock), Path(workspace), view)
+    if links:
+        script = ('$taskDepotLinks = [Console]::In.ReadToEnd() | ConvertFrom-Json; '
+                  'foreach ($taskDepotLink in $taskDepotLinks) { '
+                  'New-Item -ItemType Junction -Path $taskDepotLink[0] -Target $taskDepotLink[1] '
+                  '-ErrorAction Stop | Out-Null }')
+        subprocess.run(['powershell', '-NoProfile', '-NonInteractive', '-Command', script],
+                       input=json.dumps(links), text=True, check=True, capture_output=True)
+        for alias, target in links:
+            if not os.path.samefile(alias, target):
+                raise RuntimeError('Read-through depot link verification failed')
+    return view
+
+
+def run_wcc(cfg, command, options, workspace, label):
+    required_file(cfg['wcc'])
+    workspace = Path(workspace).absolute()
+    workspace.mkdir(parents=True, exist_ok=True)
+    depot_alias = readthrough_depot(cfg['depot'], workspace)
+    if ' ' in str(workspace):
+        raise RuntimeError('WCC workspace startup path must have no spaces')
+    log = ROOT / 'build/logs' / (time.strftime('%Y%m%d-%H%M%S') + '-' + label + '-' + uuid.uuid4().hex[:6] + '.log')
+    log.parent.mkdir(parents=True, exist_ok=True)
+    args = native_args(cfg, command, options, workspace, depot_alias)
+    print('REDkit:', command, '| log:', log, flush=True)
+    started = time.monotonic()
+    try:
+        with log.open('w', encoding='utf-8') as output:
+            result = subprocess.run(args, cwd=cfg['wcc'].parent, stdout=output,
+                                    stderr=subprocess.STDOUT, timeout=cfg['timeoutSeconds'])
+    except subprocess.TimeoutExpired as error:
+        raise RuntimeError('REDkit timed out; inspect ' + str(log)) from error
+    text = log.read_text(encoding='utf-8', errors='replace')
+    record = {'command': command, 'args': args, 'exitCode': result.returncode,
+              'seconds': round(time.monotonic() - started, 3), 'logSHA256': digest(log),
+              'logPath': log.relative_to(ROOT).as_posix(),
+              'wccSHA256': digest(cfg['wcc'])}
+    write_json(log.with_suffix('.json'), record)
+    if result.returncode or re.search(r'\[Error\]\[(WCC|Script)\]|\[Fatal\]', text):
+        raise RuntimeError('Native REDkit command failed; inspect ' + str(log) + '\n' + text[-3500:])
+    print('Native command succeeded.', flush=True)
+    return record
+
+
+def copy_tree(source, destination):
+    if source.exists():
+        for path in source.rglob('*'):
+            if path.is_file() and path.suffix not in ('.db', '.db-shm', '.db-wal'):
+                target = inside(destination, path.relative_to(source))
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(path, target)
+
+
+def overlay():
+    destination = ROOT / 'build/jobs' / ('workspace-' + uuid.uuid4().hex[:12])
+    destination.mkdir(parents=True)
+    copy_tree(ROOT / 'workspace', destination)
+    copy_tree(ROOT / 'generated/workspace', destination)
+    return destination
+
+
+def export_resource(cfg, resource, output):
+    relative = relative_resource(resource)
+    candidates = [inside(ROOT / 'generated/workspace', relative), inside(ROOT / 'workspace', relative),
+                  inside(cfg['depot'], relative), inside(cfg['redkit'] / 'r4data', relative)]
+    source = next((p for p in candidates if p.is_file()), candidates[-1])
+    required_file(source)
+    output = Path(output).resolve()
+    if output.suffix.lower() != '.fbx' or relative.suffix.lower() != '.w2mesh':
+        raise ValueError('This command exports a .w2mesh into .fbx')
+    if not output.is_relative_to(ROOT / 'build'):
+        raise ValueError('Keep native character exports in this repository\'s ignored build/ directory')
+    output.parent.mkdir(parents=True, exist_ok=True)
+    if output.exists():
+        raise ValueError('Export output already exists; choose a new filename')
+    record = run_wcc(cfg, 'export', ['-depot=local', '-file=' + str(relative), '-out=' + str(output)],
+                     overlay(), 'export')
+    required_file(output)
+    write_json(output.with_suffix('.provenance.json'), {'resource': relative.as_posix(),
+               'sourceSHA256': digest(source), 'outputSHA256': digest(output), 'native': record})
+    print('Exported:', output)
+
+
+def import_mesh(cfg, source, resource):
+    source = required_file(Path(source).resolve())
+    relative = relative_resource(resource)
+    if source.suffix.lower() != '.fbx' or relative.suffix.lower() != '.w2mesh':
+        raise ValueError('Expected .fbx source and .w2mesh output')
+    destination = inside(ROOT / 'generated/workspace', relative)
+    if destination.exists():
+        raise ValueError('Imported resource exists; use a new revision path')
+    workspace = ROOT / 'generated/workspace'
+    workspace.mkdir(parents=True, exist_ok=True)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    # REDkit 5.0's importer writes relative outputs beneath bin/, ignoring the
+    # writable workspace layer. An absolute, validated output stays in our repo.
+    record = run_wcc(cfg, 'import', ['-depot=local', '-file=' + str(source), '-out=' + str(destination)],
+                     workspace, 'import')
+    required_file(destination)
+    write_json(ROOT / 'generated/imports' / (uuid.uuid4().hex[:12] + '.json'),
+               {'resource': relative.as_posix(), 'sourceSHA256': digest(source),
+                'materialXMLSHA256': digest(source.with_suffix('.xml')) if source.with_suffix('.xml').exists() else None,
+                'outputSHA256': digest(destination), 'native': record})
+    print('Imported:', destination)
+
+
+def compile_scripts(cfg, workspace=None):
+    workspace = workspace or overlay()
+    combined = ROOT / 'build/jobs' / ('scripts-' + uuid.uuid4().hex[:12])
+    combined.mkdir(parents=True)
+    copy_tree(cfg['redkit'] / 'r4data/scripts', combined)
+    copy_tree(workspace / 'scripts', combined)
+    signature = hashlib.sha256()
+    for path in sorted(combined.rglob('*.ws')):
+        signature.update(path.relative_to(combined).as_posix().encode())
+        signature.update(path.read_bytes())
+    signature.update(digest(cfg['wcc']).encode())
+    signature = signature.hexdigest()
+    cache_path = ROOT / 'build/script-check.json'
+    if cache_path.exists():
+        cache = read_json(cache_path)
+        artifact = Path(cache['artifact'])
+        if (artifact.resolve().is_relative_to((ROOT / 'build').resolve()) and artifact.is_file() and
+                cache['signature'] == signature and digest(artifact) == cache['artifactSHA256']):
+            print('Reusing verified script compilation for identical sources/tool.', flush=True)
+            return dict(cache['native'], reused=True)
+    output = combined.parent / (combined.name + '-compiled')
+    output.mkdir()
+    record = run_wcc(cfg, 'compilescripts', [str(combined), '-out=' + str(output)], workspace, 'scripts')
+    files = list(output.glob('*.redscripts'))
+    if not files:
+        raise RuntimeError('Compiler reported success without a .redscripts output')
+    for path in files:
+        required_file(path)
+    write_json(cache_path, {'signature': signature, 'artifact': str(files[0]),
+                           'artifactSHA256': digest(files[0]), 'native': record})
+    return record
+
+
+def empty_cache_expected(builder, log):
+    if 'Found 0 files to process' in log:
+        return True
+    count = re.search(r'Found (\d+) files to process', log)
+    return (builder == 'physics' and count is not None and
+            int(count.group(1)) == len(re.findall(r"Mesh '[^'\r\n]+' does not contain collision", log)))
+
+
+def build(cfg):
+    lock = base_checkout(cfg)
+    project = read_json(ROOT / 'project.json')
+    if not re.fullmatch(r'mod[A-Za-z0-9_]+', project['name']):
+        raise ValueError('Invalid mod directory name')
+    workspace = overlay()
+    job = workspace.parent / ('package-' + uuid.uuid4().hex[:12])
+    job.mkdir()
+    records = []
+    scripts = workspace / 'scripts'
+    if scripts.exists():
+        records.append(compile_scripts(cfg, workspace))
+    resource_types = {'.xbm', '.redcloth', '.redfur', '.reddlc', '.redgame', '.redswf', '.swf', '.csv', '.xml'}
+    resources = [p for p in workspace.rglob('*') if p.is_file() and
+                 (p.suffix.startswith(('.w2', '.w3')) or p.suffix in resource_types)]
+    packed = job / 'packed'
+    content = packed / 'Mods' / project['name'] / 'content'
+    content.mkdir(parents=True)
+    if resources:
+        # WCC creates a localization SQLite DB at startup in its writable
+        # workspace. Feed -mod a separate, explicit asset intake so this DB and
+        # loose scripts cannot accidentally become cooker seeds.
+        native_input = job / 'native-input'
+        native_input.mkdir()
+        for path in resources:
+            target = inside(native_input, path.relative_to(workspace))
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(path, target)
+        cooked = job / 'cooked'
+        cooked.mkdir()
+        records.append(run_wcc(cfg, 'cook', ['-platform=' + project['platform'],
+                       '-mod=' + str(native_input), '-outdir=' + str(cooked) + os.sep], workspace, 'cook'))
+        db = required_file(cooked / 'cook.db')
+        for builder in project['cacheBuilders']:
+            name = {'textures': 'texture.cache', 'physics': 'collision.cache'}[builder]
+            out = content / name
+            record = run_wcc(cfg, 'buildcache', [builder, '-platform=' + project['platform'],
+                             '-db=' + str(db), '-out=' + str(out)], workspace, builder)
+            if out.exists() and out.stat().st_size:
+                required_file(out)
+            elif empty_cache_expected(builder, (ROOT / record['logPath']).read_text(errors='replace')):
+                record['cacheStatus'] = 'no eligible resources; no cache emitted'
+                if out.exists():
+                    out.unlink()  # Empty artifact owned by this fresh build job.
+            else:
+                required_file(out)
+            records.append(record)
+        dep = content / 'dep.cache'
+        records.append(run_wcc(cfg, 'dependencies', ['-db=' + str(db), '-out=' + str(dep)], workspace, 'dependencies'))
+        required_file(dep)
+        bundle_input = job / 'bundle-input'
+        bundle_input.mkdir()
+        for path in cooked.rglob('*'):
+            if path.is_file() and path.suffix not in ('.db', '.cache', '.log'):
+                target = inside(bundle_input, path.relative_to(cooked))
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(path, target)
+        bundles = content / 'bundles'
+        bundles.mkdir()
+        records.append(run_wcc(cfg, 'pack', ['-dir=' + str(bundle_input), '-outdir=' + str(bundles) + os.sep,
+                       '-compression=lz4'], workspace, 'pack'))
+        if not list(bundles.glob('*.bundle')):
+            raise RuntimeError('Packer produced no bundle')
+        records.append(run_wcc(cfg, 'metadatastore', ['-path=' + str(content) + os.sep], workspace, 'metadata'))
+        required_file(content / 'metadata.store')
+    if scripts.exists():
+        copy_tree(scripts, content / 'scripts')
+    if not resources and not scripts.exists():
+        raise RuntimeError('Workspace is empty')
+    publish = ROOT / 'publish' / (time.strftime('%Y%m%d-%H%M%S') + '-' + uuid.uuid4().hex[:6])
+    shutil.copytree(packed, publish)
+    files = [{'path': p.relative_to(publish).as_posix(), 'sha256': digest(p), 'bytes': p.stat().st_size}
+             for p in sorted(publish.rglob('*')) if p.is_file()]
+    manifest = {'project': project['name'], 'version': project['version'], 'baseCommit': lock['commit'],
+                'files': files, 'nativeCommands': records, 'gameplayTested': False,
+                'scope': 'native build foundation; no fitted anatomy or live body editor'}
+    write_json(publish / 'build-manifest.json', manifest)
+    archive = publish.with_suffix('.zip')
+    with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as package:
+        for path in sorted(publish.rglob('*')):
+            if path.is_file():
+                package.write(path, path.relative_to(publish).as_posix())
+    write_json(ROOT / 'publish/latest.json', {'directory': publish.relative_to(ROOT).as_posix(),
+                                            'archive': archive.relative_to(ROOT).as_posix(), 'sha256': digest(archive)})
+    print('Built game-format package:', archive)
+    return publish
+
+
+def doctor(cfg):
+    lock = base_checkout(cfg)
+    required_file(cfg['wcc'])
+    required_file(cfg['game'] / 'bin/x64_dx12/witcher3.exe')
+    if not cfg['depot'].is_dir():
+        raise ValueError('Uncooked depot is missing')
+    directory_alias(ROOT / 'build/wcc-depot', cfg['depot'])
+    character = read_json(ROOT / 'characters/geralt.json')
+    for resource in character['resources'].values():
+        required_file(inside(cfg['depot'], resource))
+    print('Ready: REDkit, game, depot, native body resources and pinned Base', lock['commit'])
+    print('Gameplay and live editing readiness: pending; see characters/geralt.json')
+
+
+def verify_package(directory):
+    directory = Path(directory).resolve()
+    if not directory.is_relative_to((ROOT / 'publish').resolve()):
+        raise ValueError('Package must be inside this repository\'s publish directory')
+    manifest = read_json(directory / 'build-manifest.json')
+    paths = set()
+    for record in manifest['files']:
+        path = inside(directory, record['path'])
+        if record['path'] in paths:
+            raise ValueError('Duplicate manifest path')
+        paths.add(record['path'])
+        required_file(path)
+        if path.stat().st_size != record['bytes'] or digest(path) != record['sha256']:
+            raise RuntimeError('Package file changed: ' + record['path'])
+    actual = {p.relative_to(directory).as_posix() for p in directory.rglob('*') if p.is_file()}
+    if actual != paths | {'build-manifest.json'}:
+        raise RuntimeError('Package contains unrecorded or missing files')
+    print('PASS package integrity:', len(paths), 'files; gameplayTested:', manifest['gameplayTested'])
+    return manifest
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    commands = parser.add_subparsers(dest='command', required=True)
+    commands.add_parser('doctor')
+    base = commands.add_parser('base')
+    base.add_argument('--preferences', type=Path)
+    export = commands.add_parser('export')
+    export.add_argument('resource')
+    export.add_argument('output', type=Path)
+    importer = commands.add_parser('import-mesh')
+    importer.add_argument('source', type=Path)
+    importer.add_argument('resource')
+    commands.add_parser('compile')
+    commands.add_parser('build')
+    verifier = commands.add_parser('verify')
+    verifier.add_argument('--directory', type=Path)
+    args = parser.parse_args()
+    cfg = settings()
+    try:
+        if args.command == 'doctor':
+            doctor(cfg)
+        elif args.command == 'base':
+            lock = base_checkout(cfg)
+            profile = args.preferences or cfg['base'] / lock['preferenceProfile']
+            subprocess.run([sys.executable, str(cfg['base'] / 'tools/build_generic.py'),
+                            '--preferences', str(profile), '--output', str(ROOT / 'build/shared/generic-male')], check=True)
+        elif args.command == 'export':
+            export_resource(cfg, args.resource, args.output)
+        elif args.command == 'import-mesh':
+            import_mesh(cfg, args.source, args.resource)
+        elif args.command == 'compile':
+            compile_scripts(cfg)
+        elif args.command == 'build':
+            build(cfg)
+        elif args.command == 'verify':
+            directory = args.directory or ROOT / read_json(ROOT / 'publish/latest.json')['directory']
+            verify_package(directory)
+    except (ValueError, RuntimeError, OSError, subprocess.CalledProcessError) as error:
+        print('ERROR:', error, file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

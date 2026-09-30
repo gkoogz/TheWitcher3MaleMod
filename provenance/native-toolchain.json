@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "scope": "Native build foundation only; no gameplay or fitted anatomy validation",
+  "baseCommit": "414823b08ee3340755afcee502a16869a512c6c0",
+  "tool": {
+    "name": "Official REDkit wcc_lite.exe",
+    "version": "5.0.1042178; P4CL 13314933",
+    "sha256": "56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e"
+  },
+  "commands": [
+    {
+      "name": "compilescripts",
+      "exitCode": 0,
+      "logSHA256": "0894c8646c392ff429b1cd4d61b9ffffef34acd0d1765121173e32b8fdeddb00"
+    },
+    {
+      "name": "cook",
+      "exitCode": 0,
+      "logSHA256": "60d836ea947cddbcc80a8d5a2309044910e3d453925f575f1356ce35fb7a6b2b"
+    },
+    {
+      "name": "buildcache",
+      "exitCode": 0,
+      "logSHA256": "c110421f2850590711b2b55d48c5245a37d2e3c440a2961ae92e8a83698dd707",
+      "cacheStatus": "no eligible resources; no cache emitted"
+    },
+    {
+      "name": "buildcache",
+      "exitCode": 0,
+      "logSHA256": "95cf914ff162851aa6f2d4d00af61ceeaa538b373a823aab4b99f6bb16ffe03b",
+      "cacheStatus": "no eligible resources; no cache emitted"
+    },
+    {
+      "name": "dependencies",
+      "exitCode": 0,
+      "logSHA256": "19e1ac41166ed2d3b1d05a056f57faa738e13984c65d57067b1e87bb45339f32"
+    },
+    {
+      "name": "pack",
+      "exitCode": 0,
+      "logSHA256": "03956b9725cc41a74893e803ab77fefa3c60f9638c910b4a9a3712fb5618e686"
+    },
+    {
+      "name": "metadatastore",
+      "exitCode": 0,
+      "logSHA256": "8baca083e202d4c1c0ca90a5621d61188f4f3af690f0ef1245915edb11c9a7af"
+    }
+  ],
+  "packageFiles": [
+    {
+      "path": "Mods/modMaleMod/content/bundles/blob0.bundle",
+      "sha256": "9c2539284891b90092b23d09696720d7f77955b2ecc7df0f945731052d8dd37e",
+      "bytes": 3126
+    },
+    {
+      "path": "Mods/modMaleMod/content/bundles/buffers0.bundle",
+      "sha256": "29aef3d77222e4975853e9709c4d3c96dfc8799e7c2d3b67623141968066822a",
+      "bytes": 55661
+    },
+    {
+      "path": "Mods/modMaleMod/content/dep.cache",
+      "sha256": "404652b2ae77a49f506876d385d9802e4e48efc487d4119788af5a0be02937fa",
+      "bytes": 64
+    },
+    {
+      "path": "Mods/modMaleMod/content/metadata.store",
+      "sha256": "08c94106417e6b73846dee435abfaa3de70cedfc31c0952574650c6939b8265d",
+      "bytes": 503
+    },
+    {
+      "path": "Mods/modMaleMod/content/scripts/local/maleModInfo.ws",
+      "sha256": "89b01bff10a77e2ea60a3fd32a2a5a57de73bb1181ce757ded8e28cb7afb0fc3",
+      "bytes": 337
+    }
+  ],
+  "packageSHA256": "c7d96eaaab7bccc6b41376f3deffe3b3ef2dd3e8a0bb7324381ee21ad30755cb",
+  "checks": {
+    "unitTests": 9,
+    "baseRevisionCheck": "passed",
+    "stockMeshExport": "passed: upper and lower Geralt body",
+    "fbxImport": "passed: lower Geralt body at custom resource path",
+    "scriptCompilation": "passed: full installed baseline plus authored diagnostic",
+    "cooking": "passed: imported mesh",
+    "bundleAndMetadata": "passed: mesh plus external buffer",
+    "zipCRCAndHashes": "passed",
+    "gameplay": "not tested",
+    "liveBodyEditor": "not implemented",
+    "nativeBundleRoundtrip": "passed: mesh and buffer SHA256 match cooked inputs"
+  },
+  "nativeUnbundleLogSHA256": "6abc818e1be489d52e73bd59e71ab7aa430a732f89e9a7ea60ae76f75845e65a"
+}

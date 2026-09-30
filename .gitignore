@@ -1,6 +1,12 @@
 __pycache__/
 *.blend1
 *.blend2
-build/
-captures/
-local/
+/build/
+/captures/
+/local/
+/publish/
+/generated/
+/.deps/
+*.pyc
+workspace/*.db
+workspace/*.db-*

@@ -1,0 +1,10 @@
+{
+  "format": "malemod-witcher-cli-1",
+  "name": "modMaleMod",
+  "version": "0.1.0-framework",
+  "workspace": "workspace",
+  "generatedWorkspace": "generated/workspace",
+  "platform": "pc",
+  "cacheBuilders": ["textures", "physics"],
+  "status": "build foundation; fitted anatomy and live body editor pending"
+}
