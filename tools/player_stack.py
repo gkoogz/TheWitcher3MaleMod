@@ -353,7 +353,7 @@ def verify_native_player(cooked, probe):
 
 
 def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=False, full_joint_lod=False,
-         effective_templates=False, shipped_player=None):
+         effective_templates=False, shipped_player=None, size_controls=False):
     if measure_pose and not rest_joints:raise ValueError('Pose measurement requires the current authored-rest candidate')
     if effective_templates and not (rest_joints and full_joint_lod):
         raise ValueError('Effective template repair requires authored rest and full joint LOD')
@@ -430,7 +430,13 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     if measure_pose:
         root_frame=rig['_chunks']['CSkeleton #0']['_vars']['rigdata']['_elements'][94]['_vars']['Position']['_vars']
         pose_rest=[root_frame[c]['_value'] for c in 'XYZ']
-    script.write_text(player_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(),names,pose_rest),encoding='utf-8')
+    runtime=player_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(),names,pose_rest)
+    size_contract=None
+    if size_controls:
+        if not effective_templates:raise ValueError('Size controls require the observed shipped player path')
+        from size_controls import add_size_controls
+        runtime,size_contract=add_size_controls(runtime,cfg['base'],probe['controlledNames'])
+    script.write_text(runtime,encoding='utf-8')
     evidence=dict(probe,baseCommit=pin['commit'],executionPhase='player-stack',authoredRestMask=rest_joints,
         fullJointLod=full_joint_lod,poseMeasurement=measure_pose,
         effectiveTemplates=effective_templates,effectiveTemplateResources=effective,
@@ -451,7 +457,7 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     evidence['resources']=[dict(path=p.relative_to(workspace).as_posix(),sourceSHA256=digest(p))
         for p in workspace.rglob('*') if p.is_file() and p.suffix!='.ws']
     write_json(job/'deformation-probe.json',evidence)
-    project=dict(name='modMaleMod',version='0.4.20-shipped-player-load-test' if effective_templates else '0.4.18-boot-recovery-test' if full_joint_lod else '0.4.16-pose-measurement' if measure_pose else '0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
+    project=dict(name='modMaleMod',version='0.4.21-size-controls-test' if size_controls else '0.4.20-shipped-player-load-test' if effective_templates else '0.4.18-boot-recovery-test' if full_joint_lod else '0.4.16-pose-measurement' if measure_pose else '0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
         scriptedCook=True,motionEntity=BODY,motionOutput='player',additionalNativeDumps=[RIG,PLAYER,PARENT]+[r['path'] for r in effective],
         isolatedNativeDumps=[r['path'] for r in effective],
         isolatedNativeResources=[r['path'] for r in effective],
@@ -462,7 +468,8 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
             executionPhase='player-stack',authoredRestMask=rest_joints,fullJointLod=full_joint_lod,
             effectiveTemplates=effective_templates,
             poseMeasurement=measure_pose,cageBaseCommit=probe['cageBaseCommit']),
-        scope='Player stack pose/scale probe. Full source controls, dynamic pelvis and secondary motion remain incomplete.')
+        sizeControls=size_contract,
+        scope='Five live size cage controls; authored surface parity, remaining controls, dynamic pelvis and secondary motion incomplete.' if size_controls else 'Player stack pose/scale probe. Full source controls, dynamic pelvis and secondary motion remain incomplete.')
     package=build(cfg,project,workspace);verify_package(package)
     write_json(job/'candidate-provenance.json',dict(package=package.relative_to(ROOT).as_posix(),installed=False,observedGameplay=False))
     print(package)
@@ -477,4 +484,5 @@ if __name__=='__main__':
     parser.add_argument('--full-joint-lod',action='store_true')
     parser.add_argument('--effective-templates',action='store_true')
     parser.add_argument('--shipped-player',type=Path)
-    args=parser.parse_args();main(args.probe,args.player_inspection,args.rest_joints,args.measure_pose,args.full_joint_lod,args.effective_templates,args.shipped_player)
+    parser.add_argument('--size-controls',action='store_true')
+    args=parser.parse_args();main(args.probe,args.player_inspection,args.rest_joints,args.measure_pose,args.full_joint_lod,args.effective_templates,args.shipped_player,args.size_controls)

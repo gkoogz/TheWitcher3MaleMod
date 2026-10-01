@@ -5,8 +5,8 @@
   "cageBaseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
   "version": "0.4.20-shipped-player-load-test",
   "package": "publish/20261001-061552-504edb",
-  "installed": true,
-  "observedGameplay": false,
+  "installed": false,
+  "observedGameplay": true,
   "adapterTestsPassed": 56,
   "packedResourcesAndBuffersVerified": 10,
   "installedFilesVerified": 5,
@@ -329,11 +329,9 @@
   "sharedAlgorithmsChanged": false,
   "sourcePinDifference": "Base handoff only; installed package uses 9966388; shared anatomy/physics unchanged",
   "remaining": [
-    "Observe loading the same save without CTD",
-    "Observe 104-bone boot and graph activation",
-    "Observe bounded parent-follow samples and rendered idle/walk/run/turn following",
-    "Observe waist/ankle parity and scale 0.8/1.2",
-    "Full controls, coupled pelvis and secondary motion incomplete"
+    "Observe new slider independence and persistence separately",
+    "Observe rendered extremes, waist/ankle parity, walk/run/turn and equipment/save transitions",
+    "Complete authored surface, remaining controls, coupled pelvis and secondary motion"
   ],
   "implementationSHA256": {
     "tools/player_stack.py": "b07e1bf797fb2b259c86647bd1f3ab38f497cf8b10e2faeee60c44396097dc2a",
@@ -341,5 +339,24 @@
     "tools/shipped_player.py": "4afbd951e1d3ba9c675e91cdc8e6829cc1ede4e1381a4300668b12872fbba242",
     "tools/mod.py": "1ca0b3ae6e0dafa7af4a18e75579e9b090aecc3ba98a90f833203fdb62000290",
     "tools/deploy_motion.py": "1656f175c181bef9c65e2086cbe0dc77afdeaf2e45890ee5bad8dfdbec5d3164"
-  }
+  },
+  "observedResult": "User reports working; 06:21 screenshot confirms attached first-attempt boot, active and accepted graph, 60 pose samples",
+  "observedDiagnostics": {
+    "graphActive": true,
+    "parameterAccepted": true,
+    "graphReadback": 1.0,
+    "frozen": false,
+    "boot": "attached",
+    "attempts": 1,
+    "poseSamples": 60,
+    "pelvisMotion": 0.151142,
+    "addedRootMotion": 0.164259,
+    "firstParentFollowError": 1.1e-05,
+    "maximumParentFollowError": 0.000116,
+    "pelvisIndex": 9,
+    "addedRootIndex": 94,
+    "parentEntries": 104,
+    "sliderChanges": 0
+  },
+  "archive": "local/uninstalled/modMaleMod-7461db09d18a"
 }

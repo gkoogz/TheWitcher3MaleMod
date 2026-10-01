@@ -1,9 +1,9 @@
 {
   "checkpoint": "2026-10-01",
-  "baseCommit": "9604e2f07fc6ec526de4cf73a29f4a8ffbc6a753",
-  "installedVersion": "0.4.20-shipped-player-load-test",
-  "installedPackage": "publish/20261001-061552-504edb",
-  "installedBaseCommit": "9966388f6bb1a2e1dd764c46dc536540b11c138c",
+  "baseCommit": "4df2302f4daa2e3c4e1bab5a6d2b06a397edbb1e",
+  "installedVersion": "0.4.21-size-controls-test",
+  "installedPackage": "publish/20261001-063505-7a41a8",
+  "installedBaseCommit": "15758e5f872a157f6cf627d844960f461eb053db",
   "attempts": [
     {
       "version": "0.4.5-deformation-bridge-test",
@@ -424,13 +424,37 @@
       "nativeBindingVerified": true,
       "packageVerified": true,
       "installed": true,
-      "currentlyInstalled": true,
-      "observedGameplay": false,
+      "currentlyInstalled": false,
+      "observedGameplay": true,
       "adapterTestsPassed": 56,
       "packedResourcesAndBuffersVerified": 10,
       "installedFilesVerified": 5,
       "correction": "Use shipped cooked player entity payloads; block unsafe SDK source-cache packaging",
-      "detailedProvenance": "provenance/effective-player.json"
+      "detailedProvenance": "provenance/effective-player.json",
+      "observedResult": "User reports working; attached boot and 60 live pose samples; maximum parent-follow error 0.000116"
+    },
+    {
+      "version": "0.4.21-size-controls-test",
+      "package": "publish/20261001-063505-7a41a8",
+      "baseCommit": "15758e5f872a157f6cf627d844960f461eb053db",
+      "installed": true,
+      "currentlyInstalled": true,
+      "observedGameplay": false,
+      "nativeCook": true,
+      "nativeBindingVerified": true,
+      "packageVerified": true,
+      "packedResourcesAndBuffersVerified": 10,
+      "adapterTestsPassed": 58,
+      "supportedControls": [
+        "overall",
+        "length",
+        "width",
+        "glans",
+        "scrotum"
+      ],
+      "backend": "normalized-size-cage-preview",
+      "workingRollback": "0.4.20-shipped-player-load-test",
+      "detailedProvenance": "provenance/size-controls.json"
     }
   ],
   "remaining": [
@@ -535,5 +559,5 @@
     ],
     "observedGameplay": false
   },
-  "currentBaseAdoption": "Installed 0.4.20 uses Base 9966388 and unchanged ca78de0 cage. Source pin 9604e2f adds only the shared repair handoff. Shipped entity extraction and rig redirection belong in the adapter; shared anatomy/physics unchanged."
+  "currentBaseAdoption": "Installed 0.4.21 uses Base 15758e5 normalized size transport and unchanged ca78de0 cage; source pin 4df2302 adds shared docs only. Shared morphology/controls stay in Base; native axes, graph/UI and storage are adapter owned."
 }

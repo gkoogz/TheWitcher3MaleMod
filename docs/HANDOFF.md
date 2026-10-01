@@ -17,9 +17,33 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
-**0.4.20-shipped-player-load-test is installed; gameplay pending.** Package
-`publish/20261001-061552-504edb`, built against Base `9966388`, cage `ca78de0`.
-Source pin `9604e2f` adds only the shared handoff after that build.
+**0.4.21-size-controls-test is installed; new-control gameplay pending.**
+Package `publish/20261001-063505-7a41a8`, built against Base `15758e5`, unchanged
+cage `ca78de0`. Source pin `4df2302` adds only later shared docs.
+
+The first tranche adds overall size, length, width, glans size and scrotum size.
+UI ranges/defaults and normalized source samples are generated from pinned Base.
+The shared transport math lives in Base; native frame/joint assignments, UI and
+persistence belong here. Every authored scale variable is updated on input or
+boot, with factors at hierarchy roots to avoid compounded descendant scaling.
+Defaults retain the fitted rest shape. This is a small-cage preview, not source
+authored-surface, refined glans, coupled-pelvis or physics parity. Remaining
+controls have no placeholder/no-op menu rows. Read `docs/SLIDER-PORT.md`.
+
+58 adapter tests, three shared transport tests, Base provenance, native script
+compilation/cooking, graph/rig/template gates, ten unpacked resources/buffers and
+five installed hashes pass. The initial long initializer hit a parser limit;
+five bounded methods compiled. The rejected build was never installed.
+See `provenance/size-controls.json`. Test five controls independently, then
+combinations while moving; observe close/reopen and restart persistence.
+
+**0.4.20 has observed working loading/pose**, confirmed by the user at 06:21.
+Screenshot: first-attempt attached boot, graph active/accepted, readback 1.0,
+60 samples, pelvis motion 0.151142, added root motion 0.164259, maximum follow
+error 0.000116, pelvis index 9/root index 94, 104 parent entries. It has zero
+slider callbacks in that image; that is not evidence of the new controls.
+It is the managed working rollback, archived at
+`local/uninstalled/modMaleMod-7461db09d18a`, with its F6 bindings retained.
 
 **0.4.19 FAILED loading-screen CTDs** twice at 05:57:52 and 05:59:18.
 Windows records 0xc0000005 at witcher3.exe RVA 0x1e06862; the exception is a null
@@ -44,11 +68,8 @@ in place. Shared geometry, anatomy and numerical physics are unchanged.
 unpacked resources/buffers and all five installed file hashes pass. See
 `docs/ANIMATION-FOLLOW.md` and `provenance/effective-player.json`.
 
-Next gate: load the same save without CTD. After successful load, inspect F6:
-require attached boot, graph active/accepted and bounded pose samples. Then
-observe idle/walk/run/turn, waist/ankle continuity and scale 0.8/1.2. Gameplay
-and following are unconfirmed until observed. The 05:05 0.4.18 screenshot remains
-an observed 94-bone boot failure; authored export did not change that runtime.
+The 0.4.20 loading/pose gate is now observed. New-control effects, persistence,
+full surface shaping and secondary physics remain separate gates.
 
 **0.4.18-boot-recovery-test FAILED observed following.** Package
 `publish/20261001-031309-f1ed02`, Base `4b4719f`, unchanged cage `ca78de0`.

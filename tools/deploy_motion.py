@@ -51,14 +51,15 @@ def install(directory):
     old_rollback=read_json(rollback_path) if rollback_path.exists() else None
     uninstall_package(cfg);backup=read_json(ROOT/'local/installation.json')['uninstalledTo']
     stable_previous,stable_backup=previous,backup
-    if old_rollback and old_rollback['newPackage']==previous['package']:
+    if old_rollback and old_rollback['newPackage']==previous['package'] and not previous.get('observedLoadAndPose'):
         stable_previous,stable_backup=old_rollback['previous'],old_rollback['backup']
     write_json(rollback_path,{'previous':stable_previous,'backup':stable_backup,
         'replaced':previous,'replacedBackup':backup,'newPackage':packed['package']})
     try:
         install_package(cfg,directory);bindings=input_bindings.install(input_path)
         print('Installed motion test and hotkeys; previous build archived at:',backup)
-        print('F6 opens the native pause menu; select MaleMod - player pose test. Escape returns to gameplay.')
+        category='MaleMod - size controls' if manifest.get('sizeControls') else 'MaleMod - player pose test'
+        print('F6 opens the native pause menu; select '+category+'. Escape returns to gameplay.')
         return bindings
     except Exception:
         current=read_json(ROOT/'local/installation.json')
@@ -72,7 +73,8 @@ def revert():
     current=read_json(ROOT/'local/installation.json')
     if current['package']!=record['newPackage']:raise RuntimeError('Installed package is no longer this motion test')
     uninstall_package(cfg);restore_previous(cfg,record['previous'],record['backup'])
-    input_bindings.uninstall();print('Restored the previous static build; removed only MaleMod hotkeys.')
+    if not record['previous'].get('observedLoadAndPose'):input_bindings.uninstall()
+    print('Restored the previous verified build; preserved its required hotkeys.')
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('command',choices=['install','revert'])

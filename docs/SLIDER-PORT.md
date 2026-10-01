@@ -5,16 +5,36 @@ reconstruct the dynamic pelvis, and retain the interim native pause menu. Prefer
 live deformation eventually. Animation, fluid, audio and other non-sliders are
 explicitly deferred. Read `PROJECT-CONTEXT.md` and Base's `AUTHORED-SHAPE.md`.
 
-The 0.4.4 baseline was restored after the failed 0.4.5 probe. The user confirms its native menu is
-visible; tuning effects and persistence are not yet observed. It still has just
-the three REDengine-specific controls. This pass does NOT complete the 18-control
-runtime port. Do not tell the user it does.
+October 1 06:21: the user confirms 0.4.20 is working. Its screenshot establishes
+attached first-attempt boot, active/accepted graph, readback 1.0, 60 pose samples,
+104 parent entries and maximum parent-follow error 0.000116. Slider callbacks are
+zero in that image; it does not establish new controls or persistence.
+
+The first new tranche is five controls: overall, length, width, glans, scrotum.
+`tools/size_controls.py` generates native rows, defaults, raw preference storage
+and default-normalized lookup tables from pinned Base's control transport.
+It drives all ten existing graph variables on input/startup, without a frame
+loop. The shared math is in Base, not copied into a second adapter algorithm.
+
+This is a small-cage size preview: shaft-root local X is axial, Y/Z radial;
+distal knot 6 is the head root; both pelvis-parented lobe roots scale independently.
+The factor is applied once per hierarchy, not at every descendant. Default 50
+leaves every scale at 1. Source morph/refined-glans/coupled-pelvis parity is not
+claimed. Angle, offsets, hang, state and eight physics controls still need their
+real output paths; no placeholder rows are added for them. See current HANDOFF
+and `provenance/size-controls.json` for build/install/observed gates.
+
+Portable raw preferences use `MaleModPortable`, version 1, stable Base IDs.
+Missing keys keep defaults; values are bounded/rounded to catalog steps. Native
+backend tuning retains its separate settings. Save/load behavior is implemented
+and still requires observation. The first monolithic table initializer exhausted
+the native parser; five bounded initializers compile successfully instead.
 
 ## Latest bridge failures and continuation
 
 October 1: **0.4.14 and 0.4.15 FAILED authored joint animation follow**:
 the model follows WASD but stays steady during idle sway, stretching its base.
-**0.4.17-full-joint-lod is installed; gameplay pending.** Its private 104-joint
+Historical **0.4.17-full-joint-lod was installed; subsequent tests supersede it.** Its private 104-joint
 rig now includes all added joints in the reduced-detail update range (previously
 40). Native LOD coverage, 23 connected pose nodes, eight packed resources, five
 installed hashes and 47 tests pass. Bounded read-only pose measurements appear
