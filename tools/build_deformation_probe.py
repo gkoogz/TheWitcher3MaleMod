@@ -30,7 +30,7 @@ def probe_script(source, direct=False, late=False):
         if (!deformationRoot) { deformationRoot = (CAnimatedComponent)thePlayer.GetComponent("MaleModDeformation"); }
         bridgeScale = 1.0;
         LoadTuning();''')
-    if direct:
+    if direct or late:
         replace_once('        bridgeScale = 1.0;', '''        if (deformationRoot) { deformationRoot.UpdateByOtherAnimatedComponent(thePlayer.GetRootAnimatedComponent()); }
         bridgeScale = 1.0;''')
     replace_once("        if (control == 'MaleModGravity') { return gravityValue; }", '''        if (control == 'MaleModBridgeScale') { return bridgeScale; }
@@ -58,6 +58,9 @@ def probe_script(source, direct=False, late=False):
         source=source.replace('"Scale bridge (test)"','"Direct scale test | accepted: " + controller.BridgeAccepted()')
         source=source.replace('MaleMod - motion controls','MaleMod - isolated pose test')
     if late:
+        if not direct:
+            replace_once('    public function Status() : string',
+                '    public function BridgeAccepted() : bool { return bridgeAccepted; }\n\n    public function Status() : string')
         replace_once('    private var bridgeAccepted : bool;', '''    private var bridgeAccepted : bool;
     private var bridgeBooted : bool;
     private var bridgeChanges : int;''')
@@ -142,7 +145,6 @@ def main(job,direct=False,late=False):
         'characters\\malemod\\physics\\deformation.w2rig', 'characters\\malemod\\behavior\\deformation.w2beh',
         output='direct' if direct else 'dangle')
     if late:
-        if not direct:raise ValueError('Late graph test requires direct output')
         def late_slot(resource):
             for c in resource['_chunks'].values():
                 if c['_type']=='CAnimatedComponent':
@@ -177,7 +179,9 @@ def main(job,direct=False,late=False):
     script.parent.mkdir(parents=True)
     script.write_text(probe_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(encoding='utf-8'),direct,late),
                       encoding='utf-8')
-    version=('0.4.10-root-pose-test' if evidence.get('identityRoot') else
+    version=('0.4.12-model-pose-test' if direct and evidence.get('parentPoseSpace')=='model' else
+             '0.4.11-connected-motion-test' if late and not direct and evidence.get('identityRoot') else
+             '0.4.10-root-pose-test' if evidence.get('identityRoot') else
              '0.4.9-connected-graph-test' if late else
              '0.4.7-ordered-pose-test' if direct else '0.4.5-deformation-bridge-test')
     project = dict(name='modMaleMod', version=version, platform='pc',
@@ -187,9 +191,11 @@ def main(job,direct=False,late=False):
             lateActivation=late,
             identityRoot=evidence.get('identityRoot'),
             fullTransformChannels=evidence.get('fullTransformChannels',False),
+            parentPoseSpace=evidence.get('parentPoseSpace','local'),
             sourceProbeSHA256=digest(job/'deformation-probe.json'),
             cageBaseCommit=evidence['cageBaseCommit'], currentBaseAdoption='Control/output probe only; cage geometry unchanged'),
-        scope='Isolated native pose/scale test; secondary motion is not the visible output in direct mode. Source sliders and dynamic pelvis are incomplete.')
+        scope=('Connected native graph-to-dangle test; three native engine controls plus scale probe. Full source sliders and dynamic pelvis incomplete.'
+            if not direct else 'Isolated native pose/scale test; secondary motion is not the visible output in direct mode. Source sliders and dynamic pelvis are incomplete.'))
     package = build(cfg, project, workspace)
     verify_package(package)
     write_json(workspace/'candidate-provenance.json', dict(sourceProbe=str(job.relative_to(ROOT)),

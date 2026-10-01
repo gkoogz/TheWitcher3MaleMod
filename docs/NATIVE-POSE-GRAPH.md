@@ -31,6 +31,18 @@ such default, a connected default or multiple authored outputs are rejected.
 
 ## Related native findings
 
+- The user rejected 0.4.10: waist separation remains and an ankle gap is also
+  visible. Identity-root policy alone does not establish pose parity.
+  Native localSpace=true ParentAlign reads GetBoneTransformLocalSpace through
+  the parent SBehaviorSampleContext. localSpace=false invokes
+  ISkeletonDataProvider vtable slot 0x48, verified as GetBoneMatrixModelSpace,
+  reading the component's model-space matrix buffer and converting via the
+  already aligned ancestor pose. This is a distinct stream, not world-space
+  copying. 0.4.12 isolates this model-space policy with the same scale probe;
+  it must pass gameplay before secondary motion or full controls are layered on.
+  The 0.4.11 graph-to-dangle package is held because it retains the failing local
+  pose path. No fixed mesh translation was used to hide the discrepancy.
+
 - 0.4.10 preserves observed bone-zero identity instead of ParentAlign copying
   animated Root. Native `OnParentUpdatedAttachedAnimatedObjectsLS` copies mapped
   parent local poses, then overwrites the first transform with identity. In

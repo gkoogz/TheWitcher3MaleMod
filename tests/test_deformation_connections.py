@@ -54,3 +54,11 @@ class PoseConnectionTests(unittest.TestCase):
             p=Path(temp)/'graph.xml';p.write_text(self.fixture())
             with self.assertRaises(ValueError):
                 verify_graph(p,stock_names=['fixture_'+str(i) for i in range(94)],identity_root='fixture_0')
+
+    def test_local_and_model_pose_policies_cannot_be_confused(self):
+        with tempfile.TemporaryDirectory() as temp:
+            p=Path(temp)/'graph.xml';p.write_text(self.fixture())
+            with self.assertRaises(ValueError):verify_graph(p,parent_space='model')
+            p.write_text(self.fixture().replace('>true<','>false<'))
+            self.assertEqual(verify_graph(p,parent_space='model')['parentPoseSpace'],'model')
+            with self.assertRaises(ValueError):verify_graph(p)

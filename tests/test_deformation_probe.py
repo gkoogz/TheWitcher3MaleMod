@@ -21,3 +21,13 @@ class DeformationProbeTests(unittest.TestCase):
         # make the player's animation depend on our diagnostic component.
         self.assertIn('deformationRoot.UpdateByOtherAnimatedComponent(thePlayer.GetRootAnimatedComponent())',script)
         self.assertNotIn('thePlayer.GetRootAnimatedComponent().UpdateByOther',script)
+
+    def test_motion_candidate_keeps_physics_controls_and_delayed_graph(self):
+        source=(Path(__file__).resolve().parents[1]/'probes/runtime/maleModPhysics.ws').read_text()
+        script=probe_script(source,direct=False,late=True)
+        for control in ('MaleModGravity','MaleModDamping','MaleModSpeed','MaleModBridgeScale'):
+            self.assertIn("controller.GetTuning('"+control+"')",script)
+        self.assertIn('public function BridgeAccepted()',script)
+        self.assertIn('deformationRoot.UpdateByOtherAnimatedComponent(thePlayer.GetRootAnimatedComponent())',script)
+        self.assertIn("graphs.PushBack('MaleModDeformationLate')",script)
+        self.assertIn('dynamicConstraint.gravity = gravityValue',script)

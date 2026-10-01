@@ -18,10 +18,25 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 ## Current implementation
 
 Source dependency pin adopts Base's angular root-profile preparation stage.
-Installed 0.4.10 remains built against `81fe047`; this newer numerical stage
+Installed 0.4.12 remains built against `c7f78e3`; the shared numerical stage
 does not run in that package. See the exact source pin in base.lock.json.
 
-**Installed now: 0.4.10-root-pose-test, gameplay pending.** Package
+**0.4.10-root-pose-test FAILED observed gameplay:** the user still sees body
+separation and an ankle gap. Root identity alone did not repair it.
+0.4.11-connected-motion-test was compiled/packed but is held, never installed:
+it feeds the same failing local pose path into the native dangle.
+**0.4.12-model-pose-test is now installed**, from `deformation-d11b02d4bcc7`:
+93 inherited stock bones use model-space ParentAlign, which reads the parent's
+bone-matrix buffer rather than its animation sample context. Native initial
+script-aware cook/traversal, all six exact packed resources, five installed
+hashes and 37 tests pass; no gameplay confirmation yet. Current package
+`publish/20260930-231057-0fb1c4`, Base `c7f78e3`, cage `ca78de0`.
+It uses 93 model-space stock alignments and ten scale nodes (104 connected pose
+nodes); scalar motion channels are left for the later candidate. Previous 0.4.10
+archive: `local/uninstalled/modMaleMod-a156f580687f`.
+See NATIVE-POSE-GRAPH.md. Full source sliders and dynamic pelvis remain incomplete.
+
+Historical installation: **0.4.10-root-pose-test**. Package
 `publish/20260930-224402-e6260b`, Base `81fe047`, cage geometry `ca78de0`.
 The native attachment copies its parent pose then clears bone zero to identity;
 ParentAlign was reintroducing animated Root into the helper. The candidate

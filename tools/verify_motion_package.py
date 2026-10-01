@@ -27,14 +27,15 @@ def verify(directory):
     if (manifest.get('deformationBridge') or {}).get('lateActivation') or manifest['version']=='0.4.8-late-graph-test':
         dumps=list(cooked.rglob('*.w2ent.xml'))
         if len(dumps)!=1:raise ValueError('Late graph candidate requires one native entity dump')
-        binding=verify_binding(dumps[0],output='direct',require_late=True)
+        binding=verify_binding(dumps[0],output=(manifest.get('motionBinding') or {}).get('deformationOutput','direct'),require_late=True)
     if ((manifest.get('motionBinding') or {}).get('poseGraph') or {}).get('cookedPoseConnectionsVerified'):
         probe_record=manifest['deformationBridge']
         source=inside(ROOT,probe_record['sourceProbe'])/'deformation-probe.json'
         if digest(source)!=probe_record['sourceProbeSHA256']:raise ValueError('Pose input provenance changed')
         probe=read_json(source)
         pose=verify_graph(cooked/'characters/malemod/behavior/deformation.w2beh.xml',stock_names=probe['stockNames'],
-            identity_root=probe.get('identityRoot'),transform_controls=probe.get('fullTransformChannels',False))
+            identity_root=probe.get('identityRoot'),transform_controls=probe.get('fullTransformChannels',False),
+            parent_space=probe.get('parentPoseSpace','local'))
         if binding is None:binding={}
         binding['poseGraph']=pose
     result={'package':package.relative_to(ROOT).as_posix(),'native':native,'files':files,

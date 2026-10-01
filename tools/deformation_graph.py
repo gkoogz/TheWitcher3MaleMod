@@ -9,7 +9,8 @@ from prepare_motion import scalar, array, reference, handle, vector
 
 
 def deformation_graph(template, stock_names, controlled_names, *, transform_controls=False,
-                      identity_root=None):
+                      identity_root=None,parent_space='local'):
+    if parent_space not in ('local','model'):raise ValueError('Unknown observed parent pose space')
     if not stock_names or len(set(stock_names + controlled_names)) != len(stock_names + controlled_names):
         raise ValueError('Rig names must be observed, distinct and nonempty')
     result = {k: copy.deepcopy(v) for k, v in template.items() if k != '_chunks'}
@@ -35,7 +36,7 @@ def deformation_graph(template, stock_names, controlled_names, *, transform_cont
         pose = node('CBehaviorGraphConstraintNodeParentAlign', top, {
             'id': scalar('Uint32', len(nodes) + 2),
             'bone': scalar('String', name), 'parentBone': scalar('String', name),
-            'localSpace': scalar('Bool', True),
+            'localSpace': scalar('Bool', parent_space=='local'),
             'cachedInputNode': reference('ptr:CBehaviorGraphNode', pose)})
         nodes.append(pose)
     for i, name in enumerate(controlled_names):

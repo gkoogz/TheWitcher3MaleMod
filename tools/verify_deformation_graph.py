@@ -4,7 +4,8 @@ import xml.etree.ElementTree as ET
 from mod import digest
 
 
-def verify_graph(path,stock_names=None,*,identity_root=None,transform_controls=False):
+def verify_graph(path,stock_names=None,*,identity_root=None,transform_controls=False,parent_space='local'):
+    if parent_space not in ('local','model'):raise ValueError('Unknown parent pose space')
     path=Path(path)
     root=ET.parse(path).getroot()
     objects={o.get('id'):o for o in root.findall('.//object') if o.get('id') is not None}
@@ -57,7 +58,7 @@ def verify_graph(path,stock_names=None,*,identity_root=None,transform_controls=F
             deformations.append((bone,operation+'_'+axis))
         elif t=='CBehaviorGraphConstraintNodeParentAlign':
             bone=value(current,'bone')
-            if bone!=value(current,'parentBone') or value(current,'localSpace')!='true':
+            if bone!=value(current,'parentBone') or value(current,'localSpace')!=('true' if parent_space=='local' else 'false'):
                 raise ValueError('Stock pose parent alignment changed')
             align.append(bone)
         elif t=='CBehaviorGraphTPoseNode':terminal=True;break
@@ -77,4 +78,5 @@ def verify_graph(path,stock_names=None,*,identity_root=None,transform_controls=F
         raise ValueError('Pose alignment does not match the observed stock rig names/order')
     return dict(cookedPoseConnectionsVerified=True,stockAlignmentNodes=alignment_count,authoredScaleNodes=10,
         authoredScalarNodes=len(channels),identityRoot=identity_root,
+        parentPoseSpace=parent_space,
         connectedPoseNodes=len(seen),dumpSHA256=digest(path),observedGameplay=False)

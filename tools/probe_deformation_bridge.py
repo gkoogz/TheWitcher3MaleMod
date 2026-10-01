@@ -16,7 +16,7 @@ from prepare_motion import rig_world
 import numpy as np
 
 
-def main(transform_controls=False, identity_root=False):
+def main(transform_controls=False, identity_root=False, model_pose=False):
     cfg = settings()
     pin = base_checkout(cfg)
     cage = ROOT / 'build/motion/cage-dec402309e13'
@@ -46,7 +46,8 @@ def main(transform_controls=False, identity_root=False):
     rig_path = 'characters/malemod/physics/deformation.w2rig'
     entity_path = 'items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent'
     recipe = deformation_graph(json.loads(template_path.read_text(encoding='utf-8')), stock, controlled,
-                               transform_controls=transform_controls,identity_root=root_name)
+                               transform_controls=transform_controls,identity_root=root_name,
+                               parent_space='model' if model_pose else 'local')
     write_json(job / 'deformation-graph.json', recipe)
     rig = {k: copy.deepcopy(v) for k, v in dyng.items() if k != '_chunks'}
     rig['_chunks'] = {'CSkeleton #0': copy.deepcopy(skeleton)}
@@ -79,6 +80,7 @@ def main(transform_controls=False, identity_root=False):
                     stockNames=stock, controlledNames=controlled,
                     fullTransformChannels=transform_controls,
                     identityRoot=root_name,
+                    parentPoseSpace='model' if model_pose else 'local',
                     poseInheritanceObserved=False, liveScaleObserved=False,
                     dangleCompatibilityObserved=False, installed=False)
     try:
@@ -103,7 +105,8 @@ def main(transform_controls=False, identity_root=False):
         from verify_deformation_graph import verify_graph
         native_dump=inspect(job/'cooked'/graph_path)
         evidence['poseGraph']=verify_graph(native_dump['output'],stock_names=stock,
-            identity_root=root_name,transform_controls=transform_controls)
+            identity_root=root_name,transform_controls=transform_controls,
+            parent_space='model' if model_pose else 'local')
     finally:
         write_json(job/'deformation-probe.json', evidence)
     print(job)
@@ -115,5 +118,6 @@ if __name__ == '__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('--transforms',action='store_true')
     parser.add_argument('--identity-root',action='store_true')
+    parser.add_argument('--model-pose',action='store_true')
     args=parser.parse_args()
-    main(args.transforms,args.identity_root)
+    main(args.transforms,args.identity_root,args.model_pose)

@@ -12,8 +12,15 @@ runtime port. Do not tell the user it does.
 
 ## Latest bridge failures and continuation
 
-Installed next: **0.4.10-root-pose-test**, package `publish/20260930-224402-e6260b`,
-Base `81fe047`, gameplay pending. Preserves identity bone zero as the native
+**0.4.10 FAILED**: user reports waist separation remains and an ankle gap too.
+0.4.11 native motion candidate is held/uninstalled because it uses the same local
+pose path. 0.4.12 is installed at `publish/20260930-231057-0fb1c4`, Base `c7f78e3`.
+It isolates model-space ParentAlign sampling of the parent's actual matrix buffer,
+with the existing scale probe. Connected-output, six packed bytes, five installed
+hashes and 37 tests pass. Gameplay is pending; full source controls remain incomplete.
+
+0.4.10 package `publish/20260930-224402-e6260b`,
+Base `81fe047`. Preserves identity bone zero as the native
 attached-component path does, instead of copying animated Root back into it.
 Native verification walks 93 stock alignments, ten scale nodes and all 60 scalar
 translation/rotation links in exact order. Cook/packed bytes and 35 tests pass.
