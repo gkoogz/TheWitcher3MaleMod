@@ -17,7 +17,8 @@ def header_crc(data, start):
     return zlib.crc32(header)
 
 
-def redirect(data, old_path=OLD_RIG, new_path=NEW_RIG, expected_matches=2, *, expected_version=164):
+def redirect(data, old_path=OLD_RIG, new_path=NEW_RIG, expected_matches=2, *, expected_version=164,
+             expected_headers=2, require_cooked=False):
     if expected_version not in (163,164):
         raise ValueError('Uncalibrated native entity version')
     old=old_path.encode()+b'\0';new=new_path.encode()+b'\0'
@@ -31,6 +32,8 @@ def redirect(data, old_path=OLD_RIG, new_path=NEW_RIG, expected_matches=2, *, ex
             raise ValueError('Unexpected embedded CR2W header')
         if header_crc(data,start)!=struct.unpack_from('<I',data,start+32)[0]:
             raise ValueError('Native entity header CRC mismatch')
+        if require_cooked and struct.unpack_from('<I',data,start+36)[0]!=6:
+            raise ValueError('Expected shipped cooked entity flags')
         offset,size,crc=struct.unpack_from('<III',data,start+40)
         if offset<160 or start+offset+size>len(data) or zlib.crc32(data[start+offset:start+offset+size])!=crc:
             raise ValueError('Native entity string table CRC mismatch')
@@ -42,7 +45,7 @@ def redirect(data, old_path=OLD_RIG, new_path=NEW_RIG, expected_matches=2, *, ex
             matches.append(pos);result[pos:pos+len(old)]=new
             allowed.update(range(pos,pos+len(old)));pos+=len(old)
         headers.append(start);start+=4
-    if len(headers)!=2 or len(matches)!=expected_matches or headers[0]!=0:
+    if len(headers)!=expected_headers or len(matches)!=expected_matches or headers[0]!=0:
         raise ValueError('Expected observed top/compiled entity and exact imports')
     if data.count(old)!=len(matches):raise ValueError('Rig import occurs outside verified string tables')
     for start in headers[::-1]:
@@ -72,4 +75,5 @@ def redirect(data, old_path=OLD_RIG, new_path=NEW_RIG, expected_matches=2, *, ex
         raise ValueError('Entity changes exceed rig imports and dependent CRCs')
     return bytes(result),dict(formatVersion=expected_version,embeddedHeaders=headers,rigImportOffsets=matches,
         changedByteOffsets=changed,onlyImportsAndCRCsChanged=True,
-        onlyRigImportsAndCRCsChanged=(old_path==OLD_RIG),oldImport=old_path,newImport=new_path)
+        onlyRigImportsAndCRCsChanged=(old_path==OLD_RIG),oldImport=old_path,newImport=new_path,
+        shippedCookedFlagsVerified=require_cooked)

@@ -67,35 +67,38 @@ def verify_stock_template_baseline(cfg, receipt):
 
 
 def preserve_compiled_templates(cfg,workspace,cooked,probe):
-    """Keep the existing native compiled player state; alter only its imports.
+    """Historical SDK source-cache packaging is deliberately unavailable."""
+    raise ValueError('SDK source entity cache preservation is blocked after observed loading CTD; use shipped cooked templates')
 
-    Recompilation inherits the base template's one-slot stack and drops seven
-    slots present in Geralt's stock compiled state. Keep the rejected recook
-    outside the bundle tree. Recompute our exact import/CRC patch from verified
-    stock bytes, then require native loaded root/slot parity before packaging.
-    """
+
+def stage_shipped_templates(cfg,workspace,cooked,probe):
+    """Preserve shipped cooked caches, never uncooked SDK entity caches."""
     workspace=Path(workspace).resolve();cooked=Path(cooked).resolve()
     if not workspace.is_relative_to(ROOT/'build') or not cooked.is_relative_to(ROOT/'build'):
-        raise ValueError('Compiled preservation must stay in the owned build tree')
-    records=probe.get('effectiveTemplateResources',[])
-    expected={p:(h,v) for p,h,v,i in EFFECTIVE_TEMPLATES}
-    if {r['path'] for r in records}!=set(expected):raise ValueError('Missing compiled effective player inputs')
+        raise ValueError('Shipped template staging leaves owned build')
+    receipt_path=ROOT/probe['shippedPlayerReceipt']
+    if digest(receipt_path)!=probe['shippedPlayerReceiptSHA256']:raise ValueError('Shipped source receipt changed')
+    receipt=json.loads(receipt_path.read_text())
+    if digest(cfg['game']/'content/content0/bundles/startup.bundle')!=receipt['sourceBundleSHA256']:
+        raise ValueError('Shipped source bundle changed')
+    sources={r['path']:r for r in receipt['resources']}
+    records=probe['effectiveTemplateResources']
+    if set(sources)!={EFFECTIVE_PLAYER,GERALT_PLAYER} or {r['path'] for r in records}!=set(sources):
+        raise ValueError('Expected exact gameplay/UI shipped template pair')
     output=[]
     for record in records:
-        path=record['path'];sha,version=expected[path]
-        original=cfg['redkit']/'r4data'/path
-        if digest(original)!=sha:raise ValueError('Stock compiled template changed')
-        exact,patch=redirect(original.read_bytes(),expected_version=version)
-        source=Path(workspace)/path;dest=Path(cooked)/path
+        src=sources[record['path']];original=ROOT/src['source']
+        if digest(original)!=src['sourceSHA256']:raise ValueError('Shipped cooked source changed')
+        exact,patch=redirect(original.read_bytes(),expected_headers=src['embeddedHeaderCount'],require_cooked=True)
+        source=workspace/record['path'];dest=cooked/record['path']
         if source.read_bytes()!=exact or digest(source)!=record['patchedSHA256']:
-            raise ValueError('Compiled preservation exceeds the verified imports/CRCs')
-        rejected=Path(cooked).parent/'recompiled-stock-entities'/path
+            raise ValueError('Shipped template staging exceeds import/CRC patch')
+        rejected=cooked.parent/'recompiled-shipped-entities'/record['path']
         rejected.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(dest,rejected)
         before=digest(dest);shutil.copy2(source,dest)
-        output.append(dict(path=path,sourceSHA256=sha,outputSHA256=digest(dest),
-            recompiledSHA256=before,nativeCompiledCachePreserved=True,
-            onlyImportsAndCRCsChanged=patch['onlyImportsAndCRCsChanged']))
-    return dict(command='preserve-native-compiled-entities',files=output,observedGameplay=False)
+        output.append(dict(path=record['path'],sourceSHA256=src['sourceSHA256'],outputSHA256=digest(dest),
+            recompiledSHA256=before,shippedCookedCachePreserved=True,patch=patch))
+    return dict(command='stage-shipped-cooked-player-entities',files=output,observedGameplay=False)
 
 
 def merge_rig(original, extension, full_joint_lod=False):
@@ -350,11 +353,17 @@ def verify_native_player(cooked, probe):
 
 
 def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=False, full_joint_lod=False,
-         effective_templates=False):
+         effective_templates=False, shipped_player=None):
     if measure_pose and not rest_joints:raise ValueError('Pose measurement requires the current authored-rest candidate')
     if effective_templates and not (rest_joints and full_joint_lod):
         raise ValueError('Effective template repair requires authored rest and full joint LOD')
     cfg=settings();pin=base_checkout(cfg);probe_dir=Path(probe_dir).resolve()
+    if effective_templates and shipped_player is None:
+        raise ValueError('Effective player templates require an extracted shipped cooked source receipt')
+    shipped_receipt=Path(shipped_player).resolve() if shipped_player else None
+    if shipped_receipt and not shipped_receipt.is_relative_to(ROOT/'build/probe'):
+        raise ValueError('Expected owned shipped player receipt')
+    shipped_sources={r['path']:r for r in json.loads(shipped_receipt.read_text())['resources']} if shipped_receipt else {}
     if not probe_dir.is_relative_to(ROOT/'build/motion'):raise ValueError('Expected owned probe')
     probe=json.loads((probe_dir/'deformation-probe.json').read_text())
     if probe.get('parentPoseSpace')!='attached' or not probe.get('nativeCook'):raise ValueError('Expected verified input-node probe')
@@ -391,17 +400,14 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     effective=[]
     if effective_templates:
         for path,source_hash,version,inspection_path in EFFECTIVE_TEMPLATES:
-            source=cfg['redkit']/'r4data'/path
+            shipped=shipped_sources[path]
+            source=ROOT/shipped['source'];source_hash=shipped['sourceSHA256'];version=164
             if digest(source)!=source_hash:raise ValueError('Observed effective player template changed')
-            if (ROOT/inspection_path).exists():
-                inspected=json.loads((ROOT/inspection_path).read_text())
-            else:
-                from inspect_native import inspect
-                inspected=inspect(source)
-            dump=Path(inspected['output'])
-            if inspected['sourceSHA256']!=source_hash or digest(dump)!=inspected['outputSHA256']:
+            dump=ROOT/shipped['sourceNativeDump']
+            if digest(dump)!=shipped['sourceNativeDumpSHA256']:
                 raise ValueError('Reinspect effective player source')
-            patched,record=redirect(source.read_bytes(),expected_version=version)
+            patched,record=redirect(source.read_bytes(),expected_version=version,
+                expected_headers=shipped['embeddedHeaderCount'],require_cooked=True)
             dest=workspace/path;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(patched)
             effective.append(dict(path=path,sourceSHA256=source_hash,patchedSHA256=digest(dest),
                 sourceNativeDump=dump.relative_to(ROOT).as_posix(),sourceNativeDumpSHA256=digest(dump),patch=record))
@@ -435,6 +441,9 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
         sourcePlayerSHA256=PLAYER_SHA,sourceRigSHA256=RIG_SHA,
         playerImportPatch=patch,playerParentImportPatch=parent_patch,parentRigPatch=parent_rig_patch,
         sourceParentSHA256=digest(parent_source),installed=False,observedGameplay=False)
+    if shipped_receipt:
+        evidence.update(shippedPlayerReceipt=shipped_receipt.relative_to(ROOT).as_posix(),
+            shippedPlayerReceiptSHA256=digest(shipped_receipt))
     evidence['sourceInputProbe']=probe_dir.relative_to(ROOT).as_posix()
     evidence['sourceInputProbeSHA256']=digest(probe_dir/'deformation-probe.json')
     evidence['inputProbeNativeCook']=evidence.pop('nativeCook')
@@ -442,11 +451,11 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     evidence['resources']=[dict(path=p.relative_to(workspace).as_posix(),sourceSHA256=digest(p))
         for p in workspace.rglob('*') if p.is_file() and p.suffix!='.ws']
     write_json(job/'deformation-probe.json',evidence)
-    project=dict(name='modMaleMod',version='0.4.19-effective-player-test' if effective_templates else '0.4.18-boot-recovery-test' if full_joint_lod else '0.4.16-pose-measurement' if measure_pose else '0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
+    project=dict(name='modMaleMod',version='0.4.20-shipped-player-load-test' if effective_templates else '0.4.18-boot-recovery-test' if full_joint_lod else '0.4.16-pose-measurement' if measure_pose else '0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
         scriptedCook=True,motionEntity=BODY,motionOutput='player',additionalNativeDumps=[RIG,PLAYER,PARENT]+[r['path'] for r in effective],
         isolatedNativeDumps=[r['path'] for r in effective],
         isolatedNativeResources=[r['path'] for r in effective],
-        preserveCompiledPlayerTemplates=effective_templates,
+        stageShippedPlayerTemplates=effective_templates,
         nativeSourceBaseline=STOCK_BASELINE if effective_templates else None,
         deformationBridge=dict(sourceProbe=job.relative_to(ROOT).as_posix(),sourceProbeSHA256=digest(job/'deformation-probe.json'),
             lateActivation=False,identityRoot=probe['identityRoot'],fullTransformChannels=False,parentPoseSpace='attached',
@@ -467,4 +476,5 @@ if __name__=='__main__':
     parser.add_argument('--measure-pose',action='store_true')
     parser.add_argument('--full-joint-lod',action='store_true')
     parser.add_argument('--effective-templates',action='store_true')
-    args=parser.parse_args();main(args.probe,args.player_inspection,args.rest_joints,args.measure_pose,args.full_joint_lod,args.effective_templates)
+    parser.add_argument('--shipped-player',type=Path)
+    args=parser.parse_args();main(args.probe,args.player_inspection,args.rest_joints,args.measure_pose,args.full_joint_lod,args.effective_templates,args.shipped_player)

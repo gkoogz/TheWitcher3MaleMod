@@ -13,11 +13,12 @@ from player_rig_redirect import redirect, header_crc, OLD_RIG, NEW_RIG
 from player_stack import player_script, merge_rig, native_rig_frames, verify_template_root
 
 
-def native(payload,version=164):
+def native(payload,version=164,flags=0):
     strings=b'CSkeleton\0'+OLD_RIG.encode()+b'\0'
     exports=160+len(strings);chunk=exports+24
     data=bytearray(chunk+len(payload))
     data[:4]=b'CR2W';struct.pack_into('<I',data,4,version)
+    struct.pack_into('<I',data,36,flags)
     data[160:exports]=strings;data[chunk:]=payload
     struct.pack_into('<III',data,40,160,len(strings),zlib.crc32(strings))
     struct.pack_into('<II',data,exports+8,len(payload),chunk)
@@ -28,6 +29,23 @@ def native(payload,version=164):
 
 
 class PlayerStackTests(unittest.TestCase):
+    def test_shipped_nested_patch_rejects_sdk_uncooked_flags(self):
+        cooked=native(native(native(b'unchanged shipped payload',flags=6),flags=6),flags=6)
+        patched,record=redirect(cooked,expected_matches=3,expected_headers=3,require_cooked=True)
+        self.assertTrue(record['shippedCookedFlagsVerified'])
+        self.assertTrue(patched.endswith(b'unchanged shipped payload'))
+        for start in record['embeddedHeaders']:
+            self.assertEqual(struct.unpack_from('<I',patched,start+36)[0],6)
+            self.assertEqual(header_crc(patched,start),struct.unpack_from('<I',patched,start+32)[0])
+        for bad in (native(native(b'SDK source cache')),native(native(b'uncooked nested cache'),flags=6)):
+            with self.assertRaises(ValueError):redirect(bad,require_cooked=True)
+        with self.assertRaises(ValueError):redirect(cooked,expected_matches=3,require_cooked=True)
+
+    def test_source_cache_staging_is_blocked_after_loading_crash(self):
+        from player_stack import preserve_compiled_templates
+        with self.assertRaisesRegex(ValueError,'loading CTD'):
+            preserve_compiled_templates({},None,None,{})
+
     def test_effective_v163_player_patch_is_explicit_and_crc_checked(self):
         original=native(native(b'flattened player root',163),163)
         with self.assertRaises(ValueError):redirect(original)

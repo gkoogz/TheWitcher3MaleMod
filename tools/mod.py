@@ -434,11 +434,13 @@ def build(cfg, project_override=None, workspace_override=None):
                 records.append(run_wcc(cfg,'cook',['-platform='+project['platform'],
                     '-mod='+str(intake),'-outdir='+str(cooked)+os.sep],workspace,'cook-effective-player',baseline_asserts=baseline))
                 if project.get('preserveCompiledPlayerTemplates'):
-                    from player_stack import preserve_compiled_templates
+                    raise ValueError('Unsafe SDK entity cache preservation is blocked after loading CTD')
+                if project.get('stageShippedPlayerTemplates'):
+                    from player_stack import stage_shipped_templates
                     source_probe=inside(ROOT,project['deformationBridge']['sourceProbe'])/'deformation-probe.json'
                     if digest(source_probe)!=project['deformationBridge']['sourceProbeSHA256']:
                         raise ValueError('Compiled preservation probe changed')
-                    records.append(preserve_compiled_templates(cfg,workspace,cooked,read_json(source_probe)))
+                    records.append(stage_shipped_templates(cfg,workspace,cooked,read_json(source_probe)))
             for item in isolated:
                 records.append(run_wcc(cfg,'dumpfile',['-file='+str(required_file(item)),'-out=\\\\?\\'],
                     workspace,'inspect-effective-player',baseline_asserts=baseline if isolated_resources else ()))

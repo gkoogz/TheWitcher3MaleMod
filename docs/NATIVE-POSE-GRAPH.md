@@ -135,11 +135,14 @@ CBehaviorGraphConstraintNodeParentAlign::OnInitInstance and OnActivated.
 The effective player template is a separate gate. A private rig on
 `player_base_m` did not establish the skeleton used by the flattened concrete
 Geralt templates. The 0.4.18 user screenshot shows a live 94-bone root and an
-inactive graph. The 0.4.19 repair preserves stock compiled state while redirecting
-the gameplay/appearance imports. Require the loaded moving-agent root, all
-eight stock behavior slots and their scheduling flags, in addition to the
-104-joint rig/LOD and connected output. See [ANIMATION-FOLLOW.md](ANIMATION-FOLLOW.md).
-Recooking these templates alone dropped seven stock slots and was rejected.
+inactive graph. 0.4.19's SDK source-cache preservation failed with loading CTDs
+and is blocked. 0.4.20 redirects the actual shipped cooked gameplay/appearance
+templates. Require unchanged shipped bytes except imports/CRCs, cooked flags,
+loaded root/binding parity against the same shipped source, and the 104-joint
+rig/LOD and connected output. See [ANIMATION-FOLLOW.md](ANIMATION-FOLLOW.md).
+The SDK loaded source view contains eight slots; REDkit's loaded shipped view
+contains one Cutscene slot. Do not substitute one kind of evidence for the
+other or claim a source inspection establishes the live game stack.
 
 Native entity/graph XML dumps are diagnostic outputs. Exclude those exact paths
 from bundle input; retain unrelated authored game XML. Native unbundle must

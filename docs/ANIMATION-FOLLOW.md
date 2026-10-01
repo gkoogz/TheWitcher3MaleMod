@@ -49,8 +49,9 @@ runtime count, rather than merely suggesting a graph timing problem.
 
 The repair patches both concrete imports in each resource, including the
 embedded compiled buffer. It preserves length, every other byte and all nested
-header/string/export CRCs. The observed gameplay resource is version 163; the
-Geralt appearance resource is version 164. Other versions are rejected.
+header/string/export CRCs. SDK gameplay source is version 163; SDK Geralt source
+is 164. Both shipped cooked templates are 164 with cooked flags 6. They contain
+16 and 153 embedded headers respectively, rather than the SDK sources' two.
 
 ## Preserve compiled behavior state
 
@@ -58,10 +59,27 @@ An ordinary recook of the redirected templates inherited the base's single
 Cutscene slot, losing seven slots in Geralt's existing compiled state. The
 stronger loaded-template gate rejected that output. It was never installed.
 
-The candidate retains each stock compiled entity and changes only its rig
-imports/CRCs. The intermediate recook is archived outside the bundle tree. Native
-loaded inspection must preserve all eight slots, their names, graph paths,
-order and scheduling flags, as well as animation, ragdoll and steering bindings.
+0.4.19 copied redirected SDK source entities into the cooked bundle after an
+intermediate recook. That was unsafe: the user observed loading-screen CTDs.
+Two Windows crash events at 05:57:52 and 05:59:18 have exception 0xc0000005 at
+witcher3.exe RVA 0x1e06862. The exception context shows a null read at address
+0x80. This establishes the repeated failure, not a symbolized root cause.
+The last native inspection did not establish game-loader compatibility.
+
+0.4.20 instead extracts the actual shipped templates from content0/startup.bundle.
+The selection retains compressed payloads and entry metadata; official WCC
+unbundle must agree with uncompressed sizes and CRCs. All embedded headers must
+retain cooked flags 6. Only the two equal-length rig imports and dependent CRCs
+change; all other shipped bytes and compiled data are preserved. The intermediate
+recook is archived outside the bundle tree. SDK source-cache staging and its
+installation are now explicitly blocked.
+
+Native loaded inspection compares against an inspection of the same untouched
+shipped bytes. REDkit's loaded shipped-template view has one Cutscene slot, unlike
+the SDK source view's eight; it must remain unchanged. Do not describe this as
+observing eight runtime slots, or infer gameplay activation from a source dump.
+Game load, script initialization and stack activation are independent gates.
+Native inspection also preserves animation, ragdoll and steering bindings.
 The private 104-joint rig retains every stock rest frame/control property and
 keeps all weighted authored joints inside the model-space LOD update range.
 
@@ -70,7 +88,7 @@ stock templates: the `isChainAttack` / `man_swimming_jump_dive_stop` CName
 collision at hash 2873949622 and component.cpp:208's transform-parent assertion.
 Their acceptance is restricted to these stock inputs, the recorded SDK hash,
 unchanged baseline files/logs and those exact diagnostics. New assertions,
-resource failures, CRC changes, missing behavior slots or altered root bindings
+resource failures, CRC changes, missing source behavior slots or altered root bindings
 still fail. The baseline receipt and original rejected outputs remain local.
 
 ## Offline animation control

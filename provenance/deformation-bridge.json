@@ -1,9 +1,9 @@
 {
   "checkpoint": "2026-10-01",
-  "baseCommit": "9966388f6bb1a2e1dd764c46dc536540b11c138c",
-  "installedVersion": "0.4.19-effective-player-test",
-  "installedPackage": "publish/20261001-054712-e7bb5a",
-  "installedBaseCommit": "bff38a34c0aa5eb3ec84759736cb79d946374e6d",
+  "baseCommit": "9604e2f07fc6ec526de4cf73a29f4a8ffbc6a753",
+  "installedVersion": "0.4.20-shipped-player-load-test",
+  "installedPackage": "publish/20261001-061552-504edb",
+  "installedBaseCommit": "9966388f6bb1a2e1dd764c46dc536540b11c138c",
   "attempts": [
     {
       "version": "0.4.5-deformation-bridge-test",
@@ -403,14 +403,34 @@
       "package": "publish/20261001-054712-e7bb5a",
       "baseCommit": "bff38a34c0aa5eb3ec84759736cb79d946374e6d",
       "cageBaseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
-      "currentlyInstalled": true,
-      "observedGameplay": false,
+      "currentlyInstalled": false,
+      "observedGameplay": true,
       "nativeEffectivePlayerTemplatesVerified": true,
       "nativeCompiledCachePreserved": true,
       "adapterTestsPassed": 54,
       "packedResourcesAndBuffersVerified": 10,
       "installedFilesVerified": 5,
-      "correction": "Redirect actual gameplay/Geralt appearance flattened skeleton imports; preserve all eight stock behavior slots and cached entity state"
+      "correction": "Redirect actual gameplay/Geralt appearance flattened skeleton imports; preserve all eight stock behavior slots and cached entity state",
+      "observedResult": "FAILED: loading-screen CTD twice; repeated access violation 0xc0000005 at witcher3.exe RVA 0x1e06862",
+      "failureArchive": "local/uninstalled/modMaleMod-0a084fad9784",
+      "sourceCachePackagingBlocked": true
+    },
+    {
+      "version": "0.4.20-shipped-player-load-test",
+      "package": "publish/20261001-061552-504edb",
+      "baseCommit": "9966388f6bb1a2e1dd764c46dc536540b11c138c",
+      "cageBaseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+      "nativeCook": true,
+      "nativeBindingVerified": true,
+      "packageVerified": true,
+      "installed": true,
+      "currentlyInstalled": true,
+      "observedGameplay": false,
+      "adapterTestsPassed": 56,
+      "packedResourcesAndBuffersVerified": 10,
+      "installedFilesVerified": 5,
+      "correction": "Use shipped cooked player entity payloads; block unsafe SDK source-cache packaging",
+      "detailedProvenance": "provenance/effective-player.json"
     }
   ],
   "remaining": [
@@ -515,5 +535,5 @@
     ],
     "observedGameplay": false
   },
-  "currentBaseAdoption": "Installed 0.4.19 uses Base bff38a3 and unchanged ca78de0 cage. Source pin 9966388 adopts only the later shared handoff. Effective template/compiled cache mapping is adapter-owned; shared anatomy and numerical physics are unchanged."
+  "currentBaseAdoption": "Installed 0.4.20 uses Base 9966388 and unchanged ca78de0 cage. Source pin 9604e2f adds only the shared repair handoff. Shipped entity extraction and rig redirection belong in the adapter; shared anatomy/physics unchanged."
 }

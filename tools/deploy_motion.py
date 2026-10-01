@@ -20,6 +20,12 @@ def restore_previous(cfg,previous,backup):
 
 def install(directory):
     cfg=settings();game_closed();directory=Path(directory).resolve();manifest=verify_package(directory)
+    commands=manifest.get('nativeCommands',[])
+    if any(r.get('command')=='preserve-native-compiled-entities' for r in commands):
+        raise RuntimeError('SDK source-cache package blocked after loading CTD')
+    if (manifest.get('deformationBridge') or {}).get('effectiveTemplates') and not any(
+        r.get('command')=='stage-shipped-cooked-player-entities' for r in commands):
+        raise RuntimeError('Effective player package requires verified shipped cooked caches')
     if not (manifest.get('motionBinding') or {}).get('cookedControllerBindingVerified'):
         raise RuntimeError('Package lacks verified cooked controller binding')
     if (manifest.get('deformationBridge') or {}).get('parentPoseSpace')=='attached' and not (manifest.get('motionBinding') or {}).get('cookedPlayerStackBindingVerified'):

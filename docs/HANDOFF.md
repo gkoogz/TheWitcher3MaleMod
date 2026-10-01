@@ -17,37 +17,38 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
-**0.4.19-effective-player-test is installed; gameplay is unobserved.** Package
-`publish/20261001-054712-e7bb5a`, Base `bff38a3`, unchanged cage `ca78de0`.
-Source pin `9966388` adds the shared handoff after that build; no anatomy or
-physics module changed. Read [ANIMATION-FOLLOW.md](ANIMATION-FOLLOW.md).
+**0.4.20-shipped-player-load-test is installed; gameplay pending.** Package
+`publish/20261001-061552-504edb`, built against Base `9966388`, cage `ca78de0`.
+Source pin `9604e2f` adds only the shared handoff after that build.
 
-The user's 05:05 screenshot proves `Boot: player root has 94 bones; expected 104`
-with an inactive/unaccepted graph and no pose capture. The stock Geralt alias
-spawns `gameplay/templates/characters/player/player.w2ent`, while Geralt's
-appearance/UI template is `characters/player_entities/geralt/geralt_player.w2ent`.
-Both contain flattened stock-rig imports. Earlier packages patched only the
-ancestor `player_base_m`, leaving the effective player on 94 joints.
+**0.4.19 FAILED loading-screen CTDs** twice at 05:57:52 and 05:59:18.
+Windows records 0xc0000005 at witcher3.exe RVA 0x1e06862; the exception is a null
+read at 0x80. SDK source entity caches had been copied into cooked output.
+Native inspection did not establish game-loader compatibility. That staging
+path and installation of those packages are now blocked. Failure provenance:
+`provenance/effective-player-0.4.19-failed.json`; archive:
+`local/uninstalled/modMaleMod-0a084fad9784`.
 
-The new candidate redirects both imports in both concrete templates. It keeps
-their native compiled entity buffers and changes only equal-length rig strings
-and dependent CRCs. A recook inherited the base's one Cutscene slot and dropped
-seven Geralt behavior slots; the strengthened gate rejected it. The preserved
-templates pass native loaded rig/binding checks with all eight stock slots,
-their original graph paths/order/flags, and stock animation/ragdoll/steering.
-The private rig retains all 94 stock frames/metadata and ten authored joints,
-with full joint LOD coverage. The graph/rest mask and bounded boot/pose checks
-remain the same; no continuous script solver was added.
+The repair extracts the actual shipped gameplay/UI player templates through
+official WCC unbundle, requiring the compressed payload's size/CRC and exact
+official extracted bytes. Their 16/153 embedded headers retain cooked flags 6;
+only two equal-length rig imports and dependent CRCs change in each template.
+The intermediate recook is archived outside bundle input. Native loaded root
+and scheduling parity is checked against the same shipped source. REDkit's
+shipped loaded view has one Cutscene slot; the SDK source view has eight.
+Do not describe native source inspection as observing the live player stack.
 
-54 adapter tests, Base provenance, package integrity, ten exact native unpacked
-resources/buffers and five installed hashes pass. SDK assertions reproduced
-by unchanged stock player templates are recorded in a hash-checked baseline;
-new failures remain rejected. See `provenance/effective-player.json`.
-Previous 0.4.18: `local/uninstalled/modMaleMod-84f942a32215`.
-Restart, re-equip/remove trousers, allow ten seconds, and inspect F6. Require
-`Boot: attached`, active/accepted graph and valid bounded pose samples. Then
-observe idle sway, walk/run/turn, waist/ankle continuity and scale 0.8/1.2.
-Native loader parity is not rendered gameplay proof.
+The 104-joint private rig, graph/rest mask and bounded startup/pose checks remain
+in place. Shared geometry, anatomy and numerical physics are unchanged.
+56 adapter tests, Base provenance, native graph/rig/template gates, ten exact
+unpacked resources/buffers and all five installed file hashes pass. See
+`docs/ANIMATION-FOLLOW.md` and `provenance/effective-player.json`.
+
+Next gate: load the same save without CTD. After successful load, inspect F6:
+require attached boot, graph active/accepted and bounded pose samples. Then
+observe idle/walk/run/turn, waist/ankle continuity and scale 0.8/1.2. Gameplay
+and following are unconfirmed until observed. The 05:05 0.4.18 screenshot remains
+an observed 94-bone boot failure; authored export did not change that runtime.
 
 **0.4.18-boot-recovery-test FAILED observed following.** Package
 `publish/20261001-031309-f1ed02`, Base `4b4719f`, unchanged cage `ca78de0`.
