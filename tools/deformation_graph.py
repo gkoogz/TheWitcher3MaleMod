@@ -10,10 +10,11 @@ from prepare_motion import scalar, array, reference, handle, vector
 
 
 def deformation_graph(template, stock_names, controlled_names, *, transform_controls=False,
-                      identity_root=None,parent_space='local'):
+                      identity_root=None,parent_space='local',rest_joints=False):
     if parent_space not in ('local','model','attached'):raise ValueError('Unknown observed parent pose space')
     if parent_space=='attached' and (transform_controls or identity_root is None):
         raise ValueError('Attached-pose probe requires observed root and scale-only controls')
+    if rest_joints and parent_space!='attached':raise ValueError('Rest mask requires player input pose')
     if not stock_names or len(set(stock_names + controlled_names)) != len(stock_names + controlled_names):
         raise ValueError('Rig names must be observed, distinct and nonempty')
     result = {k: copy.deepcopy(v) for k, v in template.items() if k != '_chunks'}
@@ -31,6 +32,21 @@ def deformation_graph(template, stock_names, controlled_names, *, transform_cont
     nodes = [pose]
     variables = []
     scalar_variables = []
+    if rest_joints:
+        rest=node('CBehaviorGraphTPoseNode',top,{'id':scalar('Uint32',3)})
+        weight=node('CBehaviorGraphFloatValueNode',top,{'id':scalar('Uint32',4),'value':scalar('Float',1)})
+        pose=node('CBehaviorGraphBlendOverrideNode',top,{
+            'id':scalar('Uint32',5),'synchronize':scalar('Bool',False),
+            'alwaysActiveOverrideInput':scalar('Bool',True),'getDeltaMotionFromOverride':scalar('Bool',False),
+            'lodAtOrAboveLevel':scalar('EBehaviorLod','BL_NoLod'),
+            'Bones with weights':array('array:2,0,SBehaviorGraphBoneInfo',[
+                {'_type':'SBehaviorGraphBoneInfo','_vars':{'m_boneName':scalar('String',name),
+                    'm_weight':scalar('Float',1),'num':scalar('Int32',len(stock_names)+i)}}
+                for i,name in enumerate(controlled_names)]),
+            'cachedInputNode':reference('ptr:CBehaviorGraphNode',pose),
+            'cachedOverrideInputNode':reference('ptr:CBehaviorGraphNode',rest),
+            'cachedControlVariableNode':reference('ptr:CBehaviorGraphValueNode',weight)})
+        nodes.extend([rest,weight,pose])
     for name in stock_names:
         if parent_space=='attached':
             # InputNode preserves the previous graph output. An additional

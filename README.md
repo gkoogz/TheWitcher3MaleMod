@@ -8,15 +8,15 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-The installed candidate is **0.4.14-player-stack-test**. F6 ->
+The installed candidate is **0.4.15-authored-rest-test**. F6 ->
 **MaleMod - player pose test** exposes one scale probe plus visible diagnostics.
-0.4.12 improved idle alignment but failed gait parity: each step still opened a
-waist gap. The new candidate removes the separate lower-body sampler and appends
-its deformation graph to Geralt's stock animation stack. Native checks retain
-94 stock joints plus ten authored joints and original animation bindings;
-21 connected pose nodes, eight packed resources, five installed hashes and
-44 adapter tests pass. Waist/ankle continuity and scale .8/1.2 are awaiting
-gameplay observations. Active physics and all 18 source controls are unfinished.
+The user confirms 0.4.14 scaling, but authored joints stayed steady during idle
+sway and stretched at their base. The new test restores reference local poses
+only on those ten joints before scaling, preserving all 94 stock bone poses
+and root motion. Native cooking verifies the exact full-weight bone mask and
+23 connected pose nodes; eight packed resources, five installed hashes and
+46 tests pass. Idle/gait following, waist/ankle continuity and scale retention
+await gameplay observations. Active physics and all 18 controls remain unfinished.
 See [the player stack route](docs/PLAYER-STACK.md) and
 [native findings](docs/NATIVE-POSE-GRAPH.md). The 0.4.13 helper InputNode package
 is held/uninstalled because its first graph would reset stock animation.

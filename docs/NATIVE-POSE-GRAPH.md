@@ -29,6 +29,22 @@ the object tree. Verification excludes only its disconnected output, never an
 authored output. Graph buffers choose the authored top and output. More than one
 such default, a connected default or multiple authored outputs are rejected.
 
+## Authored joint follow and numeric serialization (October 1)
+
+0.4.14 scaling is user-confirmed, but added joints stay steady during idle sway,
+stretching their base. It is a failed animation-follow test, not pose parity.
+0.4.15 adds a reference LS branch masked onto only authored indices 94..103,
+then scale; it keeps the preceding player's stock pose and root motion. The
+connected native output has 23 pose nodes. Playback is still pending.
+
+The first rest-mask cook was rejected: constant and mask weights became zero.
+Pinned vendor CFloat.SetValue accepts float/double, but ignores integer JSON
+values without an error. `prepare_motion.scalar` now casts Float values before
+serialization. Native mask checks require full weight, exact names/indices,
+active unsynchronized override input and unchanged root-motion policy. The
+license-free converter round-trip regression is skipped only when the pinned
+local converter is unavailable; native cooking remains an installation gate.
+
 ## Related native findings
 
 - 0.4.12 improved the gap but FAILED moving-pose parity: the user reports a

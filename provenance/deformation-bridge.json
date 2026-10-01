@@ -1,9 +1,9 @@
 {
   "checkpoint": "2026-10-01",
-  "baseCommit": "90886b87c7816d803fe47405d7a57947de56fa8e",
-  "installedVersion": "0.4.14-player-stack-test",
-  "installedPackage": "publish/20261001-005951-7981b3",
-  "installedBaseCommit": "0af9e5c4b920c3c084b49991d5f58cb824f2c723",
+  "baseCommit": "3b10594cc441cb80000dbbc3e2e133c2ec1f3b25",
+  "installedVersion": "0.4.15-authored-rest-test",
+  "installedPackage": "publish/20261001-014011-2cda1b",
+  "installedBaseCommit": "466aebb4a3e9cc68c78670c1e966c1008a43c0cd",
   "attempts": [
     {
       "version": "0.4.5-deformation-bridge-test",
@@ -244,8 +244,8 @@
       "installedFilesVerified": 5,
       "adapterTestsPassed": 44,
       "installed": true,
-      "currentlyInstalled": true,
-      "observedGameplay": false,
+      "currentlyInstalled": false,
+      "observedGameplay": true,
       "hypothesis": "Append InputNode graph to existing player stack; original appearance mesh shares the player pose instead of sampling another lower-body helper",
       "scope": "Player stack pose/scale probe. Full source controls, dynamic pelvis and secondary motion remain incomplete.",
       "rejectedBuilds": [
@@ -253,12 +253,78 @@
         "Inherited player rig recached from stock parent: native gate failure, never packaged/installed",
         "Native cooker outputs rig v164, rejected by deliberately restricted converter: native gate failure, never packaged/installed; replaced with official dump/CRC-bound raw reference buffer verification"
       ],
-      "previousArchive": "local/uninstalled/modMaleMod-7734febcc20a"
+      "previousArchive": "local/uninstalled/modMaleMod-7734febcc20a",
+      "observedResult": "failed authored joint animation follow: scale works, anatomy stays steady during idle sway and its base stretches",
+      "observedScale": true,
+      "observedWaistAnkleParity": null
+    },
+    {
+      "version": "0.4.15-authored-rest-test",
+      "package": "publish/20261001-014011-2cda1b",
+      "baseCommit": "466aebb4a3e9cc68c78670c1e966c1008a43c0cd",
+      "cageBaseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+      "sourceProbe": "build/motion/player-stack-20081c8e8f65",
+      "nativeCook": true,
+      "nativeBindingVerified": true,
+      "motionBinding": {
+        "cookedControllerBindingVerified": true,
+        "sameConstraintReference": true,
+        "cookedDeformationBindingVerified": true,
+        "deformationOutput": "player",
+        "cookedPlayerStackBindingVerified": true,
+        "stockAppearanceAutobindingExpected": true,
+        "meshSkinningAttachmentVerified": false,
+        "runtimeHandleBindingVerified": false,
+        "observedGameplay": false,
+        "dumpSHA256": "b6dde55a185a618d59177a290699d525abc00d6e1d2171be8259b350a91e28e1",
+        "poseGraph": {
+          "cookedPoseConnectionsVerified": true,
+          "stockAlignmentNodes": 0,
+          "authoredScaleNodes": 10,
+          "authoredScalarNodes": 0,
+          "identityRoot": "Root",
+          "parentPoseSpace": "attached",
+          "authoredRestMaskVerified": true,
+          "connectedPoseNodes": 23,
+          "dumpSHA256": "783f41a12b4ba1c2594472c37a3ad2f250a341e41c64220734ece601d9ca3a1a",
+          "observedGameplay": false
+        },
+        "playerRig": {
+          "nativePlayerRigVerified": true,
+          "playerRigPath": "characters\\base_entities\\man_base\\malebase.w2rig",
+          "stockJointCount": 94,
+          "authoredJointCount": 10,
+          "stockRootBindingsPreserved": true,
+          "maximumRestFrameError": 5.7571411193890754e-08,
+          "rigSHA256": "7f8cf81fe3f07db4be71a990a3b03b08ff6715174f40b494cb4ba42863440285",
+          "playerEntitySHA256": "5053f4f149faaa657a001791d9716ccdbfc1b17961c5e193b1dc7c2d89a84723",
+          "parentEntitySHA256": "b8bb003f5992944e86efb8509000b8813dea66c4c5644f8acc04259b4268a4f2",
+          "observedGameplay": false
+        }
+      },
+      "packageVerified": true,
+      "packedResourcesAndBuffersVerified": 8,
+      "installedFilesVerified": 5,
+      "adapterTestsPassed": 46,
+      "installed": true,
+      "currentlyInstalled": true,
+      "observedGameplay": false,
+      "hypothesis": "Restore reference local transforms only on the ten authored joints before scale; preserve the preceding player graph stock pose and root motion",
+      "scope": "Player stack pose/scale probe. Full source controls, dynamic pelvis and secondary motion remain incomplete.",
+      "previousArchive": "local/uninstalled/modMaleMod-17851b978686",
+      "rejectedBuilds": [
+        {
+          "sourceProbe": "build/motion/player-stack-558d17aa35fd",
+          "packaged": false,
+          "installed": false,
+          "failure": "Native full-weight rest gate rejected zero constant and mask weights: CFloat.SetValue silently ignores integer JSON tokens. Fixed scalar authoring to emit floats; binary round-trip regression and native cook verify full weights and indices."
+        }
+      ]
     }
   ],
   "remaining": [
     "full native deformation channels beyond the observed single scale bridge",
-    "Observe player-stack pose candidate at waist/ankle and scale .8/1.2; earlier parent-buffer candidates failed gait parity",
+    "Observe authored-rest-mask candidate during idle sway and gait; scale was observed in 0.4.14 but authored joint animation follow failed",
     "all 18 independent source controls",
     "coupled dynamic pelvis",
     "native persistence and performance observations",
@@ -270,18 +336,19 @@
     "audio"
   ],
   "implementationSHA256": {
-    "tools/deformation_graph.py": "04cdbcab07c1f1e5fce34b9e7c6c3c8863a8a439d0226101149cc3b8bd723fbd",
+    "tools/deformation_graph.py": "a8b44b1238612bb533c2098b2fb42c4ac077f944bdd003918bec195cc4064c43",
     "tools/probe_deformation_bridge.py": "1e4b516adf152fec68852e87dfb3ae641c21f81a34bf151b7eda92583254be93",
     "tools/build_deformation_probe.py": "02f9d6404a2cebbc6f0c15088aa8b7b66cc9077ac4cc7a28de2f4d229724913f",
     "tools/verify_cooked_motion.py": "8a3f15e90557a025ae334f442449d49168d38505c6d37b7127a5673eb8bfc609",
-    "tools/verify_deformation_graph.py": "6f1fcaec449563517651b6dd8a86a0d7b897073695004d320bc72874824f0f04",
-    "tools/mod.py": "51e43389573ad08ca46f18f03a7219a71b3ae52607932c1aabf4fa0149a8af8d",
-    "tools/verify_motion_package.py": "ee9d4448e1792a672ca7bcca826437f68f958d92b05fd77234b0d9ce27d1190e",
+    "tools/verify_deformation_graph.py": "7c5f00a619557ab4adb626388c9328604f9b2b48cf7b2e8ea74636d392a74e02",
+    "tools/mod.py": "105973b5b217e1833489db06e56619d66d2be4698d5d41725964e4cadb767d63",
+    "tools/verify_motion_package.py": "6117ed4bff2ec401ad16083ba64c42d587652de2d44c9b8c7663903e374e9713",
     "tools/deploy_motion.py": "2322bbbef120af81d23f5ee69210b471679ca4ebdddf63c74ca821871e044db3",
-    "tools/player_stack.py": "455275bf2353afe53256d6a5c41513079967042a38b511856e781fa324eeb4b5",
+    "tools/player_stack.py": "35ccfe88970dafe6459a4d7289f1393b7a69a8c868b49fce1632838e97cd8e8f",
     "tools/player_rig_redirect.py": "e0225a727ce9da4e92a5bfbc149a1a57637941c72b6a1cb654a6998dbaddb829",
     "tools/native/MaleModPhysicsItem.cs": "cf9b62e0ff2731741a2207750d45bc5e5a6e4bf6be9ab0b0227be37b2de3faf2",
-    "tools/build_native_converter.py": "3198d1ef4a8e8626e8047e1e82805898fcc749db91c63327b81631db755dee0e"
+    "tools/build_native_converter.py": "3198d1ef4a8e8626e8047e1e82805898fcc749db91c63327b81631db755dee0e",
+    "tools/prepare_motion.py": "2131fefd3aeb7db8fe8f789a3626bb2d673927041f157a0f2c2c6c0912f90c43"
   },
   "baselineRestoredBeforeCandidate": {
     "version": "0.4.4-native-sliders-test",
@@ -317,7 +384,11 @@
       "CBehaviorGraphStack::FindSlot",
       "CAnimatedComponent::funcAttachBehavior",
       "CBehaviorGraphScaleBoneNode::Sample",
-      "CBehaviorGraphConstraintReset::OnUpdate"
+      "CBehaviorGraphConstraintReset::OnUpdate",
+      "CBehaviorGraphBlendOverrideNode::Sample",
+      "CBehaviorGraphTPoseNode::Sample",
+      "CPose::SyncMSFromLS",
+      "CPose::MakeAllChildrenLocalSpace"
     ],
     "findings": [
       "ParentAlign caches transform parent at instance initialization; OnActivated does not rerun FindParent",
@@ -334,9 +405,13 @@
       "ScaleBone multiplies incoming scale; ten resets target only authored scales and preserve translation/rotation",
       "Player v164 imported rig change is recached from included parent; private parent include preserves the intended private rig through native cooking",
       "Player/parent source v164 resources are changed only at equal-length imports and nested CRCs; shared man_base rig is not overridden",
-      "Native rig v164 is checked through official loaded XML bone/parent arrays, native export CRC/bounds and 104x48-byte reference records; converter v164 restriction unchanged"
+      "Native rig v164 is checked through official loaded XML bone/parent arrays, native export CRC/bounds and 104x48-byte reference records; converter v164 restriction unchanged",
+      "BlendOverride samples the reference LS branch and replaces only its weighted authored bone indices; getDeltaMotionFromOverride=false retains stock root motion",
+      "TPose copies skeleton reference local transforms; Reset translation/rotation produces zero/identity rather than authored rest transforms",
+      "Child pose propagation scans later parent indices; an interleaved subtree alone does not justify reordering the private rig",
+      "Pinned vendor CFloat.SetValue accepts float/double but silently ignores integers; authored Float values must use float JSON tokens and survive native round-trip"
     ],
     "observedGameplay": false
   },
-  "currentBaseAdoption": "Installed 0.4.14 uses Base 0af9e5c and unchanged ca78de0 cage. Source pin 90886b8 adds shared handoff only; shared root-profile/preparation and full source sliders/pelvis are not executed by installed scale probe."
+  "currentBaseAdoption": "Installed 0.4.15 uses Base 466aebb and unchanged ca78de0 cage. Source pin 3b10594 records the installed checkpoint only. Recent Base commits record pose lessons and observations only; shared root-profile/preparation and full source sliders/pelvis are not executed by installed scale probe. Native rest-mask and float serialization changes belong to the Witcher adapter."
 }

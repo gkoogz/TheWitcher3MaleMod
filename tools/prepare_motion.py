@@ -19,7 +19,10 @@ from wcc_fbx import Document, Node, Property
 from native_joint_frames import orient_chain,verify_rest_axes
 
 
-def scalar(kind, value): return {'_type': kind, '_value': value}
+def scalar(kind, value):
+    # WolvenKit CFloat.SetValue accepts float/double, not integer JSON tokens.
+    # An integer token silently drops the property and leaves native defaults.
+    return {'_type': kind, '_value': float(value) if kind == 'Float' else value}
 def array(kind, elements): return {'_type': kind, '_elements': elements}
 def reference(kind, key): return {'_type': kind, '_vars': {'_reference': scalar('string', key)}}
 def handle(kind, key):

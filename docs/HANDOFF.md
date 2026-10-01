@@ -17,29 +17,38 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
-Source dependency pin adopts Base's angular root-profile preparation stage.
-Installed 0.4.14 is built against `0af9e5c`; the shared numerical stage
-does not run in that package. See the exact source pin in base.lock.json.
-The source pin advances to `90886b8` for the shared handoff update only;
-installed Base and cage revisions remain separately recorded.
+Installed 0.4.15 uses Base `466aebb`; source pin `3b10594` records the newer
+installed checkpoint only. Cage geometry remains
+`ca78de0`. Recent Base commits record observations and a shared pose-authority
+lesson only. Shared root-profile preparation is not executed in this package.
 
-**0.4.14-player-stack-test is installed; observed gameplay is pending.**
-Package `publish/20261001-005951-7981b3`, source job
-`build/motion/player-stack-a4b4c53ef0eb`, Base `0af9e5c`, cage `ca78de0`.
-It removes the independent lower-body sampler and appends an InputNode graph to
-Geralt's stock animation stack. A private player/parent template and rig retain
-94 stock bones plus ten authored joints without replacing the shared man_base
-skeleton. Ten scale resets plus ten scale nodes yield 21 connected pose nodes.
-Full native cook/dump, stock animation/ragdoll/steering bindings, private rig
-names/parents/reference records, eight exact unpacked resources, five installed
-hashes and 44 tests pass. Native reference-record error is 5.7572e-8.
+**0.4.15-authored-rest-test is installed; gameplay observations are pending.**
+Package `publish/20261001-014011-2cda1b`, source job
+`build/motion/player-stack-20081c8e8f65`. This appends the same owned player layer,
+then restores reference local transforms only on the ten authored joint indices
+94..103 before applying scale. Stock pose and root motion remain the preceding
+graph's output. Native full-weight mask/name/index checks, 23 connected pose nodes,
+private player rig/control metadata, eight exact unpacked resources, five
+installed hashes and 46 tests pass. No additional per-frame script work.
+
+**0.4.14 FAILED authored joint animation follow:** the user confirms scaling,
+but anatomy stays steady during idle sway and its base stretches. Waist/ankle
+parity was not independently reported. Historical package
+`publish/20261001-005951-7981b3`, Base `0af9e5c`, cage `ca78de0`.
+Its 21-node graph kept incoming authored local transforms unchanged; the new
+mask tests that path without changing the correct pelvis parent indices.
+One 0.4.15 build was rejected before packaging/installation because its Float
+constant/mask weights cooked as zero. Vendor CFloat ignores integer JSON tokens;
+`prepare_motion.scalar` now emits float tokens. A converter binary round-trip
+regression catches this silent loss; the strict native gate was preserved.
+
 F6 -> **MaleMod - player pose test** has one scale probe and three disabled
 diagnostic rows. Full 18 controls, dynamic pelvis and active secondary motion
-remain incomplete. Walk/run/turn, waist/ankle continuity, scale .8/1.2 and
-appearance reattachment require user observations. No CPU performance claim yet.
-Previous 0.4.12 archive: `local/uninstalled/modMaleMod-7734febcc20a`.
-Generic rollback still targets the older static baseline; do not describe it
-as a 0.4.12 or 0.4.4 restore. See PLAYER-STACK.md for reproduction and recovery.
+remain incomplete. Test idle sway, walk/run/turn, waist/ankle continuity, scale
+.8/1.2 and appearance reattachment. No CPU performance claim yet.
+Previous 0.4.14 archive: `local/uninstalled/modMaleMod-17851b978686`.
+Generic rollback still targets the older static baseline, not 0.4.14/0.4.4.
+See PLAYER-STACK.md for reproduction and exact-package recovery.
 
 **0.4.13-attached-pose-test is HELD, NEVER INSTALLED**, package
 `publish/20261001-000237-219d76`: PrepareForSample resets a helper's first graph

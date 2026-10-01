@@ -398,7 +398,7 @@ def build(cfg, project_override=None, workspace_override=None):
                 probe=read_json(inside(ROOT,project['deformationBridge']['sourceProbe'])/'deformation-probe.json')
                 binding['poseGraph']=verify_graph(Path(str(graph)+'.xml'),stock_names=probe['stockNames'],
                     identity_root=probe.get('identityRoot'),transform_controls=probe.get('fullTransformChannels',False),
-                    parent_space=probe.get('parentPoseSpace','local'))
+                    parent_space=probe.get('parentPoseSpace','local'),rest_joints=probe.get('authoredRestMask',False))
             if project.get('motionOutput')=='player':
                 from player_stack import verify_native_player
                 binding['playerRig']=verify_native_player(cooked,probe)

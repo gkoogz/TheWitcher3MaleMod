@@ -201,7 +201,7 @@ def verify_native_player(cooked, probe):
         parentEntitySHA256=digest(cooked/PARENT),observedGameplay=False)
 
 
-def main(probe_dir, player_inspection=None):
+def main(probe_dir, player_inspection=None, rest_joints=False):
     cfg=settings();pin=base_checkout(cfg);probe_dir=Path(probe_dir).resolve()
     if not probe_dir.is_relative_to(ROOT/'build/motion'):raise ValueError('Expected owned probe')
     probe=json.loads((probe_dir/'deformation-probe.json').read_text())
@@ -241,10 +241,18 @@ def main(probe_dir, player_inspection=None):
         source=probe_dir/'intake'/record['path']
         if digest(source)!=record['sourceSHA256']:raise ValueError('Verified cage/graph changed')
         dest=workspace/record['path'];dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,dest)
+    if rest_joints:
+        from deformation_graph import deformation_graph
+        graph=deformation_graph(json.loads((probe_dir/'stock-graph.json').read_text()),probe['stockNames'],probe['controlledNames'],
+            identity_root=probe['identityRoot'],parent_space='attached',rest_joints=True)
+        write_json(job/'deformation-graph.json',graph)
+        # Replace only this freshly copied, owned input; preserve immutable probe.
+        (workspace/GRAPH).unlink()
+        subprocess.run([str(converter),'import',str(job/'deformation-graph.json'),str(workspace/GRAPH)],check=True,capture_output=True)
     names,_parents,_worlds=rig_world(rig['_chunks']['CSkeleton #0']['_vars'])
     script=workspace/'scripts/local/maleModPhysics.ws';script.parent.mkdir(parents=True)
     script.write_text(player_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(),names),encoding='utf-8')
-    evidence=dict(probe,baseCommit=pin['commit'],executionPhase='player-stack',
+    evidence=dict(probe,baseCommit=pin['commit'],executionPhase='player-stack',authoredRestMask=rest_joints,
         playerRigRecipe=(job/'player-rig.json').relative_to(ROOT).as_posix(),
         playerRigRecipeSHA256=digest(job/'player-rig.json'),
         sourcePlayerNativeDump=source_dump.relative_to(ROOT).as_posix(),
@@ -259,11 +267,11 @@ def main(probe_dir, player_inspection=None):
     evidence['resources']=[dict(path=p.relative_to(workspace).as_posix(),sourceSHA256=digest(p))
         for p in workspace.rglob('*') if p.is_file() and p.suffix!='.ws']
     write_json(job/'deformation-probe.json',evidence)
-    project=dict(name='modMaleMod',version='0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
+    project=dict(name='modMaleMod',version='0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
         scriptedCook=True,motionEntity=BODY,motionOutput='player',additionalNativeDumps=[RIG,PLAYER,PARENT],
         deformationBridge=dict(sourceProbe=job.relative_to(ROOT).as_posix(),sourceProbeSHA256=digest(job/'deformation-probe.json'),
             lateActivation=False,identityRoot=probe['identityRoot'],fullTransformChannels=False,parentPoseSpace='attached',
-            executionPhase='player-stack',cageBaseCommit=probe['cageBaseCommit']),
+            executionPhase='player-stack',authoredRestMask=rest_joints,cageBaseCommit=probe['cageBaseCommit']),
         scope='Player stack pose/scale probe. Full source controls, dynamic pelvis and secondary motion remain incomplete.')
     package=build(cfg,project,workspace);verify_package(package)
     write_json(job/'candidate-provenance.json',dict(package=package.relative_to(ROOT).as_posix(),installed=False,observedGameplay=False))
@@ -274,4 +282,5 @@ def main(probe_dir, player_inspection=None):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('probe',type=Path)
     parser.add_argument('--player-inspection',type=Path)
-    args=parser.parse_args();main(args.probe,args.player_inspection)
+    parser.add_argument('--rest-joints',action='store_true')
+    args=parser.parse_args();main(args.probe,args.player_inspection,args.rest_joints)

@@ -48,11 +48,26 @@ detaches and erases only its own slot. There is no per-frame script polling.
 
 ## Reproduction and gates
 
-Installed test: **0.4.14**, `publish/20261001-005951-7981b3`, built against Base
-`0af9e5c`; cage geometry remains `ca78de0`. 44 tests pass, 21 native pose nodes
+Installed test: **0.4.15**, `publish/20261001-014011-2cda1b`, built against Base
+`466aebb`; cage geometry remains `ca78de0`. 46 tests pass, 23 native pose nodes
 are connected, eight resources round-trip exactly and five installed hashes
-match. Gameplay remains pending. Source pin `90886b8` adds only the shared
-checkpoint documentation after this build.
+match. Gameplay observations are pending.
+
+**0.4.14 FAILED authored joint follow:** scaling works, but idle sway leaves the
+anatomy unnaturally steady, stretching its base. Waist/ankle parity was not
+separately reported. 0.4.15 tests a reference-pose branch plus BlendOverride
+with constant full weight on exactly authored indices 94..103; all stock bones
+and root motion retain preceding player output. Native TPose copies reference
+LS transforms; Reset translation/rotation instead produces zero/identity and
+must not be used to reconstruct rest transforms. Native child propagation scans
+later parent indices, so there is no evidence for reordering the rig's subtrees.
+This remains an unobserved fix hypothesis.
+
+The first rest-mask cook was rejected before packaging because integer-valued
+Float JSON properties were silently omitted by vendor CFloat.SetValue. The
+constant and weights became zero. `scalar` now emits float tokens and the binary
+converter round-trip regression plus strict native mask gate require full weights,
+correct names/indices, an active unsynchronized rest branch and preserved root motion.
 
 Use the pinned Base and licensed inputs recorded in the candidate's provenance.
 The input-node graph probe is generated with:
@@ -64,6 +79,8 @@ python tools/player_stack.py build/motion/deformation-<new job id>
 python tools/verify_motion_package.py --directory publish/<candidate>
 python tools/deploy_motion.py install --directory publish/<candidate>
 ```
+
+Use `--rest-joints` for the authored-only reference-pose mask test (0.4.15).
 
 The builder currently requires the locally observed player native dump/hash;
 on a new machine reproduce `tools/inspect_native.py` for the recorded stock

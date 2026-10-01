@@ -4,10 +4,11 @@ import xml.etree.ElementTree as ET
 from mod import digest
 
 
-def verify_graph(path,stock_names=None,*,identity_root=None,transform_controls=False,parent_space='local'):
+def verify_graph(path,stock_names=None,*,identity_root=None,transform_controls=False,parent_space='local',rest_joints=False):
     if parent_space not in ('local','model','attached'):raise ValueError('Unknown parent pose space')
     if parent_space=='attached' and (transform_controls or identity_root is None):
         raise ValueError('Attached pose is a scale-only observed-root probe')
+    if rest_joints and parent_space!='attached':raise ValueError('Rest mask requires player input')
     path=Path(path)
     root=ET.parse(path).getroot()
     objects={o.get('id'):o for o in root.findall('.//object') if o.get('id') is not None}
@@ -27,7 +28,7 @@ def verify_graph(path,stock_names=None,*,identity_root=None,transform_controls=F
         raise ValueError('Unexpected extra native output')
     if len(outputs)!=1:raise ValueError('Expected one native graph output')
     current=linked(outputs[0],'cachedInputNode')
-    seen=set();scales=[];align=[];terminal=False;channels=[];deformations=[]
+    seen=set();scales=[];align=[];terminal=False;channels=[];deformations=[];rest_mask=False
     while True:
         if current.get('id') in seen:raise ValueError('Cyclic cooked pose chain')
         seen.add(current.get('id'))
@@ -72,6 +73,23 @@ def verify_graph(path,stock_names=None,*,identity_root=None,transform_controls=F
             if current.find('./properties/prop[@name="cachedControlValueNode"]/reference') is not None:
                 raise ValueError('Scale reset must be unconditional')
             deformations.append((bone,'reset_scale'))
+        elif t=='CBehaviorGraphBlendOverrideNode':
+            if not rest_joints or rest_mask or align:raise ValueError('Unexpected rest override')
+            rest=linked(current,'cachedOverrideInputNode');weight=linked(current,'cachedControlVariableNode')
+            if rest.get('class')!='CBehaviorGraphTPoseNode' or weight.get('class')!='CBehaviorGraphFloatValueNode' or value(weight,'value')!='1':
+                raise ValueError('Rest override must use reference pose with constant full weight')
+            props=current.findall('./properties/prop[@name="Bones with weights"]/array/element/object/properties')
+            mask=[(p.findtext('./prop[@name="m_boneName"]'),p.findtext('./prop[@name="m_weight"]'),
+                   p.findtext('./prop[@name="num"]')) for p in props]
+            expected=['mm_shaft_'+str(i).zfill(2) for i in range(8)]+['mm_scrotum_l','mm_scrotum_r']
+            if stock_names is None or mask!=[(n,'1',str(len(stock_names)+i)) for i,n in enumerate(expected)]:
+                raise ValueError('Rest mask must cover exactly the ten authored bone names and indices')
+            if value(current,'getDeltaMotionFromOverride')!='false' or value(current,'lodAtOrAboveLevel')!='BL_NoLod':
+                raise ValueError('Rest override may not replace root motion or silently disable by LOD')
+            if value(current,'synchronize')!='false' or value(current,'alwaysActiveOverrideInput')!='true':
+                raise ValueError('Rest branch must remain active without synchronizing the stock input')
+            if rest.get('id') in seen:raise ValueError('Cyclic rest pose branch')
+            seen.add(rest.get('id'));rest_mask=True
         elif t==('CBehaviorGraphInputNode' if parent_space=='attached' else 'CBehaviorGraphTPoseNode'):
             terminal=True;break
         else:raise ValueError('Unexpected cooked pose node '+str(t))
@@ -79,6 +97,7 @@ def verify_graph(path,stock_names=None,*,identity_root=None,transform_controls=F
     alignment_count=0 if parent_space=='attached' else 94-int(identity_root is not None)
     if not terminal or len(align)!=alignment_count or len(scales)!=10 or len(set(align+scales))!=alignment_count+10:
         raise ValueError('Cooked graph does not reach the declared stock and authored joints')
+    if rest_mask!=rest_joints:raise ValueError('Rest override missing from connected output')
     expected=['mm_shaft_'+str(i).zfill(2) for i in range(8)]+['mm_scrotum_l','mm_scrotum_r']
     if scales!=expected[::-1]:raise ValueError('Authored scale chain order changed')
     operations=(['reset_scale'] if parent_space=='attached' else [])+['scale']+([operation+'_'+axis for operation in ('translate','rotate') for axis in 'xyz'] if transform_controls else [])
@@ -91,4 +110,5 @@ def verify_graph(path,stock_names=None,*,identity_root=None,transform_controls=F
     return dict(cookedPoseConnectionsVerified=True,stockAlignmentNodes=alignment_count,authoredScaleNodes=10,
         authoredScalarNodes=len(channels),identityRoot=identity_root,
         parentPoseSpace=parent_space,
+        authoredRestMaskVerified=rest_mask,
         connectedPoseNodes=len(seen),dumpSHA256=digest(path),observedGameplay=False)

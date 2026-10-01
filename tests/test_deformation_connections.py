@@ -7,6 +7,42 @@ from deformation_graph import deformation_graph
 
 
 class PoseConnectionTests(unittest.TestCase):
+    def test_authored_rest_mask_cannot_replace_stock_animation_or_root_motion(self):
+        import xml.etree.ElementTree as ET
+        names=['fixture_'+str(i) for i in range(94)]
+        controlled=['mm_shaft_'+str(i).zfill(2) for i in range(8)]+['mm_scrotum_l','mm_scrotum_r']
+        graph=deformation_graph({'_chunks':{'CBehaviorGraph #0':{'_vars':{}}}},names,controlled,
+            identity_root=names[0],parent_space='attached',rest_joints=True)
+        ids={k:str(i) for i,k in enumerate(graph['_chunks'])}
+        root=ET.Element('dump');objects=ET.SubElement(root,'objects')
+        def prop(parent,name,data):
+            p=ET.SubElement(parent,'prop',name=name)
+            if '_value' in data:
+                value=data['_value'];p.text=str(value).lower() if isinstance(value,bool) else format(value,'g') if isinstance(value,float) else str(value)
+            elif '_reference' in data.get('_vars',{}):
+                ET.SubElement(p,'reference',id=ids[data['_vars']['_reference']['_value']])
+            elif '_elements' in data:
+                arr=ET.SubElement(p,'array')
+                for e in data['_elements']:
+                    el=ET.SubElement(arr,'element');obj=ET.SubElement(el,'object');props=ET.SubElement(obj,'properties')
+                    for k,v in e.get('_vars',{}).items():prop(props,k,v)
+        for key,chunk in graph['_chunks'].items():
+            o=ET.SubElement(objects,'object',{'id':ids[key],'class':chunk['_type']});p=ET.SubElement(o,'properties')
+            for k,v in chunk['_vars'].items():prop(p,k,v)
+        text=ET.tostring(root,encoding='unicode')
+        with tempfile.TemporaryDirectory() as temp:
+            p=Path(temp)/'graph.xml';p.write_text(text)
+            result=verify_graph(p,stock_names=names,identity_root=names[0],parent_space='attached',rest_joints=True)
+            self.assertTrue(result['authoredRestMaskVerified']);self.assertEqual(result['connectedPoseNodes'],23)
+            for bad in (text.replace('name="m_boneName">mm_shaft_00','name="m_boneName">fixture_9'),
+                        text.replace('name="m_weight">1','name="m_weight">0'),
+                        text.replace('name="num">94','name="num">9'),
+                        text.replace('name="alwaysActiveOverrideInput">true','name="alwaysActiveOverrideInput">false'),
+                        text.replace('name="getDeltaMotionFromOverride">false','name="getDeltaMotionFromOverride">true'),
+                        text.replace('name="value">1','name="value">0')):
+                p.write_text(bad)
+                with self.assertRaises(ValueError):verify_graph(p,stock_names=names,identity_root=names[0],parent_space='attached',rest_joints=True)
+
     def fixture(self):
         nodes=['<object class="CBehaviorGraphTPoseNode" id="0"><properties/></object>']
         previous='0';index=0

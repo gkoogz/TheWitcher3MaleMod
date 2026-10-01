@@ -35,7 +35,7 @@ def verify(directory):
         probe=read_json(source)
         pose=verify_graph(cooked/'characters/malemod/behavior/deformation.w2beh.xml',stock_names=probe['stockNames'],
             identity_root=probe.get('identityRoot'),transform_controls=probe.get('fullTransformChannels',False),
-            parent_space=probe.get('parentPoseSpace','local'))
+            parent_space=probe.get('parentPoseSpace','local'),rest_joints=probe.get('authoredRestMask',False))
         if binding is None:binding={}
         binding['poseGraph']=pose
         if (manifest.get('motionBinding') or {}).get('deformationOutput')=='player':

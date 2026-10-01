@@ -13,12 +13,13 @@ runtime port. Do not tell the user it does.
 ## Latest bridge failures and continuation
 
 October 1: **0.4.12 FAILED gait parity** (smaller gap, still bobs with each step).
-**0.4.14-player-stack-test is installed, observed gameplay pending**. It appends
-scale-only InputNode output to the stock player stack and preserves original
-appearance autobinding, removing a second body sampler. Native/private rig,
-21 connected pose nodes, eight packed resources, five installed hashes and
-44 tests pass. Full source controls, coupled pelvis and active secondary motion
-remain incomplete. See PLAYER-STACK.md; reject the held 0.4.13 first-graph helper.
+**0.4.14 FAILED authored joint follow**, despite user-confirmed scaling: idle
+sway leaves anatomy steady and stretches its base. **0.4.15-authored-rest-test
+is installed, gameplay pending**. Its player InputNode layer masks reference
+local pose onto only ten authored joints before scale, preserving stock pose
+and root motion. Native mask weights/names/indices, 23 connected pose nodes,
+eight packed resources, five installed hashes and 46 tests pass. Full controls,
+coupled pelvis and active secondary motion remain incomplete. See PLAYER-STACK.md.
 
 **0.4.10 FAILED**: user reports waist separation remains and an ankle gap too.
 0.4.11 native motion candidate is held/uninstalled because it uses the same local
