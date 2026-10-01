@@ -86,7 +86,21 @@ def probe_script(source, direct=False, late=False):
             + " | requested: " + bridgeScale + " | readback: " + actual.X;
     }''')
         replace_once('return "Native controller attached: "', 'return BridgeDetail() + " | Native controller attached: "')
+        replace_once('    group = m_flashValueStorage.CreateTempFlashObject();', '''    controls.PushBackFlashObject(MaleModDiagnosticRow(m_flashValueStorage,'MaleModGraphActive',
+        "Graph active: " + controller.BridgeBooted() + " | accepted: " + controller.BridgeAccepted()));
+    controls.PushBackFlashObject(MaleModDiagnosticRow(m_flashValueStorage,'MaleModCallbackState',
+        "Slider changes: " + controller.BridgeChanges() + " | requested: " + controller.GetTuning('MaleModBridgeScale')));
+    controls.PushBackFlashObject(MaleModDiagnosticRow(m_flashValueStorage,'MaleModGraphReadback',
+        "Graph readback: " + controller.BridgeReadback() + " | frozen: " + controller.BridgeFrozen()));
+    group = m_flashValueStorage.CreateTempFlashObject();''')
         source+='''
+function MaleModDiagnosticRow(storage : CScriptedFlashValueStorage, control : name, label : string) : CScriptedFlashObject
+{
+    var row : CScriptedFlashObject;
+    row = MaleModSlider(storage,control,label,0.0,0.0,1.0,1);
+    row.SetMemberFlashBool("disabled",true);
+    return row;
+}
 state MaleModGraphStartup in MaleModMotionComponent
 {
     event OnEnterState(previous : name) { StartGraph(); }
@@ -100,6 +114,16 @@ exec function MaleModScale(value : float)
     MaleModShowStatus();
 }
 '''
+        source=source.replace('    public function BridgeDetail() : string', '''    public function BridgeBooted() : bool { return bridgeBooted; }
+    public function BridgeChanges() : int { return bridgeChanges; }
+    public function BridgeFrozen() : bool { return deformationRoot && deformationRoot.HasFrozenPose(); }
+    public function BridgeReadback() : float
+    {
+        var actual : Vector;
+        if (deformationRoot) { actual = deformationRoot.GetBehaviorVectorVariable('mm_shaft_00_scale'); }
+        return actual.X;
+    }
+    public function BridgeDetail() : string''')
     return source
 
 
@@ -153,7 +177,7 @@ def main(job,direct=False,late=False):
     script.parent.mkdir(parents=True)
     script.write_text(probe_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(encoding='utf-8'),direct,late),
                       encoding='utf-8')
-    project = dict(name='modMaleMod', version='0.4.8-late-graph-test' if late else ('0.4.7-ordered-pose-test' if direct else '0.4.5-deformation-bridge-test'), platform='pc',
+    project = dict(name='modMaleMod', version='0.4.9-connected-graph-test' if late else ('0.4.7-ordered-pose-test' if direct else '0.4.5-deformation-bridge-test'), platform='pc',
         cacheBuilders=['textures', 'physics'], scriptedCook=True, motionEntity=entity,
         motionOutput='direct' if direct else 'dangle',
         deformationBridge=dict(sourceProbe=job.relative_to(ROOT).as_posix(),

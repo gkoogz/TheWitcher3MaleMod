@@ -88,6 +88,7 @@ def deformation_graph(template, stock_names, controlled_names, *, transform_cont
     nodes.append(out)
     values = copy.deepcopy(template['_chunks']['CBehaviorGraph #0']['_vars'])
     values.update(stateMachines=array('array:2,0,ptr:CBehaviorGraphStateMachineNode', []),
+                  sourceDataRemoved=scalar('Bool',True),
                   Toplevelnode=handle('CBehaviorVariable', top),
                   Unk2=scalar('Uint32', len(scalar_variables)), Variables1=array('array:0,0,IdHandle', scalar_variables),
                   Unk4=scalar('Uint32', len(variables)),
@@ -99,6 +100,11 @@ def deformation_graph(template, stock_names, controlled_names, *, transform_cont
         'Unk1': array('CBufferVLQInt32:CName', []),
         'Unk2': array('CBufferVLQInt32:CName', []),
         'Outputnode': handle('CBehaviorVariable', out)})
+    # This is an authored compiled graph: every cached input and buffered node
+    # table is supplied above, with no editor socket topology. Native
+    # CBehaviorGraph::CacheConnections clears these inputs when
+    # sourceDataRemoved is false; mark the graph consistently and verify every
+    # connection after native cooking. Do not use this flag to bypass that gate.
     result['_chunks'] = chunks
     return result
 

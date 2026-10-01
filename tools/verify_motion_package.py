@@ -2,6 +2,7 @@
 import argparse,uuid
 from mod import *
 from verify_cooked_motion import verify_binding
+from verify_deformation_graph import verify_graph
 
 def verify(directory):
     cfg=settings();package=Path(directory).resolve();manifest=verify_package(package)
@@ -27,6 +28,13 @@ def verify(directory):
         dumps=list(cooked.rglob('*.w2ent.xml'))
         if len(dumps)!=1:raise ValueError('Late graph candidate requires one native entity dump')
         binding=verify_binding(dumps[0],output='direct',require_late=True)
+    if ((manifest.get('motionBinding') or {}).get('poseGraph') or {}).get('cookedPoseConnectionsVerified'):
+        probe_record=manifest['deformationBridge']
+        source=inside(ROOT,probe_record['sourceProbe'])/'deformation-probe.json'
+        if digest(source)!=probe_record['sourceProbeSHA256']:raise ValueError('Pose input provenance changed')
+        pose=verify_graph(cooked/'characters/malemod/behavior/deformation.w2beh.xml',stock_names=read_json(source)['stockNames'])
+        if binding is None:binding={}
+        binding['poseGraph']=pose
     result={'package':package.relative_to(ROOT).as_posix(),'native':native,'files':files,
             'additionalMotionBinding':binding}
     write_json(ROOT/'local/motion-package-verification.json',result)

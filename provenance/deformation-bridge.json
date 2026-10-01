@@ -1,8 +1,8 @@
 {
   "checkpoint": "2026-09-30",
-  "baseCommit": "95da934c4b59f77c497114407e349aee70f07f04",
-  "installedVersion": "0.4.8-late-graph-test",
-  "installedPackage": "publish/20260930-213438-894b9b",
+  "baseCommit": "81fe04778eb6f1e1599cfe936225c027739527e4",
+  "installedVersion": "0.4.9-connected-graph-test",
+  "installedPackage": "publish/20260930-222053-e9fa95",
   "installedBaseCommit": "95da934c4b59f77c497114407e349aee70f07f04",
   "attempts": [
     {
@@ -58,8 +58,8 @@
       "packedResourcesAndBuffersVerified": 6,
       "adapterTestsPassed": 31,
       "installed": true,
-      "currentlyInstalled": true,
-      "observedGameplay": false,
+      "currentlyInstalled": false,
+      "observedGameplay": true,
       "scope": "Delayed second graph instance and UI/variable readback diagnostics; single scale probe, no complete source sliders",
       "hypothesis": "ParentAlign caches parent during OnInitInstance; delayed activation creates an instance after appearance attachment",
       "diagnostics": [
@@ -68,12 +68,59 @@
         "requested",
         "readback",
         "variable accepted"
-      ]
+      ],
+      "observedResult": "failed: lower body does not follow torso idle animation; no visible resizing; console diagnostic output unavailable to user",
+      "diagnosticValues": null
+    },
+    {
+      "version": "0.4.9-connected-graph-test",
+      "package": "publish/20260930-222053-e9fa95",
+      "baseCommit": "95da934c4b59f77c497114407e349aee70f07f04",
+      "cageBaseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+      "sourceProbe": "deformation-841b1f329b55",
+      "nativeCook": true,
+      "nativeBindingVerified": true,
+      "cookedLateGraphSlotsVerified": true,
+      "cookedPoseConnectionsVerified": true,
+      "stockAlignmentNodes": 94,
+      "authoredScaleNodes": 10,
+      "connectedPoseNodes": 105,
+      "packageVerified": true,
+      "packedResourcesAndBuffersVerified": 6,
+      "adapterTestsPassed": 33,
+      "installed": true,
+      "currentlyInstalled": true,
+      "observedGameplay": true,
+      "scope": "One connected scale probe plus visible disabled status rows; full sliders/pelvis remain pending",
+      "correction": "Mark explicitly authored compiled graph sourceDataRemoved=true so native CacheConnections does not clear inputs from absent editor sockets",
+      "repack": {
+        "rejectedPackage": "publish/20260930-221607-66f65e",
+        "failure": "Extra diagnostic graph XML in bundle; native exact-unbundle gate rejected before installation",
+        "cookRerun": false,
+        "nativePackAndMetadataRerun": true
+      },
+      "diagnostics": [
+        "graph active",
+        "accepted",
+        "slider changes",
+        "requested",
+        "graph readback",
+        "frozen"
+      ],
+      "observedResult": "Visible resizing at 0.8 and 1.2; torso/leg tracking greatly improved; some animations open a temporary vertical waist gap",
+      "diagnosticValues": {
+        "graphActive": true,
+        "accepted": true,
+        "sliderChanges": 27,
+        "requested": 0.8,
+        "readback": 0.8,
+        "frozen": false
+      }
     }
   ],
   "remaining": [
-    "native graph-to-visible-mesh binding",
-    "parent pose alignment",
+    "full native deformation channels beyond the observed single scale bridge",
+    "animation-dependent vertical waist gap / complete parent pose parity",
     "all 18 independent source controls",
     "coupled dynamic pelvis",
     "native persistence and performance observations"
@@ -84,10 +131,14 @@
     "audio"
   ],
   "implementationSHA256": {
-    "tools/deformation_graph.py": "8372370223237ded911ff64fade417f6302c7bfcb54e78b49e2d2d16d71515dc",
-    "tools/probe_deformation_bridge.py": "3d640d40a80a586b6b643f3633200051da378d5b7d68ca9e37c80a595c4f1775",
-    "tools/build_deformation_probe.py": "ea38e682622b842d80c141534a6efc9fb113588099e95cb67ae8937d5d421698",
-    "tools/verify_cooked_motion.py": "559e4bd8880d98261978532da8e3a80107da0aa5569d27bddbdade98b2ecb97b"
+    "tools/deformation_graph.py": "d7f601c1a42fa240908ac135d43ff2a842e1913c30da7fd1cb346259a12aca24",
+    "tools/probe_deformation_bridge.py": "a7b7e10b40260e0303470c11cbc9399c02ee79bc8fc1dba36548ea6557c03103",
+    "tools/build_deformation_probe.py": "43b551b501456f24db9c3d4f4e3bcfc0bee7e5805d13d34b1962b3c8a8cdd9d7",
+    "tools/verify_cooked_motion.py": "559e4bd8880d98261978532da8e3a80107da0aa5569d27bddbdade98b2ecb97b",
+    "tools/verify_deformation_graph.py": "606df7f9d5be27046890d39a17dfac18a169204b94b333d000691d1da0affa57",
+    "tools/mod.py": "3436bbd01699ece8e69c34d70a2f75bf1f87327e6e227e34c25eba6986ed4ee3",
+    "tools/verify_motion_package.py": "c25a3d77e1023845d596ab3669d5a68c6d5cb24c3d98b9eed432fe9682281185",
+    "tools/deploy_motion.py": "f0f6ad7f4122b6fc8a9b980f8abf5838fe402b2197af1a939f5b36a401dd5e56"
   },
   "baselineRestoredBeforeCandidate": {
     "version": "0.4.4-native-sliders-test",
@@ -103,13 +154,21 @@
       "CBehaviorGraphConstraintNodeParentAlign::OnActivated",
       "CBehaviorGraphStack::Init",
       "CBehaviorGraphStack::InternalActivateBehaviorInstance",
-      "CAnimatedComponent::funcActivateBehaviors"
+      "CAnimatedComponent::funcActivateBehaviors",
+      "CBehaviorGraph::CacheConnections",
+      "CBehaviorGraphBaseNode::CacheConnections",
+      "CBehaviorGraph::OnPostLoad"
     ],
     "findings": [
       "ParentAlign caches transform parent at instance initialization; OnActivated does not rerun FindParent",
       "Stack Init activates the first slot; explicit ActivateBehaviors constructs the selected instance",
-      "Current native graph slot RTTI does not retain the legacy alwaysLoaded flag; delayed test does not depend on that flag"
+      "Current native graph slot RTTI does not retain the legacy alwaysLoaded flag; delayed test does not depend on that flag",
+      "Previous cooked graph output, pose inputs and scale-control inputs were NULL despite nodes/variables existing",
+      "Compiled graph authoring lacked sourceDataRemoved=true; native recaching cleared inputs from absent editor sockets",
+      "Corrected compiled graph preserves the full 105-node chain and ten variable links through official cook",
+      "Two editor-socket exploration jobs were rejected (NULL inputs / native load assertion), removed from active authoring, never installed"
     ],
     "observedGameplay": false
-  }
+  },
+  "currentBaseAdoption": "Handoff/evidence documentation only; installed 0.4.9 remains built against 95da934; runtime modules unchanged"
 }

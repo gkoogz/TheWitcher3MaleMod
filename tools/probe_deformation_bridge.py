@@ -90,6 +90,12 @@ def main(transform_controls=False):
             for kind in ['CBehaviorGraphVariableNode','CBehaviorGraphTranslateBoneNode',
                          'CBehaviorGraphRotateBoneNode','CBehaviorVariable']:
                 if ': '+kind+' (' not in log:raise RuntimeError('Cook omitted '+kind)
+        from inspect_native import inspect
+        from verify_deformation_graph import verify_graph
+        native_dump=inspect(job/'cooked'/graph_path)
+        if transform_controls:
+            evidence['poseConnectionVerification']='Pending scalar topology gate'
+        else:evidence['poseGraph']=verify_graph(native_dump['output'],stock_names=stock)
     finally:
         write_json(job/'deformation-probe.json', evidence)
     print(job)

@@ -1,0 +1,83 @@
+# Native pose graph: failure and required gates
+
+## Failure isolated September 30, 2026
+
+Versions 0.4.5, 0.4.7 and 0.4.8 cooked and exposed vector variables, but their
+cooked output and every cached pose/scale-control input were NULL. Gameplay
+confirmed no resizing and a lower body that did not follow torso idle motion.
+The user reported variable acceptance true in 0.4.7. That flag establishes only
+variable storage, never execution of connected pose nodes.
+
+The generated graph supplied compiled buffered node tables and cached input
+pointers, but omitted `sourceDataRemoved`. Its native default is false.
+REDkit `CBehaviorGraph::CacheConnections` therefore rebuilds inputs from editor
+socket topology, which this compiled authoring format does not contain. It
+clears the authored pointers. Marking the complete compiled graph consistently
+with `sourceDataRemoved=true` preserves the cached chain through native cooking.
+
+This is native serialization evidence, not gameplay confirmation. Never set
+this flag while leaving uninitialized tables/inputs. The official script-aware
+cook now dumps both entity and graph. `verify_deformation_graph.py` traverses
+from the authored output through ten scale nodes and 94 stock ParentAlign nodes
+to TPose, verifies the ten named vector links and matches observed rig order.
+It rejects NULL inputs, missing controls, cycles and wrong names/order. Installing
+any deformation package requires that verification in its manifest. Previous
+packages fail the new gate and must not be reinstalled as deformation candidates.
+
+The native constructor leaves an unused top/output pair with node id zero in
+the object tree. Verification excludes only its disconnected output, never an
+authored output. Graph buffers choose the authored top and output. More than one
+such default, a connected default or multiple authored outputs are rejected.
+
+## Related native findings
+
+- ParentAlign caches its transform parent in OnInitInstance; OnActivated does
+  not rerun parent discovery. A bounded delayed second graph remains a separate
+  lifecycle test. It has not independently proved a working parent connection.
+- UpdateByOtherAnimatedComponent schedules the receiving helper after the
+  player. It does not copy a pose and must never make the player depend on itself.
+- The current native graph slot RTTI does not retain the legacy converter's
+  alwaysLoaded flag. Do not claim lazy creation based on that flag. Native stack
+  Init selects the first slot; explicit activation constructs the second instance.
+- Native JSON object ownership must be parent-before-child in source and the
+  embedded flat compiled tree; otherwise the cooked skinning attachment is lost.
+- Source editor sockets need their actual native classes and input-to-output
+  serialized connection direction. Two exploratory socket candidates were
+  rejected (NULL inputs/native load assertion); none were installed. Their
+  uncalibrated path was removed from the active authoring tool.
+
+Evidence was read from the licensed offline REDkit editor and symbol map.
+Reports hash inputs under ignored build/probe. No SDK changes or game-process
+attachment is required. Key symbols: CBehaviorGraph::CacheConnections,
+CBehaviorGraph::OnPostLoad, CBehaviorGraphStack::Init,
+CBehaviorGraphStack::InternalActivateBehaviorInstance,
+CBehaviorGraphConstraintNodeParentAlign::OnInitInstance and OnActivated.
+
+## Packaging and user diagnostics
+
+Native entity/graph XML dumps are diagnostic outputs. Exclude those exact paths
+from bundle input; retain unrelated authored game XML. Native unbundle must
+recover exactly the six expected resources/buffers and match their cooked bytes.
+One 0.4.9 package accidentally bundled its graph dump and was rejected before
+installation. Repacking preserved compiled/cooked resources and reran official
+pack and metadata commands; its manifest records inherited cook evidence.
+
+The 0.4.9 menu includes three disabled diagnostic rows showing graph activation,
+callback count/requested scale, and actual vector readback/frozen pose. Close
+and reopen the menu to refresh them. They are status rows, not source controls.
+Observed 0.4.9 gameplay now confirms distinct 0.8/1.2 scale results and improved
+torso/leg tracking. Some animations still open a vertical waist gap. Screenshot
+readouts show active=true, accepted=true, 27 changes, requested/readback=0.8,
+frozen=false. Investigate root pose handling/sampling before claiming pose parity.
+No console setup is needed. The single test slider remains separate from the
+full 18-control implementation and cannot establish dynamic pelvis or XPBD parity.
+
+## Hub and spoke adoption
+
+This defect and fix belong in the Witcher adapter. Base owns anatomy, rest
+geometry, control laws and numerical dynamics. Wolverine uses a different native
+output path, so copying this REDengine flag into it would be inappropriate.
+The reusable lesson for all spokes is to verify the complete path to rendered
+output, separately from accepted parameters and resource/class existence.
+Offer the shared original-code shape/rest/material fixtures back to Wolverine;
+keep its authoritative runtime unchanged until an adapter adoption is tested.

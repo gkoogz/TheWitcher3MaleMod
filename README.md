@@ -8,18 +8,19 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-The installed candidate is **0.4.8-late-graph-test**. F6 opens the native pause
-menu; select **MaleMod - isolated pose test** for one direct scale probe.
-A delayed second graph instance tests pose inheritance after item attachment.
-Native binding, delayed slots, all six packed byte checks and 31 tests pass;
-visible scale and alignment need gameplay testing. `MaleModPhysicsStatus`
-reports activation, callback count, requested scale and actual graph readback.
+The installed candidate is **0.4.9-connected-graph-test**. F6 ->
+**MaleMod - isolated pose test** exposes one scale probe plus visible diagnostics.
+The earlier compiled graph was recached from absent editor connections, clearing
+all pose/scale inputs. That native defect is corrected: 105 connected pose nodes,
+10 named scale inputs, stock rig order, all six packed byte checks and 33 tests
+pass. Leg animation, waist alignment and visible scale await gameplay testing.
+See [the native graph fix](docs/NATIVE-POSE-GRAPH.md).
 
-0.4.7 failed observed gameplay despite variable acceptance. The recovery baseline
-is **0.4.4-native-sliders-test**, whose native slider menu is user-confirmed.
-Its three physics controls are REDengine parameters; source solver parity,
-size controls, coupled pelvis and the unpaused corner overlay remain unfinished.
-See [the handoff](docs/HANDOFF.md) for exact installed and recovery evidence.
+Recovery baseline: **0.4.4-native-sliders-test**, whose menu is user-confirmed.
+Full source controls, coupled pelvis, numerical physics parity and an unpaused
+corner overlay remain unfinished. Source controls are not represented by the
+three engine-specific parameters or the current test row.
+See [the handoff](docs/HANDOFF.md) for installed/recovery evidence.
 
 Read [test and rollback instructions](docs/LIVE-MOTION-TEST.md). The previous
 0.3 static appearance test is preserved for rollback. The user confirmed its

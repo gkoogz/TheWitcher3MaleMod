@@ -17,6 +17,10 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
+Source dependency pin: `81fe047` (documentation-only adoption of the cross-spoke
+graph failure/evidence checkpoint). Installed 0.4.9 remains built against
+`95da934`; no numerical/source geometry change follows from this pin update.
+
 Latest user observation: **the 0.4.4 native pause-menu category is visible**.
 Actual tuning effects/persistence remain unconfirmed. The next request is the
 full 18-control port with a dynamic coupled pelvis; read `SLIDER-PORT.md` first.
@@ -34,26 +38,45 @@ scale change, lower half misaligned, variable accepted **true**. Accepted is not
 proof of visible deformation or even a changed requested slider value.
 
 The verified **0.4.4-native-sliders-test** baseline was restored after 0.4.7,
-then replaced by **0.4.8-late-graph-test** for focused gameplay testing. Current
-package: `publish/20260930-213438-894b9b`, Base `95da934`, unchanged cage geometry
-from `ca78de0`. Native script compile/cook, strict rig/graph/skin plus delayed
-slot verification, six unpacked byte checks and 31 adapter tests pass. Gameplay
-is pending. F6 -> **MaleMod - isolated pose test** exposes one scale probe;
-`MaleModPhysicsStatus` now reports **late graph / changes / requested / readback**.
-`MaleModScale(1.2)` bypasses UI and prints the same status. No source-slider
-completion or visible secondary motion is claimed for this direct-output test.
+then replaced by 0.4.8, which also FAILED observed gameplay: the user saw torso
+idle motion without matching leg motion, and no resizing. Console diagnostics
+were not accessible; numeric values remain unknown.
 
-Native ParentAlign caches its animated parent at instance initialization. The
-0.4.8 hypothesis is that earlier graph creation preceded appearance attachment.
-A delayed state explicitly activates a second instance after 0.25 seconds, with
-no continual closed-menu polling. Offline REDkit inspection establishes this
-instance path; gameplay must still prove alignment and visible scale. Current
-RTTI drops the legacy converter's `alwaysLoaded` flag; do not rely on it.
+**0.4.9-connected-graph-test has an observed working scale bridge.** The user
+reports visibly different results at 0.8 and 1.2 and much improved torso/leg
+tracking. Some animations still open a temporary vertical waist gap. The menu
+screenshot shows graph active=true, accepted=true, 27 callbacks, requested and
+readback=0.800000, frozen=false. The three grey rows are intentional diagnostic
+readouts, not missing source sliders. Full 18-control/pelvis work remains pending.
+Current
+package `publish/20260930-222053-e9fa95`, Base `95da934`, unchanged cage geometry
+from `ca78de0`. Native script compile/cook, strict rig/skin and delayed slots,
+full 105-node pose/scale chain, observed stock rig name order, all six unpacked
+byte checks and 33 tests pass. Five installed files are receipt-verified.
+F6 -> **MaleMod - isolated pose test** exposes one scale row and three disabled
+diagnostic rows. Close/reopen the menu to refresh activation, accepted flag,
+callback count, requested scale, actual graph readback and frozen-pose status.
+No console setup is required. Source controls, dynamic pelvis and visible
+secondary motion are incomplete in this direct output test.
+
+The decisive discovered bug: cached inputs were authored without the compiled
+`sourceDataRemoved=true` flag. Native recaching interpreted the graph as editable
+source, rebuilt it from absent editor sockets, and cleared every connection.
+An accepted variable thus never reached its disconnected scale node. The new
+native output traversal rejects previous candidates and verifies each named
+scale variable and all inherited stock pose inputs. See `NATIVE-POSE-GRAPH.md`.
+An initial 0.4.9 bundle included diagnostic graph XML and was rejected before
+installation; the installed repack preserves verified cook bytes and reruns
+native pack/metadata. Dump paths are now excluded explicitly from bundle intake.
+
+The delayed second instance is retained as a separate lifecycle hypothesis:
+ParentAlign caches its animated parent in OnInitInstance, and OnActivated does
+not rediscover it. This has not independently established correct parent
+attachment. Current RTTI drops the legacy `alwaysLoaded` flag; do not rely on it.
 
 Recovery baseline: **0.4.4-native-sliders-test**, local package
 `publish/20260930-183505-9d2838`, Base
-`ca78de046a7be63ccb316c7a9b9c12bc7ce3293f`. The baseline immediately replaced by
-0.4.8 is archived at `local/uninstalled/modMaleMod-f1b87204c689`; validate receipt
+`ca78de046a7be63ccb316c7a9b9c12bc7ce3293f`. The recovery baseline is archived at `local/uninstalled/modMaleMod-f1b87204c689`; validate receipt
 and use the managed installer after native exact-package unbundle verification.
 Read `LIVE-MOTION-TEST.md` and
 `WCC-SCRIPTED-COOK.md`. The custom-class cooking blocker is resolved by running

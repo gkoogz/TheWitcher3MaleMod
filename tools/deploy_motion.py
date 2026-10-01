@@ -22,6 +22,8 @@ def install(directory):
     cfg=settings();game_closed();directory=Path(directory).resolve();manifest=verify_package(directory)
     if not (manifest.get('motionBinding') or {}).get('cookedControllerBindingVerified'):
         raise RuntimeError('Package lacks verified cooked controller binding')
+    if manifest.get('deformationBridge') and not ((manifest.get('motionBinding') or {}).get('poseGraph') or {}).get('cookedPoseConnectionsVerified'):
+        raise RuntimeError('Deformation package lacks connected native pose/scale output verification')
     packed=read_json(ROOT/'local/motion-package-verification.json')
     if packed['package']!=directory.relative_to(ROOT).as_posix():raise RuntimeError('Run native unbundle verification for this exact package first')
     if (manifest.get('deformationBridge') or {}).get('lateActivation') or manifest['version']=='0.4.8-late-graph-test':

@@ -38,3 +38,13 @@ attachment` consumes the pinned Base rest-graft fitter, preserves stock outer
 boundaries and verifies official import/export. Its generated manifest must
 match the Base pin, profile and artifacts before packaging. Geralt's separate
 torso/legs share a native waist join; do not deform only one side of that join.
+
+## Native graph output gate
+
+For REDengine deformation authoring read docs/NATIVE-POSE-GRAPH.md. Compiled
+node tables/cached inputs require a consistent sourceDataRemoved flag. Variable
+acceptance and node-class existence do not establish execution. Require native
+cooked graph traversal to the output, named variable links, observed rig order,
+entity/skin ownership and exact unpacked bytes before installation. Keep native
+XML diagnostic dumps out of bundles. Record gameplay and numeric diagnostics
+independently; the complete 18-control port is still pending.

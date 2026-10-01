@@ -31,16 +31,26 @@ six packed resource/buffer checks. Gameplay still failed: no scale change and
 lower-body offset; the user supplied **variable accepted: true**. The baseline
 was restored. Do not treat acceptance as proof of node sampling or output.
 
-**0.4.8-late-graph-test is installed; gameplay pending.** It activates a second
-instance after a bounded startup delay to test ParentAlign's cached parent.
-The native dump verifies both named slots and their graph handles; the first
-slot cannot remain always-on-top. Current RTTI ignores legacy `alwaysLoaded`;
-offline stack inspection confirms first-slot initialization and explicit
-second-slot instance creation. Diagnostics now separate slider callbacks
-(**changes/requested**) from graph values (**readback/accepted**) and activation
-(**late graph**). All six packed resources and 31 adapter tests pass. This test
-has one scale row, not the completed source control menu. Package and recovery
-paths are recorded in HANDOFF.md and provenance/deformation-bridge.json.
+0.4.8 also FAILED: torso idle motion did not reach the replacement legs; no
+resizing; diagnostic numeric values were unavailable. Native inspection then
+found every cooked cached pose and scale input NULL. The graph supplied compiled
+connections without `sourceDataRemoved=true`, so native recaching cleared them
+from absent editor socket topology. Parameter acceptance was never pose execution.
+
+**0.4.9-connected-graph-test now has observed resizing at 0.8 and 1.2.** Torso/leg
+tracking improved; some actions still open a temporary vertical waist gap.
+Screenshot diagnostics: active=true, accepted=true, callbacks=27,
+requested=readback=0.8, frozen=false. Grey rows are disabled status readouts.
+This establishes the first visible scale output; complete pose parity and all
+18 source controls remain unfinished. Explicit compiled
+authoring now survives native cooking with every input connected. The strict gate
+walks ten named scales and all 94 observed stock alignments to TPose (105 nodes).
+It verifies vector links and rejects NULLs, cycles, wrong names/order, extra
+outputs and missing chains. All six packed byte checks and 33 tests pass.
+The menu has three disabled diagnostic rows; reopen it after editing to view
+activation/accepted, changes/requested, and readback/frozen. No console needed.
+It remains one scale probe, not all 18 source controls. See NATIVE-POSE-GRAPH.md
+for the fix, failed socket experiments, constructor artifacts and packaging gate.
 
 `tools/probe_deformation_bridge.py --transforms` cooks scale and six scalar
 translation/rotation channels for each of ten authored joints. This is native
@@ -109,8 +119,8 @@ real logical/Raphe guide is not reconstructed by this probe.
 
 Across both LODs and three radius fixtures, checked outputs have zero inversions,
 zero body/module seam error, zero stock outer-boundary drift and donor errors
-below 1.5e-14 source units. The raw correction initially inverted 10â€“20 triangles.
-The conservative bound accepts only about 17â€“36% of the synthetic correction.
+below 1.5e-14 source units. The raw correction initially inverted 10Ã¢â‚¬â€œ20 triangles.
+The conservative bound accepts only about 17Ã¢â‚¬â€œ36% of the synthetic correction.
 That is an unresolved shape-accuracy gate, not full-range support. Improve the
 actual guide/targets/local support before declaring extreme sliders usable.
 

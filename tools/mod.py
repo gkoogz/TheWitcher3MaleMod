@@ -364,6 +364,7 @@ def build(cfg, project_override=None, workspace_override=None):
     resources = [p for p in workspace.rglob('*') if p.is_file() and
                  (p.suffix.startswith(('.w2', '.w3')) or p.suffix in resource_types)]
     packed = job / 'packed'
+    native_dumps=set()
     content = packed / 'Mods' / project['name'] / 'content'
     content.mkdir(parents=True)
     if resources:
@@ -384,11 +385,18 @@ def build(cfg, project_override=None, workspace_override=None):
             from wcc_scripted import run_scripted_cook
             from verify_cooked_motion import verify_binding
             entity=inside(cooked,project['motionEntity'])
-            records.append(run_scripted_cook(cfg,cook_options,workspace,'scripted-cook',[entity]))
+            graph=inside(cooked,'characters/malemod/behavior/deformation.w2beh') if project.get('deformationBridge') else None
+            dump_resources=[entity]+([graph] if graph else [])
+            native_dumps={Path(str(item)+'.xml') for item in dump_resources}
+            records.append(run_scripted_cook(cfg,cook_options,workspace,'scripted-cook',dump_resources))
             binding=verify_binding(Path(str(entity)+'.xml'),output=project.get('motionOutput','dangle'),
                 require_late=(project.get('deformationBridge') or {}).get('lateActivation',False))
             if project.get('deformationBridge') and not binding.get('cookedDeformationBindingVerified'):
                 raise RuntimeError('Deformation candidate lacks verified native skeleton/graph/output references')
+            if graph:
+                from verify_deformation_graph import verify_graph
+                probe=read_json(inside(ROOT,project['deformationBridge']['sourceProbe'])/'deformation-probe.json')
+                binding['poseGraph']=verify_graph(Path(str(graph)+'.xml'),stock_names=probe['stockNames'])
             write_json(job/'motion-binding-verification.json',binding)
         else:
             records.append(run_wcc(cfg,'cook',cook_options,workspace,'cook'))
@@ -418,7 +426,7 @@ def build(cfg, project_override=None, workspace_override=None):
         bundle_input = job / 'bundle-input'
         bundle_input.mkdir()
         for path in cooked.rglob('*'):
-            if path.is_file() and path.suffix not in ('.db', '.cache', '.log') and not path.name.endswith('.w2ent.xml'):
+            if path.is_file() and path.suffix not in ('.db', '.cache', '.log') and path not in native_dumps:
                 target = inside(bundle_input, path.relative_to(cooked))
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(path, target)
