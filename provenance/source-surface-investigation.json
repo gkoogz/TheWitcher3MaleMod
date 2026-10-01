@@ -1,0 +1,50 @@
+{
+  "contractVersion": 1,
+  "candidateBaseRevision": "6d878bc5f52d19e09efb290ddf2ac8b8bad44090",
+  "baseAdopted": false,
+  "baseLockUnchanged": true,
+  "sourceSurfaceProvenanceSHA256": "4d7f3d32984472159ae18eb282f7f77bd9ea0bffcb814c1560a77d4d85ae4dae",
+  "installedVersion": "0.4.23-coherent-shape-test",
+  "observedShapeQuality": "failed; user 07:54 screenshot reports better but not solved",
+  "sourceNumericalParity": "70 slider fixtures and changing 180-frame trace pass in 32-bit; 64-bit gate fails",
+  "nativeVertexDeliveryImplemented": false,
+  "newBackendInstalled": false,
+  "gameExecutableVersion": "5.0.15.58680",
+  "steamBuildID": "25575366",
+  "gameExecutableSHA256": "c272b2c2e61f84c758e28fab69ab2915944dd1e539dbb435fae9fc67494c7e25",
+  "diagnostic": {
+    "tool": "RenderDoc 1.46",
+    "toolSHA256": "400cb013ea52b9baa818d69dc0a6341776d2a9560edad5bcc6e200fe8c03806d",
+    "sourceCommit": "e4bd23b671d3d5a747ff5221dbe08a63eb6ca200",
+    "firstLaunch": {
+      "startupFailed": true,
+      "exception": "0xc0000005",
+      "module": "bin/ddi/Steam.dll",
+      "rva": "0x2084",
+      "nullSteamInterfaceObserved": true
+    },
+    "repairedLaunch": {
+      "steamAppID": "292030",
+      "gameFilesModified": false,
+      "startupProcessObserved": true,
+      "captureObserved": false,
+      "controlConnectionObserved": true,
+      "controlPID": 22856,
+      "registeredGraphicsAPI": "",
+      "localEvidence": "build/probe/runtime-captures/20261001-093818/launch.json"
+    }
+  },
+  "script": {
+    "path": "tools/capture_runtime_mesh.py",
+    "sha256": "a7f1928ce0950a41d5b2c1103e111d6534b3a3d9355c1cbaf33f2be8fc68aa3c"
+  },
+  "remaining": [
+    "capture actual native vertices and skinning layout",
+    "repair 64-bit arithmetic or verify explicit 32-bit service integration",
+    "consume versioned source IDs and edge donors with protected Geralt boundaries",
+    "implement synchronized native full-surface delivery",
+    "native cook/package/loader/performance verification",
+    "observed in-game slider and moving-pose parity"
+  ],
+  "workingRollback": "0.4.20-shipped-player-load-test"
+}

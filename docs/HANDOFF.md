@@ -7,6 +7,27 @@ the installed package still matches this record.
 
 ## Current size repair: 0.4.23 installed
 
+**07:54 observed result: improved, still fails shape quality.** The user requests
+first-principles reconstruction of every source slider. Base now contains a
+complete SDK-free numerical surface session (Base `6d878bc`): 17,528 vertices, original 35,000
+triangles, lighting/UVs and both body sections. Its 32-bit strict-arithmetic
+verification passes 37 shape fixtures, 33 physics fixtures and a changing
+180-frame source trace. Read Base's `docs/SOURCE-SURFACE.md` and its separate
+provenance. The 64-bit parity gate fails; no native full-surface bridge is installed.
+This adapter still pins the installed joint preview's Base revision. Adopt the
+new solver deliberately only after target bindings and native delivery are tested.
+
+The installed executable is 5.0.15.58680, Steam build 25575366, not the editor
+binary. `tools/capture_runtime_mesh.py` runs an owned RenderDoc 1.46 diagnostic
+without changing game files. Initial direct launch exited with a null Steam
+interface in `bin/ddi/Steam.dll` at RVA 0x2084. Supplying the installed manifest's
+real App ID to that process restored observed startup. The repaired launch is
+`build/probe/runtime-captures/20261001-093818`; RenderDoc is loaded and its control
+connection identifies witcher3 PID 22856. A frame capture and native buffer layout
+have not been observed. F12/scene confirmation is pending from the user.
+Neither editor addresses nor a single native morph blend establish the required
+full nonlinear 18-control vertex path. Working rollback remains 0.4.20.
+
 The user's next screenshot reports 0.4.22 is closer but still incorrect, with an
 uneven shaft and sharp distal transition. It establishes loading and visible
 enlargement, not exact settings or gait parity. Installed `publish/20261001-074941-b04b52`,
@@ -18,7 +39,8 @@ the shipped-template loading repair are retained. Full surface parity is pending
 59 adapter tests, three coherent transport tests, three rest-frame oracle tests,
 four authored oracle tests, Base provenance, native cook/graph/rig/template gates,
 ten packed resources and five installed hashes pass. Offline default bind and
-all-max seam checks pass. New shape quality/moving gameplay is unobserved.
+all-max seam checks pass. The 07:54 observation fails shape quality; moving
+gameplay and exact slider parity remain unverified.
 Working rollback stays 0.4.20. See SOURCE-SHAPE-SCALING.md and size-controls provenance.
 
 ## Ownership and dependency
