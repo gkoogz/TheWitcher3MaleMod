@@ -17,7 +17,7 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
-**0.4.17-full-joint-lod is installed; observed gameplay is pending.**
+**0.4.17-full-joint-lod FAILED observed gameplay.**
 Package `publish/20261001-021142-cf7e81`, source job
 `build/motion/player-stack-c38bc5dd963b`, Base `3b10594`, cage `ca78de0`.
 Source pin `09d7cf5` adopts the shared LOD requirement/checkpoint only.
@@ -32,21 +32,39 @@ model-space update range by GetLodBoneNum, excluding all authored joints at
 indices 94..103 in that mode. `--full-joint-lod` raises the private limit to 104.
 Native verification requires the cooked limit to cover every added joint.
 47 tests, stock rest-frame/control metadata preservation, 23 connected pose
-nodes, eight exact unpacked resources and five installed hashes pass.
+nodes, eight exact unpacked resources and five installed hashes pass. These
+offline/native gates did not predict the runtime failure. The user's
+2026-10-01 02:25 screenshot shows `Graph active: false`, scale `accepted: false`,
+`Slider changes: 0`, requested scale 1.0, graph readback 0.0, zero pose samples,
+zero pelvis/root motion, and untouched diagnostic defaults (pelvis index 0,
+root index 0, parent entries 0). The UI thumb displays 0.94. The bounded pose
+capture did not run; its zero motion and error readings are missing measurements,
+not evidence of successful tracking. The user reports the attachment moves
+roughly with WASD but does not follow Geralt's actual hip/idle animation and
+appears anchored to another moving reference. Treat 0.4.17 as a failed install
+candidate, not a fix.
 
 The candidate also includes `--measure-pose`: after a two-second settling delay,
 60 read-only samples at 0.1 seconds capture actor-relative pelvis/root movement
 and root position error in pelvis coordinates. This stops after six seconds;
 there is no permanent script polling. Re-equip trousers to start another capture.
 F6 -> **MaleMod - player pose test** contains the original scale probe, three
-old diagnostics and three new measurement rows. Wait ten seconds in gameplay
-before opening it. Samples=0 needs investigation, not an assumption of zero error.
+old diagnostics and three new measurement rows. A valid capture requires the
+controller and graph to boot; the latest screenshot confirms that did not happen.
 0.4.16 measurement-only package `publish/20261001-020823-8b1758` was never installed.
 
 The LOD omission is an observed native data defect; its causal role in gameplay
-must still be verified. Shared Base REST-GRAFT.md adds update-range coverage to
-all spoke adoption checks. Full 18 controls, dynamic pelvis and active secondary
-motion remain incomplete. Test idle, walk/run/turn, waist/ankles and scale .8/1.2.
+was not verified and it did not yield an active graph in this installed test.
+Next agent: inspect component/controller lifecycle and graph boot diagnostics
+before changing rig bindings again. Surface each boot exit reason, confirm the
+menu callback and runtime controller refer to the same component, reacquire the
+player root when needed, and make bounded recovery idempotent so it cannot append
+duplicate behavior slots. Preserve zero idle polling and report failure state in
+the menu. Do not infer the attachment anchor from this screenshot; the graph
+never activated and no pose capture ran. Shared Base REST-GRAFT.md adds
+update-range coverage to all spoke adoption checks. Full 18 controls, dynamic
+pelvis and active secondary motion remain incomplete. Test idle, walk/run/turn,
+waist/ankles and scale .8/1.2 only after graph activation and readback work.
 Previous 0.4.15 archive: `local/uninstalled/modMaleMod-fdf18dbc0c66`.
 Generic rollback still targets the older static baseline. Use exact-package
 verification/deployment for a deliberate recovery; see PLAYER-STACK.md.
