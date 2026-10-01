@@ -39,7 +39,8 @@ def launch(tool):
         toolSHA256=digest(tool),gameExecutableSHA256=digest(executable),
         command=args,targetControlPort=result.returncode,stdout=result.stdout,stderr=result.stderr,
         steamAppID=entries['appid'],steamManifestSHA256=digest(manifest),
-        sourceSurfaceBackendInstalled=False,startupObserved=False,captureObserved=False)
+        sourceSurfaceBackendInstalled=False,startupObserved=False,
+        graphicsAPIReady=False,captureObserved=False)
     write_json(job/'launch.json',record)
     if result.returncode<38920 or result.returncode>38999:
         raise RuntimeError('Capture launch did not return a target-control port: '+result.stdout+' '+result.stderr)
@@ -51,7 +52,9 @@ def launch(tool):
     write_json(job/'launch.json',record)
     if not record['startupObserved']:
         raise RuntimeError('Game exited during startup; no frame capture observed. See '+str(job/'launch.json'))
-    print('Game process survived startup. Load the saved scene, show the attachment, and press F12 once.')
+    # Process survival and a target-control port do not establish interception
+    # of the game's graphics device. Verify that before requesting a frame.
+    print('Game process survived startup. Graphics capture readiness is not yet verified.')
     print('Captures: '+str(job))
     return job
 

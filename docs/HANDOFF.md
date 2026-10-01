@@ -24,7 +24,13 @@ interface in `bin/ddi/Steam.dll` at RVA 0x2084. Supplying the installed manifest
 real App ID to that process restored observed startup. The repaired launch is
 `build/probe/runtime-captures/20261001-093818`; RenderDoc is loaded and its control
 connection identifies witcher3 PID 22856. A frame capture and native buffer layout
-have not been observed. F12/scene confirmation is pending from the user.
+were not observed at that checkpoint.
+The user subsequently pressed F12 and Steam took a screenshot, but no RDC file
+was saved. The running process is now PID 27060 and has no RenderDoc module;
+the original diagnostic process was PID 22856. Capture readiness must be verified
+against the actual game's registered graphics API before requesting F12 again.
+The launcher no longer equates process survival with capture readiness. A close
+and diagnostic relaunch is pending; preserve the current game session meanwhile.
 Neither editor addresses nor a single native morph blend establish the required
 full nonlinear 18-control vertex path. Working rollback remains 0.4.20.
 

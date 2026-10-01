@@ -32,11 +32,18 @@
       "controlPID": 22856,
       "registeredGraphicsAPI": "",
       "localEvidence": "build/probe/runtime-captures/20261001-093818/launch.json"
+    },
+    "subsequentF12Attempt": {
+      "userReportedSteamScreenshot": true,
+      "captureObserved": false,
+      "runningGamePID": 27060,
+      "renderdocModuleLoaded": false,
+      "relaunchPending": true
     }
   },
   "script": {
     "path": "tools/capture_runtime_mesh.py",
-    "sha256": "a7f1928ce0950a41d5b2c1103e111d6534b3a3d9355c1cbaf33f2be8fc68aa3c"
+    "sha256": "b6323e357b77ad79cd870bfa05fc9c47c8352f8f39a443fff7c59f29e97b8943"
   },
   "remaining": [
     "capture actual native vertices and skinning layout",
