@@ -1,9 +1,9 @@
 {
-  "checkpoint": "2026-09-30",
-  "baseCommit": "408d8f23ed406a4f3920cd213b51f326bf3a2c7f",
-  "installedVersion": "0.4.12-model-pose-test",
-  "installedPackage": "publish/20260930-231057-0fb1c4",
-  "installedBaseCommit": "c7f78e3dcc850aaeff9f86ecf8dd37343bd40eb2",
+  "checkpoint": "2026-10-01",
+  "baseCommit": "90886b87c7816d803fe47405d7a57947de56fa8e",
+  "installedVersion": "0.4.14-player-stack-test",
+  "installedPackage": "publish/20261001-005951-7981b3",
+  "installedBaseCommit": "0af9e5c4b920c3c084b49991d5f58cb824f2c723",
   "attempts": [
     {
       "version": "0.4.5-deformation-bridge-test",
@@ -180,18 +180,89 @@
       "packedResourcesAndBuffersVerified": 6,
       "adapterTestsPassed": 37,
       "installed": true,
+      "currentlyInstalled": false,
+      "observedGameplay": true,
+      "hypothesis": "Model-space ParentAlign reads parent matrix buffer rather than local animation sample context; identity bone zero retained",
+      "scope": "Single scale probe with independent pose-stream correction; complete source sliders/pelvis remain unfinished",
+      "observedResult": "Improved but FAILED gait parity: smaller waist gap resolves at idle and bobs open at each step; fresh scale/ankle diagnostics unavailable"
+    },
+    {
+      "version": "0.4.13-attached-pose-test",
+      "package": "publish/20261001-000237-219d76",
+      "nativeCook": true,
+      "packaged": true,
+      "installed": false,
+      "currentlyInstalled": false,
+      "observedGameplay": false,
+      "heldReason": "PrepareForSample resets first helper graph to reference pose; InputNode cannot preserve mapped stock animation in that route"
+    },
+    {
+      "version": "0.4.14-player-stack-test",
+      "package": "publish/20261001-005951-7981b3",
+      "baseCommit": "0af9e5c4b920c3c084b49991d5f58cb824f2c723",
+      "cageBaseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+      "sourceProbe": "build/motion/player-stack-a4b4c53ef0eb",
+      "nativeCook": true,
+      "nativeBindingVerified": true,
+      "motionBinding": {
+        "cookedControllerBindingVerified": true,
+        "sameConstraintReference": true,
+        "cookedDeformationBindingVerified": true,
+        "deformationOutput": "player",
+        "cookedPlayerStackBindingVerified": true,
+        "stockAppearanceAutobindingExpected": true,
+        "meshSkinningAttachmentVerified": false,
+        "runtimeHandleBindingVerified": false,
+        "observedGameplay": false,
+        "dumpSHA256": "b6dde55a185a618d59177a290699d525abc00d6e1d2171be8259b350a91e28e1",
+        "poseGraph": {
+          "cookedPoseConnectionsVerified": true,
+          "stockAlignmentNodes": 0,
+          "authoredScaleNodes": 10,
+          "authoredScalarNodes": 0,
+          "identityRoot": "Root",
+          "parentPoseSpace": "attached",
+          "connectedPoseNodes": 21,
+          "dumpSHA256": "ea1dce6879dfe39690414f3c6f1d6f33e8558420282b4a6b1d0422f2a0bc5fd6",
+          "observedGameplay": false
+        },
+        "playerRig": {
+          "nativePlayerRigVerified": true,
+          "playerRigPath": "characters\\base_entities\\man_base\\malebase.w2rig",
+          "stockJointCount": 94,
+          "authoredJointCount": 10,
+          "stockRootBindingsPreserved": true,
+          "maximumRestFrameError": 5.7571411193890754e-08,
+          "rigSHA256": "7f8cf81fe3f07db4be71a990a3b03b08ff6715174f40b494cb4ba42863440285",
+          "playerEntitySHA256": "5053f4f149faaa657a001791d9716ccdbfc1b17961c5e193b1dc7c2d89a84723",
+          "parentEntitySHA256": "b8bb003f5992944e86efb8509000b8813dea66c4c5644f8acc04259b4268a4f2",
+          "observedGameplay": false
+        }
+      },
+      "packageVerified": true,
+      "packedResourcesAndBuffersVerified": 8,
+      "installedFilesVerified": 5,
+      "adapterTestsPassed": 44,
+      "installed": true,
       "currentlyInstalled": true,
       "observedGameplay": false,
-      "hypothesis": "Model-space ParentAlign reads parent matrix buffer rather than local animation sample context; identity bone zero retained",
-      "scope": "Single scale probe with independent pose-stream correction; complete source sliders/pelvis remain unfinished"
+      "hypothesis": "Append InputNode graph to existing player stack; original appearance mesh shares the player pose instead of sampling another lower-body helper",
+      "scope": "Player stack pose/scale probe. Full source controls, dynamic pelvis and secondary motion remain incomplete.",
+      "rejectedBuilds": [
+        "Graph handle absent from local custom serialization schema: two native gate failures, never packaged/installed",
+        "Inherited player rig recached from stock parent: native gate failure, never packaged/installed",
+        "Native cooker outputs rig v164, rejected by deliberately restricted converter: native gate failure, never packaged/installed; replaced with official dump/CRC-bound raw reference buffer verification"
+      ],
+      "previousArchive": "local/uninstalled/modMaleMod-7734febcc20a"
     }
   ],
   "remaining": [
     "full native deformation channels beyond the observed single scale bridge",
-    "observe model-space pose candidate at waist/ankle; root-only candidate failed",
+    "Observe player-stack pose candidate at waist/ankle and scale .8/1.2; earlier parent-buffer candidates failed gait parity",
     "all 18 independent source controls",
     "coupled dynamic pelvis",
-    "native persistence and performance observations"
+    "native persistence and performance observations",
+    "Layer secondary motion after single-pose appearance parity is observed"
   ],
   "deferred": [
     "animation",
@@ -199,14 +270,18 @@
     "audio"
   ],
   "implementationSHA256": {
-    "tools/deformation_graph.py": "92e6e6d95a30de70fee978b186bf30229a9837dcfae6be45445118dfe11a47b7",
-    "tools/probe_deformation_bridge.py": "72cb102e1796b788de555d9822ba0d3ac738c268813e42d2a6ca823084b0f934",
-    "tools/build_deformation_probe.py": "6ce74b97fb152153d90c725fb3148479d11ef67532ee546ab0953dca5816b956",
-    "tools/verify_cooked_motion.py": "559e4bd8880d98261978532da8e3a80107da0aa5569d27bddbdade98b2ecb97b",
-    "tools/verify_deformation_graph.py": "791c6c8660f62b1d006ee671d53929dbc25801decb5433f24bcffa2c9a12d926",
-    "tools/mod.py": "9b3fc6adb94f28f53bd65b2ada64988b519e078941497693ff713be2d67ddd21",
-    "tools/verify_motion_package.py": "7fbe6b7758e02fac49ad46e282dd98074feb709d37f9eb6d8514c4182e53c449",
-    "tools/deploy_motion.py": "f0f6ad7f4122b6fc8a9b980f8abf5838fe402b2197af1a939f5b36a401dd5e56"
+    "tools/deformation_graph.py": "04cdbcab07c1f1e5fce34b9e7c6c3c8863a8a439d0226101149cc3b8bd723fbd",
+    "tools/probe_deformation_bridge.py": "1e4b516adf152fec68852e87dfb3ae641c21f81a34bf151b7eda92583254be93",
+    "tools/build_deformation_probe.py": "02f9d6404a2cebbc6f0c15088aa8b7b66cc9077ac4cc7a28de2f4d229724913f",
+    "tools/verify_cooked_motion.py": "8a3f15e90557a025ae334f442449d49168d38505c6d37b7127a5673eb8bfc609",
+    "tools/verify_deformation_graph.py": "6f1fcaec449563517651b6dd8a86a0d7b897073695004d320bc72874824f0f04",
+    "tools/mod.py": "51e43389573ad08ca46f18f03a7219a71b3ae52607932c1aabf4fa0149a8af8d",
+    "tools/verify_motion_package.py": "ee9d4448e1792a672ca7bcca826437f68f958d92b05fd77234b0d9ce27d1190e",
+    "tools/deploy_motion.py": "2322bbbef120af81d23f5ee69210b471679ca4ebdddf63c74ca821871e044db3",
+    "tools/player_stack.py": "455275bf2353afe53256d6a5c41513079967042a38b511856e781fa324eeb4b5",
+    "tools/player_rig_redirect.py": "e0225a727ce9da4e92a5bfbc149a1a57637941c72b6a1cb654a6998dbaddb829",
+    "tools/native/MaleModPhysicsItem.cs": "cf9b62e0ff2731741a2207750d45bc5e5a6e4bf6be9ab0b0227be37b2de3faf2",
+    "tools/build_native_converter.py": "3198d1ef4a8e8626e8047e1e82805898fcc749db91c63327b81631db755dee0e"
   },
   "baselineRestoredBeforeCandidate": {
     "version": "0.4.4-native-sliders-test",
@@ -231,7 +306,18 @@
       "SBehaviorSampleContext::GetBoneTransformLocalSpace",
       "CAnimatedComponent::OnParentUpdatedAttachedAnimatedObjectsLS",
       "CAnimatedComponent::GetBoneMatrixModelSpace",
-      "CAnimatedComponent::GetBoneMatrixWorldSpace"
+      "CAnimatedComponent::GetBoneMatrixWorldSpace",
+      "CBehaviorGraphInputNode::Sample",
+      "CBehaviorGraphStack::Sample",
+      "CBehaviorGraphStack::PrepareForSample",
+      "CBehaviorGraphStack::CachePoseFromPrevSampling",
+      "SBehaviorSampleContext::GetPoseFromPrevSampling",
+      "CPose::ResetPoseLS",
+      "CAnimatedComponent::LoadBehaviorGraphs",
+      "CBehaviorGraphStack::FindSlot",
+      "CAnimatedComponent::funcAttachBehavior",
+      "CBehaviorGraphScaleBoneNode::Sample",
+      "CBehaviorGraphConstraintReset::OnUpdate"
     ],
     "findings": [
       "ParentAlign caches transform parent at instance initialization; OnActivated does not rerun FindParent",
@@ -242,9 +328,15 @@
       "Corrected compiled graph preserves the full 105-node chain and ten variable links through official cook",
       "Two editor-socket exploration jobs were rejected (NULL inputs / native load assertion), removed from active authoring, never installed",
       "Native attached pose clears bone zero; local ParentAlign reads parent sample context; 0.4.10 preserves verified identity root as a gameplay hypothesis",
-      "ParentAlign localSpace=false calls ISkeletonDataProvider slot 0x48, resolved from native vtable as GetBoneMatrixModelSpace; localSpace=true reads sample context"
+      "ParentAlign localSpace=false calls ISkeletonDataProvider slot 0x48, resolved from native vtable as GetBoneMatrixModelSpace; localSpace=true reads sample context",
+      "InputNode copies cached previous graph output; PrepareForSample resets first graph to reference pose; ordinary helper Input candidate is held",
+      "runtimeBehaviorInstanceSlots offset3528 matches native LoadBehaviorGraphs stackInit pointer; AttachBehavior appends owned graph rather than replacing stock stack",
+      "ScaleBone multiplies incoming scale; ten resets target only authored scales and preserve translation/rotation",
+      "Player v164 imported rig change is recached from included parent; private parent include preserves the intended private rig through native cooking",
+      "Player/parent source v164 resources are changed only at equal-length imports and nested CRCs; shared man_base rig is not overridden",
+      "Native rig v164 is checked through official loaded XML bone/parent arrays, native export CRC/bounds and 104x48-byte reference records; converter v164 restriction unchanged"
     ],
     "observedGameplay": false
   },
-  "currentBaseAdoption": "Source preparation includes root-profile stage and latest handoff; installed 0.4.12 built against c7f78e3 but its script/mesh do not evaluate shared root-profile stage"
+  "currentBaseAdoption": "Installed 0.4.14 uses Base 0af9e5c and unchanged ca78de0 cage. Source pin 90886b8 adds shared handoff only; shared root-profile/preparation and full source sliders/pelvis are not executed by installed scale probe."
 }

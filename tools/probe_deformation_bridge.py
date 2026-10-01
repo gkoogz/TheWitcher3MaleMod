@@ -16,7 +16,9 @@ from prepare_motion import rig_world
 import numpy as np
 
 
-def main(transform_controls=False, identity_root=False, model_pose=False):
+def main(transform_controls=False, identity_root=False, model_pose=False, attached_pose=False):
+    if model_pose and attached_pose:raise ValueError('Choose one pose input')
+    parent_space='attached' if attached_pose else 'model' if model_pose else 'local'
     cfg = settings()
     pin = base_checkout(cfg)
     cage = ROOT / 'build/motion/cage-dec402309e13'
@@ -47,7 +49,7 @@ def main(transform_controls=False, identity_root=False, model_pose=False):
     entity_path = 'items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent'
     recipe = deformation_graph(json.loads(template_path.read_text(encoding='utf-8')), stock, controlled,
                                transform_controls=transform_controls,identity_root=root_name,
-                               parent_space='model' if model_pose else 'local')
+                               parent_space=parent_space)
     write_json(job / 'deformation-graph.json', recipe)
     rig = {k: copy.deepcopy(v) for k, v in dyng.items() if k != '_chunks'}
     rig['_chunks'] = {'CSkeleton #0': copy.deepcopy(skeleton)}
@@ -80,7 +82,7 @@ def main(transform_controls=False, identity_root=False, model_pose=False):
                     stockNames=stock, controlledNames=controlled,
                     fullTransformChannels=transform_controls,
                     identityRoot=root_name,
-                    parentPoseSpace='model' if model_pose else 'local',
+                    parentPoseSpace=parent_space,
                     poseInheritanceObserved=False, liveScaleObserved=False,
                     dangleCompatibilityObserved=False, installed=False)
     try:
@@ -93,7 +95,8 @@ def main(transform_controls=False, identity_root=False, model_pose=False):
                                  for p in resources if p.is_file()]
         log = (ROOT/evidence['nativeCook']['logPath']).read_text(encoding='utf-8', errors='replace')
         for kind in ['CAnimatedComponent', 'CAnimatedAttachment', 'CAnimDangleComponent',
-                     'CBehaviorGraphTPoseNode', 'CBehaviorGraphConstraintNodeParentAlign',
+                     *(['CBehaviorGraphInputNode','CBehaviorGraphConstraintReset'] if attached_pose else
+                       ['CBehaviorGraphTPoseNode','CBehaviorGraphConstraintNodeParentAlign']),
                      'CBehaviorGraphScaleBoneNode', 'CSkeleton']:
             if ': '+kind+' (' not in log:
                 raise RuntimeError('Cook omitted ' + kind)
@@ -106,7 +109,7 @@ def main(transform_controls=False, identity_root=False, model_pose=False):
         native_dump=inspect(job/'cooked'/graph_path)
         evidence['poseGraph']=verify_graph(native_dump['output'],stock_names=stock,
             identity_root=root_name,transform_controls=transform_controls,
-            parent_space='model' if model_pose else 'local')
+            parent_space=parent_space)
     finally:
         write_json(job/'deformation-probe.json', evidence)
     print(job)
@@ -119,5 +122,6 @@ if __name__ == '__main__':
     parser.add_argument('--transforms',action='store_true')
     parser.add_argument('--identity-root',action='store_true')
     parser.add_argument('--model-pose',action='store_true')
+    parser.add_argument('--attached-pose',action='store_true')
     args=parser.parse_args()
-    main(args.transforms,args.identity_root,args.model_pose)
+    main(args.transforms,args.identity_root,args.model_pose,args.attached_pose)

@@ -135,6 +135,8 @@ def main(job,direct=False,late=False):
     if not job.is_relative_to(ROOT/'build/motion'):
         raise ValueError('Expected an owned deformation probe')
     evidence = json.loads((job/'deformation-probe.json').read_text(encoding='utf-8'))
+    if evidence.get('parentPoseSpace')=='attached':
+        raise ValueError('Ordinary helper stack resets its input pose; attached input candidate is held. Use the player-stack builder.')
     if not evidence.get('nativeCook'):
         raise ValueError('Candidate lacks native cook evidence')
     cfg = settings()
@@ -179,7 +181,8 @@ def main(job,direct=False,late=False):
     script.parent.mkdir(parents=True)
     script.write_text(probe_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(encoding='utf-8'),direct,late),
                       encoding='utf-8')
-    version=('0.4.12-model-pose-test' if direct and evidence.get('parentPoseSpace')=='model' else
+    version=('0.4.13-attached-pose-test' if direct and evidence.get('parentPoseSpace')=='attached' else
+             '0.4.12-model-pose-test' if direct and evidence.get('parentPoseSpace')=='model' else
              '0.4.11-connected-motion-test' if late and not direct and evidence.get('identityRoot') else
              '0.4.10-root-pose-test' if evidence.get('identityRoot') else
              '0.4.9-connected-graph-test' if late else

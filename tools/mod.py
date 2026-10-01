@@ -386,7 +386,7 @@ def build(cfg, project_override=None, workspace_override=None):
             from verify_cooked_motion import verify_binding
             entity=inside(cooked,project['motionEntity'])
             graph=inside(cooked,'characters/malemod/behavior/deformation.w2beh') if project.get('deformationBridge') else None
-            dump_resources=[entity]+([graph] if graph else [])
+            dump_resources=[entity]+([graph] if graph else [])+[inside(cooked,p) for p in project.get('additionalNativeDumps',[])]
             native_dumps={Path(str(item)+'.xml') for item in dump_resources}
             records.append(run_scripted_cook(cfg,cook_options,workspace,'scripted-cook',dump_resources))
             binding=verify_binding(Path(str(entity)+'.xml'),output=project.get('motionOutput','dangle'),
@@ -399,6 +399,9 @@ def build(cfg, project_override=None, workspace_override=None):
                 binding['poseGraph']=verify_graph(Path(str(graph)+'.xml'),stock_names=probe['stockNames'],
                     identity_root=probe.get('identityRoot'),transform_controls=probe.get('fullTransformChannels',False),
                     parent_space=probe.get('parentPoseSpace','local'))
+            if project.get('motionOutput')=='player':
+                from player_stack import verify_native_player
+                binding['playerRig']=verify_native_player(cooked,probe)
             write_json(job/'motion-binding-verification.json',binding)
         else:
             records.append(run_wcc(cfg,'cook',cook_options,workspace,'cook'))

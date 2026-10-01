@@ -1,7 +1,8 @@
 """Author an adapter-owned skeletal deformation graph from observed rig names.
 
-Every stock local pose is read from the attached animated parent. New joints
-start at their authored rest pose; vector variables change their local scale.
+ParentAlign modes read the observed parent stream. Input mode requires an
+additional player-stack layer; ordinary helper stacks reset to reference pose.
+Vector variables change only the authored joints' local scale.
 The caller owns native verification and gameplay evidence.
 """
 import copy
@@ -10,7 +11,9 @@ from prepare_motion import scalar, array, reference, handle, vector
 
 def deformation_graph(template, stock_names, controlled_names, *, transform_controls=False,
                       identity_root=None,parent_space='local'):
-    if parent_space not in ('local','model'):raise ValueError('Unknown observed parent pose space')
+    if parent_space not in ('local','model','attached'):raise ValueError('Unknown observed parent pose space')
+    if parent_space=='attached' and (transform_controls or identity_root is None):
+        raise ValueError('Attached-pose probe requires observed root and scale-only controls')
     if not stock_names or len(set(stock_names + controlled_names)) != len(stock_names + controlled_names):
         raise ValueError('Rig names must be observed, distinct and nonempty')
     result = {k: copy.deepcopy(v) for k, v in template.items() if k != '_chunks'}
@@ -23,11 +26,17 @@ def deformation_graph(template, stock_names, controlled_names, *, transform_cont
 
     root = node('CBehaviorGraph', '', {})
     top = node('CBehaviorGraphTopLevelNode', root, {'id': scalar('Uint32', 1)})
-    pose = node('CBehaviorGraphTPoseNode', top, {'id': scalar('Uint32', 2)})
+    pose = node('CBehaviorGraphInputNode' if parent_space=='attached' else 'CBehaviorGraphTPoseNode',
+                top, {'id': scalar('Uint32', 2)})
     nodes = [pose]
     variables = []
     scalar_variables = []
     for name in stock_names:
+        if parent_space=='attached':
+            # InputNode preserves the previous graph output. An additional
+            # player layer is required: PrepareForSample resets the first graph
+            # to reference pose, so this must never be a helper's first graph.
+            continue
         if name == identity_root:
             # Native attached components explicitly clear bone zero after
             # copying the parent pose. Do not reintroduce extracted root motion.
@@ -40,6 +49,15 @@ def deformation_graph(template, stock_names, controlled_names, *, transform_cont
             'cachedInputNode': reference('ptr:CBehaviorGraphNode', pose)})
         nodes.append(pose)
     for i, name in enumerate(controlled_names):
+        if parent_space=='attached':
+            # ScaleBone multiplies incoming scale. Reset only authored scale;
+            # preserve stock output and authored translations/rotations.
+            pose=node('CBehaviorGraphConstraintReset',top,{
+                'id':scalar('Uint32',len(nodes)+2), 'bone':scalar('String',name),
+                'translation':scalar('Bool',False),'rotation':scalar('Bool',False),
+                'scale':scalar('Bool',True),
+                'cachedInputNode':reference('ptr:CBehaviorGraphNode',pose)})
+            nodes.append(pose)
         variable_name = name + '_scale'
         control = node('CBehaviorGraphVectorVariableNode', top, {
             'id': scalar('Uint32', len(nodes) + 2),

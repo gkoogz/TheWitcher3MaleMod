@@ -31,6 +31,27 @@ such default, a connected default or multiple authored outputs are rejected.
 
 ## Related native findings
 
+- 0.4.12 improved the gap but FAILED moving-pose parity: the user reports a
+  smaller waist separation that resolves at idle and opens with every step.
+  Native `CBehaviorGraphInputNode::Sample` copies `GetPoseFromPrevSampling`;
+  `CBehaviorGraphStack::Sample` caches the component's existing sampled pose
+  immediately before evaluating each graph. However, PrepareForSample calls
+  ResetPoseLS(true) before the first graph and replaces that mapped pose with
+  reference pose. **0.4.13-attached-pose-test is HELD, never installed**: InputNode
+  in an ordinary helper's first graph would still lose stock animation. The
+  build and installer reject that route. InputNode in an additional player
+  graph layer instead consumes the preceding stock graph's current output.
+  The next candidate preserves original appearance autobinding to the player,
+  extends only its private rig, and appends an owned graph with AttachBehavior.
+  It never calls ActivateBehaviors, UnfreezePose or UpdateByOther on the player.
+  This buffer-path evidence is offline, not proof of gameplay timing.
+  The native ScaleBone sample multiplies scale,
+  so ten unconditional scale-only ConstraintReset nodes protect authored joints
+  against frame-to-frame accumulation. They preserve translations/rotations;
+  scalar motion channels are rejected for this isolated candidate until their
+  absolute rest/reset policy is established. Stock waist/ankle bindings and
+  geometry are unchanged. No fixed offset hides the discrepancy.
+
 - The user rejected 0.4.10: waist separation remains and an ankle gap is also
   visible. Identity-root policy alone does not establish pose parity.
   Native localSpace=true ParentAlign reads GetBoneTransformLocalSpace through
@@ -79,7 +100,7 @@ CBehaviorGraphConstraintNodeParentAlign::OnInitInstance and OnActivated.
 
 Native entity/graph XML dumps are diagnostic outputs. Exclude those exact paths
 from bundle input; retain unrelated authored game XML. Native unbundle must
-recover exactly the six expected resources/buffers and match their cooked bytes.
+recover exactly the candidate's expected resources/buffers and match their cooked bytes.
 One 0.4.9 package accidentally bundled its graph dump and was rejected before
 installation. Repacking preserved compiled/cooked resources and reran official
 pack and metadata commands; its manifest records inherited cook evidence.

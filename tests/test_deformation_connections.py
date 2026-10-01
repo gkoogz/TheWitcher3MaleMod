@@ -62,3 +62,36 @@ class PoseConnectionTests(unittest.TestCase):
             p.write_text(self.fixture().replace('>true<','>false<'))
             self.assertEqual(verify_graph(p,parent_space='model')['parentPoseSpace'],'model')
             with self.assertRaises(ValueError):verify_graph(p)
+
+    def test_attached_input_preserves_stock_pose_and_resets_only_authored_scale(self):
+        names=['fixture_'+str(i) for i in range(94)]
+        controls=['mm_shaft_'+str(i).zfill(2) for i in range(8)]+['mm_scrotum_l','mm_scrotum_r']
+        graph=deformation_graph({'_chunks':{'CBehaviorGraph #0':{'_vars':{}}}},names,controls,
+            identity_root=names[0],parent_space='attached')
+        chunks=graph['_chunks'].values()
+        self.assertFalse(any(c['_type'] in ('CBehaviorGraphTPoseNode','CBehaviorGraphConstraintNodeParentAlign') for c in chunks))
+        self.assertEqual([c['_vars']['bone']['_value'] for c in chunks if c['_type']=='CBehaviorGraphConstraintReset'],controls)
+        import re
+        text=self.fixture().replace('CBehaviorGraphTPoseNode','CBehaviorGraphInputNode')
+        # Retain the original IDs while removing the stock alignment chain.
+        text=re.sub(r'<object class="CBehaviorGraphConstraintNodeParentAlign".*?</object>','',text)
+        text=text.replace('<reference id="94"/>','<reference id="0"/>')
+        for i,bone in enumerate(controls):
+            previous=str(94+i) if i else '0'
+            reset='reset'+str(i)
+            text=text.replace('<reference id="'+previous+'"/>','<reference id="'+reset+'"/>')
+            node='<object class="CBehaviorGraphConstraintReset" id="'+reset+'"><properties>'
+            node+='<prop name="bone">'+bone+'</prop><prop name="translation">false</prop><prop name="rotation">false</prop><prop name="scale">true</prop>'
+            node+='<prop name="cachedInputNode"><reference id="'+previous+'"/></prop></properties></object>'
+            text=text.replace('</objects>',node+'</objects>')
+        with tempfile.TemporaryDirectory() as temp:
+            p=Path(temp)/'graph.xml';p.write_text(text)
+            result=verify_graph(p,stock_names=names,identity_root=names[0],parent_space='attached')
+            self.assertEqual(result['connectedPoseNodes'],21)
+            self.assertEqual(result['stockAlignmentNodes'],0)
+            for bad in (text.replace('name="rotation">false','name="rotation">true'),
+                        text.replace('id="reset0"/>','id="0"/>'),
+                        text.replace('name="bone">mm_shaft_00','name="bone">fixture_0')):
+                p.write_text(bad)
+                with self.assertRaises(ValueError):
+                    verify_graph(p,stock_names=names,identity_root=names[0],parent_space='attached')

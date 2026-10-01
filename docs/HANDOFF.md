@@ -1,6 +1,6 @@
 # Resume here: Witcher adapter
 
-Checkpoint: 2026-09-30. Read `AGENTS.md`, `README.md`, `HEADLESS-WORKFLOW.md`
+Checkpoint: 2026-10-01. Read `AGENTS.md`, `README.md`, `HEADLESS-WORKFLOW.md`
 and [Base's handoff](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 Chat history is not required. Inspect Git and local evidence before assuming
 the installed package still matches this record.
@@ -18,18 +18,47 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 ## Current implementation
 
 Source dependency pin adopts Base's angular root-profile preparation stage.
-Installed 0.4.12 remains built against `c7f78e3`; the shared numerical stage
+Installed 0.4.14 is built against `0af9e5c`; the shared numerical stage
 does not run in that package. See the exact source pin in base.lock.json.
+The source pin advances to `90886b8` for the shared handoff update only;
+installed Base and cage revisions remain separately recorded.
+
+**0.4.14-player-stack-test is installed; observed gameplay is pending.**
+Package `publish/20261001-005951-7981b3`, source job
+`build/motion/player-stack-a4b4c53ef0eb`, Base `0af9e5c`, cage `ca78de0`.
+It removes the independent lower-body sampler and appends an InputNode graph to
+Geralt's stock animation stack. A private player/parent template and rig retain
+94 stock bones plus ten authored joints without replacing the shared man_base
+skeleton. Ten scale resets plus ten scale nodes yield 21 connected pose nodes.
+Full native cook/dump, stock animation/ragdoll/steering bindings, private rig
+names/parents/reference records, eight exact unpacked resources, five installed
+hashes and 44 tests pass. Native reference-record error is 5.7572e-8.
+F6 -> **MaleMod - player pose test** has one scale probe and three disabled
+diagnostic rows. Full 18 controls, dynamic pelvis and active secondary motion
+remain incomplete. Walk/run/turn, waist/ankle continuity, scale .8/1.2 and
+appearance reattachment require user observations. No CPU performance claim yet.
+Previous 0.4.12 archive: `local/uninstalled/modMaleMod-7734febcc20a`.
+Generic rollback still targets the older static baseline; do not describe it
+as a 0.4.12 or 0.4.4 restore. See PLAYER-STACK.md for reproduction and recovery.
+
+**0.4.13-attached-pose-test is HELD, NEVER INSTALLED**, package
+`publish/20261001-000237-219d76`: PrepareForSample resets a helper's first graph
+to reference pose. InputNode is valid only after a preceding player graph.
+The old builder and installer reject the unsafe helper route. Early player
+builds were rejected before packaging for a dropped graph handle and inherited
+rig recaching; custom schema and private parent include repairs pass native gates.
 
 **0.4.10-root-pose-test FAILED observed gameplay:** the user still sees body
 separation and an ankle gap. Root identity alone did not repair it.
 0.4.11-connected-motion-test was compiled/packed but is held, never installed:
 it feeds the same failing local pose path into the native dangle.
-**0.4.12-model-pose-test is now installed**, from `deformation-d11b02d4bcc7`:
+Historical **0.4.12-model-pose-test**, from `deformation-d11b02d4bcc7`:
 93 inherited stock bones use model-space ParentAlign, which reads the parent's
 bone-matrix buffer rather than its animation sample context. Native initial
 script-aware cook/traversal, all six exact packed resources, five installed
-hashes and 37 tests pass; no gameplay confirmation yet. Current package
+hashes and 37 tests pass. **Observed improved but FAILED gait parity:** the user
+reports a smaller waist gap that resolves at idle and bobs open with each step.
+No fresh scale/ankle diagnostics were supplied. Historical package
 `publish/20260930-231057-0fb1c4`, Base `c7f78e3`, cage `ca78de0`.
 It uses 93 model-space stock alignments and ten scale nodes (104 connected pose
 nodes); scalar motion channels are left for the later candidate. Previous 0.4.10

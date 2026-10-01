@@ -63,6 +63,7 @@ def build():
     write_json(output/'toolchain.json',{'vendorCommit':expected,'writeVersion':159,'readVersions':{'resources':159,'skeleton':161},
         'sourceFiles':len(files),'executableSHA256':digest(output/'MaleModCR2W.exe'),
         'librarySHA256':digest(output/'WolvenKit.CR2W.dll'),
+        'customSchemaSHA256':digest(ROOT/'tools/native/MaleModPhysicsItem.cs'),
         'patchSourceSHA256':digest(ROOT/'tools/build_native_converter.py')})
 
 

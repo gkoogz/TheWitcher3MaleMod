@@ -12,12 +12,20 @@ runtime port. Do not tell the user it does.
 
 ## Latest bridge failures and continuation
 
+October 1: **0.4.12 FAILED gait parity** (smaller gap, still bobs with each step).
+**0.4.14-player-stack-test is installed, observed gameplay pending**. It appends
+scale-only InputNode output to the stock player stack and preserves original
+appearance autobinding, removing a second body sampler. Native/private rig,
+21 connected pose nodes, eight packed resources, five installed hashes and
+44 tests pass. Full source controls, coupled pelvis and active secondary motion
+remain incomplete. See PLAYER-STACK.md; reject the held 0.4.13 first-graph helper.
+
 **0.4.10 FAILED**: user reports waist separation remains and an ankle gap too.
 0.4.11 native motion candidate is held/uninstalled because it uses the same local
-pose path. 0.4.12 is installed at `publish/20260930-231057-0fb1c4`, Base `c7f78e3`.
+pose path. Historical 0.4.12 package `publish/20260930-231057-0fb1c4`, Base `c7f78e3`.
 It isolates model-space ParentAlign sampling of the parent's actual matrix buffer,
 with the existing scale probe. Connected-output, six packed bytes, five installed
-hashes and 37 tests pass. Gameplay is pending; full source controls remain incomplete.
+hashes and 37 tests pass, but observed gait parity failed; full source controls remain incomplete.
 
 0.4.10 package `publish/20260930-224402-e6260b`,
 Base `81fe047`. Preserves identity bone zero as the native

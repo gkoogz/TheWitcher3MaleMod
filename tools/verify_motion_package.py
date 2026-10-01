@@ -38,6 +38,10 @@ def verify(directory):
             parent_space=probe.get('parentPoseSpace','local'))
         if binding is None:binding={}
         binding['poseGraph']=pose
+        if (manifest.get('motionBinding') or {}).get('deformationOutput')=='player':
+            from player_stack import verify_native_player
+            binding['playerRig']=verify_native_player(cooked,probe)
+            binding['cookedPlayerStackBindingVerified']=True
     result={'package':package.relative_to(ROOT).as_posix(),'native':native,'files':files,
             'additionalMotionBinding':binding}
     write_json(ROOT/'local/motion-package-verification.json',result)

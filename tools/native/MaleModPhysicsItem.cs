@@ -22,6 +22,8 @@ namespace WolvenKit.CR2W.Types
     {
         [Ordinal(1)] [RED("dynamicConstraint")]
         public CHandle<CAnimDangleConstraint_Dyng> DynamicConstraint { get; set; }
+        [Ordinal(2)] [RED("deformationGraph")]
+        public CHandle<CBehaviorGraph> DeformationGraph { get; set; }
         public MaleModMotionComponent(CR2WFile file, CVariable parent, string name)
             : base(file, parent, name) { }
         public static new CVariable Create(CR2WFile file, CVariable parent, string name)

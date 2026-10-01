@@ -22,10 +22,17 @@ def install(directory):
     cfg=settings();game_closed();directory=Path(directory).resolve();manifest=verify_package(directory)
     if not (manifest.get('motionBinding') or {}).get('cookedControllerBindingVerified'):
         raise RuntimeError('Package lacks verified cooked controller binding')
+    if (manifest.get('deformationBridge') or {}).get('parentPoseSpace')=='attached' and not (manifest.get('motionBinding') or {}).get('cookedPlayerStackBindingVerified'):
+        raise RuntimeError('Attached input in an ordinary helper stack resets the stock pose; held candidate must not be installed')
     if manifest.get('deformationBridge') and not ((manifest.get('motionBinding') or {}).get('poseGraph') or {}).get('cookedPoseConnectionsVerified'):
         raise RuntimeError('Deformation package lacks connected native pose/scale output verification')
     packed=read_json(ROOT/'local/motion-package-verification.json')
     if packed['package']!=directory.relative_to(ROOT).as_posix():raise RuntimeError('Run native unbundle verification for this exact package first')
+    if (manifest.get('motionBinding') or {}).get('deformationOutput')=='player':
+        native=(manifest['motionBinding'].get('playerRig') or {})
+        round_trip=(packed.get('additionalMotionBinding') or {}).get('playerRig') or {}
+        if (manifest.get('deformationBridge') or {}).get('executionPhase')!='player-stack' or not native.get('nativePlayerRigVerified') or native!=round_trip:
+            raise RuntimeError('Player layer lacks matching native/packed private rig verification')
     if (manifest.get('deformationBridge') or {}).get('lateActivation') or manifest['version']=='0.4.8-late-graph-test':
         if not (packed.get('additionalMotionBinding') or {}).get('cookedLateGraphSlotsVerified'):
             raise RuntimeError('Delayed graph package lacks native second-slot verification')

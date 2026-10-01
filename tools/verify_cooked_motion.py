@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from mod import digest
 
 def verify_binding(path,output='dangle',require_late=False):
-    if output not in ('dangle','direct'):raise ValueError('Unknown motion output')
+    if output not in ('dangle','direct','player'):raise ValueError('Unknown motion output')
     path=Path(path)
     root=ET.parse(path).getroot()
     objects=root.findall('.//object')
@@ -12,9 +12,10 @@ def verify_binding(path,output='dangle',require_late=False):
         found=[x for x in objects if x.get('class')==kind and x.get('id') is not None]
         if len(found)!=1:raise ValueError('Expected one cooked '+kind)
         return found[0]
-    item=one('MaleModMotionComponent');component=one('CAnimDangleComponent')
+    item=one('MaleModMotionComponent')
+    component=one('CAnimDangleComponent') if output!='player' else None
     constraint=one('CAnimDangleConstraint_Dyng');mesh=one('CMeshComponent')
-    link=one('CMeshSkinningAttachment')
+    link=one('CMeshSkinningAttachment') if output!='player' else None
     def ref(node,prop):
         p=node.find('./properties/prop[@name="'+prop+'"]')
         if p is None:raise ValueError('Missing native property '+prop)
@@ -24,6 +25,21 @@ def verify_binding(path,output='dangle',require_late=False):
     p,binding=ref(item,'dynamicConstraint')
     if p.get('scripted')!='1' or binding!=constraint.get('id'):
         raise ValueError('Script handle did not survive cooking')
+    if output=='player':
+        if require_late:raise ValueError('Player layer must append, never activate helper slots')
+        if any(o.get('class') in ('CAnimatedComponent','CAnimDangleComponent','CMeshSkinningAttachment') and o.get('id') is not None for o in objects):
+            raise ValueError('Player output must retain orphan stock-style appearance mesh; no second sampler')
+        if mesh.find('./properties/prop[@name="transformParent"]/reference') is not None:
+            raise ValueError('Player appearance mesh has an authored transform parent')
+        graph_prop=item.find('./properties/prop[@name="deformationGraph"]')
+        graph=graph_prop.find('resource') if graph_prop is not None else None
+        if graph is None or graph_prop.get('scripted')!='1' or graph.get('path')!='characters\\malemod\\behavior\\deformation.w2beh':
+            raise ValueError('Player layer controller lost its owned graph handle')
+        return dict(cookedControllerBindingVerified=True,sameConstraintReference=True,
+            cookedDeformationBindingVerified=True,deformationOutput=output,
+            cookedPlayerStackBindingVerified=True,stockAppearanceAutobindingExpected=True,
+            meshSkinningAttachmentVerified=False,runtimeHandleBindingVerified=False,
+            observedGameplay=False,dumpSHA256=digest(path))
     if ref(component,'constraint')[1]!=binding:raise ValueError('Script and component point to different constraints')
     if (output=='dangle' and ref(link,'parent')[1]!=component.get('id')) or ref(link,'child')[1]!=mesh.get('id'):
         raise ValueError('Motion output is not attached to the mesh')

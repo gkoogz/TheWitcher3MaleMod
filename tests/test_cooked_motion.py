@@ -24,6 +24,24 @@ class CookedBindingTests(unittest.TestCase):
         with self.assertRaises(ValueError):self.check(FIXTURE.replace('scripted="1"','scripted="0"'))
         with self.assertRaises(ValueError):self.check(FIXTURE.replace('name="child"><reference id="2"','name="child"><reference id="9"'))
 
+    def test_player_binding_rejects_second_sampler_or_transform_parent(self):
+        text=r'''<dump><objects>
+        <object class="MaleModMotionComponent" id="1"><properties>
+        <prop name="dynamicConstraint" scripted="1"><reference id="5"/></prop>
+        <prop name="deformationGraph" scripted="1"><resource path="characters\malemod\behavior\deformation.w2beh"/></prop>
+        </properties></object>
+        <object class="CAnimDangleConstraint_Dyng" id="5"/>
+        <object class="CMeshComponent" id="2"><properties/></object>
+        </objects></dump>'''
+        result=self.check(text,output='player')
+        self.assertTrue(result['cookedPlayerStackBindingVerified'])
+        self.assertFalse(result['runtimeHandleBindingVerified'])
+        broken=[text.replace('</objects>','<object class="CAnimatedComponent" id="9"/></objects>'),
+            text.replace('<properties/></object>','<properties><prop name="transformParent"><reference id="9"/></prop></properties></object>'),
+            text.replace('behavior\\deformation','behavior\\missing')]
+        for b in broken:
+            with self.assertRaises(ValueError):self.check(b,output='player')
+
     def test_deformation_gate_rejects_null_resources_and_disconnected_output(self):
         helper=r'''<object class="CAnimatedComponent" id="7"><properties>
         <prop name="name">MaleModDeformation</prop>
