@@ -5,19 +5,21 @@ and [Base's handoff](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOF
 Chat history is not required. Inspect Git and local evidence before assuming
 the installed package still matches this record.
 
-## Current size repair: 0.4.22 installed
+## Current size repair: 0.4.23 installed
 
-The user reports smooshed/distorted maximum sliders in 0.4.21. Installed
-`publish/20261001-071733-98def3`, Base `34ffd86`, retains the confirmed loading
-repair and replaces ratio hierarchy scaling with source-authored independent
-section translation, rotation and positive dimensions. All ten authored bones
-parent to observed pelvis 9 with identical rest world frames; 94 stock bones
-are unchanged. Full prepared-surface/coupled-pelvis parity remains incomplete.
-59 adapter tests, three shared transport tests, four authored oracle tests,
-Base provenance, native cook/graph/rig/template gates, ten packed resources and
-five installed hashes pass. Offline default bind and all-max seam checks pass.
-New shape quality/moving gameplay is unobserved. Working rollback stays 0.4.20.
-See `SOURCE-SHAPE-SCALING.md` and `provenance/size-controls.json`.
+The user's next screenshot reports 0.4.22 is closer but still incorrect, with an
+uneven shaft and sharp distal transition. It establishes loading and visible
+enlargement, not exact settings or gait parity. Installed `publish/20261001-074941-b04b52`,
+Base `3119d70`, consumes source radius/span measurements in the calibrated export
+axis rather than coarse-default displacement vectors in a different posed frame.
+All shaft joints share uniform radial scale; both crown joints implement one
+similarity transform. Independent lobe fits remain. Defaults, stock bones and
+the shipped-template loading repair are retained. Full surface parity is pending.
+59 adapter tests, three coherent transport tests, three rest-frame oracle tests,
+four authored oracle tests, Base provenance, native cook/graph/rig/template gates,
+ten packed resources and five installed hashes pass. Offline default bind and
+all-max seam checks pass. New shape quality/moving gameplay is unobserved.
+Working rollback stays 0.4.20. See SOURCE-SHAPE-SCALING.md and size-controls provenance.
 
 ## Ownership and dependency
 

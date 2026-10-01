@@ -55,18 +55,27 @@ def build_transport(base,rig,job):
     # Crown scaling is about .76 of the shaft, as in source, rather than about
     # knot 6. Bone skinning still approximates the source's folded transition.
     translated=positions+np.einsum('nij,...nj->...ni',rotations,lattice[...,:3])
-    anchor=translated[...,5,:]+(.76-5/7)/(1/7)*(translated[...,6,:]-translated[...,5,:])
+    reference_anchor=positions[0]+.76*(positions[7]-positions[0])
+    # Both crown joints share one affine transform, about the same anchor.
+    # Recover its current anchor from knot 6; interpolating independently fitted
+    # centroids created the previous sharp distal transition.
+    anchor=translated[...,6,:]-lattice[...,6,3,None]*(positions[6]-reference_anchor)
     offsets=np.einsum('nji,...nj->...ni',rotations,translated-anchor[...,None,:])
     table=np.concatenate((lattice[...,:6],angles,offsets),axis=-1)
     if not np.isfinite(table).all():raise ValueError('Nonfinite source-backed pose table')
     np.savez_compressed(job/'source-size-poses.npz',poses=table,sourceOrigins=origins,sourceFrames=frames)
-    receipt=dict(backend='source-authored-independent-cage',sourceBankSHA256=digest(bank),
+    receipt=dict(backend='source-measured-coherent-cage',sourceBankSHA256=digest(bank),
         sharedShapeTransportSHA256=digest(base/'malemod_base/shape_transport.py'),
         fitReceipt=str(fit_path.relative_to(ROOT)),fitReceiptSHA256=digest(fit_path),
         mappedKnots={key:shared.mapped_knots(key).tolist() for key in shared.AXES},
         latticeShape=list(table.shape),minimumScale=float(lattice[...,3:6].min()),
         maximumScale=float(lattice[...,3:6].max()),
         sourceSurfaceParity=False,physicsParity=False,observedGameplay=False,
-        omissions=list(evaluator.shape.evaluate().omitted_stages)+['bone approximation of folded glans attachment'])
+        neutralSourceRadius=evaluator.reference_frame.body_radius,
+        neutralSourceLength=evaluator.reference_frame.rest_length,
+        shaftTransport='common radius; measured axial span along calibrated export axis',
+        crownTransport='one common similarity transform about calibrated .76 anchor',
+        omissions=list(evaluator.shape.evaluate().omitted_stages)+['bone approximation of folded glans attachment',
+            'short-profile previous-length fallback uses measured neutral rather than gameplay history'])
     write_json(job/'source-size-transport.json',receipt)
     return table,receipt

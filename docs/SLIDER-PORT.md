@@ -12,8 +12,9 @@ zero in that image; it does not establish new controls or persistence.
 
 The first tranche provides overall, length, width, glans and scrotum.
 0.4.21 ratio-hierarchy scaling FAILED user shape-quality testing at maximums.
-0.4.22 now consumes pinned Base source-authored section fits and independently
-drives translation, rotation and scale. Read `SOURCE-SHAPE-SCALING.md`.
+0.4.22 independent section fitting also FAILED shape quality, despite improvement.
+0.4.23 uses source rest-frame radius/span ratios in the calibrated export axis
+and a common crown transform, eliminating independent shaft section fitting. Read `SOURCE-SHAPE-SCALING.md`.
 The five UI controls and stable portable preferences are retained. Defaults
 preserve the weighted native bind. Full surface/refined-glans/coupled-pelvis and
 physics parity remains pending, as do the remaining thirteen controls.

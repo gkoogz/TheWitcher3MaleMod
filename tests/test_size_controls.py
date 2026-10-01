@@ -60,3 +60,14 @@ class SizeControlTests(unittest.TestCase):
         np.testing.assert_allclose(neutral[:,:3],0,atol=1e-10)
         np.testing.assert_allclose(neutral[:,3:6],1,atol=1e-10)
         np.testing.assert_allclose(neutral[:,6:9],0,atol=1e-10)
+        # All crown points receive one identical similarity transform from
+        # either joint, including maximum glans. Their skin-weight blend cannot
+        # introduce the previous kink or squash the free crown.
+        for head in (.82/.9706456,1.,1.56/.9706456):
+            offsets=[]
+            for i in (6,7):
+                q=worlds[94+i][:3,:3];origin=worlds[94+i][:3,3]
+                delta=poses[...,i,:3]+(head-1)*poses[...,i,9:]
+                factor=poses[...,i,3]*head
+                offsets.append(origin+np.einsum('ij,...j->...i',q,delta)-factor[...,None]*origin)
+            np.testing.assert_allclose(offsets[0],offsets[1],atol=1e-10)

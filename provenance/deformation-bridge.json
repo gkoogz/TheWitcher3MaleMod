@@ -1,9 +1,9 @@
 {
   "checkpoint": "2026-10-01",
-  "baseCommit": "34ffd8640ceeb57e4bed5149685dbf16bb2abc28",
-  "installedVersion": "0.4.22-source-shape-test",
-  "installedPackage": "publish/20261001-071733-98def3",
-  "installedBaseCommit": "34ffd8640ceeb57e4bed5149685dbf16bb2abc28",
+  "baseCommit": "3119d70231566f5d2cb1379dc6d9f5a487e6f431",
+  "installedVersion": "0.4.23-coherent-shape-test",
+  "installedPackage": "publish/20261001-074941-b04b52",
+  "installedBaseCommit": "3119d70231566f5d2cb1379dc6d9f5a487e6f431",
   "attempts": [
     {
       "version": "0.4.5-deformation-bridge-test",
@@ -463,7 +463,7 @@
       "version": "0.4.22-source-shape-test",
       "package": "publish/20261001-071733-98def3",
       "installed": true,
-      "currentlyInstalled": true,
+      "currentlyInstalled": false,
       "observedGameplay": false,
       "nativeCook": true,
       "nativeBindingVerified": true,
@@ -471,6 +471,25 @@
       "packedResourcesAndBuffersVerified": 10,
       "adapterTestsPassed": 59,
       "backend": "source-authored-independent-cage",
+      "workingRollback": "0.4.20-shipped-player-load-test",
+      "detailedProvenance": "provenance/size-controls.json",
+      "failed": true,
+      "observedLoadedGame": true,
+      "observedShapeQuality": false,
+      "userObservation": "Close but not quite; screenshot shows uneven shaft contour and sharp distal transition"
+    },
+    {
+      "version": "0.4.23-coherent-shape-test",
+      "package": "publish/20261001-074941-b04b52",
+      "installed": true,
+      "currentlyInstalled": true,
+      "observedGameplay": false,
+      "nativeCook": true,
+      "nativeBindingVerified": true,
+      "packageVerified": true,
+      "packedResourcesAndBuffersVerified": 10,
+      "adapterTestsPassed": 59,
+      "backend": "source-measured-coherent-cage",
       "workingRollback": "0.4.20-shipped-player-load-test",
       "detailedProvenance": "provenance/size-controls.json"
     }
@@ -577,5 +596,5 @@
     ],
     "observedGameplay": false
   },
-  "currentBaseAdoption": "Installed 0.4.22 consumes pinned Base 34ffd86 authored section fits; unchanged cage source ca78de0. Independent native parenting and 60 scalar graph channels belong to Witcher."
+  "currentBaseAdoption": "Installed 0.4.23 consumes Base 3119d70 measured common radius/span ratios in calibrated reference frame and one coherent crown transform; unchanged ca78de0 cage source."
 }
