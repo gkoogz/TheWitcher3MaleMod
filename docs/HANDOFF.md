@@ -5,6 +5,20 @@ and [Base's handoff](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOF
 Chat history is not required. Inspect Git and local evidence before assuming
 the installed package still matches this record.
 
+## Current size repair: 0.4.22 installed
+
+The user reports smooshed/distorted maximum sliders in 0.4.21. Installed
+`publish/20261001-071733-98def3`, Base `34ffd86`, retains the confirmed loading
+repair and replaces ratio hierarchy scaling with source-authored independent
+section translation, rotation and positive dimensions. All ten authored bones
+parent to observed pelvis 9 with identical rest world frames; 94 stock bones
+are unchanged. Full prepared-surface/coupled-pelvis parity remains incomplete.
+59 adapter tests, three shared transport tests, four authored oracle tests,
+Base provenance, native cook/graph/rig/template gates, ten packed resources and
+five installed hashes pass. Offline default bind and all-max seam checks pass.
+New shape quality/moving gameplay is unobserved. Working rollback stays 0.4.20.
+See `SOURCE-SHAPE-SCALING.md` and `provenance/size-controls.json`.
+
 ## Ownership and dependency
 
 This is a separate engine adapter repository. `dependencies/base.lock.json`
@@ -17,7 +31,7 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
-**0.4.21-size-controls-test is installed; new-control gameplay pending.**
+**0.4.21 FAILED maximum-slider shape quality; superseded by 0.4.22.**
 Package `publish/20261001-063505-7a41a8`, built against Base `15758e5`, unchanged
 cage `ca78de0`. Source pin `4df2302` adds only later shared docs.
 

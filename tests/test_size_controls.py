@@ -29,3 +29,34 @@ class SizeControlTests(unittest.TestCase):
     def test_unknown_native_cage_cannot_receive_assumed_anatomical_roles(self):
         with self.assertRaisesRegex(ValueError,'Recalibrate'):
             add_size_controls('',settings()['base'],['unknown']*10)
+
+    def test_calibrated_independent_frames_and_source_table_delivery(self):
+        import json
+        import tempfile
+        import numpy as np
+        from shape_size_transport import independent_rig,build_transport
+        from prepare_motion import rig_world
+        path=ROOT/'build/motion/player-stack-49c3f9716831/player-rig.json'
+        if not path.exists():self.skipTest('Local verified native player fixture unavailable')
+        original=json.loads(path.read_text())
+        rig,receipt=independent_rig(original)
+        v=rig['_chunks']['CSkeleton #0']['_vars']
+        _,parents,worlds=rig_world(v)
+        self.assertEqual(parents[94:],[9]*10)
+        np.testing.assert_allclose(worlds,rig_world(original['_chunks']['CSkeleton #0']['_vars'])[2],atol=1e-12)
+        for key in ('bones','parentIndices','rigdata'):
+            self.assertEqual(v[key]['_elements'][:94],original['_chunks']['CSkeleton #0']['_vars'][key]['_elements'][:94])
+        with tempfile.TemporaryDirectory(dir=ROOT/'build/probe') as temp:
+            poses,receipt=build_transport(settings()['base'],rig,Path(temp))
+        names=['mm_shaft_'+str(i).zfill(2) for i in range(8)]+['mm_scrotum_l','mm_scrotum_r']
+        source=player_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(),['observed_%d'%i for i in range(104)])
+        script,_=add_size_controls(source,settings()['base'],names,poses=poses)
+        actual=np.array([float(v) for v in re.findall(r'sourcePoses\.PushBack\(([^)]+)\)',script)])
+        np.testing.assert_allclose(actual,poses.reshape(-1),atol=1e-10)
+        self.assertEqual(script.count('SetBehaviorVariable('),60)
+        self.assertIn('index * 120 + field',script)
+        # Mapped default coordinates: overall=1,width=2,length=2,scrotum=2.
+        neutral=poses[1,2,2,2]
+        np.testing.assert_allclose(neutral[:,:3],0,atol=1e-10)
+        np.testing.assert_allclose(neutral[:,3:6],1,atol=1e-10)
+        np.testing.assert_allclose(neutral[:,6:9],0,atol=1e-10)

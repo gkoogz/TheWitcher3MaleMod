@@ -10,25 +10,14 @@ attached first-attempt boot, active/accepted graph, readback 1.0, 60 pose sample
 104 parent entries and maximum parent-follow error 0.000116. Slider callbacks are
 zero in that image; it does not establish new controls or persistence.
 
-The first new tranche is five controls: overall, length, width, glans, scrotum.
-`tools/size_controls.py` generates native rows, defaults, raw preference storage
-and default-normalized lookup tables from pinned Base's control transport.
-It drives all ten existing graph variables on input/startup, without a frame
-loop. The shared math is in Base, not copied into a second adapter algorithm.
-
-This is a small-cage size preview: shaft-root local X is axial, Y/Z radial;
-distal knot 6 is the head root; both pelvis-parented lobe roots scale independently.
-The factor is applied once per hierarchy, not at every descendant. Default 50
-leaves every scale at 1. Source morph/refined-glans/coupled-pelvis parity is not
-claimed. Angle, offsets, hang, state and eight physics controls still need their
-real output paths; no placeholder rows are added for them. See current HANDOFF
-and `provenance/size-controls.json` for build/install/observed gates.
-
-Portable raw preferences use `MaleModPortable`, version 1, stable Base IDs.
-Missing keys keep defaults; values are bounded/rounded to catalog steps. Native
-backend tuning retains its separate settings. Save/load behavior is implemented
-and still requires observation. The first monolithic table initializer exhausted
-the native parser; five bounded initializers compile successfully instead.
+The first tranche provides overall, length, width, glans and scrotum.
+0.4.21 ratio-hierarchy scaling FAILED user shape-quality testing at maximums.
+0.4.22 now consumes pinned Base source-authored section fits and independently
+drives translation, rotation and scale. Read `SOURCE-SHAPE-SCALING.md`.
+The five UI controls and stable portable preferences are retained. Defaults
+preserve the weighted native bind. Full surface/refined-glans/coupled-pelvis and
+physics parity remains pending, as do the remaining thirteen controls.
+Current build/install observations are in HANDOFF and provenance/size-controls.json.
 
 ## Latest bridge failures and continuation
 

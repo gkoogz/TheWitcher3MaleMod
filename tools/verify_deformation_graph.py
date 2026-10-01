@@ -6,8 +6,8 @@ from mod import digest
 
 def verify_graph(path,stock_names=None,*,identity_root=None,transform_controls=False,parent_space='local',rest_joints=False):
     if parent_space not in ('local','model','attached'):raise ValueError('Unknown parent pose space')
-    if parent_space=='attached' and (transform_controls or identity_root is None):
-        raise ValueError('Attached pose is a scale-only observed-root probe')
+    if parent_space=='attached' and (identity_root is None or (transform_controls and not rest_joints)):
+        raise ValueError('Attached transform controls require observed root and authored rest mask')
     if rest_joints and parent_space!='attached':raise ValueError('Rest mask requires player input')
     path=Path(path)
     root=ET.parse(path).getroot()

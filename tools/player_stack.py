@@ -382,6 +382,10 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     original_rig=job/'stock-rig.json'
     subprocess.run([str(converter),'export',str(source_rig),str(original_rig)],check=True,capture_output=True)
     rig=merge_rig(json.loads(original_rig.read_text()),json.loads((probe_dir/'deformation-rig.json').read_text()),full_joint_lod)
+    hierarchy=None
+    if size_controls:
+        from shape_size_transport import independent_rig
+        rig,hierarchy=independent_rig(rig)
     write_json(job/'player-rig.json',rig)
     body=player_entity(json.loads((probe_dir/'scripted-motion-entity.json').read_text()))
     write_json(job/'player-body.json',body)
@@ -419,7 +423,7 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     if rest_joints:
         from deformation_graph import deformation_graph
         graph=deformation_graph(json.loads((probe_dir/'stock-graph.json').read_text()),probe['stockNames'],probe['controlledNames'],
-            identity_root=probe['identityRoot'],parent_space='attached',rest_joints=True)
+            identity_root=probe['identityRoot'],parent_space='attached',rest_joints=True,transform_controls=size_controls)
         write_json(job/'deformation-graph.json',graph)
         # Replace only this freshly copied, owned input; preserve immutable probe.
         (workspace/GRAPH).unlink()
@@ -435,7 +439,10 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     if size_controls:
         if not effective_templates:raise ValueError('Size controls require the observed shipped player path')
         from size_controls import add_size_controls
-        runtime,size_contract=add_size_controls(runtime,cfg['base'],probe['controlledNames'])
+        from shape_size_transport import build_transport
+        poses,shape_receipt=build_transport(cfg['base'],rig,job)
+        runtime,size_contract=add_size_controls(runtime,cfg['base'],probe['controlledNames'],poses=poses)
+        size_contract.update(shape_receipt,independentHierarchy=hierarchy)
     script.write_text(runtime,encoding='utf-8')
     evidence=dict(probe,baseCommit=pin['commit'],executionPhase='player-stack',authoredRestMask=rest_joints,
         fullJointLod=full_joint_lod,poseMeasurement=measure_pose,
@@ -451,20 +458,21 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
         evidence.update(shippedPlayerReceipt=shipped_receipt.relative_to(ROOT).as_posix(),
             shippedPlayerReceiptSHA256=digest(shipped_receipt))
     evidence['sourceInputProbe']=probe_dir.relative_to(ROOT).as_posix()
+    evidence['fullTransformChannels']=size_controls
     evidence['sourceInputProbeSHA256']=digest(probe_dir/'deformation-probe.json')
     evidence['inputProbeNativeCook']=evidence.pop('nativeCook')
     evidence['inputProbeResources']=evidence.pop('resources')
     evidence['resources']=[dict(path=p.relative_to(workspace).as_posix(),sourceSHA256=digest(p))
         for p in workspace.rglob('*') if p.is_file() and p.suffix!='.ws']
     write_json(job/'deformation-probe.json',evidence)
-    project=dict(name='modMaleMod',version='0.4.21-size-controls-test' if size_controls else '0.4.20-shipped-player-load-test' if effective_templates else '0.4.18-boot-recovery-test' if full_joint_lod else '0.4.16-pose-measurement' if measure_pose else '0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
+    project=dict(name='modMaleMod',version='0.4.22-source-shape-test' if size_controls else '0.4.20-shipped-player-load-test' if effective_templates else '0.4.18-boot-recovery-test' if full_joint_lod else '0.4.16-pose-measurement' if measure_pose else '0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
         scriptedCook=True,motionEntity=BODY,motionOutput='player',additionalNativeDumps=[RIG,PLAYER,PARENT]+[r['path'] for r in effective],
         isolatedNativeDumps=[r['path'] for r in effective],
         isolatedNativeResources=[r['path'] for r in effective],
         stageShippedPlayerTemplates=effective_templates,
         nativeSourceBaseline=STOCK_BASELINE if effective_templates else None,
         deformationBridge=dict(sourceProbe=job.relative_to(ROOT).as_posix(),sourceProbeSHA256=digest(job/'deformation-probe.json'),
-            lateActivation=False,identityRoot=probe['identityRoot'],fullTransformChannels=False,parentPoseSpace='attached',
+            lateActivation=False,identityRoot=probe['identityRoot'],fullTransformChannels=size_controls,parentPoseSpace='attached',
             executionPhase='player-stack',authoredRestMask=rest_joints,fullJointLod=full_joint_lod,
             effectiveTemplates=effective_templates,
             poseMeasurement=measure_pose,cageBaseCommit=probe['cageBaseCommit']),

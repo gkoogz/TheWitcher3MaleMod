@@ -12,8 +12,8 @@ from prepare_motion import scalar, array, reference, handle, vector
 def deformation_graph(template, stock_names, controlled_names, *, transform_controls=False,
                       identity_root=None,parent_space='local',rest_joints=False):
     if parent_space not in ('local','model','attached'):raise ValueError('Unknown observed parent pose space')
-    if parent_space=='attached' and (transform_controls or identity_root is None):
-        raise ValueError('Attached-pose probe requires observed root and scale-only controls')
+    if parent_space=='attached' and (identity_root is None or (transform_controls and not rest_joints)):
+        raise ValueError('Attached transform controls require observed root and authored rest mask')
     if rest_joints and parent_space!='attached':raise ValueError('Rest mask requires player input pose')
     if not stock_names or len(set(stock_names + controlled_names)) != len(stock_names + controlled_names):
         raise ValueError('Rig names must be observed, distinct and nonempty')

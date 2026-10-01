@@ -1,19 +1,20 @@
 {
   "checkpoint": "2026-10-01",
-  "sourceBaseCommit": "4df2302f4daa2e3c4e1bab5a6d2b06a397edbb1e",
-  "installedBaseCommit": "15758e5f872a157f6cf627d844960f461eb053db",
+  "version": "0.4.22-source-shape-test",
+  "package": "publish/20261001-071733-98def3",
+  "sourceBaseCommit": "34ffd8640ceeb57e4bed5149685dbf16bb2abc28",
+  "installedBaseCommit": "34ffd8640ceeb57e4bed5149685dbf16bb2abc28",
   "cageBaseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
-  "version": "0.4.21-size-controls-test",
-  "package": "publish/20261001-063505-7a41a8",
   "installed": true,
   "observedGameplay": false,
-  "adapterTestsPassed": 58,
+  "adapterTestsPassed": 59,
   "sharedTransportTestsPassed": 3,
+  "sourceAuthoredOracleTestsPassed": 4,
   "baseProvenanceVerified": true,
   "packedResourcesAndBuffersVerified": 10,
   "installedFilesVerified": 5,
   "workingRollbackVersion": "0.4.20-shipped-player-load-test",
-  "workingRollbackArchive": "local/uninstalled/modMaleMod-7461db09d18a",
+  "workingRollbackArchive": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\local\\uninstalled\\modMaleMod-7461db09d18a",
   "sizeControls": {
     "supportedControls": [
       "overall",
@@ -22,7 +23,7 @@
       "glans",
       "scrotum"
     ],
-    "backend": "normalized-size-cage-preview",
+    "backend": "source-authored-independent-cage",
     "defaultRestPreserved": true,
     "sharedTransportSHA256": "c57fe1720a38fbcd15ff350ed3f618fc71608056680bb232b909cb9771cbd99e",
     "sourceCatalogSHA256": "ec043619d65ee3aeaa6dbdf403db61a543d7e2c7dedfb69cf2fd9609ca8db747",
@@ -41,7 +42,86 @@
     },
     "sourceSurfaceParity": false,
     "physicsParity": false,
-    "observedGameplay": false
+    "observedGameplay": false,
+    "sourceBankSHA256": "435cb9b391e6bf1ee76a09524b075bfc356230920b30e523bac90448961b2f30",
+    "sharedShapeTransportSHA256": "01aa863649d972a742d2f88dd23408b8619cffdd387a05207366732a90a41b71",
+    "fitReceipt": "build\\attachment\\fit-20260930-075013-7ae7f2\\geralt-anatomy.fit.json",
+    "fitReceiptSHA256": "5df2a109331128142c9cc49f20dbeb9b92523f4a14c03063f61f3bdba5d589f1",
+    "mappedKnots": {
+      "overall": [
+        0.85,
+        1.2,
+        1.5,
+        2.5
+      ],
+      "width": [
+        0.95,
+        1.15,
+        1.59,
+        2.0
+      ],
+      "length": [
+        0.4,
+        1.0,
+        1.6,
+        2.4
+      ],
+      "scrotum": [
+        1.0,
+        1.25,
+        1.53,
+        2.0
+      ]
+    },
+    "latticeShape": [
+      4,
+      4,
+      4,
+      4,
+      10,
+      12
+    ],
+    "minimumScale": 0.06703630243208833,
+    "maximumScale": 3.8881653835394094,
+    "omissions": [
+      "coarse coupled fairing",
+      "rest-frame regularization",
+      "logical surface construction",
+      "egg rest fitting",
+      "rounded/raphe surfaces",
+      "final UnifiedCollar",
+      "posed dynamics/contact",
+      "lighting rebuild",
+      "bone approximation of folded glans attachment"
+    ],
+    "independentHierarchy": {
+      "originalParents": [
+        9,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        9,
+        9
+      ],
+      "independentParents": [
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9
+      ],
+      "neutralWorldFrameMaxError": 6.106226635438361e-16,
+      "stockPrefixUnchanged": true
+    }
   },
   "nativeBinding": {
     "cookedControllerBindingVerified": true,
@@ -53,17 +133,17 @@
     "meshSkinningAttachmentVerified": false,
     "runtimeHandleBindingVerified": false,
     "observedGameplay": false,
-    "dumpSHA256": "de877331900bb12fb6e11d04cf49a3fbbdddf1a5f33e056c5bcc5a223a1fa2ce",
+    "dumpSHA256": "9750d775f60164a063e4cbad8a52e8fad16687a90a24a316dfdc7ca25953cc51",
     "poseGraph": {
       "cookedPoseConnectionsVerified": true,
       "stockAlignmentNodes": 0,
       "authoredScaleNodes": 10,
-      "authoredScalarNodes": 0,
+      "authoredScalarNodes": 60,
       "identityRoot": "Root",
       "parentPoseSpace": "attached",
       "authoredRestMaskVerified": true,
-      "connectedPoseNodes": 23,
-      "dumpSHA256": "1cad91e13a0c230a5677da5108fdafff4b780d96f01e2cd5ee987480e20e11f7",
+      "connectedPoseNodes": 83,
+      "dumpSHA256": "5bd3a54210e60b1eb6f27caa36bc1e3c55f49d76c3771ff4dccde6ea199c817c",
       "observedGameplay": false
     },
     "playerRig": {
@@ -73,7 +153,7 @@
       "authoredJointCount": 10,
       "stockRootBindingsPreserved": true,
       "maximumRestFrameError": 5.7571411193890754e-08,
-      "rigSHA256": "673079ea6830a2a66b561da723d679bc4c1c283456fe96230eb0094dc5d109f4",
+      "rigSHA256": "9b087ed9e678286a88b3d7299d11ea344d9798cdf0c035c0f29fda1c35a9fe41",
       "playerEntitySHA256": "5053f4f149faaa657a001791d9716ccdbfc1b17961c5e193b1dc7c2d89a84723",
       "parentEntitySHA256": "b8bb003f5992944e86efb8509000b8813dea66c4c5644f8acc04259b4268a4f2",
       "observedGameplay": false,
@@ -100,49 +180,231 @@
       ]
     }
   },
-  "sourcePinDifference": "Shared handoff/docs only after build; installed module/catalog match source hashes",
-  "persistence": {
-    "section": "MaleModPortable",
-    "version": 1,
-    "rawStableIDs": true,
-    "writeOnInput": true,
-    "saveOnDetach": true,
-    "observed": false
+  "offlineSkin": {
+    "neutralMaxError": 6.661338147750939e-16,
+    "maximumSeamGap": 0.0,
+    "allMaximumUIFinite": true,
+    "observedGameplay": false
   },
-  "previousObservedDiagnostics": {
-    "graphActive": true,
-    "parameterAccepted": true,
-    "graphReadback": 1.0,
-    "frozen": false,
-    "boot": "attached",
-    "attempts": 1,
-    "poseSamples": 60,
-    "pelvisMotion": 0.151142,
-    "addedRootMotion": 0.164259,
-    "firstParentFollowError": 1.1e-05,
-    "maximumParentFollowError": 0.000116,
-    "pelvisIndex": 9,
-    "addedRootIndex": 94,
-    "parentEntries": 104,
-    "sliderChanges": 0
+  "sourcePoseReceipt": {
+    "backend": "source-authored-independent-cage",
+    "sourceBankSHA256": "435cb9b391e6bf1ee76a09524b075bfc356230920b30e523bac90448961b2f30",
+    "sharedShapeTransportSHA256": "01aa863649d972a742d2f88dd23408b8619cffdd387a05207366732a90a41b71",
+    "fitReceipt": "build\\attachment\\fit-20260930-075013-7ae7f2\\geralt-anatomy.fit.json",
+    "fitReceiptSHA256": "5df2a109331128142c9cc49f20dbeb9b92523f4a14c03063f61f3bdba5d589f1",
+    "mappedKnots": {
+      "overall": [
+        0.85,
+        1.2,
+        1.5,
+        2.5
+      ],
+      "width": [
+        0.95,
+        1.15,
+        1.59,
+        2.0
+      ],
+      "length": [
+        0.4,
+        1.0,
+        1.6,
+        2.4
+      ],
+      "scrotum": [
+        1.0,
+        1.25,
+        1.53,
+        2.0
+      ]
+    },
+    "latticeShape": [
+      4,
+      4,
+      4,
+      4,
+      10,
+      12
+    ],
+    "minimumScale": 0.06703630243208833,
+    "maximumScale": 3.8881653835394094,
+    "sourceSurfaceParity": false,
+    "physicsParity": false,
+    "observedGameplay": false,
+    "omissions": [
+      "coarse coupled fairing",
+      "rest-frame regularization",
+      "logical surface construction",
+      "egg rest fitting",
+      "rounded/raphe surfaces",
+      "final UnifiedCollar",
+      "posed dynamics/contact",
+      "lighting rebuild",
+      "bone approximation of folded glans attachment"
+    ]
   },
-  "rejectedBuild": {
-    "reason": "Script parser memory exhausted in monolithic lookup initializer; split into five bounded functions",
-    "log": "build/logs/20261001-062848-scripted-cook-9312fc.log",
-    "logSHA256": "df6d36ea13e38b0cfe6d14438c9747c219551dc83fa6d98b0408ad5229071988",
-    "installed": false
+  "previousFailed": {
+    "checkpoint": "2026-10-01",
+    "sourceBaseCommit": "4df2302f4daa2e3c4e1bab5a6d2b06a397edbb1e",
+    "installedBaseCommit": "15758e5f872a157f6cf627d844960f461eb053db",
+    "cageBaseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+    "version": "0.4.21-size-controls-test",
+    "package": "publish/20261001-063505-7a41a8",
+    "installed": false,
+    "observedGameplay": false,
+    "adapterTestsPassed": 58,
+    "sharedTransportTestsPassed": 3,
+    "baseProvenanceVerified": true,
+    "packedResourcesAndBuffersVerified": 10,
+    "installedFilesVerified": 5,
+    "workingRollbackVersion": "0.4.20-shipped-player-load-test",
+    "workingRollbackArchive": "local/uninstalled/modMaleMod-7461db09d18a",
+    "sizeControls": {
+      "supportedControls": [
+        "overall",
+        "length",
+        "width",
+        "glans",
+        "scrotum"
+      ],
+      "backend": "normalized-size-cage-preview",
+      "defaultRestPreserved": true,
+      "sharedTransportSHA256": "c57fe1720a38fbcd15ff350ed3f618fc71608056680bb232b909cb9771cbd99e",
+      "sourceCatalogSHA256": "ec043619d65ee3aeaa6dbdf403db61a543d7e2c7dedfb69cf2fd9609ca8db747",
+      "assignments": {
+        "shaftRoot": "mm_shaft_00",
+        "axialAxis": "X",
+        "radialAxes": [
+          "Y",
+          "Z"
+        ],
+        "headRoot": "mm_shaft_06",
+        "lobeRoots": [
+          "mm_scrotum_l",
+          "mm_scrotum_r"
+        ]
+      },
+      "sourceSurfaceParity": false,
+      "physicsParity": false,
+      "observedGameplay": false
+    },
+    "nativeBinding": {
+      "cookedControllerBindingVerified": true,
+      "sameConstraintReference": true,
+      "cookedDeformationBindingVerified": true,
+      "deformationOutput": "player",
+      "cookedPlayerStackBindingVerified": true,
+      "stockAppearanceAutobindingExpected": true,
+      "meshSkinningAttachmentVerified": false,
+      "runtimeHandleBindingVerified": false,
+      "observedGameplay": false,
+      "dumpSHA256": "de877331900bb12fb6e11d04cf49a3fbbdddf1a5f33e056c5bcc5a223a1fa2ce",
+      "poseGraph": {
+        "cookedPoseConnectionsVerified": true,
+        "stockAlignmentNodes": 0,
+        "authoredScaleNodes": 10,
+        "authoredScalarNodes": 0,
+        "identityRoot": "Root",
+        "parentPoseSpace": "attached",
+        "authoredRestMaskVerified": true,
+        "connectedPoseNodes": 23,
+        "dumpSHA256": "1cad91e13a0c230a5677da5108fdafff4b780d96f01e2cd5ee987480e20e11f7",
+        "observedGameplay": false
+      },
+      "playerRig": {
+        "nativePlayerRigVerified": true,
+        "playerRigPath": "characters\\base_entities\\man_base\\malebase.w2rig",
+        "stockJointCount": 94,
+        "authoredJointCount": 10,
+        "stockRootBindingsPreserved": true,
+        "maximumRestFrameError": 5.7571411193890754e-08,
+        "rigSHA256": "673079ea6830a2a66b561da723d679bc4c1c283456fe96230eb0094dc5d109f4",
+        "playerEntitySHA256": "5053f4f149faaa657a001791d9716ccdbfc1b17961c5e193b1dc7c2d89a84723",
+        "parentEntitySHA256": "b8bb003f5992944e86efb8509000b8813dea66c4c5644f8acc04259b4268a4f2",
+        "observedGameplay": false,
+        "fullJointLodVerified": true,
+        "reducedDetailBoneCount": 104,
+        "nativeEffectivePlayerTemplatesVerified": true,
+        "effectiveTemplates": [
+          {
+            "path": "gameplay/templates/characters/player/player.w2ent",
+            "sha256": "fb57f58d9d06a93d98dc9fb9050ecf1876bd3bb771b0ea26fa0282531909be9d",
+            "privateRigImportVerified": true,
+            "stockRootBindingsPreserved": true,
+            "stockSlotSchedulingPreserved": true,
+            "rootClass": "CMovingPhysicalAgentComponent"
+          },
+          {
+            "path": "characters/player_entities/geralt/geralt_player.w2ent",
+            "sha256": "b7e24b6966ae88fa36bde6f1ccc9df9fd5f5c3035a09a7b160f22f292f7981bf",
+            "privateRigImportVerified": true,
+            "stockRootBindingsPreserved": true,
+            "stockSlotSchedulingPreserved": true,
+            "rootClass": "CMovingPhysicalAgentComponent"
+          }
+        ]
+      }
+    },
+    "sourcePinDifference": "Shared handoff/docs only after build; installed module/catalog match source hashes",
+    "persistence": {
+      "section": "MaleModPortable",
+      "version": 1,
+      "rawStableIDs": true,
+      "writeOnInput": true,
+      "saveOnDetach": true,
+      "observed": false
+    },
+    "previousObservedDiagnostics": {
+      "graphActive": true,
+      "parameterAccepted": true,
+      "graphReadback": 1.0,
+      "frozen": false,
+      "boot": "attached",
+      "attempts": 1,
+      "poseSamples": 60,
+      "pelvisMotion": 0.151142,
+      "addedRootMotion": 0.164259,
+      "firstParentFollowError": 1.1e-05,
+      "maximumParentFollowError": 0.000116,
+      "pelvisIndex": 9,
+      "addedRootIndex": 94,
+      "parentEntries": 104,
+      "sliderChanges": 0
+    },
+    "rejectedBuild": {
+      "reason": "Script parser memory exhausted in monolithic lookup initializer; split into five bounded functions",
+      "log": "build/logs/20261001-062848-scripted-cook-9312fc.log",
+      "logSHA256": "df6d36ea13e38b0cfe6d14438c9747c219551dc83fa6d98b0408ad5229071988",
+      "installed": false
+    },
+    "remaining": [
+      "Observe independent overall/length/width/glans/scrotum effects and extremes while moving",
+      "Observe close/reopen and game restart preference persistence",
+      "Implement hang, angle, forward, vertical and mechanical state",
+      "Implement eight source physics controls with a real shared backend",
+      "Implement authored surface/refined glans/coupled pelvis parity"
+    ],
+    "implementationSHA256": {
+      "tools/size_controls.py": "1255a402141128f1b4914d2377aaec1bfa5880afec13b468a4046e138ad90993",
+      "tools/player_stack.py": "80ac22870bac67fe714b7a379559909a93e40e2046e05dfd2eb8a488f7274394",
+      "tools/mod.py": "697437b5954fdd8159c6fe8e018767b46957efc28f3659e4b7cf5f3aa1416aa9",
+      "tools/deploy_motion.py": "3f132dfbf729314e8031ebda4b03ec9b8660c04c1d49902cfd8af914c4c2ef92"
+    },
+    "observedShapeQuality": false,
+    "failed": true,
+    "userObservation": "Maximum sliders look bad, smooshed and distorted; match Wolverine better",
+    "archive": "local/uninstalled/modMaleMod-5691e9d79e5f"
   },
   "remaining": [
-    "Observe independent overall/length/width/glans/scrotum effects and extremes while moving",
-    "Observe close/reopen and game restart preference persistence",
-    "Implement hang, angle, forward, vertical and mechanical state",
-    "Implement eight source physics controls with a real shared backend",
-    "Implement authored surface/refined glans/coupled pelvis parity"
+    "Observe maximum/combined controls while moving",
+    "Full authored prepared surface/refined glans/coupled pelvis parity",
+    "Remaining 13 source controls and numerical physics"
   ],
   "implementationSHA256": {
-    "tools/size_controls.py": "1255a402141128f1b4914d2377aaec1bfa5880afec13b468a4046e138ad90993",
-    "tools/player_stack.py": "80ac22870bac67fe714b7a379559909a93e40e2046e05dfd2eb8a488f7274394",
-    "tools/mod.py": "697437b5954fdd8159c6fe8e018767b46957efc28f3659e4b7cf5f3aa1416aa9",
-    "tools/deploy_motion.py": "3f132dfbf729314e8031ebda4b03ec9b8660c04c1d49902cfd8af914c4c2ef92"
+    "tools/size_controls.py": "d85120ff4a269df0960d263b0bf23b570a3c181f0bf6035ccfe8704925d0b93f",
+    "tools/shape_size_transport.py": "ca97eccb5fb0feda171e0ae20afee942f2c3308f56dc651714a01f488ae819da",
+    "tools/player_stack.py": "b20bd8ebe1afb7403716adafd5c06b8d73c9309da1455bc57930259581a5fbfe",
+    "tools/deformation_graph.py": "a506e0159f3a6041e433c31e3d19aa917c366eaebc582140969b62458f4e18da",
+    "tools/verify_deformation_graph.py": "6416fc6a170869ea1f7a0fd448cd45c02a4a583693ef826850a059db6e1a14ef"
   }
 }
