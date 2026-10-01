@@ -1,5 +1,9 @@
 # Full source slider port: resume here
 
+**Superseded October 1:** the user discarded all Witcher sliders. Current work
+is fixed unit scale and Base secondary physics; see `FIXED-PHYSICS.md` and the
+current handoff. This document is historical, not an active implementation plan.
+
 User request September 30: port every Wolverine size/deformation/physics control,
 reconstruct the dynamic pelvis, and retain the interim native pause menu. Prefer
 live deformation eventually. Animation, fluid, audio and other non-sliders are

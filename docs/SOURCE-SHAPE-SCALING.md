@@ -1,5 +1,9 @@
 # Source-backed size repair
 
+**Superseded October 1:** active Witcher size controls and transport tables are
+deleted. Keep the initial unit scale and develop secondary physics instead.
+See `FIXED-PHYSICS.md`. The notes below are historical failed shape experiments.
+
 ## 0.4.23: coherent frame transport
 
 The user's 07:35 screenshot shows 0.4.22 is closer, but still has an uneven

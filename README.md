@@ -8,22 +8,17 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-The installed candidate is **0.4.18-boot-recovery-test**. F6 ->
-**MaleMod - player pose test** exposes the scale probe and diagnostics.
-0.4.17 failed observed gameplay with an inactive graph and no pose samples.
-This candidate reports startup failures in the menu and makes bounded startup
-retries. Native cook, LOD coverage, connected pose output, eight packed
-resources, five installed hashes and 47 tests pass. **Gameplay is pending.**
-After re-equipping, inspect the boot reason and graph rows first. If the graph
-activates, a bounded six-second measurement reports pelvis/root motion and
-parent-follow error, then stops. Full controls, coupled pelvis and active
-physics remain unfinished. See [the player stack route](docs/PLAYER-STACK.md).
+Installed candidate: **0.4.25-fixed-rest-physics** (compiled/cooked/packed and
+installed hashes verified; gameplay pending). The current phase is
+**fixed unit scale and secondary physics**, per the user's
+October 1 reset. Witcher sliders, size tables and tuning UI are removed from the
+active build. The authored mesh and 104-joint player attachment remain the
+foundation. Wolverine's runtime, sliders and installation are unchanged.
 
-Recovery baseline: **0.4.4-native-sliders-test**, whose menu is user-confirmed.
-Full source controls, coupled pelvis, numerical physics parity and an unpaused
-corner overlay remain unfinished. Source controls are not represented by the
-three engine-specific parameters or the current test row.
-See [the handoff](docs/HANDOFF.md) for installed/recovery evidence.
+See [fixed-rest physics](docs/FIXED-PHYSICS.md) for Base-derived rod/suspension
+kernels, animated-thigh contacts, native verification and current gameplay gates.
+The adapter does not claim full Wolverine physics or surface parity. Animation
+sequences, fluid and audio remain deferred. Use the handoff for installed status.
 
 Read [test and rollback instructions](docs/LIVE-MOTION-TEST.md). The previous
 0.3 static appearance test is preserved for rollback. The user confirmed its

@@ -5,7 +5,65 @@ and [Base's handoff](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOF
 Chat history is not required. Inspect Git and local evidence before assuming
 the installed package still matches this record.
 
-## Current size repair: 0.4.23 installed
+## Current phase: fixed unit scale and Base secondary physics
+
+The user explicitly discarded all Witcher sliders on October 1. Keep the
+initial fitted geometry and observed working skeleton attachment; implement
+rod/lobe physics and collision from Base. **Do not change Wolverine.**
+Capture and slider reconstruction work below is historical and superseded.
+No F12 use, tuning UI or new hotkey is authorized for this phase.
+
+Base `a3a8dd8` adds SDK-free curved rod/suspension/contact adaptations and source
+ovoid support. It is deliberately pinned in `dependencies/base.lock.json`.
+The point-mass adaptation excludes angular contact effective mass, the full
+Hermite reaction Jacobian, pressure, dynamic collar and full surface solver
+parity. Read `FIXED-PHYSICS.md` and Base `SECONDARY-RIG-PHYSICS.md`.
+Witcher size controls/shape tables and their tests are deleted. New build uses
+the existing independent 104-joint rig at unit scale, owned player pose layer,
+generated Base numerical methods and observed animated thigh endpoints.
+No appearance resculpt or Wolverine runtime change was made.
+
+Steam updated both REDkit and Witcher during this session. REDkit build
+25651183/hash `37ac2851...` required a new observed dispatcher ABI profile and
+an untouched stock cook baseline. Game build 25646871 changed startup.bundle,
+so shipped cooked templates were re-extracted and officially dumped in
+`build/probe/shipped-player-5c21d8dbc3d2/shipped-player.json`. Both template
+payloads remain byte-identical to the earlier working ones. The loading CTD
+repair still patches only rig import/CRC bytes and preserves their cooked caches.
+
+Current package/installation and observed gameplay are recorded in
+`provenance/fixed-physics.json` when available. Do not treat previous slider
+provenance, a native cook or status counters as observed secondary-motion success.
+
+### Installed checkpoint: 0.4.25-fixed-rest-physics
+
+Final package `publish/20261001-185931-7366b3` is installed at
+`E:/SteamLibrary/steamapps/common/The Witcher 3/Mods/modMaleMod`.
+All five installed file hashes match. Official unbundle recovered 10 resources
+and buffers byte for byte, including native 104-joint rig and connected player
+pose graph. Full authored cook is `publish/20261001-185819-2d6df9`; the final
+script-only patch preserves all four native package files and passes separate
+compilation plus unchanged declaration/signature checks. The script adds detach
+cancellation of pending startup without altering serialized fields.
+
+57 adapter tests, 55 Base Python tests, new C++ secondary kernel tests and full
+Base provenance verification pass. Source support agrees on 5,000 cases within
+0.0000109387 source units; the 600-step moving-guide fixture remains finite with
+maximum rod length error 0.000055775 native units. This is offline evidence.
+
+Installation removed only owned MaleMod input bindings; the remaining input
+file bytes are preserved exactly. No F12 changes. The replaced 0.4.23 build is
+archived at `local/uninstalled/modMaleMod-4c44fac0466c`; stable 0.4.20 rollback
+is retained by `local/motion-rollback.json` and `tools/deploy_motion.py revert`.
+
+**Observed secondary motion and live performance remain pending.** Do not mark
+this candidate gameplay-tested before idle/walk/run/turn/crouch/outfit/reload
+observations. Optional console `MaleModPhysicsStatus()` reports boot, fixed scale,
+step/contact counters, motion/resets and variable acceptance; no tuning menu or
+hotkey is installed. The canonical Wolverine HEAD remains `f57fccf` and was not
+modified or installed into by this work.
+
+## Historical size repair: 0.4.23
 
 **07:54 observed result: improved, still fails shape quality.** The user requests
 first-principles reconstruction of every source slider. Base now contains a

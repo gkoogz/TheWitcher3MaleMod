@@ -1,0 +1,283 @@
+{
+  "checkpoint": "2026-10-01",
+  "version": "0.4.25-fixed-rest-physics",
+  "package": "publish/20261001-185931-7366b3",
+  "baseCommit": "a3a8dd80ed08a3415828f6c5809f4b50d8c68bb9",
+  "installed": true,
+  "installedFilesVerified": 5,
+  "packedResourcesAndBuffersVerified": 10,
+  "adapterTestsPassed": 57,
+  "basePythonTestsPassed": 55,
+  "baseProvenanceVerified": true,
+  "secondaryKernelTestsPassed": true,
+  "sourceSupportCases": 5000,
+  "maximumSourceSupportError": 1.09387e-05,
+  "fixedScale": 1,
+  "slidersRemoved": true,
+  "physics": {
+    "kernels": [
+      {
+        "path": "include/malemod/physics/xpbd_kernels.hpp",
+        "sha256": "d91eea589f380b48a7dc76174a7c51c5f81785c394dc52767d9a36aedc771747"
+      },
+      {
+        "path": "include/malemod/physics/rig_kernels.hpp",
+        "sha256": "a3cae6b0ce2f8222ee48d4c54e1ee5f4ab758b7e790db929f8bcc727ad8467f9"
+      },
+      {
+        "path": "include/malemod/physics/ovoid_support.hpp",
+        "sha256": "c9a1e48807ecbc60e2ec293478f7a178a54e656c1e1b07782217cfc9ae719560"
+      }
+    ],
+    "numericalCodeGeneratedFromBase": true,
+    "fixedScale": 1,
+    "enabled": true,
+    "solver": "Base XPBD curved rod, damped suspension and support contacts; WitcherScript fixed step",
+    "coefficients": {
+      "shaft_mass": 1.825,
+      "lobe_mass": 1.925,
+      "shaft_drag": 1.7999999999999998,
+      "lobe_drag": 2.25,
+      "shaft_motion_response": 1.208,
+      "lobe_motion_response": 1.298,
+      "shaft_gravity": 1.1280740442555182,
+      "lobe_gravity": 0.7383757380581574,
+      "shaft_bend_compliance": 0.0015,
+      "shaft_bend_damping_ratio": 0.30000000000000004,
+      "suspension_compliance": 1.182589848786678e-05,
+      "suspension_shear_compliance": 2.2e-05,
+      "suspension_damping_ratio": 0.4,
+      "lobe_torsion": 20.0,
+      "root_mass": 3.2229818523173814,
+      "root_stiffness": 10.0,
+      "root_damping": 9.764665642967884,
+      "root_droop": 0.28,
+      "root_motion_drive": 12.0,
+      "root_pitch_limit": 0.92
+    },
+    "sourceToNativeLength": 0.010255218584141074,
+    "restLengths": [
+      0.13758973758238519,
+      0.06001342082691978,
+      0.056102379360430256,
+      0.042490807468901624,
+      0.06615792779173559,
+      0.037530893984999106,
+      0.052990525244417844
+    ],
+    "jointRadii": [
+      [
+        0.1052080372057085,
+        0.1052080372057085,
+        0.1052080372057085
+      ],
+      [
+        0.09748022188578596,
+        0.09748022188578596,
+        0.09748022188578596
+      ],
+      [
+        0.08998558330857295,
+        0.08998558330857295,
+        0.08998558330857295
+      ],
+      [
+        0.07387294595194747,
+        0.07387294595194747,
+        0.07387294595194747
+      ],
+      [
+        0.0722136194755463,
+        0.0722136194755463,
+        0.0722136194755463
+      ],
+      [
+        0.06539042116813912,
+        0.06539042116813912,
+        0.06539042116813912
+      ],
+      [
+        0.06258884589906137,
+        0.06258884589906137,
+        0.06258884589906137
+      ],
+      [
+        0.05178147840652757,
+        0.05178147840652757,
+        0.05178147840652757
+      ],
+      [
+        0.037857625640183086,
+        0.062208949869403535,
+        0.05656162332089781
+      ],
+      [
+        0.038848319284186784,
+        0.06179757155736517,
+        0.05929407529933031
+      ]
+    ],
+    "thighRadii": [
+      0.11657433374674782,
+      0.11749565135017065
+    ],
+    "thighBones": [
+      "r_thigh",
+      "r_shin",
+      "l_thigh",
+      "l_shin"
+    ],
+    "fitReceipt": "build/attachment/fit-20261001-050243-44cbb5/geralt-anatomy.fit.json",
+    "fitSHA256": "1175e4a0fe587c94f7ee74437a77ed4a3321d358cc2456e03347136472219631",
+    "cage": "build/motion/cage-dec402309e13/motion-lod0.npz",
+    "cageSHA256": "ca00802c75a97cb6e09ad211c33d242ccdd1554535da467cebb68005a2d04eaf",
+    "colliderCalibration": "95th percentile stock thigh radial envelope; lobe weighted envelope maxima; shaft radial 95th percentile",
+    "omissions": [
+      "full source surface deformation",
+      "angular contact effective mass and reaction torques",
+      "Hermite guide Jacobian",
+      "pressure deformation",
+      "dynamic pelvic collar"
+    ],
+    "runtimeParity": false,
+    "observedGameplay": false,
+    "independentHierarchy": {
+      "originalParents": [
+        9,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        9,
+        9
+      ],
+      "independentParents": [
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9
+      ],
+      "neutralWorldFrameMaxError": 6.106226635438361e-16,
+      "stockPrefixUnchanged": true
+    },
+    "runtimeScriptSHA256": "d3dc26846935c690803e238829fd862977086e6b18dc0543b25b2e4b47c8190c"
+  },
+  "nativeCook": true,
+  "scriptPatch": {
+    "sourcePackage": "publish/20261001-185819-2d6df9",
+    "sourceManifestSHA256": "05fb1dd23f6a7b69b1f5e0a7d9a9be79d4b42238660923d678c5888d441e2916",
+    "sourceScriptSHA256": "d3dc26846935c690803e238829fd862977086e6b18dc0543b25b2e4b47c8190c",
+    "nativeFilesPreserved": [
+      {
+        "path": "Mods/modMaleMod/content/bundles/blob0.bundle",
+        "sha256": "6f8211b581bb66530176728b0a91dea6668102074cbca0d5aad4dc09fd92f8a4",
+        "bytes": 467738
+      },
+      {
+        "path": "Mods/modMaleMod/content/bundles/buffers0.bundle",
+        "sha256": "bf0922ec3e788954d82f0b3f5a8f1749ee4c1fdc7561194b78ff5b7b39ceab61",
+        "bytes": 1255955
+      },
+      {
+        "path": "Mods/modMaleMod/content/dep.cache",
+        "sha256": "ca0daa6c98d47c9c0d373aaa1d02c4f4cb9ef127856c7bb83ab1b77f5f86cf1b",
+        "bytes": 256
+      },
+      {
+        "path": "Mods/modMaleMod/content/metadata.store",
+        "sha256": "7737bb62aa559b52043e0ade0b9ce435f8dcd72b44c9d01f6e1d32d548c26add",
+        "bytes": 1885
+      }
+    ],
+    "serializedControllerLayoutChanged": false,
+    "compilation": {
+      "command": "compilescripts",
+      "args": [
+        "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3 REDkit\\bin\\x64_RedKit\\wcc_lite.exe",
+        "compilescripts",
+        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\scripts-12ff081f4ee7",
+        "-out=C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\scripts-12ff081f4ee7-compiled",
+        "-uncookDir",
+        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\depot-3c0d050cbf48\\",
+        "-workspaceDir",
+        "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\script-patch-690e2d488bfa\\",
+        "-noninteractivecrash"
+      ],
+      "exitCode": 0,
+      "seconds": 28.0,
+      "logSHA256": "3d4b0319b41299d75d73c984141132fe220d19cd6c5f783b89c98000b5fdc04b",
+      "logPath": "build/logs/20261001-185903-scripts-7139b9.log",
+      "wccSHA256": "37ac28519adc8bc234653fcf973ba76935096aea50003b0f3a03af4007788f7d"
+    }
+  },
+  "nativeRig": {
+    "nativePlayerRigVerified": true,
+    "playerRigPath": "characters\\base_entities\\man_base\\malebase.w2rig",
+    "stockJointCount": 94,
+    "authoredJointCount": 10,
+    "stockRootBindingsPreserved": true,
+    "maximumRestFrameError": 5.7571411193890754e-08,
+    "rigSHA256": "9b087ed9e678286a88b3d7299d11ea344d9798cdf0c035c0f29fda1c35a9fe41",
+    "playerEntitySHA256": "5053f4f149faaa657a001791d9716ccdbfc1b17961c5e193b1dc7c2d89a84723",
+    "parentEntitySHA256": "b8bb003f5992944e86efb8509000b8813dea66c4c5644f8acc04259b4268a4f2",
+    "observedGameplay": false,
+    "fullJointLodVerified": true,
+    "reducedDetailBoneCount": 104,
+    "nativeEffectivePlayerTemplatesVerified": true,
+    "effectiveTemplates": [
+      {
+        "path": "gameplay/templates/characters/player/player.w2ent",
+        "sha256": "fb57f58d9d06a93d98dc9fb9050ecf1876bd3bb771b0ea26fa0282531909be9d",
+        "privateRigImportVerified": true,
+        "stockRootBindingsPreserved": true,
+        "stockSlotSchedulingPreserved": true,
+        "rootClass": "CMovingPhysicalAgentComponent"
+      },
+      {
+        "path": "characters/player_entities/geralt/geralt_player.w2ent",
+        "sha256": "b7e24b6966ae88fa36bde6f1ccc9df9fd5f5c3035a09a7b160f22f292f7981bf",
+        "privateRigImportVerified": true,
+        "stockRootBindingsPreserved": true,
+        "stockSlotSchedulingPreserved": true,
+        "rootClass": "CMovingPhysicalAgentComponent"
+      }
+    ]
+  },
+  "nativePoseGraph": {
+    "cookedPoseConnectionsVerified": true,
+    "stockAlignmentNodes": 0,
+    "authoredScaleNodes": 10,
+    "authoredScalarNodes": 60,
+    "identityRoot": "Root",
+    "parentPoseSpace": "attached",
+    "authoredRestMaskVerified": true,
+    "connectedPoseNodes": 83,
+    "dumpSHA256": "18dd60dc3ba3372e1b8b3f8d1ca2fb743d1e2022e0343453d118a3dbeb2bfe0a",
+    "observedGameplay": false
+  },
+  "gameSteamBuild": "25646871",
+  "redkitSteamBuild": "25651183",
+  "gameExecutableSHA256": "9406eccc12b68e08920931442ef6a57340e910d3e01f2082e88232487433fe51",
+  "nativeCookPackage": "publish/20261001-185819-2d6df9",
+  "shippedPlayerReceipt": "build/probe/shipped-player-5c21d8dbc3d2/shipped-player.json",
+  "observedGameplay": false,
+  "observedSecondaryMotion": false,
+  "livePerformanceMeasured": false,
+  "wolverineChanged": false,
+  "ownedInputBindingsRemoved": 24,
+  "unrelatedInputBytesPreserved": true,
+  "rollback": {
+    "backup": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\local\\uninstalled\\modMaleMod-7461db09d18a",
+    "replacedBackup": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\local\\uninstalled\\modMaleMod-4c44fac0466c",
+    "newPackage": "publish/20261001-185931-7366b3"
+  }
+}

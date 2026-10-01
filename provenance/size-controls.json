@@ -5,7 +5,7 @@
   "sourceBaseCommit": "3119d70231566f5d2cb1379dc6d9f5a487e6f431",
   "installedBaseCommit": "3119d70231566f5d2cb1379dc6d9f5a487e6f431",
   "cageBaseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
-  "installed": true,
+  "installed": false,
   "observedGameplay": false,
   "adapterTestsPassed": 59,
   "sharedTransportTestsPassed": 3,
@@ -272,5 +272,7 @@
     "tools/player_stack.py": "c74ffb88c397dec692aa95a2c4203c8c051414c340f2941c57bd9228f3b7cb06",
     "tools/deformation_graph.py": "a506e0159f3a6041e433c31e3d19aa917c366eaebc582140969b62458f4e18da",
     "tools/verify_deformation_graph.py": "6416fc6a170869ea1f7a0fd448cd45c02a4a583693ef826850a059db6e1a14ef"
-  }
+  },
+  "supersededBy": "0.4.25-fixed-rest-physics",
+  "supersededReason": "User discarded Witcher sliders; retain unit scale and implement Base secondary physics"
 }

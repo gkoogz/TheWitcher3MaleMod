@@ -35,7 +35,7 @@ EFFECTIVE_TEMPLATES=(
      'build/inspection/native-4559847a44f0/inspection.json'),
     (GERALT_PLAYER,'85d3b48eeb1639378346d36c12a88ab472a64cf191249d5990088bc26c9035e8',164,
      'build/inspection/native-2be16d6e54c1/inspection.json'))
-STOCK_BASELINE='build/probe/stock-player-cook-16bcafa78ab2/source-baseline.json'
+STOCK_BASELINE='build/probe/stock-player-cook-25f7f3afc7b7/source-baseline.json'
 
 
 def verify_stock_template_baseline(cfg, receipt):
@@ -353,7 +353,9 @@ def verify_native_player(cooked, probe):
 
 
 def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=False, full_joint_lod=False,
-         effective_templates=False, shipped_player=None, size_controls=False):
+         effective_templates=False, shipped_player=None, physics=False):
+    if not (rest_joints and full_joint_lod and effective_templates):
+        raise ValueError('Fixed-rest builds require the observed rest mask, full joint LOD and shipped player template repair')
     if measure_pose and not rest_joints:raise ValueError('Pose measurement requires the current authored-rest candidate')
     if effective_templates and not (rest_joints and full_joint_lod):
         raise ValueError('Effective template repair requires authored rest and full joint LOD')
@@ -383,9 +385,8 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     subprocess.run([str(converter),'export',str(source_rig),str(original_rig)],check=True,capture_output=True)
     rig=merge_rig(json.loads(original_rig.read_text()),json.loads((probe_dir/'deformation-rig.json').read_text()),full_joint_lod)
     hierarchy=None
-    if size_controls:
-        from shape_size_transport import independent_rig
-        rig,hierarchy=independent_rig(rig)
+    from fixed_physics import independent_rig
+    rig,hierarchy=independent_rig(rig)
     write_json(job/'player-rig.json',rig)
     body=player_entity(json.loads((probe_dir/'scripted-motion-entity.json').read_text()))
     write_json(job/'player-body.json',body)
@@ -423,7 +424,7 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     if rest_joints:
         from deformation_graph import deformation_graph
         graph=deformation_graph(json.loads((probe_dir/'stock-graph.json').read_text()),probe['stockNames'],probe['controlledNames'],
-            identity_root=probe['identityRoot'],parent_space='attached',rest_joints=True,transform_controls=size_controls)
+            identity_root=probe['identityRoot'],parent_space='attached',rest_joints=True,transform_controls=True)
         write_json(job/'deformation-graph.json',graph)
         # Replace only this freshly copied, owned input; preserve immutable probe.
         (workspace/GRAPH).unlink()
@@ -434,15 +435,9 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     if measure_pose:
         root_frame=rig['_chunks']['CSkeleton #0']['_vars']['rigdata']['_elements'][94]['_vars']['Position']['_vars']
         pose_rest=[root_frame[c]['_value'] for c in 'XYZ']
-    runtime=player_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(),names,pose_rest)
-    size_contract=None
-    if size_controls:
-        if not effective_templates:raise ValueError('Size controls require the observed shipped player path')
-        from size_controls import add_size_controls
-        from shape_size_transport import build_transport
-        poses,shape_receipt=build_transport(cfg['base'],rig,job)
-        runtime,size_contract=add_size_controls(runtime,cfg['base'],probe['controlledNames'],poses=poses)
-        size_contract.update(shape_receipt,independentHierarchy=hierarchy)
+    from fixed_physics import generate
+    runtime,physics_contract=generate(cfg['base'],rig,job,enabled=physics)
+    physics_contract['independentHierarchy']=hierarchy
     script.write_text(runtime,encoding='utf-8')
     evidence=dict(probe,baseCommit=pin['commit'],executionPhase='player-stack',authoredRestMask=rest_joints,
         fullJointLod=full_joint_lod,poseMeasurement=measure_pose,
@@ -458,26 +453,26 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
         evidence.update(shippedPlayerReceipt=shipped_receipt.relative_to(ROOT).as_posix(),
             shippedPlayerReceiptSHA256=digest(shipped_receipt))
     evidence['sourceInputProbe']=probe_dir.relative_to(ROOT).as_posix()
-    evidence['fullTransformChannels']=size_controls
+    evidence['fullTransformChannels']=True
     evidence['sourceInputProbeSHA256']=digest(probe_dir/'deformation-probe.json')
     evidence['inputProbeNativeCook']=evidence.pop('nativeCook')
     evidence['inputProbeResources']=evidence.pop('resources')
     evidence['resources']=[dict(path=p.relative_to(workspace).as_posix(),sourceSHA256=digest(p))
         for p in workspace.rglob('*') if p.is_file() and p.suffix!='.ws']
     write_json(job/'deformation-probe.json',evidence)
-    project=dict(name='modMaleMod',version='0.4.23-coherent-shape-test' if size_controls else '0.4.20-shipped-player-load-test' if effective_templates else '0.4.18-boot-recovery-test' if full_joint_lod else '0.4.16-pose-measurement' if measure_pose else '0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
+    project=dict(name='modMaleMod',version='0.4.25-fixed-rest-physics' if physics else '0.4.24-fixed-rest',platform='pc',cacheBuilders=['textures','physics'],
         scriptedCook=True,motionEntity=BODY,motionOutput='player',additionalNativeDumps=[RIG,PLAYER,PARENT]+[r['path'] for r in effective],
         isolatedNativeDumps=[r['path'] for r in effective],
         isolatedNativeResources=[r['path'] for r in effective],
         stageShippedPlayerTemplates=effective_templates,
         nativeSourceBaseline=STOCK_BASELINE if effective_templates else None,
         deformationBridge=dict(sourceProbe=job.relative_to(ROOT).as_posix(),sourceProbeSHA256=digest(job/'deformation-probe.json'),
-            lateActivation=False,identityRoot=probe['identityRoot'],fullTransformChannels=size_controls,parentPoseSpace='attached',
+            lateActivation=False,identityRoot=probe['identityRoot'],fullTransformChannels=True,parentPoseSpace='attached',
             executionPhase='player-stack',authoredRestMask=rest_joints,fullJointLod=full_joint_lod,
             effectiveTemplates=effective_templates,
             poseMeasurement=measure_pose,cageBaseCommit=probe['cageBaseCommit']),
-        sizeControls=size_contract,
-        scope='Five live size cage controls; authored surface parity, remaining controls, dynamic pelvis and secondary motion incomplete.' if size_controls else 'Player stack pose/scale probe. Full source controls, dynamic pelvis and secondary motion remain incomplete.')
+        fixedPhysics=physics_contract,
+        scope='Fixed unit rest scale; Base-derived secondary motion and collisions, pending in-game validation.' if physics else 'Fixed unit rest scale; no sliders or dynamic motion.')
     package=build(cfg,project,workspace);verify_package(package)
     write_json(job/'candidate-provenance.json',dict(package=package.relative_to(ROOT).as_posix(),installed=False,observedGameplay=False))
     print(package)
@@ -492,5 +487,5 @@ if __name__=='__main__':
     parser.add_argument('--full-joint-lod',action='store_true')
     parser.add_argument('--effective-templates',action='store_true')
     parser.add_argument('--shipped-player',type=Path)
-    parser.add_argument('--size-controls',action='store_true')
-    args=parser.parse_args();main(args.probe,args.player_inspection,args.rest_joints,args.measure_pose,args.full_joint_lod,args.effective_templates,args.shipped_player,args.size_controls)
+    parser.add_argument('--physics',action='store_true')
+    args=parser.parse_args();main(args.probe,args.player_inspection,args.rest_joints,args.measure_pose,args.full_joint_lod,args.effective_templates,args.shipped_player,args.physics)

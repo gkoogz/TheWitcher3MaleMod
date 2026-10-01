@@ -45,7 +45,8 @@ def install(directory):
         if not (packed.get('additionalMotionBinding') or {}).get('cookedLateGraphSlotsVerified'):
             raise RuntimeError('Delayed graph package lacks native second-slot verification')
     input_path=Path.home()/'Documents/The Witcher 3/input.settings'
-    input_bindings.edit_bindings(input_path.read_bytes())
+    fixed = bool(manifest.get('fixedPhysics'))
+    if not fixed:input_bindings.edit_bindings(input_path.read_bytes())
     previous=read_json(ROOT/'local/installation.json')
     rollback_path=ROOT/'local/motion-rollback.json'
     old_rollback=read_json(rollback_path) if rollback_path.exists() else None
@@ -56,7 +57,12 @@ def install(directory):
     write_json(rollback_path,{'previous':stable_previous,'backup':stable_backup,
         'replaced':previous,'replacedBackup':backup,'newPackage':packed['package']})
     try:
-        install_package(cfg,directory);bindings=input_bindings.install(input_path)
+        install_package(cfg,directory)
+        if fixed:
+            bindings=input_bindings.uninstall() if (ROOT/'local/input-bindings.json').exists() else []
+            print('Installed fixed-scale physics candidate; removed owned MaleMod hotkeys. Previous build:',backup)
+            return bindings
+        bindings=input_bindings.install(input_path)
         print('Installed motion test and hotkeys; previous build archived at:',backup)
         category='MaleMod - size controls' if manifest.get('sizeControls') else 'MaleMod - player pose test'
         print('F6 opens the native pause menu; select '+category+'. Escape returns to gameplay.')
@@ -73,7 +79,10 @@ def revert():
     current=read_json(ROOT/'local/installation.json')
     if current['package']!=record['newPackage']:raise RuntimeError('Installed package is no longer this motion test')
     uninstall_package(cfg);restore_previous(cfg,record['previous'],record['backup'])
-    if not record['previous'].get('observedLoadAndPose'):input_bindings.uninstall()
+    prior_manifest=read_json(ROOT/record['previous']['package']/'build-manifest.json')
+    if prior_manifest.get('fixedPhysics'):
+        if (ROOT/'local/input-bindings.json').exists():input_bindings.uninstall()
+    else:input_bindings.install(Path.home()/'Documents/The Witcher 3/input.settings')
     print('Restored the previous verified build; preserved its required hotkeys.')
 
 if __name__=='__main__':

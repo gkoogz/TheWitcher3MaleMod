@@ -1,0 +1,139 @@
+    private function PhysicsStep(dt : float)
+    {
+        var i, iteration, lobe : int;
+        var gravity, drag, t, lambda, stretch : float;
+        var zero, rest, oldRest, cord, axisX, axisY, current, desired : Vector;
+        zero = Vector(0.0,0.0,0.0,0.0);
+        for (i = 0; i < 10; i += 1)
+        {
+            physicsOld[i] = physicsPosition[i];
+            if (i < 2) { physicsPosition[i] = targets[i]; }
+            else
+            {
+                if (i < 8) { gravity = @shaft_gravity@; drag = @shaft_drag@; }
+                else { gravity = @lobe_gravity@; drag = @lobe_drag@; }
+                physicsVelocity[i].Z -= gravity*dt;
+                physicsVelocity[i] *= ExpF(-drag*dt);
+                physicsPosition[i] += physicsVelocity[i]*dt;
+            }
+        }
+        for (i = 0; i < 7; i += 1) { lengthLambda[i] = 0.0; }
+        for (i = 0; i < 6; i += 1)
+        {
+            t = (i+1.0)/7.0;
+            bends[i] = PrepareBend(i+1,@shaft_bend_compliance@*(0.02+0.98*t*t),dt,0.5);
+            bendLambda[i] = zero;
+        }
+        for (i = 0; i < 2; i += 1)
+        { suspensionLambda[i] = 0.0; shearLambdaX[i] = 0.0; shearLambdaY[i] = 0.0; }
+        for (iteration = 0; iteration < 24; iteration += 1)
+        {
+            for (i = 1; i < 7; i += 1)
+            { lambda = lengthLambda[i]; SolveDistance(i,i+1,lengths[i],0.0,lambda,dt); lengthLambda[i] = lambda; }
+            for (i = 0; i < 6; i += 1)
+            {
+                rest = targets[i]-targets[i+1]*2.0+targets[i+2];
+                oldRest = oldTargets[i]-oldTargets[i+1]*2.0+oldTargets[i+2];
+                current = bendLambda[i]; SolveRestBend(i+1,bends[i],rest,oldRest,current); bendLambda[i] = current;
+            }
+            for (lobe = 0; lobe < 2; lobe += 1)
+            {
+                i = lobe+8;
+                cord = VecNormalize(targets[i]-targets[0]);
+                axisX = VecNormalize(VecCross(cord,VecTransformDir(pelvis,Vector(0.0,1.0,0.0,0.0))));
+                axisY = VecNormalize(VecCross(cord,axisX));
+                lambda = shearLambdaX[lobe]; SolveMaterialAxis(i,targets[i],oldTargets[i],axisX,@suspension_shear_compliance@,dt,lambda); shearLambdaX[lobe] = lambda;
+                lambda = shearLambdaY[lobe]; SolveMaterialAxis(i,targets[i],oldTargets[i],axisY,@suspension_shear_compliance@,dt,lambda); shearLambdaY[lobe] = lambda;
+                lambda = suspensionLambda[lobe]; SolveSuspension(i,targets[0],oldTargets[0],tetherRest[lobe],@suspension_compliance@,@suspension_damping_ratio@,dt,lambda); suspensionLambda[lobe] = lambda;
+                SolveReach(i,targets[0],tetherLimit[lobe]);
+            }
+            // Broad phase prevents support queries for separated resources.
+            ResolveContacts();
+        }
+        for (i = 2; i < 10; i += 1)
+        {
+            physicsVelocity[i] = (physicsPosition[i]-physicsOld[i])/dt;
+            stretch = VecDistance(physicsPosition[i],targets[i]);
+            if (!(stretch >= 0.0) || stretch > 1.0) { ResetPhysics(); return; }
+        }
+        for (lobe = 0; lobe < 2; lobe += 1)
+        {
+            cord = restPoints[lobe+8]-restPoints[0];
+            current = VecTransformDir(worldToPelvis,physicsPosition[lobe+8]-targets[0]);
+            desired = q_SetShortestRotation(VecNormalize(cord),VecNormalize(current));
+            lobeRotations[lobe] = q_SetSlerp(lobeRotations[lobe],desired,1.0-ExpF(-@lobe_torsion@*dt));
+        }
+    }
+
+    private function SegmentPart(p, a, b : Vector) : float
+    {
+        var ab : Vector;
+        var d : float;
+        ab = b-a; d = VecDot(ab,ab);
+        if (d < 0.00000001) { return 0.0; }
+        return ClampF(VecDot(p-a,ab)/d,0.0,1.0);
+    }
+
+    private function LobeSupport(i : int, n : Vector) : Vector
+    {
+        var localPoint : Vector;
+        localPoint = VecTransformDir(worldToPelvis,n);
+        localPoint = v_SetRotatedDir(q_SetInv(lobeRotations[i-8]),localPoint);
+        localPoint = VecTransformDir(MatrixGetInverted(restFrames[i]),localPoint);
+        localPoint = OvoidSupport(localPoint,radii[i]);
+        localPoint = VecTransformDir(restFrames[i],localPoint);
+        localPoint = v_SetRotatedDir(lobeRotations[i-8],localPoint);
+        return VecTransformDir(pelvis,localPoint);
+    }
+
+    private function ResolveContacts()
+    {
+        var i, side, a, j : int;
+        var t, distance, gap, radius : float;
+        var closest, delta, normal, support, surfaceMove : Vector;
+        for (i = 2; i < 10; i += 1)
+        {
+            radius = MaxF(radii[i].X,MaxF(radii[i].Y,radii[i].Z))*1.15;
+            for (side = 0; side < 2; side += 1)
+            {
+                a = side*2;
+                t = SegmentPart(physicsPosition[i],capsules[a],capsules[a+1]);
+                closest = capsules[a]+(capsules[a+1]-capsules[a])*t;
+                delta = physicsPosition[i]-closest; distance = VecLength(delta);
+                if (distance > radius+thighRadii[side] || distance < 0.000001) { continue; }
+                normal = delta/distance;
+                if (i < 8) { gap = distance-radii[i].X-thighRadii[side]; }
+                else
+                {
+                    support = LobeSupport(i,-normal);
+                    gap = VecDot(delta+support,normal)-thighRadii[side];
+                }
+                if (gap < 0.0)
+                {
+                    surfaceMove = closest-(oldCapsules[a]+(oldCapsules[a+1]-oldCapsules[a])*t);
+                    ProjectMovingContact(i,normal,gap,surfaceMove); physicsContacts += 1;
+                }
+            }
+        }
+        delta = physicsPosition[9]-physicsPosition[8]; distance = VecLength(delta);
+        if (distance > 0.000001)
+        {
+            normal = delta/distance;
+            gap = VecDot(delta+LobeSupport(9,-normal)-LobeSupport(8,normal),normal)-@padding@;
+            if (gap < 0.0) { ProjectPairContact(8,9,normal,gap); physicsContacts += 1; }
+        }
+        for (i = 8; i < 10; i += 1)
+        {
+            radius = MaxF(radii[i].X,MaxF(radii[i].Y,radii[i].Z))*1.15;
+            for (j = 1; j < 7; j += 1)
+            {
+                t = SegmentPart(physicsPosition[i],physicsPosition[j],physicsPosition[j+1]);
+                closest = physicsPosition[j]+(physicsPosition[j+1]-physicsPosition[j])*t;
+                delta = physicsPosition[i]-closest; distance = VecLength(delta);
+                if (distance < 0.000001 || distance > radius+MaxF(radii[j].X,radii[j+1].X)*1.25) { continue; }
+                normal = delta/distance;
+                gap = VecDot(delta+LobeSupport(i,-normal),normal)-(radii[j].X*(1.0-t)+radii[j+1].X*t)*1.25;
+                if (gap < 0.0) { ProjectRodContact(j,j+1,i,t,normal,gap); physicsContacts += 1; }
+            }
+        }
+    }

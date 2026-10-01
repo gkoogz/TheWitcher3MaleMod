@@ -33,7 +33,18 @@ dispatcher RVA is `0x5214f0`; native UTF-8 string constructor/destructor RVAs ar
 string layout. The wrapper owns the argument table, so it skips that table's
 native allocator cleanup at `0x521d45` and individually destroys the native
 strings before freeing its own buffer. This is allocator ownership, not an
-engine validation bypass. A different executable hash fails before launch.
+engine validation bypass. Unrecognized executable hashes fail before launch.
+
+The October 1 Steam REDkit update (build 25651183) is also pinned by
+SHA256 `37ac28519adc8bc234653fcf973ba76935096aea50003b0f3a03af4007788f7d`.
+The dispatcher was relocated by its starting-commandlet string reference and
+PE unwind boundaries to `0x5299d0`; its argument cleanup call is `0x52a225`.
+Observed 12-byte UTF-8 constructor/destructor are `0x293e730`/`0x293eae0`.
+An untouched player-template cook was repeated with the same two calibrated
+stock assertions; its receipt is
+`build/probe/stock-player-cook-25f7f3afc7b7/source-baseline.json`.
+Script compilation, dispatch, authored cook and same-process native dumps passed
+with this profile. Subsequent package gates remain mandatory.
 
 Compiler and cooker return values, native error signatures, output files and
 native object references remain required. Unexpected native assertions fail.

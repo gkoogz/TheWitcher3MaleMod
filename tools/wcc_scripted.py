@@ -28,8 +28,14 @@ def checked(ok):
     if not ok:raise C.WinError(C.get_last_error())
 def q(b,off=0):return struct.unpack_from('<Q',b,off)[0]
 def put(b,off,v):struct.pack_into('<Q',b,off,v)
+ABI_PROFILES = {
+ '56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e':dict(dispatcher=0x5214f0,cleanup=0x521d45,constructor=0x293e240,destructor=0x293e5f0),
+ '37ac28519adc8bc234653fcf973ba76935096aea50003b0f3a03af4007788f7d':dict(dispatcher=0x5299d0,cleanup=0x52a225,constructor=0x293e730,destructor=0x293eae0),
+}
+
 class Session:
-    def __init__(self,args,cwd,log):
+    def __init__(self,args,cwd,log,abi):
+        self.abi=abi
         self.pi=PI();s=SI();s.cb=C.sizeof(s)
         self.log=log.open('wb'); self.input=open(os.devnull,'rb')
         s.flags=0x100
@@ -61,7 +67,7 @@ class Session:
             if e.code==3:
                 self.base=q(b,24)
                 if q(b):close(q(b))
-                self.bp(self.base+0x5214f0)
+                self.bp(self.base+self.abi['dispatcher'])
             elif e.code==6:
                 if q(b):close(q(b))
             elif e.code==5:
@@ -83,12 +89,12 @@ class Session:
         saved=self.ctx();ctx=bytearray(saved);sp=(q(ctx,0x98)-0x100)&~15;sp-=8
         self.write(sp,struct.pack('<Q',self.trap));put(ctx,0x98,sp);put(ctx,0xf8,address)
         for off,v in [(0x80,rcx),(0x88,rdx),(0xb8,r8),(0xc0,r9)]:put(ctx,off,v)
-        if skip_cleanup:self.bp(self.base+0x521d45)
+        if skip_cleanup:self.bp(self.base+self.abi['cleanup'])
         self.setctx(ctx);self.resume()
         while True:
             kind,a=self.event()
             if kind!='break':raise RuntimeError('WCC exited during invocation: '+str(a))
-            if skip_cleanup and a==self.base+0x521d45:
+            if skip_cleanup and a==self.base+self.abi['cleanup']:
                 self.unbp(a);x=self.ctx()
                 if q(x,0x80)!=rdx:raise RuntimeError('Unexpected argument destructor')
                 put(x,0xf8,a+5);self.setctx(x);self.resume();continue
@@ -104,8 +110,9 @@ def run_scripted_cook(cfg, options, workspace, label, inspect_entities=()):
     Temporary breakpoints only control the child tool's command dispatch; they
     do not bypass compiler, resource, cooker, or output validation.
     """
-    expected='56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e'
-    if digest(cfg['wcc'])!=expected:raise RuntimeError('Unsupported WCC executable; session addresses require revalidation')
+    expected=digest(cfg['wcc'])
+    abi=ABI_PROFILES.get(expected)
+    if abi is None:raise RuntimeError('Unsupported WCC executable; session addresses require revalidation')
     workspace=Path(workspace).resolve()
     if not workspace.is_relative_to(ROOT/'build'):raise ValueError('Expected an owned build workspace')
     combined=ROOT/'build/jobs'/('session-scripts-'+uuid.uuid4().hex[:12]);combined.mkdir(parents=True)
@@ -124,10 +131,10 @@ def run_scripted_cook(cfg, options, workspace, label, inspect_entities=()):
         p=Path(p).resolve()
         if not p.is_relative_to(ROOT/'build'):raise ValueError('Inspection must stay in build')
         commands.append(['dumpfile','-file='+str(p),'-out=\\\\?\\'])
-    s=Session(args,cfg['wcc'].parent,log);started=time.monotonic();results=[]
+    s=Session(args,cfg['wcc'].parent,log,abi);started=time.monotonic();results=[]
     try:
         kind,entry=s.event()
-        if kind!='break' or entry!=s.base+0x5214f0:raise RuntimeError('Unexpected WCC dispatcher entry')
+        if kind!='break' or entry!=s.base+abi['dispatcher']:raise RuntimeError('Unexpected WCC dispatcher entry')
         x=s.ctx();engine=q(x,0x80);ret=q(s.read(q(x,0x98),8));s.unbp(entry);s.bp(ret);put(x,0xf8,entry);s.setctx(x);s.resume()
         kind,a=s.event()
         if kind!='break' or a!=ret:raise RuntimeError('Unexpected WCC compilation return')
@@ -141,11 +148,11 @@ def run_scripted_cook(cfg, options, workspace, label, inspect_entities=()):
             if len(argv)>200 or sum(len(a.encode())+1 for a in argv)>0xe000:raise ValueError('Command exceeds native session argument bounds')
             for i,arg in enumerate(argv):
                 b=arg.encode()+b'\x00';s.write(raw,b);s.write(arr+i*12,b'\x00'*12)
-                s.invoke(s.base+0x293e240,arr+i*12,raw);raw+=len(b)
+                s.invoke(s.base+abi['constructor'],arr+i*12,raw);raw+=len(b)
             s.write(table,struct.pack('<QII',arr,len(argv),len(argv)))
-            result=s.invoke(s.base+0x5214f0,engine,table,skip_cleanup=True)&255
+            result=s.invoke(s.base+abi['dispatcher'],engine,table,skip_cleanup=True)&255
             results.append({'command':command[0],'args':command[1:],'returnedSuccess':bool(result)})
-            for i in range(len(argv)):s.invoke(s.base+0x293e5f0,arr+i*12)
+            for i in range(len(argv)):s.invoke(s.base+abi['destructor'],arr+i*12)
             if not result:raise RuntimeError('Native '+command[0]+' failed; inspect '+str(log))
         s.unbp(s.trap);checked(free(s.pi.process,mem,0,0x8000));s.resume()
         kind,exit_code=s.event()
@@ -168,7 +175,7 @@ def run_scripted_cook(cfg, options, workspace, label, inspect_entities=()):
             'seconds':round(time.monotonic()-started,3),'logPath':log.relative_to(ROOT).as_posix(),
             'logSHA256':digest(log),'wccSHA256':expected,'wrapperSHA256':digest(Path(__file__)),
             'sourceSignature':signature.hexdigest(),'compiledSHA256':digest(compiled[0]),
-            'sdkModified':False,'runtimeHookRequired':False}
+            'sdkModified':False,'runtimeHookRequired':False,'abi':abi}
     write_json(log.with_suffix('.json'),record)
     print('Native script-aware commands succeeded.',flush=True)
     return record

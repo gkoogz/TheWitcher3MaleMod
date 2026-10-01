@@ -513,7 +513,7 @@ def build(cfg, project_override=None, workspace_override=None):
                 'nativeOverrides': override_records,'attachment':attachment_record,
                 'motionBinding':binding if project.get('scriptedCook') else None,
                 'deformationBridge':project.get('deformationBridge'),
-                'sizeControls':project.get('sizeControls')}
+                'fixedPhysics':project.get('fixedPhysics')}
     write_json(publish / 'build-manifest.json', manifest)
     archive = publish.with_suffix('.zip')
     with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as package:

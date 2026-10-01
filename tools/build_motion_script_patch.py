@@ -4,10 +4,16 @@ Use only when serialized controller fields/classes and native resources are
 unchanged. Native cook evidence is inherited explicitly, not claimed as rerun.
 """
 import argparse
+import re
 from mod import *
 
 
-def build_patch(source, version):
+def layout(text):
+    # Conservative gate: class inheritance/imports, every declaration and
+    # function signature must survive. Only method bodies may change here.
+    return re.findall(r'(?m)^\s*(?:import\s+)?(?:abstract\s+)?(?:class|struct|state)\s+[^\n{]+|(?:[\w]+\s+)*var\s+[^;]+;|(?:[\w]+\s+)*(?:function|event)\s+\w+\([^)]*\)(?:\s*:\s*\w+)?',text)
+
+def build_patch(source, version, runtime=None):
     source = Path(source).resolve()
     manifest = verify_package(source)
     if not (manifest.get('motionBinding') or {}).get('cookedControllerBindingVerified'):
@@ -15,7 +21,10 @@ def build_patch(source, version):
     workspace = ROOT / 'build/jobs' / ('script-patch-' + uuid.uuid4().hex[:12])
     scripts = workspace / 'scripts/local'
     scripts.mkdir(parents=True)
-    script = ROOT / 'probes/runtime/maleModPhysics.ws'
+    script = Path(runtime).resolve() if runtime else ROOT / 'probes/runtime/maleModPhysics.ws'
+    previous_script=inside(source,'Mods/modMaleMod/content/scripts/local/maleModPhysics.ws')
+    if layout(script.read_text())!=layout(previous_script.read_text()):
+        raise ValueError('Runtime-only patch changes controller declarations or signatures; recook instead')
     shutil.copy2(script, scripts / script.name)
     compilation = compile_scripts(settings(), workspace)
     package = ROOT / 'publish' / (time.strftime('%Y%m%d-%H%M%S') + '-' + uuid.uuid4().hex[:6])
@@ -40,6 +49,7 @@ def build_patch(source, version):
         'serializedControllerLayoutChanged': False,
         'compilation': compilation,
     }
+    if manifest.get('fixedPhysics'):manifest['fixedPhysics']['runtimeScriptSHA256']=digest(script)
     manifest['files'] = [dict(path=p.relative_to(package).as_posix(), sha256=digest(p), bytes=p.stat().st_size)
                          for p in sorted(package.rglob('*')) if p.is_file()]
     write_json(package / 'build-manifest.json', manifest)
@@ -58,5 +68,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--version', required=True)
+    parser.add_argument('--script', type=Path)
     args = parser.parse_args()
-    build_patch(args.source, args.version)
+    build_patch(args.source, args.version, args.script)

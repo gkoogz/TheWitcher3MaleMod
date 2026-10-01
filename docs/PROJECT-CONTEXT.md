@@ -20,8 +20,10 @@ in Base with deliberate adoption by Wolverine and future games. Native Geralt
 bindings, formats, input/menu, cooking and installation belong here. Do not
 fork shared algorithms into this repository for convenience.
 
-Current work: repair secondary physics and F6 corner-menu behavior, then complete
-real live size/physics controls comparable to Wolverine. Animation sequences,
+Current work, reset October 1: delete Witcher sliders and scaling controls, retain
+one initial unit scale and the working skeleton rig, then adapt Base secondary
+physics and collision for the rod and suspended lobes. Do not change Wolverine's
+source, controls or installed runtime. No menu or hotkey is needed. Animation sequences,
 fluid and audio were explicitly deferred for this phase. Future reproductive
 physiology demonstrations remain part of the longer-term educational scope.
 
