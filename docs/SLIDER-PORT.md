@@ -5,10 +5,44 @@ reconstruct the dynamic pelvis, and retain the interim native pause menu. Prefer
 live deformation eventually. Animation, fluid, audio and other non-sliders are
 explicitly deferred. Read `PROJECT-CONTEXT.md` and Base's `AUTHORED-SHAPE.md`.
 
-The installed 0.4.4 test remains unchanged. The user confirms its native menu is
+The 0.4.4 baseline was restored after the failed 0.4.5 probe. The user confirms its native menu is
 visible; tuning effects and persistence are not yet observed. It still has just
 the three REDengine-specific controls. This pass does NOT complete the 18-control
-runtime port or install a new test. Do not tell the user it does.
+runtime port. Do not tell the user it does.
+
+## Latest bridge failures and continuation
+
+0.4.5 added an independent CAnimatedComponent, observed rig names, a TPose plus
+per-bone ParentAlign graph, and scale variables before the existing dangle.
+Its native handles and packed bytes passed verification. Observed gameplay
+failed: no meaningful scale change and lower-body offset. The diagnostic graph
+and variable-accepted values were not supplied. The baseline was restored.
+
+0.4.6 routes the mesh directly to the graph, schedules that helper after the
+player's animation, and separates visible output from dangle reconstruction.
+Compilation/cooking succeeded, but the native dump has no explicit skinning
+attachment; the strict output gate rejected it before packaging/installation.
+Do not relax that gate without proving how the engine recreates the binding.
+Later diagnosis found a JSON ownership ordering dependency: parent objects must
+be filled before their children in the source and embedded flat compiled tree.
+Topological ownership ordering retains the direct skinning attachment without
+loosening the gate. 0.4.7 compiles, cooks, passes strict graph/rig/mesh binding and
+six packed resource/buffer checks, and is installed for focused gameplay testing.
+The user has been asked for scale response, waist alignment, leg animation and
+the menu row's accepted flag. Until those arrive, visible deformation is pending.
+
+`tools/probe_deformation_bridge.py --transforms` cooks scale and six scalar
+translation/rotation channels for each of ten authored joints. This is native
+serialization evidence only. Axis units/order, pose inheritance and output are
+pending. `tools/inspect_editor_function.py` inspects the licensed offline editor
+and symbol map without modifying them or attaching to a game process. Ignored
+disassembly reports hash their inputs. ParentAlign requires an animated parent;
+UpdateByOtherAnimatedComponent schedules updates and does not copy the pose.
+
+Base's `PHYSICS-CONTROLS.md` adds 600 original C++ float32 oracle comparisons
+covering the eight source material controls. It preserves raw versus mapped UI
+values and source units. Complete solver/native output remains required; the
+three native dyng controls must not masquerade as those eight controls.
 
 ## Source control coverage
 
@@ -100,7 +134,7 @@ on control changes; the frame loop should operate on a small motion cage.
 
 ## Pin and rebuild caution
 
-The lock now adopts Base `26944f8` for shared authoring/domain work. Installed
+The lock now adopts Base `fb325ae` for shared authoring/domain and material-law work. Installed
 0.4.4 assets remain their verified earlier bytes. `build/motion/latest.json` still
 records the older cage provenance; `build_motion_release.py` deliberately rejects
 that pin mismatch. Prepare/reverify a cage against the new pin for a full release,

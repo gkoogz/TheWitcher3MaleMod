@@ -1,0 +1,115 @@
+"""Build a reversible native output test before publishing source sliders.
+
+The existing controller and menu stay authoritative. This adds one clearly
+labelled bridge test; accepting a graph variable is not proof of visible motion.
+"""
+import argparse
+import json
+import shutil
+import uuid
+from pathlib import Path
+from mod import ROOT, settings, build, write_json, digest, verify_package
+from deformation_graph import add_deformation_component
+import subprocess
+
+
+def probe_script(source, direct=False):
+    def replace_once(old, new):
+        nonlocal source
+        if source.count(old) != 1:
+            raise ValueError('Controller insertion marker changed: ' + old)
+        source = source.replace(old, new)
+
+    replace_once('    private var panelOpen : bool;', '''    private var deformationRoot : CAnimatedComponent;
+    private var bridgeScale : float;
+    private var bridgeAccepted : bool;
+    private var panelOpen : bool;''')
+    replace_once('        LoadTuning();', '''        deformationRoot = (CAnimatedComponent)GetEntity().GetComponent("MaleModDeformation");
+        if (!deformationRoot) { deformationRoot = (CAnimatedComponent)thePlayer.GetComponent("MaleModDeformation"); }
+        bridgeScale = 1.0;
+        LoadTuning();''')
+    if direct:
+        replace_once('        bridgeScale = 1.0;', '''        if (deformationRoot) { deformationRoot.UpdateByOtherAnimatedComponent(thePlayer.GetRootAnimatedComponent()); }
+        bridgeScale = 1.0;''')
+    replace_once("        if (control == 'MaleModGravity') { return gravityValue; }", '''        if (control == 'MaleModBridgeScale') { return bridgeScale; }
+        if (control == 'MaleModGravity') { return gravityValue; }''')
+    replace_once("        if (control == 'MaleModGravity') { gravityValue = ClampF(value,0.0,2.0); }", '''        if (control == 'MaleModBridgeScale') { bridgeScale = ClampF(value,0.8,1.2); }
+        else if (control == 'MaleModGravity') { gravityValue = ClampF(value,0.0,2.0); }''')
+    replace_once('    private function ApplyTuning()\n    {', '''    private function ApplyTuning()
+    {
+        var scale : Vector;
+        if (deformationRoot)
+        {
+            scale = Vector(bridgeScale, bridgeScale, bridgeScale);
+            bridgeAccepted = deformationRoot.SetBehaviorVectorVariable('mm_shaft_00_scale', scale);
+        }''')
+    replace_once('            + " | gravity "', '            + " | graph: " + (bool)deformationRoot + " | variable accepted: " + bridgeAccepted + " | bridge scale: " + bridgeScale\n            + " | gravity "')
+    replace_once('    group = m_flashValueStorage.CreateTempFlashObject();', '''    controls.PushBackFlashObject(MaleModSlider(m_flashValueStorage, 'MaleModBridgeScale',
+        "Scale bridge (test)", controller.GetTuning('MaleModBridgeScale'),0.8,1.2,40));
+    group = m_flashValueStorage.CreateTempFlashObject();''')
+    if direct:
+        start=source.index('    controls.PushBackFlashObject(MaleModSlider(m_flashValueStorage, \'MaleModGravity\',')
+        end=source.index('    controls.PushBackFlashObject(MaleModSlider(m_flashValueStorage, \'MaleModBridgeScale\',',start)
+        source=source[:start]+source[end:]
+        replace_once('    public function Status() : string',
+                     '    public function BridgeAccepted() : bool { return bridgeAccepted; }\n\n    public function Status() : string')
+        source=source.replace('"Scale bridge (test)"','"Direct scale test | accepted: " + controller.BridgeAccepted()')
+        source=source.replace('MaleMod - motion controls','MaleMod - isolated pose test')
+    return source
+
+
+def main(job,direct=False):
+    job = Path(job).resolve()
+    if not job.is_relative_to(ROOT/'build/motion'):
+        raise ValueError('Expected an owned deformation probe')
+    evidence = json.loads((job/'deformation-probe.json').read_text(encoding='utf-8'))
+    if not evidence.get('nativeCook'):
+        raise ValueError('Candidate lacks native cook evidence')
+    cfg = settings()
+    workspace = ROOT/'build/jobs'/('deformation-release-'+uuid.uuid4().hex[:12])
+    workspace.mkdir(parents=True)
+    entity = 'items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent'
+    custom = add_deformation_component(json.loads((job/'scripted-motion-entity.json').read_text(encoding='utf-8')),
+        'characters\\malemod\\physics\\deformation.w2rig', 'characters\\malemod\\behavior\\deformation.w2beh',
+        output='direct' if direct else 'dangle')
+    recipe = workspace/'entity.json'
+    write_json(recipe, custom)
+    output = workspace/entity
+    output.parent.mkdir(parents=True)
+    converter = ROOT/'build/research/wkit-current/MaleModCR2W.exe'
+    subprocess.run([str(converter), 'import', str(recipe), str(output)], check=True, capture_output=True)
+    for record in evidence['resources']:
+        if record['path'] == entity:
+            continue
+        source = job/'intake'/record['path']
+        if digest(source) != record['sourceSHA256']:
+            raise ValueError('Verified candidate resource changed')
+        target = workspace/record['path']
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+    script = workspace/'scripts/local/maleModPhysics.ws'
+    script.parent.mkdir(parents=True)
+    script.write_text(probe_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(encoding='utf-8'),direct),
+                      encoding='utf-8')
+    project = dict(name='modMaleMod', version='0.4.7-ordered-pose-test' if direct else '0.4.5-deformation-bridge-test', platform='pc',
+        cacheBuilders=['textures', 'physics'], scriptedCook=True, motionEntity=entity,
+        motionOutput='direct' if direct else 'dangle',
+        deformationBridge=dict(sourceProbe=job.relative_to(ROOT).as_posix(),
+            sourceProbeSHA256=digest(job/'deformation-probe.json'),
+            cageBaseCommit=evidence['cageBaseCommit'], currentBaseAdoption='Control/output probe only; cage geometry unchanged'),
+        scope='Isolated native pose/scale test; secondary motion is not the visible output in direct mode. Source sliders and dynamic pelvis are incomplete.')
+    package = build(cfg, project, workspace)
+    verify_package(package)
+    write_json(workspace/'candidate-provenance.json', dict(sourceProbe=str(job.relative_to(ROOT)),
+        sourceProbeSHA256=digest(job/'deformation-probe.json'), cageBaseCommit=evidence['cageBaseCommit'],
+        installed=False, observedGameplay=False, package=str(package.relative_to(ROOT))))
+    print(package)
+    return package
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('job', type=Path)
+    parser.add_argument('--direct',action='store_true')
+    args=parser.parse_args()
+    main(args.job,args.direct)

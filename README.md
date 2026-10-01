@@ -8,7 +8,13 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-The installed test is **0.4.4-native-sliders-test**. F6 opens the native pause
+The installed candidate is **0.4.7-ordered-pose-test**. F6 opens the native pause
+menu; select **MaleMod - isolated pose test** for one direct scale probe.
+Native binding and packed-byte verification pass; visible deformation and pose
+alignment await gameplay testing. This isolates the output bridge before the
+full source slider port. See [the handoff](docs/HANDOFF.md) for exact recovery.
+
+The prior working baseline is **0.4.4-native-sliders-test**. F6 opens the native pause
 menu; select **MaleMod - motion controls** for three physics sliders. Escape
 resumes gameplay. This replaces the failed debug HUD and repeated toasts in
 0.4.3. The working model/physics assets are unchanged. Compilation and package

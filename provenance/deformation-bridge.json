@@ -1,0 +1,66 @@
+{
+  "checkpoint": "2026-09-30",
+  "baseCommit": "fb325ae6c16f7cd2e7a4db85b9dcc28b07c32534",
+  "installedVersion": "0.4.7-ordered-pose-test",
+  "installedPackage": "publish/20260930-210808-ef9a4d",
+  "installedBaseCommit": "fb325ae6c16f7cd2e7a4db85b9dcc28b07c32534",
+  "restoredAfterUserClosedGame": true,
+  "attempts": [
+    {
+      "version": "0.4.5-deformation-bridge-test",
+      "package": "publish/20260930-201814-4c1124",
+      "nativeCook": true,
+      "nativeBindingVerified": true,
+      "packageVerified": true,
+      "installedPreviously": true,
+      "currentlyInstalled": false,
+      "observedResult": "failed: no meaningful resizing; lower half offset from upper half",
+      "variableAcceptedValue": null
+    },
+    {
+      "version": "0.4.6-direct-pose-test",
+      "nativeCook": true,
+      "nativeBindingVerified": false,
+      "packaged": false,
+      "installed": false,
+      "failure": "CMeshSkinningAttachment absent from cooked native dump"
+    },
+    {
+      "probe": "deformation-c7a27faae64d",
+      "fullTransformChannels": true,
+      "nativeCook": true,
+      "installed": false,
+      "observedGameplay": false
+    },
+    {
+      "version": "0.4.7-ordered-pose-test",
+      "package": "publish/20260930-210808-ef9a4d",
+      "nativeCook": true,
+      "nativeBindingVerified": true,
+      "packageVerified": true,
+      "packedResourcesAndBuffersVerified": 6,
+      "installed": true,
+      "observedGameplay": false,
+      "correction": "Parent-before-child ownership order in source and flat compiled tree preserves direct skin attachment; strict output gate unchanged",
+      "adapterTestsPassed": 29
+    }
+  ],
+  "remaining": [
+    "native graph-to-visible-mesh binding",
+    "parent pose alignment",
+    "all 18 independent source controls",
+    "coupled dynamic pelvis",
+    "native persistence and performance observations"
+  ],
+  "deferred": [
+    "animation",
+    "fluid",
+    "audio"
+  ],
+  "implementationSHA256": {
+    "tools/deformation_graph.py": "8372370223237ded911ff64fade417f6302c7bfcb54e78b49e2d2d16d71515dc",
+    "tools/probe_deformation_bridge.py": "3d640d40a80a586b6b643f3633200051da378d5b7d68ca9e37c80a595c4f1775",
+    "tools/build_deformation_probe.py": "c5d4afe2f1678597cd392865914de7a33841e2a99f81590185094233ae2be9f5",
+    "tools/verify_cooked_motion.py": "f6536282f1b335b37144bb2978c815f54d937043d8919aacdca11a916bb40446"
+  }
+}

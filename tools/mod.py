@@ -385,7 +385,9 @@ def build(cfg, project_override=None, workspace_override=None):
             from verify_cooked_motion import verify_binding
             entity=inside(cooked,project['motionEntity'])
             records.append(run_scripted_cook(cfg,cook_options,workspace,'scripted-cook',[entity]))
-            binding=verify_binding(Path(str(entity)+'.xml'))
+            binding=verify_binding(Path(str(entity)+'.xml'),output=project.get('motionOutput','dangle'))
+            if project.get('deformationBridge') and not binding.get('cookedDeformationBindingVerified'):
+                raise RuntimeError('Deformation candidate lacks verified native skeleton/graph/output references')
             write_json(job/'motion-binding-verification.json',binding)
         else:
             records.append(run_wcc(cfg,'cook',cook_options,workspace,'cook'))
@@ -439,7 +441,8 @@ def build(cfg, project_override=None, workspace_override=None):
                 'files': files, 'nativeCommands': records, 'gameplayTested': False,
                 'scope': project.get('scope', 'native build foundation; no fitted anatomy or live body editor'),
                 'nativeOverrides': override_records,'attachment':attachment_record,
-                'motionBinding':binding if project.get('scriptedCook') else None}
+                'motionBinding':binding if project.get('scriptedCook') else None,
+                'deformationBridge':project.get('deformationBridge')}
     write_json(publish / 'build-manifest.json', manifest)
     archive = publish.with_suffix('.zip')
     with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as package:

@@ -20,13 +20,28 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 Latest user observation: **the 0.4.4 native pause-menu category is visible**.
 Actual tuning effects/persistence remain unconfirmed. The next request is the
 full 18-control port with a dynamic coupled pelvis; read `SLIDER-PORT.md` first.
-Base `26944f8` now supplies an original-code-verified early shape stage and a
+Base `fb325ae` supplies original-code-verified early shape and physics-control laws and a
 protected fitted-graft collar domain. Both Geralt LODs pass synthetic seam/area
 checks, but the limited correction does not establish the full shape envelope.
-An isolated native scale graph cooks successfully; runtime pose and physics
-compatibility remain unverified. No new package was installed in this pass.
+The 0.4.5 graph-to-dangle test was installed and FAILED observed gameplay: the
+user reported no meaningful resizing and lower-body offset from the torso.
+After the user closed the game, the verified 0.4.4 package was restored. No
+graph/variable-accepted diagnostic values were supplied; do not invent them.
+A 0.4.6 direct graph-to-mesh candidate compiled/cooked but failed the native
+attachment gate: its CMeshSkinningAttachment disappeared. It was never packaged
+or installed. Full translation/rotation/scale channels cook in isolation, but
+their units, ordering and visible output remain unverified. Read
+`provenance/deformation-bridge.json` and `SLIDER-PORT.md` before another attempt.
+The attachment failure was subsequently isolated to native JSON ownership order:
+write a parent before its children, including the embedded flat compiled tree.
+The corrected **0.4.7-ordered-pose-test** passes the strict native attachment gate,
+all six packed resource/buffer byte checks and 29 adapter tests. It is installed
+at `publish/20260930-210808-ef9a4d`, with Base `fb325ae` and unchanged cage inputs
+from `ca78de0`. Gameplay feedback is pending. It exposes one direct scale probe
+under F6 -> MaleMod - isolated pose test; this probe separates graph pose output
+from the dangle simulator and does not provide complete physics or source sliders.
 
-Current installed test: **0.4.4-native-sliders-test**, local package
+Restored baseline before installing 0.4.7: **0.4.4-native-sliders-test**, local package
 `publish/20260930-183505-9d2838`, Base
 `ca78de046a7be63ccb316c7a9b9c12bc7ce3293f`. Read `LIVE-MOTION-TEST.md` and
 `WCC-SCRIPTED-COOK.md`. The custom-class cooking blocker is resolved by running
@@ -89,8 +104,9 @@ Base algorithm changed. The installer still retains historical arrow/F8 bindings
 this UI no longer uses them. Future cleanup should remove only owned bindings.
 
 The installed package was built against Base `ca78de0`. The current lock adopts
-`33c74af` for durable context documentation only; all runtime source/assets are
-identical. `provenance/base-context-adoption.json` records the exact changes.
+`fb325ae` for shared authoring and physics laws. These new algorithms do not run
+in the restored package. `provenance/base-context-adoption.json` describes only
+the earlier documentation adoption; it is not evidence of this newer adoption.
 Read [PROJECT-CONTEXT.md](PROJECT-CONTEXT.md) for the user's educational purpose,
 phase scope and deferrals. No Wolverine runtime or Base algorithm changed.
 
