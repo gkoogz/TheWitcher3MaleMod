@@ -17,6 +17,26 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
+**0.4.18-boot-recovery-test is installed; gameplay is unobserved.** Package
+`publish/20261001-031309-f1ed02`, Base `4b4719f`, unchanged cage `ca78de0`.
+The prior 0.4.17 screenshot had an inactive graph and zero callbacks, so its
+pose samples were unavailable. The new player-stack script reports the exact
+boot exit in a grey F6 menu row, reacquires the player root, retries a missing
+root/skeleton or incomplete 104-joint load for at most five seconds, and removes
+an owned slot if `AttachBehavior` fails before retrying. It does not poll after
+the bounded startup. A graph handle or rig-name mismatch stops with a reason.
+Native script compilation/cooking, 47 adapter tests, package integrity, exact
+unbundle comparison of eight resources/buffers and five installed hashes pass.
+The previous installed candidate is archived under
+`local/uninstalled/modMaleMod-d6b0e5eb4ae8`. Re-equip trousers, wait ten seconds,
+then inspect the boot, graph, scale and pose rows. A successful graph boot and
+60 pose samples still do not prove rendered hip/waist/ankle parity; test idle
+sway, walk/run/turn and scale 0.8/1.2 in gameplay. Do not report 0.4.18 as a
+motion fix until those observations pass. This revision changes only the
+Witcher adapter. The current source pin is Base `db85d36`, which adds only this
+handoff record after the installed build's Base `4b4719f`. A future rebuild
+must record the new installed revision explicitly.
+
 **0.4.17-full-joint-lod FAILED observed gameplay.**
 Package `publish/20261001-021142-cf7e81`, source job
 `build/motion/player-stack-c38bc5dd963b`, Base `3b10594`, cage `ca78de0`.

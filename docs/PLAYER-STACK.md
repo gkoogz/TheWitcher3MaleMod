@@ -49,10 +49,18 @@ detaches and erases only its own slot. There is no per-frame script polling.
 
 ## Reproduction and gates
 
-Installed test: **0.4.17**, `publish/20261001-021142-cf7e81`, built against Base
-`3b10594`; cage geometry remains `ca78de0`. 47 tests pass, 23 native pose nodes
-are connected, eight resources round-trip exactly and five installed hashes
-match. Gameplay observations are pending.
+Installed test: **0.4.18-boot-recovery-test**,
+`publish/20261001-031309-f1ed02`, built against Base `4b4719f`; cage geometry
+remains `ca78de0`. 47 tests pass, 23 native pose nodes are connected, eight
+resources round-trip exactly and five installed hashes match. Gameplay
+observations are pending. Its bounded startup reacquires the player root and
+retries a missing root/skeleton or incomplete 104-joint load for five seconds.
+The F6 menu reports the last boot exit reason and attempt count. An attach
+failure removes the owned slot before retrying. No idle polling was added.
+
+**0.4.17 failed observed gameplay:** graph inactive, no slider callbacks or
+pose samples, and the attachment still appeared anchored away from Geralt's
+animated hips. The zero movement/error fields were missing measurements.
 
 **0.4.14 and 0.4.15 FAILED authored joint follow.** Restoring reference local
 transforms did not fix the steady attachment during idle sway. Native review

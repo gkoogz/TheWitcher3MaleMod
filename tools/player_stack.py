@@ -89,34 +89,56 @@ def player_entity(source):
 def player_script(source, names, pose_rest=None):
     result=probe_script(source,direct=True,late=True)
     result=result.replace('    editable var dynamicConstraint',
-        '    editable var deformationGraph : CBehaviorGraph;\n    private var ownsPoseLayer : bool;\n    editable var dynamicConstraint',1)
+        '    editable var deformationGraph : CBehaviorGraph;\n    private var ownsPoseLayer : bool;\n    private var bridgeBootReason : string;\n    private var bridgeBootAttempts : int;\n    editable var dynamicConstraint',1)
     start=result.index('        deformationRoot = (CAnimatedComponent)GetEntity().GetComponent(')
     end=result.index('        bridgeScale = 1.0;',start)
     result=result[:start]+'        deformationRoot = thePlayer.GetRootAnimatedComponent();\n'+result[end:]
     start=result.index('    public latent function BootDeformationGraph()')
     end=result.index('    public function BridgeBooted()',start)
-    checks='\n'.join("        if (deformationRoot.skeleton.bones[%d].nameAsCName != '%s') { return; }" % (i,n)
+    checks='\n'.join("            if (deformationRoot.skeleton.bones[%d].nameAsCName != '%s') { bridgeBootReason = \"rig name mismatch at %d\"; return; }" % (i,n,i)
         for i,n in enumerate(names))
     result=result[:start]+'''    public latent function BootDeformationGraph()
     {
         var slot : SBehaviorGraphInstanceSlot;
         var i : int;
-        Sleep(0.25);
-        if (!listening || !deformationRoot || !deformationGraph || !deformationRoot.skeleton) { return; }
-        if (deformationRoot.skeleton.bones.Size() != 104) { return; }
-'''+checks+'''
-        for (i = 0; i < deformationRoot.runtimeBehaviorInstanceSlots.Size(); i += 1)
+        var attempt : int;
+        bridgeBootReason = "waiting for player root";
+        for (attempt = 0; attempt < 10; attempt += 1)
         {
-            if (deformationRoot.runtimeBehaviorInstanceSlots[i].instanceName == 'MaleModAnatomyLayer') { return; }
+            Sleep(0.5);
+            if (!listening || !thePlayer) { bridgeBootReason = "controller stopped"; return; }
+            bridgeBootAttempts = attempt + 1;
+            deformationRoot = thePlayer.GetRootAnimatedComponent();
+            if (!deformationRoot) { bridgeBootReason = "player root unavailable"; continue; }
+            if (!deformationGraph) { bridgeBootReason = "controller graph handle missing"; return; }
+            if (!deformationRoot.skeleton) { bridgeBootReason = "player skeleton unavailable"; continue; }
+            if (deformationRoot.skeleton.bones.Size() != 104)
+            { bridgeBootReason = "player root has " + deformationRoot.skeleton.bones.Size() + " bones; expected 104"; continue; }
+'''+checks+'''
+            for (i = 0; i < deformationRoot.runtimeBehaviorInstanceSlots.Size(); i += 1)
+            {
+                if (deformationRoot.runtimeBehaviorInstanceSlots[i].instanceName == 'MaleModAnatomyLayer')
+                { bridgeBootReason = "pose slot already present"; return; }
+            }
+            slot.instanceName = 'MaleModAnatomyLayer';
+            slot.graph = deformationGraph;
+            slot.alwaysOnTopOfStack = true;
+            deformationRoot.runtimeBehaviorInstanceSlots.PushBack(slot);
+            ownsPoseLayer = true;
+            bridgeBooted = deformationRoot.AttachBehavior('MaleModAnatomyLayer');
+            if (bridgeBooted)
+            {
+                bridgeBootReason = "attached";
+                ApplyTuning();
+                return;
+            }
+            bridgeBootReason = "AttachBehavior rejected slot";
+            RemovePoseLayer();
         }
-        slot.instanceName = 'MaleModAnatomyLayer';
-        slot.graph = deformationGraph;
-        slot.alwaysOnTopOfStack = true;
-        deformationRoot.runtimeBehaviorInstanceSlots.PushBack(slot);
-        ownsPoseLayer = true;
-        bridgeBooted = deformationRoot.AttachBehavior('MaleModAnatomyLayer');
-        ApplyTuning();
     }
+
+    public function BridgeBootDetail() : string
+    { return "Boot: " + bridgeBootReason + " | attempts: " + bridgeBootAttempts; }
 
     private function RemovePoseLayer()
     {
@@ -136,6 +158,9 @@ def player_script(source, names, pose_rest=None):
     result=result.replace('    private function StopPanel()\n    {','    private function StopPanel()\n    {\n        RemovePoseLayer();',1)
     result=result.replace('MaleMod - isolated pose test','MaleMod - player pose test')
     result=result.replace('late graph: ','player layer: ')
+    result=result.replace('    group = m_flashValueStorage.CreateTempFlashObject();',
+        '''    controls.PushBackFlashObject(MaleModDiagnosticRow(m_flashValueStorage,'MaleModBootReason',controller.BridgeBootDetail()));
+    group = m_flashValueStorage.CreateTempFlashObject();''',1)
     # No replacement of the player's stock graphs, freeze state or sampling.
     for forbidden in ('ActivateBehaviors(', 'UpdateByOtherAnimatedComponent(', 'UnfreezePose('):
         if forbidden in result:raise ValueError('Player script mutates stock animation scheduling: '+forbidden)
@@ -287,7 +312,7 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     evidence['resources']=[dict(path=p.relative_to(workspace).as_posix(),sourceSHA256=digest(p))
         for p in workspace.rglob('*') if p.is_file() and p.suffix!='.ws']
     write_json(job/'deformation-probe.json',evidence)
-    project=dict(name='modMaleMod',version='0.4.17-full-joint-lod' if full_joint_lod else '0.4.16-pose-measurement' if measure_pose else '0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
+    project=dict(name='modMaleMod',version='0.4.18-boot-recovery-test' if full_joint_lod else '0.4.16-pose-measurement' if measure_pose else '0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
         scriptedCook=True,motionEntity=BODY,motionOutput='player',additionalNativeDumps=[RIG,PLAYER,PARENT],
         deformationBridge=dict(sourceProbe=job.relative_to(ROOT).as_posix(),sourceProbeSHA256=digest(job/'deformation-probe.json'),
             lateActivation=False,identityRoot=probe['identityRoot'],fullTransformChannels=False,parentPoseSpace='attached',

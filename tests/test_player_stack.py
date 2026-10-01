@@ -86,6 +86,11 @@ class PlayerStackTests(unittest.TestCase):
         self.assertIn('runtimeBehaviorInstanceSlots.PushBack(slot)',script)
         self.assertIn('slot.alwaysOnTopOfStack = true',script)
         self.assertIn('RemovePoseLayer();',script)
+        self.assertIn('player root has ',script)
+        self.assertIn('controller graph handle missing',script)
+        self.assertIn('AttachBehavior rejected slot',script)
+        self.assertIn('BridgeBootDetail()',script)
+        self.assertIn('attempt < 10',script)
         for forbidden in ('ActivateBehaviors(', 'UpdateByOtherAnimatedComponent(', 'UnfreezePose('):
             self.assertNotIn(forbidden,script)
 

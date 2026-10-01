@@ -19,10 +19,10 @@ def add_pose_measurement(script, rest_position):
     private var poseRootIndex : int;
     private var posePelvisIndex : int;
 ''', 1)
-    marker = "        bridgeBooted = deformationRoot.AttachBehavior('MaleModAnatomyLayer');\n        ApplyTuning();"
+    marker = '                ApplyTuning();\n                return;'
     if script.count(marker) != 1:
         raise ValueError('Player layer activation changed')
-    script = script.replace(marker, marker + '\n        CaptureAttachmentPose();', 1)
+    script = script.replace(marker, '                ApplyTuning();\n                CaptureAttachmentPose();\n                return;', 1)
     marker = '    private function RemovePoseLayer()'
     code = '''    // Read-only, 60 samples after attachment, then no further polling.
     public latent function CaptureAttachmentPose()
