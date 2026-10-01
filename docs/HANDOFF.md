@@ -45,6 +45,12 @@ main menu/gameplay; the Windows inspection helper failed during setup. No recent
 Application Error event establishes a crash cause. The last process check found
 no running Witcher process. Diagnose this before another launch; do not ask for
 a keypress or treat startup survival as capture success.
+The complete API-only launcher was retried as job `20261001-173200` after fixing
+the Python shadowing error. Its 45-second probe matched PID 25944 and stayed
+connected, but registered no graphics API and saved no frame. A sampled thread
+context located the tested threads in Windows' wait routine; this does not
+identify a driver, deadlock or mod fault. Keep this capture path failed and avoid
+repeated blind relaunches. The no-F12 requirement remains in PROJECT-CONTEXT.md.
 Neither editor addresses nor a single native morph blend establish the required
 full nonlinear 18-control vertex path. Working rollback remains 0.4.20.
 

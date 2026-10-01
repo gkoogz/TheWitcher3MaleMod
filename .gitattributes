@@ -5,3 +5,4 @@
 *.ws text eol=lf
 *.xml text eol=lf
 *.cs text eol=lf
+tools/native/*.cpp text eol=lf

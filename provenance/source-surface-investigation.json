@@ -42,12 +42,12 @@
     },
     "captureMechanism": "RenderDoc target TriggerCapture(1); no keypress or rebinding",
     "latestAttempt": {
-      "localEvidence": "build/probe/runtime-captures/20261001-172645/probe-result.json",
+      "localEvidence": "build/probe/runtime-captures/20261001-173200/launch.json",
       "targetMatched": true,
-      "gamePID": 24788,
+      "gamePID": 25944,
       "graphicsAPIReady": false,
       "captureObserved": false,
-      "connectionClosed": true,
+      "connectedAtEndOf45SecondProbe": true,
       "causeEstablished": false
     },
     "probeSourceSHA256": "0f5b51c7a71866efd112bc74179de9bb1ebceeced200fb90783dfa2b2b86aad5"
