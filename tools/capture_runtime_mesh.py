@@ -3,7 +3,7 @@
 This gathers rendering evidence. It does not install a deformation candidate,
 change game resources/settings, or interpret an editor ABI as a game ABI.
 """
-import argparse,datetime,subprocess,os,re,time
+import argparse,datetime,subprocess,os,re,time,json
 from pathlib import Path
 from mod import ROOT,settings,required_file,digest,write_json
 
@@ -14,6 +14,11 @@ def launch(tool):
         raise ValueError('Use the owned portable diagnostic tool')
     if digest(tool)!='400cb013ea52b9baa818d69dc0a6341776d2a9560edad5bcc6e200fe8c03806d':
         raise ValueError('Diagnostic executable differs from verified RenderDoc 1.46')
+    capture_probe=required_file(tool.parent/'control.exe')
+    proof=json.loads(required_file(ROOT/'build/probe/renderdoc/probe-build.json').read_text())
+    for path,key in [(capture_probe,'executableSHA256'),(tool.parent/'renderdoc.dll','renderdocDLLSHA256'),
+                     (ROOT/'tools/native/renderdoc_target.cpp','sourceSHA256')]:
+        if digest(required_file(path))!=proof[key]:raise ValueError('Capture probe provenance differs: '+str(path))
     startup=subprocess.STARTUPINFO();startup.dwFlags|=subprocess.STARTF_USESHOWWINDOW
     startup.wShowWindow=0
     process_query=['powershell','-NoProfile','-Command',
@@ -52,9 +57,24 @@ def launch(tool):
     write_json(job/'launch.json',record)
     if not record['startupObserved']:
         raise RuntimeError('Game exited during startup; no frame capture observed. See '+str(job/'launch.json'))
-    # Process survival and a target-control port do not establish interception
-    # of the game's graphics device. Verify that before requesting a frame.
-    print('Game process survived startup. Graphics capture readiness is not yet verified.')
+    if len(record['processIDs'])!=1:raise RuntimeError('Expected exactly one running game process')
+    # Capture via the target API only. F12 belongs to the user's existing binding.
+    result=subprocess.run([str(capture_probe),str(record['targetControlPort']),str(record['processIDs'][0]),'45','capture'],
+        capture_output=True,text=True,startupinfo=startup,timeout=55)
+    reports=[json.loads(line) for line in result.stdout.splitlines() if line.startswith('{')]
+    if not reports:raise RuntimeError('Capture probe returned no structured status')
+    record['graphicsProbe']=reports[-1]
+    record['graphicsAPIReady']=record['graphicsProbe'].get('graphicsAPIReady',False)
+    captured=record['graphicsProbe'].get('captureObserved',False)
+    if captured:
+        frame=Path(record['graphicsProbe']['capturePath']).resolve()
+        if not frame.is_relative_to(job.resolve()):raise RuntimeError('Capture is outside the owned job')
+        record['captureSHA256']=digest(required_file(frame))
+        record['captureObserved']=True
+    write_json(job/'launch.json',record)
+    if result.returncode or not record['captureObserved']:
+        raise RuntimeError('Graphics capture is not ready or no frame was saved; no keyboard capture should be requested. See '+str(job/'launch.json'))
+    print('Verified graphics device and saved one diagnostic frame through the API. No key pressed.')
     print('Captures: '+str(job))
     return job
 

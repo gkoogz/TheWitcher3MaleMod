@@ -39,11 +39,22 @@
       "runningGamePID": 27060,
       "renderdocModuleLoaded": false,
       "relaunchPending": true
-    }
+    },
+    "captureMechanism": "RenderDoc target TriggerCapture(1); no keypress or rebinding",
+    "latestAttempt": {
+      "localEvidence": "build/probe/runtime-captures/20261001-172645/probe-result.json",
+      "targetMatched": true,
+      "gamePID": 24788,
+      "graphicsAPIReady": false,
+      "captureObserved": false,
+      "connectionClosed": true,
+      "causeEstablished": false
+    },
+    "probeSourceSHA256": "0f5b51c7a71866efd112bc74179de9bb1ebceeced200fb90783dfa2b2b86aad5"
   },
   "script": {
     "path": "tools/capture_runtime_mesh.py",
-    "sha256": "b6323e357b77ad79cd870bfa05fc9c47c8352f8f39a443fff7c59f29e97b8943"
+    "sha256": "6e91d7964662d76b3b77829125ffe15e136f45bae6f3838245f84daa23f1b3c6"
   },
   "remaining": [
     "capture actual native vertices and skinning layout",

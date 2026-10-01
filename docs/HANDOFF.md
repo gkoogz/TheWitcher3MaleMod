@@ -31,6 +31,20 @@ the original diagnostic process was PID 22856. Capture readiness must be verifie
 against the actual game's registered graphics API before requesting F12 again.
 The launcher no longer equates process survival with capture readiness. A close
 and diagnostic relaunch is pending; preserve the current game session meanwhile.
+The user explicitly prohibits using F12. Captures now use the RenderDoc target
+API's `TriggerCapture(1)` after checking the exact game PID and a supported,
+presenting graphics API. No key is pressed or rebound. The diagnostic C++ client
+exports `renderdoc__replay__marker`: without it RenderDoc captures the probe itself,
+which can falsely connect to its own control port. `build_renderdoc_probe.py`
+builds that client against the hash-checked local 1.46 headers/import library.
+October 1 relaunch jobs `20261001-171756` and `20261001-172645` did not establish
+graphics readiness or produce a frame. The latter initially exposed a Python
+variable-shadowing error, now repaired; its explicit native probe matched game
+PID 24788 but disconnected with no registered API or capture. The user reported
+main menu/gameplay; the Windows inspection helper failed during setup. No recent
+Application Error event establishes a crash cause. The last process check found
+no running Witcher process. Diagnose this before another launch; do not ask for
+a keypress or treat startup survival as capture success.
 Neither editor addresses nor a single native morph blend establish the required
 full nonlinear 18-control vertex path. Working rollback remains 0.4.20.
 

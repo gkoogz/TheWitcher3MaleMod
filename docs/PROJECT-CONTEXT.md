@@ -25,6 +25,9 @@ real live size/physics controls comparable to Wolverine. Animation sequences,
 fluid and audio were explicitly deferred for this phase. Future reproductive
 physiology demonstrations remain part of the longer-term educational scope.
 
+Capture diagnostics must not press or rebind F12: the user has an existing binding
+and explicitly rejected using that key. Trigger captures through the tool's API.
+
 The user rejected 0.4.0 and 0.4.1 in gameplay: deformation and an unresponsive F6
 key remained. Preserve that correction. Build, native round-trip and package
 tests do not prove a working teaching tool. See `HANDOFF.md` and provenance for
