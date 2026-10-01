@@ -1,4 +1,18 @@
-# Installed native slider test
+# Live motion checks
+
+## Current fixed-default phase
+
+Sliders, tuning menus and owned hotkeys are removed. Never use or rebind F12.
+The current default candidate uses Wolverine state 2/all-50 geometry and its
+12-node mechanical guide at the measured character scale. Restart the game,
+load the usual save and compare the relaxed size and shape while idle. Then
+walk, run and turn; check the collar, thigh clearance, lobe movement and frame
+pacing. Save/reload and outfit transitions remain separate checks. The first
+physics attempt was reported moving in game but did not match these defaults.
+Native build proof does not confirm the new visual match. Consult HANDOFF.md
+and local/installation.json for the exact installed candidate and rollback.
+
+## Historical slider test (superseded)
 
 Checkpoint: September 30, 2026. Version `0.4.4-native-sliders-test`, installed
 from `publish/20260930-183505-9d2838`. Inspect `local/installation.json` before changing files.

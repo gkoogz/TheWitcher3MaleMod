@@ -1,5 +1,13 @@
 # Project purpose and continuity
 
+Latest October 1 clarification: the fixed Witcher baseline must closely
+approximate Wolverine ResetStudyControls defaults: full-floppy state 2, all UI
+values 50, its default size and relaxed form. The first physics build moves in
+game but the user rejected its shape and default behavior. Replace the posed
+large reference with the evaluated default; retain working player attachment.
+Keep sliders and toggles absent until this baseline is confirmed. Wolverine's
+source, controls and installation remain unchanged.
+
 The user describes themselves as a university medical-school educator and
 speculative biologist teaching postgraduate students. This is an interactive
 adult anatomy teaching project with deliberately exaggerated anatomical

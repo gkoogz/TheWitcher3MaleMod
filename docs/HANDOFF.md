@@ -7,7 +7,48 @@ the installed package still matches this record.
 
 ## Current phase: fixed unit scale and Base secondary physics
 
-The user explicitly discarded all Witcher sliders on October 1. Keep the
+### Latest checkpoint: 0.4.26 Wolverine defaults
+
+Installed `publish/20261001-194607-3fc4a2`, version
+`0.4.26-wolverine-default-physics`, pinned Base `5f0cd94`. User reported the
+previous .25 moving, but rejected its match to Wolverine defaults. The latest
+clarification supersedes retaining the old large posed mesh. This new candidate
+uses state 2/all seventeen controls 50, evaluated after 120 source frames, at
+the original measured scale 1.0255218584141075. No sliders, toggles or hotkeys.
+Wolverine's canonical source and installation were not changed.
+
+Source export: Base `build/wolverine-default-guide-v2`. Attachment:
+`build/attachment/fit-20261001-193459-664950`; native cage:
+`build/motion/cage-3b54cb1c3143`; input graph:
+`build/motion/deformation-f04abe7e9fc4`; complete player cook:
+`build/motion/player-stack-f22b33a4e7eb`. New topology and skin donor bindings
+are rebuilt together. Twelve guide nodes plus two lobes feed ten skin joints
+through Base's C1 sampler. The first guide span is 0.0237551723861 native units,
+not the previous centroid-derived 0.137 span. The bend target is zero curvature
+with the source gradient and raphe multipliers, not restoration of a posed bend.
+Lobe skin ordering follows source Y to native -X. The guide and skin rest frames
+agree to 4.6e-16 native units before import. Stock outer boundaries are preserved.
+
+58 adapter tests, 56 Base Python tests, provenance verification, source support
+and C1 kernel tests passed. The added same-session guide passed isolation and
+source segment-metric checks; 33 complete physics surfaces retained source
+parity (maximum 7.63e-6 source units). Native attachment and cage round-trips
+passed for both LODs. The isolated 600-frame free-guide test stayed finite with
+maximum segment error 0.000152787 native units; it excludes lobe/body contacts
+and does not measure WitcherScript cost. Full script-aware cook and player/graph
+binding verification passed. Official unbundle matched all ten resources and
+buffers; five installed file hashes are verified in local/installation.json.
+Rollback preserves .25 in `local/uninstalled/modMaleMod-efe5e435c85c`.
+
+**New gameplay and frame pacing are pending user comparison.** This remains a
+point-mass/native-skinning approximation. Source angular effective mass, full
+Hermite reaction Jacobian, pressure, dynamic collar, source gait/side filtering
+and live root spring response are absent. Root droop starts from the evaluated
+default. Do not call this full solver parity or reintegrate controls yet.
+
+### Historical first physics attempt (.25)
+
+The user explicitly discarded all Witcher sliders on October 1. Initially keep the
 initial fitted geometry and observed working skeleton attachment; implement
 rod/lobe physics and collision from Base. **Do not change Wolverine.**
 Capture and slider reconstruction work below is historical and superseded.

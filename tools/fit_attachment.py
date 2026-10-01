@@ -35,11 +35,24 @@ def fit(output):
     output.parent.mkdir(parents=True,exist_ok=True)
     bank_path=cfg['base']/profile['sourceMesh'];bank=np.load(bank_path)
     p=bank['derived__final_reference_positions'].astype(float)
+    baseline=None;mechanics=None
+    if profile.get('evaluatedBaseline'):
+        baseline_dir=cfg['base']/profile['evaluatedBaseline']
+        baseline=read_json(baseline_dir/'manifest.json')
+        if baseline['state']!=2 or baseline['steps']!=120:raise ValueError('Expected Wolverine full-floppy default')
+        for name,sha in baseline['files'].items():
+            if digest(baseline_dir/name)!=sha:raise ValueError('Evaluated baseline changed')
+        for path,sha in baseline['surfaceImplementationHashes'].items():
+            if digest(cfg['base']/path)!=sha:raise ValueError('Default evaluator changed; regenerate baseline')
+        evaluated=np.load(baseline_dir/'baseline.npz')
+        np.testing.assert_array_equal(evaluated['indices'].reshape(-1),bank['neck_render_data__nrIndices'])
+        np.testing.assert_array_equal(evaluated['sourceVertexIDs'],np.arange(len(p)))
+        p=evaluated['positions'].astype(float);mechanics=read_json(baseline_dir/'mechanics.json')
     f=bank['neck_render_data__nrIndices'].reshape(-1,3)[:,[0,2,1]]
     keep,ids=topology_ids(p);loops=boundary_loops(ids[f])
     if len(loops)!=1:raise ValueError('Expected one reference attachment boundary')
     boundary=p[keep[loops[0]]];root=(boundary.min(0)+boundary.max(0))/2
-    scale=profile['targetBoundaryWidth']/np.ptp(boundary[:,1])
+    scale=profile.get('sourceToFBXScale',profile['targetBoundaryWidth']/np.ptp(boundary[:,1]))
     basis=np.asarray(profile['basis']);target=np.asarray(profile['targetRoot']);projection=np.asarray(profile['projection'])
     if not np.allclose(basis@basis.T,np.eye(3)) or np.linalg.det(basis)<0:raise ValueError('Invalid calibrated basis')
     aligned=(p-root)@basis.T*scale+target
@@ -167,6 +180,9 @@ def fit(output):
             'outputSHA256':digest(output),'lods':reports,'observedGameplay':False,
             'limitations':['rest reference pose with native skinning','no secondary motion or live dilation',
                            'stock skin atlas detail; source anatomical material transfer pending','module geometry has not been reduced for distant LOD']}
+    if baseline:
+        report.update(evaluatedBaseline=profile['evaluatedBaseline'],evaluatedBaselineSHA256=digest(baseline_dir/'manifest.json'),sourceMechanics=mechanics,
+            sourceBaseline='Wolverine ResetStudyControls; state 2, all UI 50, 120 source frames',sourceBounds=baseline['sourceBounds'])
     write_json(output.with_suffix('.fit.json'),report)
     print(json.dumps(report,indent=2))
     return report

@@ -27,6 +27,7 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     private var pelvisIndex : int;
     private var thighIndices : array<int>;
     private var restPoints : array<Vector>;
+    private var jointRestPoints : array<Vector>;
     private var restFrames : array<Matrix>;
     private var restDirections : array<Vector>;
     private var lengths : array<float>;
@@ -44,6 +45,9 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     private var materialLambda : array<Vector>;
     private var lengthLambda : array<float>;
     private var bends : array<MaleModPDBendData>;
+    private var bendCompliance : array<float>;
+    private var attachmentRestTangent : Vector;
+    private var anchorOffsets, materialOffsets, previousAnchors, previousMaterial : array<Vector>;
     private var lobeRotations : array<Vector>;
     private var tetherRest, tetherLimit, suspensionLambda, shearLambdaX, shearLambdaY : array<float>;
     private var worldToPelvis : Matrix;
@@ -135,7 +139,7 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         var i : int;
         pelvis = thePlayer.GetBoneWorldMatrixByIndex(pelvisIndex);
         worldToPelvis = MatrixGetInverted(pelvis);
-        for (i = 0; i < 10; i += 1) { targets[i] = Point(pelvis, restPoints[i]); }
+        for (i = 0; i < 14; i += 1) { targets[i] = Point(pelvis, restPoints[i]); }
         for (i = 0; i < 4; i += 1)
         { capsules[i] = thePlayer.GetBoneWorldPositionByIndex(thighIndices[i]); capsules[i].W = 0.0; }
     }
@@ -144,10 +148,11 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     {
         var i : int;
         physicsTime = 0.0;
-        for (i = 0; i < 10; i += 1)
+        for (i = 0; i < 14; i += 1)
         { physicsPosition[i] = targets[i]; physicsOld[i] = targets[i]; physicsVelocity[i] = Vector(0.0,0.0,0.0,0.0); }
         oldTargets = targets; oldCapsules = capsules;
-        for (i = 0; i < 2; i += 1) { lobeRotations[i] = Vector(0.0,0.0,0.0,1.0); }
+        for (i = 0; i < 2; i += 1)
+        { lobeRotations[i] = Vector(0.0,0.0,0.0,1.0); previousAnchors[i] = AttachmentTarget(i,false); previousMaterial[i] = AttachmentTarget(i,true); }
         previousRoot = targets[0]; initialized = true; physicsResets += 1;
     }
 
@@ -165,7 +170,7 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         for (j = 0; j < steps; j += 1)
         {
             fraction = (j+1.0)/steps;
-            for (i = 0; i < 10; i += 1) { targets[i] = startTargets[i]+(frameTargets[i]-startTargets[i])*fraction; }
+            for (i = 0; i < 14; i += 1) { targets[i] = startTargets[i]+(frameTargets[i]-startTargets[i])*fraction; }
             for (i = 0; i < 4; i += 1) { capsules[i] = startCapsules[i]+(frameCapsules[i]-startCapsules[i])*fraction; }
             PhysicsStep(0.0166666667); physicsSteps += 1;
             oldTargets = targets; oldCapsules = capsules;
@@ -180,24 +185,23 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     private function PublishPose()
     {
         var i : int;
-        var localPoint, delta, direction, rotation : Vector;
+        var localPoint, delta, direction, rotation, position : Vector;
         var angles : Vector;
         physicsAccepted = true;
         for (i = 0; i < 10; i += 1)
         {
-            localPoint = Point(worldToPelvis, physicsPosition[i]);
-            delta = VecTransformDir(MatrixGetInverted(restFrames[i]),localPoint-restPoints[i]);
             if (i < 8)
             {
-                if (i < 7) { direction = physicsPosition[i+1]-physicsPosition[i]; }
-                else { direction = physicsPosition[7]-physicsPosition[6]; }
+                SampleGuide(12,i/7.0,position,direction);
                 direction = VecNormalize(VecTransformDir(worldToPelvis,direction));
                 rotation = q_SetShortestRotation(restDirections[i],direction);
             }
-            else { rotation = lobeRotations[i-8]; }
+            else { position = physicsPosition[i+4]; rotation = lobeRotations[i-8]; }
+            localPoint = Point(worldToPelvis, position);
+            delta = VecTransformDir(MatrixGetInverted(restFrames[i]),localPoint-jointRestPoints[i]);
             angles = QuaternionAngles(rotation);
             PublishJoint(i,delta,angles);
-            physicsMotion = MaxF(physicsMotion,VecDistance(physicsPosition[i],targets[i]));
+            physicsMotion = MaxF(physicsMotion,VecDistance(localPoint,jointRestPoints[i]));
         }
         if (!physicsAccepted) { reason = "physics pose variables rejected"; StopTicking(); }
     }

@@ -1,8 +1,12 @@
 # Fixed rest and secondary motion
 
 The October 1 scope reset removes all live Witcher size/physics sliders, size
-pose tables, settings persistence and tuning menu/hotkeys. The mesh stays at its
-initial fitted unit scale. This does not remove Base's portable preference
+pose tables, settings persistence and tuning menu/hotkeys. The clarified fixed
+baseline is Wolverine's evaluated ResetStudyControls default: state 2 and all
+seventeen UI values 50, after 120 source reference frames. The large posed
+authoring mesh is replaced. The original measured source-to-character scale
+1.0255218584141075 is preserved; the smaller source seam does not cause a new
+uniform enlargement. This does not remove Base's portable preference
 contract or change Wolverine. Historical slider probes are superseded.
 
 `tools/player_stack.py --physics` generates a controller using
@@ -15,12 +19,19 @@ bone mapping, world sampling, fixed-step scheduling and native pose delivery.
   pelvis children with identical world bind frames. Full 104-bone LOD is retained.
 - Scale graph variables are assigned `(1,1,1)` once. Per-frame translation and
   rotation go through the working additional player pose layer.
-- Two proximal shaft particles are kinematic to keep the attachment anchored.
-  Six distal particles use source XPBD distance and damped curved-rest bends.
+- Twelve shaft physics particles are independent of the eight shaft skin joints.
+  Two proximal particles are kinematic, separated by one uniform source segment
+  (0.0237551723861 native units). Ten distal particles use the source distance
+  compliance, zero-curvature Kelvin-Voigt bend, proximal gradient and exported
+  raphe multipliers. The old centroid cage locked a much longer initial span.
+- C1 Hermite sampling transfers the guide to the rendering joints. Source lobe
+  centers and axes replace inferred centroids. Source Y maps to native -X;
+  the lobe skin donors follow that conversion, preserving source mechanical order.
 - Two lobes use gravity, source tension-only suspension, transverse shear, hard
   reach limits and damped orientation following.
 - Collisions use actual animated `r_thigh/r_shin/l_thigh/l_shin` endpoints,
-  target mesh radii, source tapered-ovoid support, lobe/lobe separation and
+  measured stock thigh envelopes, source default radii, tapered-ovoid support,
+  lobe/lobe separation and
   symmetric rod/lobe reactions. Contact correction is excluded from recovery
   velocity; moving thigh surfaces supply relative normal/friction response.
 - Physics uses 60 fixed steps/second, 24 coupled iterations, interpolated pose
@@ -31,7 +42,10 @@ bone mapping, world sampling, fixed-step scheduling and native pose delivery.
 
 This is a point-mass adaptation, not full source solver parity. Angular contact
 effective mass, full Hermite reaction Jacobian, source surface deformation,
-pressure and dynamic collar remain omitted. The static fit is not resculpted.
+pressure and dynamic collar remain omitted. The root droop is initialized from
+the evaluated full-floppy state; source gait/side filtering and live root spring
+response are not reproduced. The static surface now comes from the evaluated
+default, with a bounded local seam repair and unchanged stock outer boundaries.
 The shared `secondary_test` exercises a 600-step moving guide and suspended
 lobes, source support agreement, contacts, length conversion and rest bend.
 Native compile/cook/unbundle and gameplay must be recorded separately.
@@ -42,8 +56,13 @@ The ignored source fixtures and native inspections must exist and match hashes.
 Refresh the shipped templates if the installed game's startup bundle changes:
 
 ```powershell
-python tools/shipped_player.py
-python tools/player_stack.py build/motion/deformation-573cfc2899f5 --rest-joints --full-joint-lod --effective-templates --shipped-player <current-shipped-player-receipt> --physics
+python ../MaleMod/tools/export_default_baseline.py ../MaleMod/build/<new-default-export>
+# Set characters/geralt-attachment.json evaluatedBaseline to the new export.
+python tools/mod.py attachment
+python tools/build_default_cage.py
+python tools/verify_default_guide.py <new-cage-directory>
+python tools/probe_deformation_bridge.py --identity-root --attached-pose --cage <new-cage-directory>
+python tools/player_stack.py <new-deformation-probe> --rest-joints --full-joint-lod --effective-templates --shipped-player <current-shipped-player-receipt> --physics
 python tools/verify_motion_package.py --directory <package-directory>
 python tools/deploy_motion.py install --directory <package-directory>
 ```
@@ -60,7 +79,14 @@ reload. Check attachment tracking, bounded motion, thigh clearance, lobe/shaft
 separation, stable settling and frame pacing. Record the observations and any
 status counters in the handoff; do not mark them successful from a cooked build.
 
-## Native checkpoint: 0.4.25
+## Historical native checkpoint: 0.4.25
+
+Current .26 install: `publish/20261001-194607-3fc4a2`, Base `5f0cd94`.
+58 adapter and 56 Base Python tests passed; native round-trips, full scripted
+cook and ten unpacked resources/buffers passed. See HANDOFF.md and
+provenance/fixed-physics.json for exact default-source and cage receipts.
+The user observed motion in .25 but rejected its default shape. The .26 visual
+match and live performance are still pending. Its five installed hashes match.
 
 Full authored cook: `publish/20261001-185819-2d6df9`. Final candidate with the
 compiled detach/startup cancellation patch: `publish/20261001-185931-7366b3`.

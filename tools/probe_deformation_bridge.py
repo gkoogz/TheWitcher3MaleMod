@@ -8,6 +8,7 @@ import json
 import shutil
 import subprocess
 import uuid
+from pathlib import Path
 from mod import ROOT, settings, base_checkout, digest, write_json, run_wcc, required_file
 from motion_entity import make_entity
 from deformation_graph import deformation_graph, add_deformation_component
@@ -16,12 +17,13 @@ from prepare_motion import rig_world
 import numpy as np
 
 
-def main(transform_controls=False, identity_root=False, model_pose=False, attached_pose=False):
+def main(transform_controls=False, identity_root=False, model_pose=False, attached_pose=False, cage_path=None):
     if model_pose and attached_pose:raise ValueError('Choose one pose input')
     parent_space='attached' if attached_pose else 'model' if model_pose else 'local'
     cfg = settings()
     pin = base_checkout(cfg)
-    cage = ROOT / 'build/motion/cage-dec402309e13'
+    cage = Path(cage_path).resolve() if cage_path else ROOT / 'build/motion/cage-dec402309e13'
+    if not cage.is_relative_to(ROOT/'build/motion'):raise ValueError('Cage must be an owned build job')
     verified = verify(cage)
     source_record = json.loads((cage / 'motion.json').read_text(encoding='utf-8'))
     job = ROOT / 'build/motion' / ('deformation-' + uuid.uuid4().hex[:12])
@@ -78,6 +80,7 @@ def main(transform_controls=False, identity_root=False, model_pose=False, attach
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(resource, target)
     evidence = dict(baseCommit=pin['commit'], cageBaseCommit=source_record['baseCommit'],
+                    sourceCage=cage.relative_to(ROOT).as_posix(),
                     cageVerification=verified, stockGraphSHA256=digest(stock_graph),
                     stockNames=stock, controlledNames=controlled,
                     fullTransformChannels=transform_controls,
@@ -123,5 +126,6 @@ if __name__ == '__main__':
     parser.add_argument('--identity-root',action='store_true')
     parser.add_argument('--model-pose',action='store_true')
     parser.add_argument('--attached-pose',action='store_true')
+    parser.add_argument('--cage',type=Path)
     args=parser.parse_args()
-    main(args.transforms,args.identity_root,args.model_pose,args.attached_pose)
+    main(args.transforms,args.identity_root,args.model_pose,args.attached_pose,args.cage)

@@ -436,7 +436,7 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
         root_frame=rig['_chunks']['CSkeleton #0']['_vars']['rigdata']['_elements'][94]['_vars']['Position']['_vars']
         pose_rest=[root_frame[c]['_value'] for c in 'XYZ']
     from fixed_physics import generate
-    runtime,physics_contract=generate(cfg['base'],rig,job,enabled=physics)
+    runtime,physics_contract=generate(cfg['base'],rig,job,enabled=physics,cage=ROOT/probe['sourceCage'])
     physics_contract['independentHierarchy']=hierarchy
     script.write_text(runtime,encoding='utf-8')
     evidence=dict(probe,baseCommit=pin['commit'],executionPhase='player-stack',authoredRestMask=rest_joints,
@@ -460,7 +460,7 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     evidence['resources']=[dict(path=p.relative_to(workspace).as_posix(),sourceSHA256=digest(p))
         for p in workspace.rglob('*') if p.is_file() and p.suffix!='.ws']
     write_json(job/'deformation-probe.json',evidence)
-    project=dict(name='modMaleMod',version='0.4.25-fixed-rest-physics' if physics else '0.4.24-fixed-rest',platform='pc',cacheBuilders=['textures','physics'],
+    project=dict(name='modMaleMod',version='0.4.26-wolverine-default-physics' if physics else '0.4.26-wolverine-default-rest',platform='pc',cacheBuilders=['textures','physics'],
         scriptedCook=True,motionEntity=BODY,motionOutput='player',additionalNativeDumps=[RIG,PLAYER,PARENT]+[r['path'] for r in effective],
         isolatedNativeDumps=[r['path'] for r in effective],
         isolatedNativeResources=[r['path'] for r in effective],

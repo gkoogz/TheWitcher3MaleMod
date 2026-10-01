@@ -24,6 +24,8 @@ def emit(base):
     texts=[(base/p).read_text() for p in paths];receipts=[dict(path=p,sha256=hashlib.sha256((base/p).read_bytes()).hexdigest()) for p in paths]
     specs=[('SolveDistance',0,'a : int, b : int, rest : float, compliance : float, out lambda : float, dt : float',''),
         ('PrepareBend',0,'i : int, compliance : float, dt : float, bounce01 : float','MaleModPDBendData'),
+        ('SolveBendPrepared',0,'i : int, data : MaleModPDBendData, out lambda : Vector',''),
+        ('SampleGuide',1,'count : int, t : float, out center : Vector, out tangent : Vector',''),
         ('SolveRestBend',1,'i : int, data : MaleModPDBendData, rest : Vector, oldRest : Vector, out lambda : Vector',''),
         ('SolveMaterial',1,'i : int, target : Vector, oldTarget : Vector, compliance : float, ratio : float, dt : float, out lambda : Vector',''),
         ('SolveReach',1,'i : int, anchor : Vector, limit : float',''),
@@ -49,7 +51,9 @@ def emit(base):
         body=re.sub(r'for\((\w+)\s*=\s*([^;]+);',r'for (\1 = \2;',body)
         body=re.sub(r'(\w+)\+\+',r'\1 += 1',body)
         body=re.sub(r'\bfloat\(', '(',body)
+        body=re.sub(r'\bint\(', 'FloorF(',body)
         for cpp,ws in [('sqrtf','SqrtF'),('Length','VecLength'),('Dot','VecDot'),('min','MinF'),('max','MaxF')]:body=re.sub(r'\b'+cpp+r'\(',ws+'(',body)
+        body=re.sub(r'\bUnit\(', 'VecNormalize(',body)
         body=re.sub(r'\.([xyz])\b',lambda m:'.'+m[1].upper(),body)
         if name=='PrepareBend':
             m=re.search(r'return\s*\{([^{}]+)\};',body);values=split(m[1]);declarations['prepared']='MaleModPDBendData'

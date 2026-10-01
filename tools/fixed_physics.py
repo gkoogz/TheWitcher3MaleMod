@@ -1,5 +1,6 @@
 """Fixed authored rig and pinned Base secondary motion delivery. No size controls."""
 import copy,json,sys
+from pathlib import Path
 from dataclasses import asdict
 import numpy as np
 from mod import ROOT,digest,write_json
@@ -24,52 +25,75 @@ def independent_rig(rig):
 def number(v):return format(float(v),'.12f')
 def vector(v):return 'Vector('+','.join(number(x) for x in v)+',0.0)'
 
-def generate(base,rig,job,enabled=True):
+def generate(base,rig,job,enabled=True,cage=None):
     sys.path.insert(0,str(base))
     from malemod_base.physics_controls import evaluate,suspension_limits
+    from malemod_base.motion_binding import sample_mechanical_guide
+    cage=Path(cage).resolve() if cage else ROOT/CAGE
+    cage_dir=cage.parent if cage.suffix=='.npz' else cage
+    cage=cage_dir/'motion-lod0.npz'
+    cage_receipt=json.loads((cage_dir/'motion.json').read_text())
+    fit_path=ROOT/cage_receipt.get('fitReport',FIT)
+    fit=json.loads(fit_path.read_text())
+    if not fit.get('sourceMechanics'):raise ValueError('Rebuild cage from evaluated Wolverine defaults, not posed reference')
+    if cage_receipt['fitSHA256']!=digest(fit_path):raise ValueError('Cage baseline fit changed')
+    source=fit['sourceMechanics'];profile=json.loads((ROOT/'characters/geralt-attachment.json').read_text())
     names,parents,worlds=rig_world(rig['_chunks']['CSkeleton #0']['_vars'])
     frames=np.array([np.linalg.inv(worlds[9])@w for w in worlds[94:]])
-    points=frames[:,:3,3];wp=np.array(worlds)[94:,:3,3]
-    lengths=np.linalg.norm(np.diff(wp[:8],axis=0),axis=1)
-    directions=np.diff(points[:8],axis=0);directions=np.vstack([directions,directions[-1]])
+    joint_points=frames[:,:3,3];wp=np.array(worlds)[94:,:3,3]
+    k=fit['sourceToFBXScale']/100;basis=np.asarray(profile['basis'])
+    convert=lambda p:((np.asarray(p)-fit['sourceRoot'])@basis.T*fit['sourceToFBXScale']+profile['targetRoot'])/100
+    local=lambda p:(p-worlds[9][:3,3])@worlds[9][:3,:3]
+    points=local(convert(np.vstack([source['shaftGuide'],source['lobeCenters']])))
+    sample_points,_=sample_mechanical_guide(points[:12],np.linspace(0,1,8))
+    neutral_error=float(np.linalg.norm(np.vstack([sample_points,points[12:]])-joint_points,axis=1).max())
+    if neutral_error>1e-5:raise ValueError('Default guide and authored skin frames disagree')
+    lengths=np.full(11,source['restLength']*k/11)
+    directions=np.diff(points[:12],axis=0);directions=np.vstack([directions,directions[-1]])
     directions/=np.linalg.norm(directions,axis=1)[:,None]
-    fit=json.loads((ROOT/FIT).read_text());k=fit['sourceToFBXScale']/100
     from malemod_base.controls import VERSION
-    controls=evaluate({'format':'malemod.controls','version':VERSION,'values':{}},mode=2,rest_length=float(lengths.sum()/k))
-    data=np.load(ROOT/CAGE);mesh=data['points']/100;weights=data['weights']
-    radii=[]
-    for i in range(10):
-        selected=mesh[weights[:,13+i]>(.1 if i==0 else (.95 if i>=8 else .45))]-wp[i]
-        if len(selected)<10:raise ValueError('Insufficient measured joint envelope')
-        if i<8:
-            d=worlds[9][:3,:3]@directions[i]
-            r=np.quantile(np.linalg.norm(selected-np.outer(selected@d,d),axis=1),.95)
-            radii.append([r,r,r])
-        else:radii.append(np.quantile(np.abs(selected@worlds[94+i][:3,:3]),.99,axis=0).tolist())
+    controls=evaluate({'format':'malemod.controls','version':VERSION,'values':{}},mode=2,rest_length=source['restLength'])
+    data=np.load(cage);mesh=data['points']/100;weights=data['weights'];body_count=len(mesh)-len(data['fields'])
+    radii=[[source['proximalRadius']*k*.85]*3 for i in range(12)]+(np.asarray(source['lobeRadii'])*k).tolist()
     thighs=['r_thigh','r_shin','l_thigh','l_shin'];indices=[names.index(n) for n in thighs]
     thigh_radii=[]
     for side in range(2):
         a,b=[worlds[i][:3,3] for i in indices[side*2:side*2+2]]
         col=fit['lods'][0]['bones'].index(thighs[side*2])
-        p=mesh[:1021][weights[:1021,col]>.5];ab=b-a
+        p=mesh[:body_count][weights[:body_count,col]>.5];ab=b-a
         t=np.clip((p-a)@ab/(ab@ab),0,1);dist=np.linalg.norm(p-a-t[:,None]*ab,axis=1)
         thigh_radii.append(float(np.quantile(dist,.95)))
     init=['physicsEnabled = '+str(enabled).lower()+';']
-    sizes={'restPoints':10,'restFrames':10,'restDirections':8,'lengths':7,'radii':10,'thighRadii':2,'thighIndices':4,
-           'physicsPosition':10,'physicsOld':10,'physicsVelocity':10,'physicsInvMass':10,'targets':10,'oldTargets':10,
-           'capsules':4,'oldCapsules':4,'bendLambda':6,'materialLambda':2,'lengthLambda':7,'bends':6,'lobeRotations':2,
+    sizes={'restPoints':14,'restFrames':10,'jointRestPoints':10,'restDirections':8,'lengths':11,'radii':14,'thighRadii':2,'thighIndices':4,
+           'physicsPosition':14,'physicsOld':14,'physicsVelocity':14,'physicsInvMass':14,'targets':14,'oldTargets':14,
+           'capsules':4,'oldCapsules':4,'bendLambda':10,'bendCompliance':10,'materialLambda':2,'lengthLambda':11,'bends':10,'lobeRotations':2,
+           'anchorOffsets':2,'materialOffsets':2,'previousAnchors':2,'previousMaterial':2,
            'tetherRest':2,'tetherLimit':2,'suspensionLambda':2,'shearLambdaX':2,'shearLambdaY':2}
     init += [f'{key}.Resize({n});' for key,n in sizes.items()]
+    for i in range(14):
+        init += [f'restPoints[{i}] = {vector(points[i])};',f'radii[{i}] = {vector(radii[i])};']
+        mass=controls.shaft_mass if i<12 else controls.lobe_mass
+        init += [f'physicsInvMass[{i}] = {number(0 if i<2 else 1/mass)};']
     for i in range(10):
-        init += [f'restPoints[{i}] = {vector(points[i])};',f'radii[{i}] = {vector(radii[i])};',f'restFrames[{i}] = MatrixIdentity();']
+        init += [f'jointRestPoints[{i}] = {vector(joint_points[i])};',f'restFrames[{i}] = MatrixIdentity();',f"deformationRoot.SetBehaviorVectorVariable('{names[94+i]}_scale',Vector(1.0,1.0,1.0,0.0));"]
         for j,axis in enumerate('XYZ'):init += [f'restFrames[{i}].{axis} = {vector(frames[i,:3,j])};']
-        mass=controls.shaft_mass if i<8 else controls.lobe_mass
-        init += [f'physicsInvMass[{i}] = {number(0 if i<2 else 1/mass)};',f"deformationRoot.SetBehaviorVectorVariable('{names[94+i]}_scale',Vector(1.0,1.0,1.0,0.0));"]
-    for i in range(8):init += [f'restDirections[{i}] = {vector(directions[i])};']
-    for i in range(7):init += [f'lengths[{i}] = {number(lengths[i])};']
+    _,sample_directions=sample_mechanical_guide(np.asarray(source['shaftGuide']),np.linspace(0,1,8))
+    sample_directions=sample_directions@basis.T@worlds[9][:3,:3]
+    for i in range(8):init += [f'restDirections[{i}] = {vector(sample_directions[i])};']
+    for i in range(11):init += [f'lengths[{i}] = {number(lengths[i])};']
+    for i in range(10):
+        t=i/10
+        init += [f'bendCompliance[{i}] = {number(controls.shaft_bend_compliance*(.02+.98*t*t)*source["bendMultipliers"][i])};']
     for i in range(4):init += [f'thighIndices[{i}] = {indices[i]};']
+    center,tangent=sample_mechanical_guide(np.asarray(source['shaftGuide']),.12)
+    init += [f'attachmentRestTangent = {vector(tangent@basis.T@worlds[9][:3,:3])};']
     for i in range(2):
-        rest,limit=suspension_limits(float(np.linalg.norm(wp[8+i]-wp[0])/k),radii[8+i][1]/k)
+        # Translate the cord's surface endpoint to the center representation.
+        up=np.asarray(source['lobeAxes'][i][2]);anchor=np.asarray(source['lobeAnchors'][i])-up*(source['lobeRadii'][i][2]*.23)
+        anchor_offset=(anchor-center)@basis.T@worlds[9][:3,:3]*k
+        material_offset=(np.asarray(source['lobeCenters'][i])-center)@basis.T@worlds[9][:3,:3]*k
+        init += [f'anchorOffsets[{i}] = {vector(anchor_offset)};',f'materialOffsets[{i}] = {vector(material_offset)};']
+        rest,limit=suspension_limits(float(np.linalg.norm(np.asarray(source['lobeCenters'][i])-anchor)),radii[12+i][1]/k)
         init += [f'thighRadii[{i}] = {number(thigh_radii[i])};',f'tetherRest[{i}] = {number(rest*k)};',f'tetherLimit[{i}] = {number(limit*k)};',f'lobeRotations[{i}] = Vector(0.0,0.0,0.0,1.0);']
     coefficients=asdict(controls)
     for key in ('shaft_gravity','lobe_gravity'):coefficients[key]*=k
@@ -87,11 +111,13 @@ def generate(base,rig,job,enabled=True):
             publish += [f"physicsAccepted = deformationRoot.SetBehaviorVariable('{name}_translate_{axis.lower()}',delta.{axis}) && physicsAccepted;",f"physicsAccepted = deformationRoot.SetBehaviorVariable('{name}_rotate_{axis.lower()}',angles.{axis}) && physicsAccepted;"]
         publish.append('}')
     source=source.replace('// PUBLISH_JOINTS','\n'.join(publish))
-    receipt.update(fixedScale=1,enabled=enabled,solver='Base XPBD curved rod, damped suspension and support contacts; WitcherScript fixed step',
+    receipt.update(fixedScale=1,enabled=enabled,solver='12-node source guide, zero-curvature Base XPBD bend and C1 rendering samples; point suspension and support contacts',
         coefficients=coefficients,sourceToNativeLength=k,restLengths=lengths.tolist(),jointRadii=radii,thighRadii=thigh_radii,
-        thighBones=thighs,fitReceipt=FIT,fitSHA256=digest(ROOT/FIT),cage=CAGE,cageSHA256=digest(ROOT/CAGE),
-        colliderCalibration='95th percentile stock thigh radial envelope; lobe weighted envelope maxima; shaft radial 95th percentile',
-        omissions=['full source surface deformation','angular contact effective mass and reaction torques','Hermite guide Jacobian','pressure deformation','dynamic pelvic collar'],
+        thighBones=thighs,fitReceipt=fit_path.relative_to(ROOT).as_posix(),fitSHA256=digest(fit_path),cage=cage.relative_to(ROOT).as_posix(),cageSHA256=digest(cage),
+        sourceBaseline=fit['sourceBaseline'],physicsNodes=14,renderJoints=10,bendTarget='zero curvature',
+        neutralGuideToRenderJointError=neutral_error,
+        colliderCalibration='95th percentile stock thigh radial envelope; source default ovoid radii and shaft radius times 0.85',
+        omissions=['full source surface deformation','angular contact effective mass and reaction torques','Hermite guide Jacobian','pressure deformation','dynamic pelvic collar','source gait/side filtering and live root spring response'],
         runtimeParity=False,observedGameplay=False)
     write_json(job/'fixed-physics.json',receipt)
     return source,receipt

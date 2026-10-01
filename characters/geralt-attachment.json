@@ -7,13 +7,47 @@
   "referenceExportSHA256": "486dcf786c56068a54625eaa4a7d1527e9dd3cf721b52a52a838f141cd5ad51d",
   "nativeResource": "characters/models/geralt/body/model/l_01_mg__body.w2mesh",
   "nativeResourceSHA256": "67e6e7485bd4eac0eae83d9119b19d8a0894ce1d8809c0928e618508f9dc42db",
-  "basis": [[0, -1, 0], [1, 0, 0], [0, 0, 1]],
+  "basis": [
+    [
+      0,
+      -1,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1
+    ]
+  ],
   "sourceRootMethod": "bounding-box center of the observed open reference boundary",
-  "targetRoot": [0, 11, 97.5],
-  "targetBoundaryWidth": 10,
-  "openingRadii": [5, 6.8],
+  "targetRoot": [
+    0,
+    11,
+    97.5
+  ],
+  "targetBoundaryWidth": 7.156553012849928,
+  "openingRadii": [
+    3.58,
+    4.87
+  ],
   "supportDistance": 12,
-  "projection": [[1, 0, 0], [0, 0, 1]],
+  "projection": [
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1
+    ]
+  ],
   "pelvisBone": "pelvis",
   "skinDiscardBudget": 0.1,
   "maximumLocalRepair": 1.25,
@@ -25,7 +59,9 @@
     "physicalSourceUnits": "unknown; fit scale is measured from reference boundary width to the authored target width",
     "evidence": "FBX GlobalSettings; identity mesh transforms; r_foot to r_toe translations establish forward +Y"
   },
-  "preset": "large source reference shape; rest pose only",
+  "preset": "Wolverine reset defaults, all UI 50, full-floppy state 2; evaluated after 120 source frames",
   "material": "Geralt stock skin with continuous target UV and color fields; original module UV retained in binding artifact",
-  "runtime": "native pelvis skinning with inherited seam weights; secondary motion and live size controls pending"
+  "runtime": "fixed shape, native skinning and Base-derived 12-node guide physics",
+  "evaluatedBaseline": "build/wolverine-default-guide-v2",
+  "sourceToFBXScale": 1.0255218584141075
 }

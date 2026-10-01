@@ -112,7 +112,7 @@ def add_bones(document, mesh, names, worlds, parents, weights):
 
 def prepare():
     cfg=settings();pin=base_checkout(cfg);sys.path.insert(0,str(cfg['base']))
-    from malemod_base.motion_binding import reference_fields,reference_cage_centres,reference_cage_weights
+    from malemod_base.motion_binding import reference_fields,reference_cage_centres,reference_cage_weights,sample_mechanical_guide
     from malemod_base.graft import topology_ids,limit_influences
     rest=json.loads((ROOT/'generated/attachment.json').read_text())
     fitpath=ROOT/rest['fitReport'];fit=json.loads(fitpath.read_text());fbx=fitpath.with_suffix('.fbx')
@@ -149,12 +149,25 @@ def prepare():
         points=b['points'];module=points[body_count:]
         if worlds is None:
             centres=reference_cage_centres(module,mf,points[b['body_seam']].mean(0),module[:,0],1.)
+            if fit.get('sourceMechanics'):
+                mechanical=fit['sourceMechanics'];guide=np.asarray(mechanical['shaftGuide'])
+                sampled,_=sample_mechanical_guide(guide,np.linspace(0,1,8))
+                centres=np.vstack([sampled,mechanical['lobeCenters']])
+                profile=json.loads((ROOT/'characters/geralt-attachment.json').read_text())
+                centres=(centres-np.asarray(fit['sourceRoot']))@np.asarray(profile['basis']).T*fit['sourceToFBXScale']+profile['targetRoot']
             worlds=np.tile(np.eye(4),(len(names),1,1));worlds[:,:3,3]=centres
             worlds=orient_chain(worlds)
+            if fit.get('sourceMechanics'):
+                for side in range(2):worlds[8+side,:3,:3]=np.asarray(profile['basis'])@np.asarray(mechanical['lobeAxes'][side]).T
         distance=cKDTree(points[b['body_seam']]).query(module)[0]
         # Authored Geralt envelope in observed FBX units: 2-unit lateral blend,
         # 5-unit seam transition. The anatomy binding law itself lives in Base.
-        dynamic=reference_cage_weights(mf,module[:,0],2.,distance,5.)
+        lateral=module[:,0]
+        if fit.get('sourceMechanics'):
+            # Source Y maps to native -X in this measured character basis.
+            # Mechanical lobe order must match the corresponding skin donors.
+            lateral=-(module[:,0]-profile['targetRoot'][0])
+        dynamic=reference_cage_weights(mf,lateral,2.,distance,5.)
         _,aliases=topology_ids(points)
         fixed=np.isin(aliases,aliases[b['body_seam']])
         dynamic[fixed[body_count:]]=0
@@ -222,6 +235,7 @@ def prepare():
             'authoredWorldRestFBX':worlds.tolist(),'nativeRestAxes':verify_rest_axes(worlds),'nativeProfile':native_profile,'nativeVerified':False,'observedGameplay':False,
             'limitations':['native secondary-motion approximation; no XPBD parity','body contacts not calibrated',
                            'live rest shape bridge pending'],'fbx':str(output),'dyng':str(dyng_out)}
+    report.update(fitReport=fitpath.relative_to(ROOT).as_posix(),fitSHA256=digest(fitpath),sourceMechanics=fit.get('sourceMechanics'))
     write_json(job/'motion.json',report);print(job);return job
 
 
