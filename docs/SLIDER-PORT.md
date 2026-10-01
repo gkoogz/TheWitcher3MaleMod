@@ -27,9 +27,20 @@ Later diagnosis found a JSON ownership ordering dependency: parent objects must
 be filled before their children in the source and embedded flat compiled tree.
 Topological ownership ordering retains the direct skinning attachment without
 loosening the gate. 0.4.7 compiles, cooks, passes strict graph/rig/mesh binding and
-six packed resource/buffer checks, and is installed for focused gameplay testing.
-The user has been asked for scale response, waist alignment, leg animation and
-the menu row's accepted flag. Until those arrive, visible deformation is pending.
+six packed resource/buffer checks. Gameplay still failed: no scale change and
+lower-body offset; the user supplied **variable accepted: true**. The baseline
+was restored. Do not treat acceptance as proof of node sampling or output.
+
+**0.4.8-late-graph-test is installed; gameplay pending.** It activates a second
+instance after a bounded startup delay to test ParentAlign's cached parent.
+The native dump verifies both named slots and their graph handles; the first
+slot cannot remain always-on-top. Current RTTI ignores legacy `alwaysLoaded`;
+offline stack inspection confirms first-slot initialization and explicit
+second-slot instance creation. Diagnostics now separate slider callbacks
+(**changes/requested**) from graph values (**readback/accepted**) and activation
+(**late graph**). All six packed resources and 31 adapter tests pass. This test
+has one scale row, not the completed source control menu. Package and recovery
+paths are recorded in HANDOFF.md and provenance/deformation-bridge.json.
 
 `tools/probe_deformation_bridge.py --transforms` cooks scale and six scalar
 translation/rotation channels for each of ten authored joints. This is native
@@ -43,6 +54,11 @@ Base's `PHYSICS-CONTROLS.md` adds 600 original C++ float32 oracle comparisons
 covering the eight source material controls. It preserves raw versus mapped UI
 values and source units. Complete solver/native output remains required; the
 three native dyng controls must not masquerade as those eight controls.
+
+Base `REST-FRAME.md` adds 3,240 original-code comparisons for rest centers,
+closest flex, root-follow weights, radius and clamped length. It measures caller
+geometry; preceding fairing/root regularization and later logical/glans stages
+are still required before complete rest geometry can be claimed.
 
 ## Source control coverage
 
@@ -93,8 +109,8 @@ real logical/Raphe guide is not reconstructed by this probe.
 
 Across both LODs and three radius fixtures, checked outputs have zero inversions,
 zero body/module seam error, zero stock outer-boundary drift and donor errors
-below 1.5e-14 source units. The raw correction initially inverted 10–20 triangles.
-The conservative bound accepts only about 17–36% of the synthetic correction.
+below 1.5e-14 source units. The raw correction initially inverted 10â€“20 triangles.
+The conservative bound accepts only about 17â€“36% of the synthetic correction.
 That is an unresolved shape-accuracy gate, not full-range support. Improve the
 actual guide/targets/local support before declaring extreme sliders usable.
 

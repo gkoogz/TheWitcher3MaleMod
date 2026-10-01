@@ -385,7 +385,8 @@ def build(cfg, project_override=None, workspace_override=None):
             from verify_cooked_motion import verify_binding
             entity=inside(cooked,project['motionEntity'])
             records.append(run_scripted_cook(cfg,cook_options,workspace,'scripted-cook',[entity]))
-            binding=verify_binding(Path(str(entity)+'.xml'),output=project.get('motionOutput','dangle'))
+            binding=verify_binding(Path(str(entity)+'.xml'),output=project.get('motionOutput','dangle'),
+                require_late=(project.get('deformationBridge') or {}).get('lateActivation',False))
             if project.get('deformationBridge') and not binding.get('cookedDeformationBindingVerified'):
                 raise RuntimeError('Deformation candidate lacks verified native skeleton/graph/output references')
             write_json(job/'motion-binding-verification.json',binding)

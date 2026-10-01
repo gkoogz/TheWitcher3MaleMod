@@ -12,9 +12,9 @@ FIXTURE='''<dump><objects>
 </objects></dump>'''
 
 class CookedBindingTests(unittest.TestCase):
-    def check(self,text):
+    def check(self,text,**kwargs):
         with tempfile.TemporaryDirectory() as directory:
-            p=Path(directory)/'native.xml';p.write_text(text);return verify_binding(p)
+            p=Path(directory)/'native.xml';p.write_text(text);return verify_binding(p,**kwargs)
     def test_same_constraint_is_required_and_gameplay_is_separate(self):
         result=self.check(FIXTURE)
         self.assertTrue(result['cookedControllerBindingVerified'])
@@ -42,3 +42,21 @@ class CookedBindingTests(unittest.TestCase):
             self.check(text.replace('<resource path="characters\\malemod\\behavior\\deformation.w2beh"/>','NULL'))
         with self.assertRaises(ValueError):
             self.check(text.replace('name="parent"><reference id="7"','name="parent"><reference id="4"'))
+
+    def test_late_graph_requires_both_ordered_native_slots(self):
+        slots=''.join(r'''<element><object class="SBehaviorGraphInstanceSlot"><properties>
+            <prop name="instanceName">%s</prop><prop name="alwaysOnTopOfStack">false</prop>
+            <prop name="graph"><resource path="characters\malemod\behavior\deformation.w2beh"/></prop>
+            </properties></object></element>''' % name for name in ('MaleModDeformation','MaleModDeformationLate'))
+        helper=r'''<object class="CAnimatedComponent" id="7"><properties>
+            <prop name="name">MaleModDeformation</prop>
+            <prop name="skeleton"><resource path="characters\malemod\physics\deformation.w2rig"/></prop>
+            <prop name="behaviorInstanceSlots"><array>''' + slots + '''</array></prop></properties></object>'''
+        text=FIXTURE.replace('</objects>',helper+'</objects>').replace(
+            'name="parent"><reference id="4"','name="parent"><reference id="7"')
+        result=self.check(text,output='direct',require_late=True)
+        self.assertTrue(result['cookedLateGraphSlotsVerified'])
+        for broken in (text.replace('MaleModDeformationLate','WrongSlot'),
+                       text.replace('>false</prop>','>true</prop>'),
+                       text.replace('behavior\\deformation.w2beh','behavior\\missing.w2beh')):
+            with self.assertRaises(ValueError):self.check(broken,output='direct',require_late=True)

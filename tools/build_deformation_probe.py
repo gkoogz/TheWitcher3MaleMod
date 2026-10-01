@@ -11,9 +11,11 @@ from pathlib import Path
 from mod import ROOT, settings, build, write_json, digest, verify_package
 from deformation_graph import add_deformation_component
 import subprocess
+import copy
+from prepare_motion import scalar
 
 
-def probe_script(source, direct=False):
+def probe_script(source, direct=False, late=False):
     def replace_once(old, new):
         nonlocal source
         if source.count(old) != 1:
@@ -55,10 +57,53 @@ def probe_script(source, direct=False):
                      '    public function BridgeAccepted() : bool { return bridgeAccepted; }\n\n    public function Status() : string')
         source=source.replace('"Scale bridge (test)"','"Direct scale test | accepted: " + controller.BridgeAccepted()')
         source=source.replace('MaleMod - motion controls','MaleMod - isolated pose test')
+    if late:
+        replace_once('    private var bridgeAccepted : bool;', '''    private var bridgeAccepted : bool;
+    private var bridgeBooted : bool;
+    private var bridgeChanges : int;''')
+        replace_once('        listening = true;', '''        listening = true;
+        GotoState('MaleModGraphStartup');''')
+        replace_once("if (control == 'MaleModBridgeScale') { bridgeScale = ClampF(value,0.8,1.2); }",
+                     "if (control == 'MaleModBridgeScale') { bridgeScale = ClampF(value,0.8,1.2); bridgeChanges += 1; }")
+        replace_once('    public function BridgeAccepted() : bool { return bridgeAccepted; }', '''    public function BridgeAccepted() : bool { return bridgeAccepted; }
+
+    public latent function BootDeformationGraph()
+    {
+        var graphs : array<name>;
+        Sleep(0.25);
+        if (!listening || !deformationRoot) { return; }
+        graphs.PushBack('MaleModDeformationLate');
+        bridgeBooted = deformationRoot.ActivateBehaviors(graphs);
+        deformationRoot.UnfreezePose();
+        ApplyTuning();
+    }
+
+    public function BridgeDetail() : string
+    {
+        var actual : Vector;
+        if (deformationRoot) { actual = deformationRoot.GetBehaviorVectorVariable('mm_shaft_00_scale'); }
+        return "late graph: " + bridgeBooted + " | changes: " + bridgeChanges
+            + " | requested: " + bridgeScale + " | readback: " + actual.X;
+    }''')
+        replace_once('return "Native controller attached: "', 'return BridgeDetail() + " | Native controller attached: "')
+        source+='''
+state MaleModGraphStartup in MaleModMotionComponent
+{
+    event OnEnterState(previous : name) { StartGraph(); }
+    entry function StartGraph() { parent.BootDeformationGraph(); }
+}
+exec function MaleModScale(value : float)
+{
+    var controller : MaleModMotionComponent;
+    controller = MaleModFindController();
+    if (controller) { controller.SetTuning('MaleModBridgeScale',value); }
+    MaleModShowStatus();
+}
+'''
     return source
 
 
-def main(job,direct=False):
+def main(job,direct=False,late=False):
     job = Path(job).resolve()
     if not job.is_relative_to(ROOT/'build/motion'):
         raise ValueError('Expected an owned deformation probe')
@@ -72,6 +117,23 @@ def main(job,direct=False):
     custom = add_deformation_component(json.loads((job/'scripted-motion-entity.json').read_text(encoding='utf-8')),
         'characters\\malemod\\physics\\deformation.w2rig', 'characters\\malemod\\behavior\\deformation.w2beh',
         output='direct' if direct else 'dangle')
+    if late:
+        if not direct:raise ValueError('Late graph test requires direct output')
+        def late_slot(resource):
+            for c in resource['_chunks'].values():
+                if c['_type']=='CAnimatedComponent':
+                    slots=c['_vars']['behaviorInstanceSlots']['_elements']
+                    slots[0]['_vars']['alwaysOnTopOfStack']=scalar('Bool',False)
+                    # Current native RTTI retains instanceName/graph/alwaysOnTop,
+                    # but not the legacy converter's alwaysLoaded field. Native
+                    # stack Init activates the first slot only; the delayed
+                    # explicit ActivateBehaviors call creates the second instance.
+                    slot=copy.deepcopy(slots[0]);slot['_vars'].update(
+                        instanceName=scalar('CName','MaleModDeformationLate'))
+                    slots.append(slot)
+                for value in c['_vars'].values():
+                    if value.get('_type')=='CR2W':late_slot(value)
+        late_slot(custom)
     recipe = workspace/'entity.json'
     write_json(recipe, custom)
     output = workspace/entity
@@ -89,12 +151,13 @@ def main(job,direct=False):
         shutil.copy2(source, target)
     script = workspace/'scripts/local/maleModPhysics.ws'
     script.parent.mkdir(parents=True)
-    script.write_text(probe_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(encoding='utf-8'),direct),
+    script.write_text(probe_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(encoding='utf-8'),direct,late),
                       encoding='utf-8')
-    project = dict(name='modMaleMod', version='0.4.7-ordered-pose-test' if direct else '0.4.5-deformation-bridge-test', platform='pc',
+    project = dict(name='modMaleMod', version='0.4.8-late-graph-test' if late else ('0.4.7-ordered-pose-test' if direct else '0.4.5-deformation-bridge-test'), platform='pc',
         cacheBuilders=['textures', 'physics'], scriptedCook=True, motionEntity=entity,
         motionOutput='direct' if direct else 'dangle',
         deformationBridge=dict(sourceProbe=job.relative_to(ROOT).as_posix(),
+            lateActivation=late,
             sourceProbeSHA256=digest(job/'deformation-probe.json'),
             cageBaseCommit=evidence['cageBaseCommit'], currentBaseAdoption='Control/output probe only; cage geometry unchanged'),
         scope='Isolated native pose/scale test; secondary motion is not the visible output in direct mode. Source sliders and dynamic pelvis are incomplete.')
@@ -111,5 +174,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('job', type=Path)
     parser.add_argument('--direct',action='store_true')
+    parser.add_argument('--late',action='store_true')
     args=parser.parse_args()
-    main(args.job,args.direct)
+    main(args.job,args.direct,args.late)

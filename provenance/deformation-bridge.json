@@ -1,10 +1,9 @@
 {
   "checkpoint": "2026-09-30",
-  "baseCommit": "fb325ae6c16f7cd2e7a4db85b9dcc28b07c32534",
-  "installedVersion": "0.4.7-ordered-pose-test",
-  "installedPackage": "publish/20260930-210808-ef9a4d",
-  "installedBaseCommit": "fb325ae6c16f7cd2e7a4db85b9dcc28b07c32534",
-  "restoredAfterUserClosedGame": true,
+  "baseCommit": "95da934c4b59f77c497114407e349aee70f07f04",
+  "installedVersion": "0.4.8-late-graph-test",
+  "installedPackage": "publish/20260930-213438-894b9b",
+  "installedBaseCommit": "95da934c4b59f77c497114407e349aee70f07f04",
   "attempts": [
     {
       "version": "0.4.5-deformation-bridge-test",
@@ -40,9 +39,36 @@
       "packageVerified": true,
       "packedResourcesAndBuffersVerified": 6,
       "installed": true,
-      "observedGameplay": false,
+      "observedGameplay": true,
       "correction": "Parent-before-child ownership order in source and flat compiled tree preserves direct skin attachment; strict output gate unchanged",
-      "adapterTestsPassed": 29
+      "adapterTestsPassed": 29,
+      "observedResult": "failed: no scale change, lower half remains misaligned",
+      "variableAcceptedValue": true,
+      "currentlyInstalled": false
+    },
+    {
+      "version": "0.4.8-late-graph-test",
+      "package": "publish/20260930-213438-894b9b",
+      "baseCommit": "95da934c4b59f77c497114407e349aee70f07f04",
+      "cageBaseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+      "nativeCook": true,
+      "nativeBindingVerified": true,
+      "cookedLateGraphSlotsVerified": true,
+      "packageVerified": true,
+      "packedResourcesAndBuffersVerified": 6,
+      "adapterTestsPassed": 31,
+      "installed": true,
+      "currentlyInstalled": true,
+      "observedGameplay": false,
+      "scope": "Delayed second graph instance and UI/variable readback diagnostics; single scale probe, no complete source sliders",
+      "hypothesis": "ParentAlign caches parent during OnInitInstance; delayed activation creates an instance after appearance attachment",
+      "diagnostics": [
+        "late graph",
+        "changes",
+        "requested",
+        "readback",
+        "variable accepted"
+      ]
     }
   ],
   "remaining": [
@@ -60,7 +86,30 @@
   "implementationSHA256": {
     "tools/deformation_graph.py": "8372370223237ded911ff64fade417f6302c7bfcb54e78b49e2d2d16d71515dc",
     "tools/probe_deformation_bridge.py": "3d640d40a80a586b6b643f3633200051da378d5b7d68ca9e37c80a595c4f1775",
-    "tools/build_deformation_probe.py": "c5d4afe2f1678597cd392865914de7a33841e2a99f81590185094233ae2be9f5",
-    "tools/verify_cooked_motion.py": "f6536282f1b335b37144bb2978c815f54d937043d8919aacdca11a916bb40446"
+    "tools/build_deformation_probe.py": "ea38e682622b842d80c141534a6efc9fb113588099e95cb67ae8937d5d421698",
+    "tools/verify_cooked_motion.py": "559e4bd8880d98261978532da8e3a80107da0aa5569d27bddbdade98b2ecb97b"
+  },
+  "baselineRestoredBeforeCandidate": {
+    "version": "0.4.4-native-sliders-test",
+    "package": "publish/20260930-183505-9d2838",
+    "gameClosedVerified": true
+  },
+  "nativeInspection": {
+    "sdkModified": false,
+    "processAttached": false,
+    "evidence": "Offline licensed REDkit editor executable and public symbol map",
+    "functions": [
+      "CBehaviorGraphConstraintNodeParentAlign::OnInitInstance",
+      "CBehaviorGraphConstraintNodeParentAlign::OnActivated",
+      "CBehaviorGraphStack::Init",
+      "CBehaviorGraphStack::InternalActivateBehaviorInstance",
+      "CAnimatedComponent::funcActivateBehaviors"
+    ],
+    "findings": [
+      "ParentAlign caches transform parent at instance initialization; OnActivated does not rerun FindParent",
+      "Stack Init activates the first slot; explicit ActivateBehaviors constructs the selected instance",
+      "Current native graph slot RTTI does not retain the legacy alwaysLoaded flag; delayed test does not depend on that flag"
+    ],
+    "observedGameplay": false
   }
 }

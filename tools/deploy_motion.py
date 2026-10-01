@@ -24,6 +24,9 @@ def install(directory):
         raise RuntimeError('Package lacks verified cooked controller binding')
     packed=read_json(ROOT/'local/motion-package-verification.json')
     if packed['package']!=directory.relative_to(ROOT).as_posix():raise RuntimeError('Run native unbundle verification for this exact package first')
+    if (manifest.get('deformationBridge') or {}).get('lateActivation') or manifest['version']=='0.4.8-late-graph-test':
+        if not (packed.get('additionalMotionBinding') or {}).get('cookedLateGraphSlotsVerified'):
+            raise RuntimeError('Delayed graph package lacks native second-slot verification')
     input_path=Path.home()/'Documents/The Witcher 3/input.settings'
     input_bindings.edit_bindings(input_path.read_bytes())
     previous=read_json(ROOT/'local/installation.json')

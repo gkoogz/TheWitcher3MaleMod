@@ -3,7 +3,7 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 from mod import digest
 
-def verify_binding(path,output='dangle'):
+def verify_binding(path,output='dangle',require_late=False):
     if output not in ('dangle','direct'):raise ValueError('Unknown motion output')
     path=Path(path)
     root=ET.parse(path).getroot()
@@ -50,7 +50,19 @@ def verify_binding(path,output='dangle'):
             raise ValueError('Deformation skeleton handle is missing or wrong')
         if graph is None or graph.get('path')!='characters\\malemod\\behavior\\deformation.w2beh':
             raise ValueError('Deformation graph handle is missing or wrong')
+        if require_late:
+            slots=helper.findall('./properties/prop[@name="behaviorInstanceSlots"]/array/element/object/properties')
+            names=[slot.findtext('./prop[@name="instanceName"]') for slot in slots]
+            if names!=['MaleModDeformation','MaleModDeformationLate']:
+                raise ValueError('Late graph requires exactly the ordered initial and delayed slots')
+            for slot in slots:
+                if slot.findtext('./prop[@name="alwaysOnTopOfStack"]')!='false':
+                    raise ValueError('Initial graph must not override delayed graph activation')
+                resource=slot.find('./prop[@name="graph"]/resource')
+                if resource is None or resource.get('path')!='characters\\malemod\\behavior\\deformation.w2beh':
+                    raise ValueError('Late graph slot lost its graph resource')
+            evidence['cookedLateGraphSlotsVerified']=True
         evidence.update(cookedDeformationBindingVerified=True,deformationOutput=output,
             deformationParentPoseObserved=False,liveScaleObserved=False,dangleScaleCompatibilityObserved=False)
-    elif output=='direct':raise ValueError('Direct output lacks its deformation root')
+    elif output=='direct' or require_late:raise ValueError('Direct/late output lacks its deformation root')
     return evidence

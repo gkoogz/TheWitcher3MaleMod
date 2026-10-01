@@ -20,30 +20,42 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 Latest user observation: **the 0.4.4 native pause-menu category is visible**.
 Actual tuning effects/persistence remain unconfirmed. The next request is the
 full 18-control port with a dynamic coupled pelvis; read `SLIDER-PORT.md` first.
-Base `fb325ae` supplies original-code-verified early shape and physics-control laws and a
-protected fitted-graft collar domain. Both Geralt LODs pass synthetic seam/area
-checks, but the limited correction does not establish the full shape envelope.
-The 0.4.5 graph-to-dangle test was installed and FAILED observed gameplay: the
-user reported no meaningful resizing and lower-body offset from the torso.
-After the user closed the game, the verified 0.4.4 package was restored. No
-graph/variable-accepted diagnostic values were supplied; do not invent them.
-A 0.4.6 direct graph-to-mesh candidate compiled/cooked but failed the native
-attachment gate: its CMeshSkinningAttachment disappeared. It was never packaged
-or installed. Full translation/rotation/scale channels cook in isolation, but
-their units, ordering and visible output remain unverified. Read
-`provenance/deformation-bridge.json` and `SLIDER-PORT.md` before another attempt.
-The attachment failure was subsequently isolated to native JSON ownership order:
-write a parent before its children, including the embedded flat compiled tree.
-The corrected **0.4.7-ordered-pose-test** passes the strict native attachment gate,
-all six packed resource/buffer byte checks and 29 adapter tests. It is installed
-at `publish/20260930-210808-ef9a4d`, with Base `fb325ae` and unchanged cage inputs
-from `ca78de0`. Gameplay feedback is pending. It exposes one direct scale probe
-under F6 -> MaleMod - isolated pose test; this probe separates graph pose output
-from the dangle simulator and does not provide complete physics or source sliders.
+Base `95da934` adds original-code-verified rest-frame measurement alongside
+shared early shape, material laws and the protected graft collar domain. Its
+46 tests and provenance pass; rest-frame fixtures compare 3,240 original C++
+samples. Complete preparation/glans/coupled dynamics remain unresolved.
 
-Restored baseline before installing 0.4.7: **0.4.4-native-sliders-test**, local package
+0.4.5 graph-to-dangle FAILED observed gameplay: no meaningful resizing and
+lower-body offset. 0.4.6 direct output FAILED its native skinning attachment
+gate and was never installed. Parent-before-child JSON ownership ordering fixes
+that serialization bug without weakening verification. 0.4.7 then passed strict
+native binding and all six packed byte checks, but FAILED gameplay too: no
+scale change, lower half misaligned, variable accepted **true**. Accepted is not
+proof of visible deformation or even a changed requested slider value.
+
+The verified **0.4.4-native-sliders-test** baseline was restored after 0.4.7,
+then replaced by **0.4.8-late-graph-test** for focused gameplay testing. Current
+package: `publish/20260930-213438-894b9b`, Base `95da934`, unchanged cage geometry
+from `ca78de0`. Native script compile/cook, strict rig/graph/skin plus delayed
+slot verification, six unpacked byte checks and 31 adapter tests pass. Gameplay
+is pending. F6 -> **MaleMod - isolated pose test** exposes one scale probe;
+`MaleModPhysicsStatus` now reports **late graph / changes / requested / readback**.
+`MaleModScale(1.2)` bypasses UI and prints the same status. No source-slider
+completion or visible secondary motion is claimed for this direct-output test.
+
+Native ParentAlign caches its animated parent at instance initialization. The
+0.4.8 hypothesis is that earlier graph creation preceded appearance attachment.
+A delayed state explicitly activates a second instance after 0.25 seconds, with
+no continual closed-menu polling. Offline REDkit inspection establishes this
+instance path; gameplay must still prove alignment and visible scale. Current
+RTTI drops the legacy converter's `alwaysLoaded` flag; do not rely on it.
+
+Recovery baseline: **0.4.4-native-sliders-test**, local package
 `publish/20260930-183505-9d2838`, Base
-`ca78de046a7be63ccb316c7a9b9c12bc7ce3293f`. Read `LIVE-MOTION-TEST.md` and
+`ca78de046a7be63ccb316c7a9b9c12bc7ce3293f`. The baseline immediately replaced by
+0.4.8 is archived at `local/uninstalled/modMaleMod-f1b87204c689`; validate receipt
+and use the managed installer after native exact-package unbundle verification.
+Read `LIVE-MOTION-TEST.md` and
 `WCC-SCRIPTED-COOK.md`. The custom-class cooking blocker is resolved by running
 compilation and native cooking in one version-pinned WCC process. Native dump
 verifies that the script handle and dangle component reference the same constraint.

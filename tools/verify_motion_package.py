@@ -1,6 +1,7 @@
 """Require native unpacked bytes to match the cooked motion resources."""
 import argparse,uuid
 from mod import *
+from verify_cooked_motion import verify_binding
 
 def verify(directory):
     cfg=settings();package=Path(directory).resolve();manifest=verify_package(package)
@@ -19,7 +20,15 @@ def verify(directory):
             files.append({'path':src.relative_to(cooked).as_posix(),'sha256':digest(dst)})
     actual={p.relative_to(out).as_posix() for p in out.rglob('*') if p.is_file()}
     if actual!={x['path'] for x in files}:raise RuntimeError('Packed resources contain unexpected files')
-    result={'package':package.relative_to(ROOT).as_posix(),'native':native,'files':files}
+    # Recheck delayed-slot ownership from the native dump even for the first
+    # 0.4.8 candidate built before lateActivation metadata was introduced.
+    binding=None
+    if (manifest.get('deformationBridge') or {}).get('lateActivation') or manifest['version']=='0.4.8-late-graph-test':
+        dumps=list(cooked.rglob('*.w2ent.xml'))
+        if len(dumps)!=1:raise ValueError('Late graph candidate requires one native entity dump')
+        binding=verify_binding(dumps[0],output='direct',require_late=True)
+    result={'package':package.relative_to(ROOT).as_posix(),'native':native,'files':files,
+            'additionalMotionBinding':binding}
     write_json(ROOT/'local/motion-package-verification.json',result)
     print('PASS native packed round-trip:',len(files),'resources and buffers')
     return result
