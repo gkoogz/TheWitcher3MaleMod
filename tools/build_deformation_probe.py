@@ -177,11 +177,16 @@ def main(job,direct=False,late=False):
     script.parent.mkdir(parents=True)
     script.write_text(probe_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(encoding='utf-8'),direct,late),
                       encoding='utf-8')
-    project = dict(name='modMaleMod', version='0.4.9-connected-graph-test' if late else ('0.4.7-ordered-pose-test' if direct else '0.4.5-deformation-bridge-test'), platform='pc',
+    version=('0.4.10-root-pose-test' if evidence.get('identityRoot') else
+             '0.4.9-connected-graph-test' if late else
+             '0.4.7-ordered-pose-test' if direct else '0.4.5-deformation-bridge-test')
+    project = dict(name='modMaleMod', version=version, platform='pc',
         cacheBuilders=['textures', 'physics'], scriptedCook=True, motionEntity=entity,
         motionOutput='direct' if direct else 'dangle',
         deformationBridge=dict(sourceProbe=job.relative_to(ROOT).as_posix(),
             lateActivation=late,
+            identityRoot=evidence.get('identityRoot'),
+            fullTransformChannels=evidence.get('fullTransformChannels',False),
             sourceProbeSHA256=digest(job/'deformation-probe.json'),
             cageBaseCommit=evidence['cageBaseCommit'], currentBaseAdoption='Control/output probe only; cage geometry unchanged'),
         scope='Isolated native pose/scale test; secondary motion is not the visible output in direct mode. Source sliders and dynamic pelvis are incomplete.')

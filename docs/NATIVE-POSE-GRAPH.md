@@ -31,6 +31,16 @@ such default, a connected default or multiple authored outputs are rejected.
 
 ## Related native findings
 
+- 0.4.10 preserves observed bone-zero identity instead of ParentAlign copying
+  animated Root. Native `OnParentUpdatedAttachedAnimatedObjectsLS` copies mapped
+  parent local poses, then overwrites the first transform with identity. In
+  contrast, ParentAlign local-space sampling calls GetBoneTransformLocalSpace,
+  which reads the parent's sample context. Root extraction therefore needs
+  explicit matching policy. The observed rig is bone zero Root, parent -1,
+  identity bind; authoring rejects other roots. Cooked graph has 93 stock
+  alignments and ten scales plus 60 connected scalar transform stages.
+  Gap repair remains unobserved until the user tests the same actions.
+
 - ParentAlign caches its transform parent in OnInitInstance; OnActivated does
   not rerun parent discovery. A bounded delayed second graph remains a separate
   lifecycle test. It has not independently proved a working parent connection.

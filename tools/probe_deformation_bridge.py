@@ -12,9 +12,11 @@ from mod import ROOT, settings, base_checkout, digest, write_json, run_wcc, requ
 from motion_entity import make_entity
 from deformation_graph import deformation_graph, add_deformation_component
 from verify_motion import verify
+from prepare_motion import rig_world
+import numpy as np
 
 
-def main(transform_controls=False):
+def main(transform_controls=False, identity_root=False):
     cfg = settings()
     pin = base_checkout(cfg)
     cage = ROOT / 'build/motion/cage-dec402309e13'
@@ -34,11 +36,17 @@ def main(transform_controls=False):
     stock = names[:-len(controlled)]
     if names[-len(controlled):] != controlled:
         raise ValueError('Native cage joint names differ')
+    root_name=None
+    if identity_root:
+        observed_names,parents,worlds=rig_world(skeleton['_vars'])
+        if observed_names != names or parents[0] != -1 or not np.allclose(worlds[0],np.eye(4),atol=1e-7):
+            raise ValueError('Identity-root policy requires an observed identity bone zero')
+        root_name=names[0]
     graph_path = 'characters/malemod/behavior/deformation.w2beh'
     rig_path = 'characters/malemod/physics/deformation.w2rig'
     entity_path = 'items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent'
     recipe = deformation_graph(json.loads(template_path.read_text(encoding='utf-8')), stock, controlled,
-                               transform_controls=transform_controls)
+                               transform_controls=transform_controls,identity_root=root_name)
     write_json(job / 'deformation-graph.json', recipe)
     rig = {k: copy.deepcopy(v) for k, v in dyng.items() if k != '_chunks'}
     rig['_chunks'] = {'CSkeleton #0': copy.deepcopy(skeleton)}
@@ -70,6 +78,7 @@ def main(transform_controls=False):
                     cageVerification=verified, stockGraphSHA256=digest(stock_graph),
                     stockNames=stock, controlledNames=controlled,
                     fullTransformChannels=transform_controls,
+                    identityRoot=root_name,
                     poseInheritanceObserved=False, liveScaleObserved=False,
                     dangleCompatibilityObserved=False, installed=False)
     try:
@@ -93,9 +102,8 @@ def main(transform_controls=False):
         from inspect_native import inspect
         from verify_deformation_graph import verify_graph
         native_dump=inspect(job/'cooked'/graph_path)
-        if transform_controls:
-            evidence['poseConnectionVerification']='Pending scalar topology gate'
-        else:evidence['poseGraph']=verify_graph(native_dump['output'],stock_names=stock)
+        evidence['poseGraph']=verify_graph(native_dump['output'],stock_names=stock,
+            identity_root=root_name,transform_controls=transform_controls)
     finally:
         write_json(job/'deformation-probe.json', evidence)
     print(job)
@@ -106,4 +114,6 @@ if __name__ == '__main__':
     import argparse
     parser=argparse.ArgumentParser()
     parser.add_argument('--transforms',action='store_true')
-    main(parser.parse_args().transforms)
+    parser.add_argument('--identity-root',action='store_true')
+    args=parser.parse_args()
+    main(args.transforms,args.identity_root)

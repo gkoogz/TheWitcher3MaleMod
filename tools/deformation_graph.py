@@ -8,7 +8,8 @@ import copy
 from prepare_motion import scalar, array, reference, handle, vector
 
 
-def deformation_graph(template, stock_names, controlled_names, *, transform_controls=False):
+def deformation_graph(template, stock_names, controlled_names, *, transform_controls=False,
+                      identity_root=None):
     if not stock_names or len(set(stock_names + controlled_names)) != len(stock_names + controlled_names):
         raise ValueError('Rig names must be observed, distinct and nonempty')
     result = {k: copy.deepcopy(v) for k, v in template.items() if k != '_chunks'}
@@ -26,6 +27,11 @@ def deformation_graph(template, stock_names, controlled_names, *, transform_cont
     variables = []
     scalar_variables = []
     for name in stock_names:
+        if name == identity_root:
+            # Native attached components explicitly clear bone zero after
+            # copying the parent pose. Do not reintroduce extracted root motion.
+            # Caller must verify this is the observed identity rig root.
+            continue
         pose = node('CBehaviorGraphConstraintNodeParentAlign', top, {
             'id': scalar('Uint32', len(nodes) + 2),
             'bone': scalar('String', name), 'parentBone': scalar('String', name),

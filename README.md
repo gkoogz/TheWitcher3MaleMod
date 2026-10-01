@@ -8,12 +8,14 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-The installed candidate is **0.4.9-connected-graph-test**. F6 ->
+The installed candidate is **0.4.10-root-pose-test**. F6 ->
 **MaleMod - isolated pose test** exposes one scale probe plus visible diagnostics.
 The earlier compiled graph was recached from absent editor connections, clearing
-all pose/scale inputs. That native defect is corrected: 105 connected pose nodes,
-10 named scale inputs, stock rig order, all six packed byte checks and 33 tests
-pass. Leg animation, waist alignment and visible scale await gameplay testing.
+all pose/scale inputs. 0.4.9 now has user-confirmed visible resizing at 0.8/1.2
+and improved leg tracking, with an animation-dependent vertical waist gap.
+0.4.10 follows the native attached-component identity-root policy; 93 stock
+alignments, ten scales and 60 scalar channels pass connected-output verification.
+All six packed byte checks and 35 tests pass. The waist fix awaits gameplay.
 See [the native graph fix](docs/NATIVE-POSE-GRAPH.md).
 
 Recovery baseline: **0.4.4-native-sliders-test**, whose menu is user-confirmed.

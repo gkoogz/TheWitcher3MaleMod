@@ -32,7 +32,9 @@ def verify(directory):
         probe_record=manifest['deformationBridge']
         source=inside(ROOT,probe_record['sourceProbe'])/'deformation-probe.json'
         if digest(source)!=probe_record['sourceProbeSHA256']:raise ValueError('Pose input provenance changed')
-        pose=verify_graph(cooked/'characters/malemod/behavior/deformation.w2beh.xml',stock_names=read_json(source)['stockNames'])
+        probe=read_json(source)
+        pose=verify_graph(cooked/'characters/malemod/behavior/deformation.w2beh.xml',stock_names=probe['stockNames'],
+            identity_root=probe.get('identityRoot'),transform_controls=probe.get('fullTransformChannels',False))
         if binding is None:binding={}
         binding['poseGraph']=pose
     result={'package':package.relative_to(ROOT).as_posix(),'native':native,'files':files,

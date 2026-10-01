@@ -39,3 +39,18 @@ class PoseConnectionTests(unittest.TestCase):
     def test_authored_compiled_graph_is_marked_consistently(self):
         graph=deformation_graph({'_chunks':{'CBehaviorGraph #0':{'_vars':{}}}},['fixture_root'],['fixture_joint'])
         self.assertTrue(graph['_chunks']['CBehaviorGraph #0']['_vars']['sourceDataRemoved']['_value'])
+
+    def test_root_motion_cannot_reenter_an_attached_identity_root(self):
+        graph=deformation_graph({'_chunks':{'CBehaviorGraph #0':{'_vars':{}}}},
+            ['Root','pelvis'],['fixture_joint'],identity_root='Root')
+        align=[c['_vars']['bone']['_value'] for c in graph['_chunks'].values()
+            if c['_type']=='CBehaviorGraphConstraintNodeParentAlign']
+        self.assertEqual(align,['pelvis'])
+        self.assertEqual(len([c for c in graph['_chunks'].values()
+            if c['_type']=='CBehaviorGraphTPoseNode']),1)
+
+    def test_identity_root_verification_rejects_copying_bone_zero(self):
+        with tempfile.TemporaryDirectory() as temp:
+            p=Path(temp)/'graph.xml';p.write_text(self.fixture())
+            with self.assertRaises(ValueError):
+                verify_graph(p,stock_names=['fixture_'+str(i) for i in range(94)],identity_root='fixture_0')

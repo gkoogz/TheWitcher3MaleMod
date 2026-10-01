@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from mod import digest
 
 
-def verify_graph(path,stock_names=None):
+def verify_graph(path,stock_names=None,*,identity_root=None,transform_controls=False):
     path=Path(path)
     root=ET.parse(path).getroot()
     objects={o.get('id'):o for o in root.findall('.//object') if o.get('id') is not None}
@@ -24,7 +24,7 @@ def verify_graph(path,stock_names=None):
         raise ValueError('Unexpected extra native output')
     if len(outputs)!=1:raise ValueError('Expected one native graph output')
     current=linked(outputs[0],'cachedInputNode')
-    seen=set();scales=[];align=[];terminal=False
+    seen=set();scales=[];align=[];terminal=False;channels=[];deformations=[]
     while True:
         if current.get('id') in seen:raise ValueError('Cyclic cooked pose chain')
         seen.add(current.get('id'))
@@ -35,6 +35,26 @@ def verify_graph(path,stock_names=None):
             if control.get('class')!='CBehaviorGraphVectorVariableNode' or value(control,'variableName')!=bone+'_scale':
                 raise ValueError('Scale control is not bound to its named vector variable')
             scales.append(bone)
+            deformations.append((bone,'scale'))
+        elif t in ('CBehaviorGraphTranslateBoneNode','CBehaviorGraphRotateBoneNode'):
+            if not transform_controls or align:raise ValueError('Unexpected scalar deformation stage')
+            bone=value(current,'boneName')
+            operation='translate' if t=='CBehaviorGraphTranslateBoneNode' else 'rotate'
+            control=linked(current,'cachedValueNode' if operation=='translate' else 'cachedControlVariableNode')
+            variable=value(control,'variableName')
+            if control.get('class')!='CBehaviorGraphVariableNode' or variable not in [bone+'_'+operation+'_'+axis for axis in 'xyz']:
+                raise ValueError('Scalar control does not match its bone/operation/axis')
+            axis=variable[-1]
+            if value(current,'scale')!='1' or (operation=='rotate' and
+                    (value(current,'axis')!='ROTAXIS_'+axis.upper() or value(current,'localSpace')!='true')):
+                raise ValueError('Scalar deformation units/space changed')
+            if operation=='translate':
+                for component in 'XYZ':
+                    observed=current.findtext('./properties/prop[@name="axis"]/object/properties/prop[@name="'+component+'"]')
+                    if observed is None or float(observed)!=float(component.lower()==axis):
+                        raise ValueError('Translation axis differs from the named control')
+            channels.append(variable)
+            deformations.append((bone,operation+'_'+axis))
         elif t=='CBehaviorGraphConstraintNodeParentAlign':
             bone=value(current,'bone')
             if bone!=value(current,'parentBone') or value(current,'localSpace')!='true':
@@ -43,11 +63,18 @@ def verify_graph(path,stock_names=None):
         elif t=='CBehaviorGraphTPoseNode':terminal=True;break
         else:raise ValueError('Unexpected cooked pose node '+str(t))
         current=linked(current,'cachedInputNode')
-    if not terminal or len(align)!=94 or len(scales)!=10 or len(set(align+scales))!=104:
-        raise ValueError('Cooked graph does not reach all 94 stock and 10 authored joints')
+    alignment_count=94-int(identity_root is not None)
+    if not terminal or len(align)!=alignment_count or len(scales)!=10 or len(set(align+scales))!=alignment_count+10:
+        raise ValueError('Cooked graph does not reach the declared stock and authored joints')
     expected=['mm_shaft_'+str(i).zfill(2) for i in range(8)]+['mm_scrotum_l','mm_scrotum_r']
     if scales!=expected[::-1]:raise ValueError('Authored scale chain order changed')
-    if stock_names is not None and align!=list(stock_names)[::-1]:
+    operations=['scale']+([operation+'_'+axis for operation in ('translate','rotate') for axis in 'xyz'] if transform_controls else [])
+    if deformations!=[(bone,op) for bone in expected for op in operations][::-1]:
+        raise ValueError('Deformation node chain order changed')
+    if identity_root is not None and (stock_names is None or list(stock_names)[0]!=identity_root or identity_root in align):
+        raise ValueError('Identity root must be the observed bone zero, never aligned')
+    if stock_names is not None and align!=[n for n in stock_names if n!=identity_root][::-1]:
         raise ValueError('Pose alignment does not match the observed stock rig names/order')
-    return dict(cookedPoseConnectionsVerified=True,stockAlignmentNodes=94,authoredScaleNodes=10,
+    return dict(cookedPoseConnectionsVerified=True,stockAlignmentNodes=alignment_count,authoredScaleNodes=10,
+        authoredScalarNodes=len(channels),identityRoot=identity_root,
         connectedPoseNodes=len(seen),dumpSHA256=digest(path),observedGameplay=False)

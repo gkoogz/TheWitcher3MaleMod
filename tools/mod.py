@@ -396,7 +396,8 @@ def build(cfg, project_override=None, workspace_override=None):
             if graph:
                 from verify_deformation_graph import verify_graph
                 probe=read_json(inside(ROOT,project['deformationBridge']['sourceProbe'])/'deformation-probe.json')
-                binding['poseGraph']=verify_graph(Path(str(graph)+'.xml'),stock_names=probe['stockNames'])
+                binding['poseGraph']=verify_graph(Path(str(graph)+'.xml'),stock_names=probe['stockNames'],
+                    identity_root=probe.get('identityRoot'),transform_controls=probe.get('fullTransformChannels',False))
             write_json(job/'motion-binding-verification.json',binding)
         else:
             records.append(run_wcc(cfg,'cook',cook_options,workspace,'cook'))

@@ -17,9 +17,22 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
-Source dependency pin: `81fe047` (documentation-only adoption of the cross-spoke
-graph failure/evidence checkpoint). Installed 0.4.9 remains built against
-`95da934`; no numerical/source geometry change follows from this pin update.
+Source dependency pin adopts Base's angular root-profile preparation stage.
+Installed 0.4.10 remains built against `81fe047`; this newer numerical stage
+does not run in that package. See the exact source pin in base.lock.json.
+
+**Installed now: 0.4.10-root-pose-test, gameplay pending.** Package
+`publish/20260930-224402-e6260b`, Base `81fe047`, cage geometry `ca78de0`.
+The native attachment copies its parent pose then clears bone zero to identity;
+ParentAlign was reintroducing animated Root into the helper. The candidate
+preserves the observed identity root from TPose and copies the other 93 stock
+bones. It also retains all 60 scalar translation/rotation inputs for the ten
+authored joints. Native cook/output traversal, exact six packed bytes and 35
+tests pass. Five installed hashes match the receipt. This is a root-gap hypothesis,
+not an observed fix. Menu remains one scale probe and three diagnostic readouts.
+Immediately previous working-scale 0.4.9 archive:
+`local/uninstalled/modMaleMod-8deffd131d19`. Generic rollback still targets the
+historical static baseline; use a specifically verified package when recovering.
 
 Latest user observation: **the 0.4.4 native pause-menu category is visible**.
 Actual tuning effects/persistence remain unconfirmed. The next request is the
@@ -48,7 +61,7 @@ tracking. Some animations still open a temporary vertical waist gap. The menu
 screenshot shows graph active=true, accepted=true, 27 callbacks, requested and
 readback=0.800000, frozen=false. The three grey rows are intentional diagnostic
 readouts, not missing source sliders. Full 18-control/pelvis work remains pending.
-Current
+Historical
 package `publish/20260930-222053-e9fa95`, Base `95da934`, unchanged cage geometry
 from `ca78de0`. Native script compile/cook, strict rig/skin and delayed slots,
 full 105-node pose/scale chain, observed stock rig name order, all six unpacked

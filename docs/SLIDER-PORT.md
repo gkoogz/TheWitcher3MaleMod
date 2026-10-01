@@ -12,6 +12,16 @@ runtime port. Do not tell the user it does.
 
 ## Latest bridge failures and continuation
 
+Installed next: **0.4.10-root-pose-test**, package `publish/20260930-224402-e6260b`,
+Base `81fe047`, gameplay pending. Preserves identity bone zero as the native
+attached-component path does, instead of copying animated Root back into it.
+Native verification walks 93 stock alignments, ten scale nodes and all 60 scalar
+translation/rotation links in exact order. Cook/packed bytes and 35 tests pass.
+All scalar defaults remain zero; the user menu still has only the proven scale
+probe. Axis/output calibration and complete source UI/runtime remain unfinished.
+The pinned Base now supplies ROOT-PROFILE.md and its 143,280 original-code
+vertex comparisons for proximal shape preparation. It is not in installed code.
+
 0.4.5 added an independent CAnimatedComponent, observed rig names, a TPose plus
 per-bone ParentAlign graph, and scale variables before the existing dangle.
 Its native handles and packed bytes passed verification. Observed gameplay
