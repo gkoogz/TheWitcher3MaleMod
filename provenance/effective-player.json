@@ -1,0 +1,114 @@
+{
+  "checkpoint": "2026-10-01",
+  "sourceBaseCommit": "9966388f6bb1a2e1dd764c46dc536540b11c138c",
+  "installedBaseCommit": "bff38a34c0aa5eb3ec84759736cb79d946374e6d",
+  "cageBaseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+  "version": "0.4.19-effective-player-test",
+  "package": "publish/20261001-054712-e7bb5a",
+  "installed": true,
+  "observedGameplay": false,
+  "adapterTestsPassed": 54,
+  "packedResourcesAndBuffersVerified": 10,
+  "installedFilesVerified": 5,
+  "previousArchive": "local/uninstalled/modMaleMod-84f942a32215",
+  "observedPreviousFailure": {
+    "version": "0.4.18-boot-recovery-test",
+    "playerBones": 94,
+    "requiredBones": 104,
+    "graphActive": false,
+    "parameterAccepted": false,
+    "poseSamples": 0
+  },
+  "effectivePlayerNativeVerification": {
+    "nativePlayerRigVerified": true,
+    "playerRigPath": "characters\\base_entities\\man_base\\malebase.w2rig",
+    "stockJointCount": 94,
+    "authoredJointCount": 10,
+    "stockRootBindingsPreserved": true,
+    "maximumRestFrameError": 5.7571411193890754e-08,
+    "rigSHA256": "673079ea6830a2a66b561da723d679bc4c1c283456fe96230eb0094dc5d109f4",
+    "playerEntitySHA256": "5053f4f149faaa657a001791d9716ccdbfc1b17961c5e193b1dc7c2d89a84723",
+    "parentEntitySHA256": "b8bb003f5992944e86efb8509000b8813dea66c4c5644f8acc04259b4268a4f2",
+    "observedGameplay": false,
+    "fullJointLodVerified": true,
+    "reducedDetailBoneCount": 104,
+    "nativeEffectivePlayerTemplatesVerified": true,
+    "effectiveTemplates": [
+      {
+        "path": "gameplay/templates/characters/player/player.w2ent",
+        "sha256": "4c56ca9d2e10341bba1cf0bfcfd114f609575d056d8cf787960cb5cd249053a7",
+        "privateRigImportVerified": true,
+        "stockRootBindingsPreserved": true,
+        "stockSlotSchedulingPreserved": true,
+        "rootClass": "CMovingPhysicalAgentComponent"
+      },
+      {
+        "path": "characters/player_entities/geralt/geralt_player.w2ent",
+        "sha256": "ab5eafec1162a0dcfe87cce8166539dfc023625b5db9cc4f9f8a79d4090c1217",
+        "privateRigImportVerified": true,
+        "stockRootBindingsPreserved": true,
+        "stockSlotSchedulingPreserved": true,
+        "rootClass": "CMovingPhysicalAgentComponent"
+      }
+    ]
+  },
+  "compiledPreservation": {
+    "command": "preserve-native-compiled-entities",
+    "files": [
+      {
+        "path": "gameplay/templates/characters/player/player.w2ent",
+        "sourceSHA256": "c567566adbb9526ca8aba85555759f5d3f938c5ebcb590dfcd62189fec0ab415",
+        "outputSHA256": "4c56ca9d2e10341bba1cf0bfcfd114f609575d056d8cf787960cb5cd249053a7",
+        "recompiledSHA256": "bbec9582a330dc867186152675a4622696e57a75908fdfac8d865de1da948b78",
+        "nativeCompiledCachePreserved": true,
+        "onlyImportsAndCRCsChanged": true
+      },
+      {
+        "path": "characters/player_entities/geralt/geralt_player.w2ent",
+        "sourceSHA256": "85d3b48eeb1639378346d36c12a88ab472a64cf191249d5990088bc26c9035e8",
+        "outputSHA256": "ab5eafec1162a0dcfe87cce8166539dfc023625b5db9cc4f9f8a79d4090c1217",
+        "recompiledSHA256": "7d7e15e6dd024e1128c15534393f6733ecf567f2ae58407129a51eeb1d931d77",
+        "nativeCompiledCachePreserved": true,
+        "onlyImportsAndCRCsChanged": true
+      }
+    ],
+    "observedGameplay": false
+  },
+  "stockBaseline": {
+    "receipt": "build/probe/stock-player-cook-16bcafa78ab2/source-baseline.json",
+    "receiptSHA256": "db59a3164164f6810aa06fc8614f225261eb4ac03608752de46ba68dd5110cfd"
+  },
+  "offlineAnimationControl": "build/probe/stock-animation-skinning.json",
+  "sdkModified": false,
+  "gameProcessAttached": false,
+  "sharedAlgorithmsChanged": false,
+  "remaining": [
+    "Observe 104-bone boot, graph activation and bounded parent-follow samples",
+    "Observe idle sway and walk/run/turn rendered attachment following",
+    "Observe waist/ankle parity and scale 0.8/1.2",
+    "Full source controls, coupled pelvis, secondary motion remain incomplete"
+  ],
+  "implementationSHA256": {
+    "tools/player_stack.py": "41ad522c072a44f449fbf33a55ce36fa78ac9d5b12e2365bff413a77fb0d0a74",
+    "tools/player_rig_redirect.py": "f99fe2de93d362656a4787e8c3c29c5b8f73ba1ab2c68bf3acaa1c983f4d6eef",
+    "tools/mod.py": "54bc1645fc9631d9296254760e40cb0f206af07c1c46ad82ddbde191bbdaab2d",
+    "tools/audit_animation_skinning.py": "4059286b2300369dfa0a1f6fe219adeb1d022db1afc117ccc7534ee188af8060",
+    "tools/deploy_motion.py": "309cebf8eea275d4434e32e7811bb8b68dbeb051d89bbc8a0442de9da11bbd44"
+  },
+  "offlineAnimationControlSHA256": "d9d94476d265186b7d160654da8a6f57414f7469bdf94cbbfc221dbfb25b37c9",
+  "offlineAnimationVerification": {
+    "observedGameplay": false,
+    "stockTracks": 94,
+    "lods": 2,
+    "clips": [
+      "locomotion_idle",
+      "walk",
+      "locomotion_run_cycle_fast_forward"
+    ],
+    "maximumSeamError": 0.0,
+    "maximumPelvisLocalFollowError": 1.4566126083082054e-13,
+    "streamedTail": "native constant fallback; deferred frames not inferred",
+    "rootBoneReset": true,
+    "extractedMotionSubtracted": false
+  }
+}

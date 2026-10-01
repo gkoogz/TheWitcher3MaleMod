@@ -1,4 +1,4 @@
-"""Redirect observed equal-length rig/parent imports without rewriting v164 entities.
+"""Redirect observed equal-length rig/parent imports without rewriting entities.
 
 Preserve every other byte, including native/compiled entity data. Only string
 tables and their dependent CRCs may change. Nested CR2W resources are handled
@@ -17,7 +17,9 @@ def header_crc(data, start):
     return zlib.crc32(header)
 
 
-def redirect(data, old_path=OLD_RIG, new_path=NEW_RIG, expected_matches=2):
+def redirect(data, old_path=OLD_RIG, new_path=NEW_RIG, expected_matches=2, *, expected_version=164):
+    if expected_version not in (163,164):
+        raise ValueError('Uncalibrated native entity version')
     old=old_path.encode()+b'\0';new=new_path.encode()+b'\0'
     if len(old)!=len(new):raise ValueError('Import redirection must preserve length')
     result=bytearray(data);headers=[];matches=[];allowed=set()
@@ -25,7 +27,7 @@ def redirect(data, old_path=OLD_RIG, new_path=NEW_RIG, expected_matches=2):
     while True:
         start=data.find(b'CR2W',start)
         if start<0:break
-        if start+160>len(data) or struct.unpack_from('<I',data,start+4)[0]!=164:
+        if start+160>len(data) or struct.unpack_from('<I',data,start+4)[0]!=expected_version:
             raise ValueError('Unexpected embedded CR2W header')
         if header_crc(data,start)!=struct.unpack_from('<I',data,start+32)[0]:
             raise ValueError('Native entity header CRC mismatch')
@@ -41,7 +43,7 @@ def redirect(data, old_path=OLD_RIG, new_path=NEW_RIG, expected_matches=2):
             allowed.update(range(pos,pos+len(old)));pos+=len(old)
         headers.append(start);start+=4
     if len(headers)!=2 or len(matches)!=expected_matches or headers[0]!=0:
-        raise ValueError('Expected observed top/compiled v164 entity and exact imports')
+        raise ValueError('Expected observed top/compiled entity and exact imports')
     if data.count(old)!=len(matches):raise ValueError('Rig import occurs outside verified string tables')
     for start in headers[::-1]:
         offset,size,_=struct.unpack_from('<III',data,start+40)
@@ -68,6 +70,6 @@ def redirect(data, old_path=OLD_RIG, new_path=NEW_RIG, expected_matches=2):
     changed=[i for i,(a,b) in enumerate(zip(data,result)) if a!=b]
     if not set(changed)<=allowed or len(result)!=len(data) or result.count(old) or result.count(new)!=expected_matches:
         raise ValueError('Entity changes exceed rig imports and dependent CRCs')
-    return bytes(result),dict(formatVersion=164,embeddedHeaders=headers,rigImportOffsets=matches,
+    return bytes(result),dict(formatVersion=expected_version,embeddedHeaders=headers,rigImportOffsets=matches,
         changedByteOffsets=changed,onlyImportsAndCRCsChanged=True,
         onlyRigImportsAndCRCsChanged=(old_path==OLD_RIG),oldImport=old_path,newImport=new_path)

@@ -169,10 +169,21 @@ def native_failure(text, returncode):
     # Known startup configuration warnings are separate from resource failures.
     return bool(returncode or re.search(
         r'\[Error\]\[(WCC|Script)\]|\[Fatal\]|TEMPLATE COOKING FAILED|'
-        r'Unable to create uncached entity|Invalid name index|\[resource load failed\]', text))
+        r'Unable to create uncached entity|Invalid name index|\[resource load failed\]|'
+        r'CName collision detected|component.cpp:208\] \( m_transformParent == 0', text))
 
 
-def run_wcc(cfg, command, options, workspace, label):
+def native_assert_key(line):
+    """Canonicalize only the observed stock collision's two name orders."""
+    if 'namesPool.cpp:221]' in line and 'CName collision detected' in line:
+        if all(s in line for s in ("'isChainAttack'", "'man_swimming_jump_dive_stop'", "'2873949622'")):
+            return 'stock-player-name-collision-2873949622'
+    if 'component.cpp:208] ( m_transformParent == 0 ).' in line:
+        return 'stock-player-transform-parent-assert'
+    return None
+
+
+def run_wcc(cfg, command, options, workspace, label, *, baseline_asserts=()):
     required_file(cfg['wcc'])
     workspace = Path(workspace).absolute()
     workspace.mkdir(parents=True, exist_ok=True)
@@ -195,8 +206,22 @@ def run_wcc(cfg, command, options, workspace, label):
               'seconds': round(time.monotonic() - started, 3), 'logSHA256': digest(log),
               'logPath': log.relative_to(ROOT).as_posix(),
               'wccSHA256': digest(cfg['wcc'])}
+    validation_text=text
+    if baseline_asserts:
+        permitted=set(baseline_asserts)
+        if not permitted <= {'stock-player-name-collision-2873949622','stock-player-transform-parent-assert'}:
+            raise ValueError('Uncalibrated native baseline assertion')
+        matched=[];remaining=[]
+        for line in text.splitlines():
+            key=native_assert_key(line)
+            if key in permitted:matched.append(key);continue
+            if '[Error][Assert]' in line and 'soundFileLoader.cpp:101] ( soundBank != nullptr )' not in line:
+                raise RuntimeError('Unexpected native assertion; inspect '+str(log))
+            remaining.append(line)
+        validation_text='\n'.join(remaining)
+        record['assertionsObservedOnUnchangedStock']=matched
     write_json(log.with_suffix('.json'), record)
-    if native_failure(text, result.returncode):
+    if native_failure(validation_text, result.returncode):
         raise RuntimeError('Native REDkit command failed; inspect ' + str(log) + '\n' + text[-3500:])
     print('Native command succeeded.', flush=True)
     return record
@@ -373,7 +398,11 @@ def build(cfg, project_override=None, workspace_override=None):
         # loose scripts cannot accidentally become cooker seeds.
         native_input = job / 'native-input'
         native_input.mkdir()
+        isolated_resources={inside(workspace,p) for p in project.get('isolatedNativeResources',[])}
+        if any(p not in resources or p.suffix!='.w2ent' for p in isolated_resources):
+            raise ValueError('Isolated cooker inputs must be explicitly selected entity resources')
         for path in resources:
+            if path in isolated_resources:continue
             target = inside(native_input, path.relative_to(workspace))
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(path, target)
@@ -387,8 +416,33 @@ def build(cfg, project_override=None, workspace_override=None):
             entity=inside(cooked,project['motionEntity'])
             graph=inside(cooked,'characters/malemod/behavior/deformation.w2beh') if project.get('deformationBridge') else None
             dump_resources=[entity]+([graph] if graph else [])+[inside(cooked,p) for p in project.get('additionalNativeDumps',[])]
+            isolated=[inside(cooked,p) for p in project.get('isolatedNativeDumps',[])]
+            if any(p not in dump_resources or p==entity or p==graph for p in isolated):
+                raise ValueError('Only additional standard resources may use isolated native inspection')
             native_dumps={Path(str(item)+'.xml') for item in dump_resources}
-            records.append(run_scripted_cook(cfg,cook_options,workspace,'scripted-cook',dump_resources))
+            records.append(run_scripted_cook(cfg,cook_options,workspace,'scripted-cook',
+                [p for p in dump_resources if p not in isolated]))
+            if isolated_resources:
+                from player_stack import verify_stock_template_baseline
+                baseline=verify_stock_template_baseline(cfg,project['nativeSourceBaseline'])
+                if {inside(cooked,p.relative_to(workspace)) for p in isolated_resources}!=set(isolated):
+                    raise ValueError('Isolated cooked entities require isolated native dumps')
+                intake=job/'standard-native-input';intake.mkdir()
+                for source in isolated_resources:
+                    target=inside(intake,source.relative_to(workspace))
+                    target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
+                records.append(run_wcc(cfg,'cook',['-platform='+project['platform'],
+                    '-mod='+str(intake),'-outdir='+str(cooked)+os.sep],workspace,'cook-effective-player',baseline_asserts=baseline))
+                if project.get('preserveCompiledPlayerTemplates'):
+                    from player_stack import preserve_compiled_templates
+                    source_probe=inside(ROOT,project['deformationBridge']['sourceProbe'])/'deformation-probe.json'
+                    if digest(source_probe)!=project['deformationBridge']['sourceProbeSHA256']:
+                        raise ValueError('Compiled preservation probe changed')
+                    records.append(preserve_compiled_templates(cfg,workspace,cooked,read_json(source_probe)))
+            for item in isolated:
+                records.append(run_wcc(cfg,'dumpfile',['-file='+str(required_file(item)),'-out=\\\\?\\'],
+                    workspace,'inspect-effective-player',baseline_asserts=baseline if isolated_resources else ()))
+                required_file(Path(str(item)+'.xml'))
             binding=verify_binding(Path(str(entity)+'.xml'),output=project.get('motionOutput','dangle'),
                 require_late=(project.get('deformationBridge') or {}).get('lateActivation',False))
             if project.get('deformationBridge') and not binding.get('cookedDeformationBindingVerified'):

@@ -33,6 +33,8 @@ def install(directory):
         round_trip=(packed.get('additionalMotionBinding') or {}).get('playerRig') or {}
         if (manifest.get('deformationBridge') or {}).get('executionPhase')!='player-stack' or not native.get('nativePlayerRigVerified') or native!=round_trip:
             raise RuntimeError('Player layer lacks matching native/packed private rig verification')
+        if (manifest.get('deformationBridge') or {}).get('effectiveTemplates') and not native.get('nativeEffectivePlayerTemplatesVerified'):
+            raise RuntimeError('Player repair lacks verified effective gameplay/UI template roots')
     if (manifest.get('deformationBridge') or {}).get('lateActivation') or manifest['version']=='0.4.8-late-graph-test':
         if not (packed.get('additionalMotionBinding') or {}).get('cookedLateGraphSlotsVerified'):
             raise RuntimeError('Delayed graph package lacks native second-slot verification')

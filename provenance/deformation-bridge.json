@@ -1,9 +1,9 @@
 {
   "checkpoint": "2026-10-01",
-  "baseCommit": "09d7cf55697bf2e6c45a418a79e66a95fa31abc3",
-  "installedVersion": "0.4.17-full-joint-lod",
-  "installedPackage": "publish/20261001-021142-cf7e81",
-  "installedBaseCommit": "3b10594cc441cb80000dbbc3e2e133c2ec1f3b25",
+  "baseCommit": "9966388f6bb1a2e1dd764c46dc536540b11c138c",
+  "installedVersion": "0.4.19-effective-player-test",
+  "installedPackage": "publish/20261001-054712-e7bb5a",
+  "installedBaseCommit": "bff38a34c0aa5eb3ec84759736cb79d946374e6d",
   "attempts": [
     {
       "version": "0.4.5-deformation-bridge-test",
@@ -384,17 +384,38 @@
       "installedFilesVerified": 5,
       "adapterTestsPassed": 47,
       "installed": true,
-      "currentlyInstalled": true,
+      "currentlyInstalled": false,
       "observedGameplay": false,
       "correction": "Raise private player reduced-detail update limit from 40 to all 104 joints so appended indices 94..103 are computed in both native pose LODs",
       "poseMeasurement": "60 read-only samples at 0.1 seconds after a two-second settling delay; reports actor-relative pelvis/root motion and authored root position error in pelvis coordinates; stops afterward",
       "previousArchive": "local/uninstalled/modMaleMod-fdf18dbc0c66",
       "scope": "Player stack pose/scale probe. Full source controls, dynamic pelvis and secondary motion remain incomplete."
+    },
+    {
+      "version": "0.4.18-boot-recovery-test",
+      "package": "publish/20261001-031309-f1ed02",
+      "currentlyInstalled": false,
+      "observedGameplay": true,
+      "observedResult": "failed: live player root has 94 bones; expected 104; graph inactive and unaccepted; no pose samples"
+    },
+    {
+      "version": "0.4.19-effective-player-test",
+      "package": "publish/20261001-054712-e7bb5a",
+      "baseCommit": "bff38a34c0aa5eb3ec84759736cb79d946374e6d",
+      "cageBaseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+      "currentlyInstalled": true,
+      "observedGameplay": false,
+      "nativeEffectivePlayerTemplatesVerified": true,
+      "nativeCompiledCachePreserved": true,
+      "adapterTestsPassed": 54,
+      "packedResourcesAndBuffersVerified": 10,
+      "installedFilesVerified": 5,
+      "correction": "Redirect actual gameplay/Geralt appearance flattened skeleton imports; preserve all eight stock behavior slots and cached entity state"
     }
   ],
   "remaining": [
     "full native deformation channels beyond the observed single scale bridge",
-    "Observe full-joint-LOD candidate during idle and gait; use bounded native pose measurements if attachment still floats",
+    "Observe effective-player 104-joint boot, parent follow and rendered idle/gait parity",
     "all 18 independent source controls",
     "coupled dynamic pelvis",
     "native persistence and performance observations",
@@ -411,15 +432,16 @@
     "tools/build_deformation_probe.py": "02f9d6404a2cebbc6f0c15088aa8b7b66cc9077ac4cc7a28de2f4d229724913f",
     "tools/verify_cooked_motion.py": "8a3f15e90557a025ae334f442449d49168d38505c6d37b7127a5673eb8bfc609",
     "tools/verify_deformation_graph.py": "7c5f00a619557ab4adb626388c9328604f9b2b48cf7b2e8ea74636d392a74e02",
-    "tools/mod.py": "105973b5b217e1833489db06e56619d66d2be4698d5d41725964e4cadb767d63",
+    "tools/mod.py": "54bc1645fc9631d9296254760e40cb0f206af07c1c46ad82ddbde191bbdaab2d",
     "tools/verify_motion_package.py": "6117ed4bff2ec401ad16083ba64c42d587652de2d44c9b8c7663903e374e9713",
-    "tools/deploy_motion.py": "2322bbbef120af81d23f5ee69210b471679ca4ebdddf63c74ca821871e044db3",
-    "tools/player_stack.py": "81a448c1d0bcb6474fa8445728b02ec8268afda6fbdedee79af818e987926642",
-    "tools/player_rig_redirect.py": "e0225a727ce9da4e92a5bfbc149a1a57637941c72b6a1cb654a6998dbaddb829",
+    "tools/deploy_motion.py": "309cebf8eea275d4434e32e7811bb8b68dbeb051d89bbc8a0442de9da11bbd44",
+    "tools/player_stack.py": "41ad522c072a44f449fbf33a55ce36fa78ac9d5b12e2365bff413a77fb0d0a74",
+    "tools/player_rig_redirect.py": "f99fe2de93d362656a4787e8c3c29c5b8f73ba1ab2c68bf3acaa1c983f4d6eef",
     "tools/native/MaleModPhysicsItem.cs": "cf9b62e0ff2731741a2207750d45bc5e5a6e4bf6be9ab0b0227be37b2de3faf2",
     "tools/build_native_converter.py": "3198d1ef4a8e8626e8047e1e82805898fcc749db91c63327b81631db755dee0e",
     "tools/prepare_motion.py": "2131fefd3aeb7db8fe8f789a3626bb2d673927041f157a0f2c2c6c0912f90c43",
-    "tools/pose_diagnostics.py": "2f4629f073b6bca029a0fd0105e4162e5c8fbc867c5ee3466257c822792bc0f0"
+    "tools/pose_diagnostics.py": "2f4629f073b6bca029a0fd0105e4162e5c8fbc867c5ee3466257c822792bc0f0",
+    "tools/audit_animation_skinning.py": "4059286b2300369dfa0a1f6fe219adeb1d022db1afc117ccc7534ee188af8060"
   },
   "baselineRestoredBeforeCandidate": {
     "version": "0.4.4-native-sliders-test",
@@ -493,5 +515,5 @@
     ],
     "observedGameplay": false
   },
-  "currentBaseAdoption": "Installed 0.4.17 uses Base 3b10594 and unchanged ca78de0 cage. Full native joint LOD and bounded pose measurement are adapter-owned. Base REST-GRAFT.md records update-range coverage as a requirement for Wolverine and future spokes; shared anatomy/physics algorithms are unchanged. Source pin 09d7cf5 adopts that documentation/checkpoint; installed assets remain built against 3b10594."
+  "currentBaseAdoption": "Installed 0.4.19 uses Base bff38a3 and unchanged ca78de0 cage. Source pin 9966388 adopts only the later shared handoff. Effective template/compiled cache mapping is adapter-owned; shared anatomy and numerical physics are unchanged."
 }

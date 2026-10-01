@@ -10,14 +10,14 @@ import numpy as np
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tools'))
 from player_rig_redirect import redirect, header_crc, OLD_RIG, NEW_RIG
-from player_stack import player_script, merge_rig, native_rig_frames
+from player_stack import player_script, merge_rig, native_rig_frames, verify_template_root
 
 
-def native(payload):
+def native(payload,version=164):
     strings=b'CSkeleton\0'+OLD_RIG.encode()+b'\0'
     exports=160+len(strings);chunk=exports+24
     data=bytearray(chunk+len(payload))
-    data[:4]=b'CR2W';struct.pack_into('<I',data,4,164)
+    data[:4]=b'CR2W';struct.pack_into('<I',data,4,version)
     data[160:exports]=strings;data[chunk:]=payload
     struct.pack_into('<III',data,40,160,len(strings),zlib.crc32(strings))
     struct.pack_into('<II',data,exports+8,len(payload),chunk)
@@ -28,6 +28,35 @@ def native(payload):
 
 
 class PlayerStackTests(unittest.TestCase):
+    def test_effective_v163_player_patch_is_explicit_and_crc_checked(self):
+        original=native(native(b'flattened player root',163),163)
+        with self.assertRaises(ValueError):redirect(original)
+        patched,evidence=redirect(original,expected_version=163)
+        self.assertEqual(evidence['formatVersion'],163)
+        self.assertEqual(len(original),len(patched))
+        self.assertTrue(evidence['onlyImportsAndCRCsChanged'])
+        self.assertTrue(patched.endswith(b'flattened player root'))
+        for start in evidence['embeddedHeaders']:
+            self.assertEqual(header_crc(patched,start),struct.unpack_from('<I',patched,start+32)[0])
+        mixed=native(native(b'root',164),163)
+        with self.assertRaises(ValueError):redirect(mixed,expected_version=163)
+
+    def test_gate_rejects_stock_rig_in_the_flattened_effective_root(self):
+        def tree(rig):
+            root=ET.Element('dump')
+            props=ET.SubElement(ET.SubElement(root,'object',{'class':'CMovingPhysicalAgentComponent','id':'2'}),'properties')
+            ET.SubElement(props,'prop',name='name').text='man_base'
+            ET.SubElement(ET.SubElement(props,'prop',name='skeleton'),'resource',path=rig)
+            for name in ('animationSets','behaviorInstanceSlots','runtimeBehaviorInstanceSlots','ragdoll','steeringBehavior'):
+                ET.SubElement(ET.SubElement(props,'prop',name=name),'array',count='0')
+            return ET.ElementTree(root)
+        with tempfile.TemporaryDirectory() as tmp:
+            source=Path(tmp)/'source.xml';cooked=Path(tmp)/'cooked.xml'
+            tree(OLD_RIG).write(source);tree(OLD_RIG).write(cooked)
+            with self.assertRaises(ValueError):verify_template_root(cooked,source)
+            tree(NEW_RIG).write(cooked)
+            self.assertTrue(verify_template_root(cooked,source)['privateRigImportVerified'])
+
     def test_native_reference_buffer_and_joint_mapping_are_verified(self):
         names=['joint_%d'%i for i in range(104)]
         fields={'bones':{'_elements':[{'_vars':{'name':{'_value':n}}} for n in names]},

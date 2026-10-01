@@ -132,6 +132,15 @@ CBehaviorGraphConstraintNodeParentAlign::OnInitInstance and OnActivated.
 
 ## Packaging and user diagnostics
 
+The effective player template is a separate gate. A private rig on
+`player_base_m` did not establish the skeleton used by the flattened concrete
+Geralt templates. The 0.4.18 user screenshot shows a live 94-bone root and an
+inactive graph. The 0.4.19 repair preserves stock compiled state while redirecting
+the gameplay/appearance imports. Require the loaded moving-agent root, all
+eight stock behavior slots and their scheduling flags, in addition to the
+104-joint rig/LOD and connected output. See [ANIMATION-FOLLOW.md](ANIMATION-FOLLOW.md).
+Recooking these templates alone dropped seven stock slots and was rejected.
+
 Native entity/graph XML dumps are diagnostic outputs. Exclude those exact paths
 from bundle input; retain unrelated authored game XML. Native unbundle must
 recover exactly the candidate's expected resources/buffers and match their cooked bytes.

@@ -1,6 +1,6 @@
 """Owned player-stack pose test; preserve stock animation and appearance binding.
 
-No stock depot writes. The v164 player entity is patched only at two observed
+No stock depot writes. Observed player entities are patched only at two observed
 equal-length rig imports and their CRCs; never rewritten through the converter.
 """
 import argparse
@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 import zlib
 from pathlib import Path
 import numpy as np
-from mod import ROOT, settings, base_checkout, digest, write_json, build, verify_package
+from mod import ROOT, settings, base_checkout, digest, write_json, build, verify_package, native_assert_key, native_failure
 from prepare_motion import scalar, rig_world
 from build_deformation_probe import probe_script
 from player_rig_redirect import redirect, NEW_RIG
@@ -28,6 +28,74 @@ BODY='items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent'
 PLAYER_SHA='430f88397bede2acd001f8699ca36144a895713f5d1e23c328b6afc37ebcb362'
 RIG_SHA='a127b0b3ae7beb84d14bc940a2198a93b31d333397f5c4f59cf452cd5d29be1d'
 PARENT_SHA='2fa3b1f381c85059b2f583925ee1c4ed59ccfce98ba5be20ea05531c6c4443b0'
+EFFECTIVE_PLAYER='gameplay/templates/characters/player/player.w2ent'
+GERALT_PLAYER='characters/player_entities/geralt/geralt_player.w2ent'
+EFFECTIVE_TEMPLATES=(
+    (EFFECTIVE_PLAYER,'c567566adbb9526ca8aba85555759f5d3f938c5ebcb590dfcd62189fec0ab415',163,
+     'build/inspection/native-4559847a44f0/inspection.json'),
+    (GERALT_PLAYER,'85d3b48eeb1639378346d36c12a88ab472a64cf191249d5990088bc26c9035e8',164,
+     'build/inspection/native-2be16d6e54c1/inspection.json'))
+STOCK_BASELINE='build/probe/stock-player-cook-16bcafa78ab2/source-baseline.json'
+
+
+def verify_stock_template_baseline(cfg, receipt):
+    """Permit only diagnostics demonstrated by the same untouched inputs/SDK."""
+    receipt=(ROOT/receipt).resolve()
+    if not receipt.is_relative_to(ROOT/'build/probe'):raise ValueError('Expected owned native stock baseline')
+    baseline=json.loads(receipt.read_text())
+    expected={p:h for p,h,v,i in EFFECTIVE_TEMPLATES}
+    if baseline['sourceHashes']!=expected:raise ValueError('Stock baseline resource hashes changed')
+    native=baseline['native'];log=ROOT/native['logPath']
+    if digest(cfg['wcc'])!=native['wccSHA256'] or digest(log)!=native['logSHA256'] or native['exitCode']!=0:
+        raise ValueError('Native stock baseline SDK/log changed or failed to execute')
+    intake=Path(next(a.split('=',1)[1] for a in native['args'] if a.startswith('-mod='))).resolve()
+    if not intake.is_relative_to(receipt.parent):raise ValueError('Stock baseline input leaves its job')
+    for path,sha in expected.items():
+        if digest(intake/path)!=sha:raise ValueError('Stock baseline input was modified')
+    lines=log.read_text(errors='replace').splitlines()
+    keys={native_assert_key(line) for line in lines if native_assert_key(line)}
+    if keys!={'stock-player-name-collision-2873949622','stock-player-transform-parent-assert'}:
+        raise ValueError('Stock baseline diagnostics differ from calibrated inputs')
+    remaining=[]
+    for line in lines:
+        if native_assert_key(line) in keys:continue
+        if '[Error][Assert]' in line and 'soundFileLoader.cpp:101] ( soundBank != nullptr )' not in line:
+            raise ValueError('Stock baseline has another native assertion')
+        remaining.append(line)
+    if native_failure('\n'.join(remaining),native['exitCode']):raise ValueError('Stock baseline has another native failure')
+    return sorted(keys)
+
+
+def preserve_compiled_templates(cfg,workspace,cooked,probe):
+    """Keep the existing native compiled player state; alter only its imports.
+
+    Recompilation inherits the base template's one-slot stack and drops seven
+    slots present in Geralt's stock compiled state. Keep the rejected recook
+    outside the bundle tree. Recompute our exact import/CRC patch from verified
+    stock bytes, then require native loaded root/slot parity before packaging.
+    """
+    workspace=Path(workspace).resolve();cooked=Path(cooked).resolve()
+    if not workspace.is_relative_to(ROOT/'build') or not cooked.is_relative_to(ROOT/'build'):
+        raise ValueError('Compiled preservation must stay in the owned build tree')
+    records=probe.get('effectiveTemplateResources',[])
+    expected={p:(h,v) for p,h,v,i in EFFECTIVE_TEMPLATES}
+    if {r['path'] for r in records}!=set(expected):raise ValueError('Missing compiled effective player inputs')
+    output=[]
+    for record in records:
+        path=record['path'];sha,version=expected[path]
+        original=cfg['redkit']/'r4data'/path
+        if digest(original)!=sha:raise ValueError('Stock compiled template changed')
+        exact,patch=redirect(original.read_bytes(),expected_version=version)
+        source=Path(workspace)/path;dest=Path(cooked)/path
+        if source.read_bytes()!=exact or digest(source)!=record['patchedSHA256']:
+            raise ValueError('Compiled preservation exceeds the verified imports/CRCs')
+        rejected=Path(cooked).parent/'recompiled-stock-entities'/path
+        rejected.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(dest,rejected)
+        before=digest(dest);shutil.copy2(source,dest)
+        output.append(dict(path=path,sourceSHA256=sha,outputSHA256=digest(dest),
+            recompiledSHA256=before,nativeCompiledCachePreserved=True,
+            onlyImportsAndCRCsChanged=patch['onlyImportsAndCRCsChanged']))
+    return dict(command='preserve-native-compiled-entities',files=output,observedGameplay=False)
 
 
 def merge_rig(original, extension, full_joint_lod=False):
@@ -205,6 +273,35 @@ def native_rig_frames(path, dump, expected):
     return error
 
 
+def verify_template_root(native_dump, source_dump):
+    """Check the flattened moving-agent root, not merely its base include."""
+    root=ET.parse(native_dump).getroot()
+    original=ET.parse(source_dump).getroot()
+    def moving(tree):
+        nodes=[o for o in tree.findall('.//object') if o.get('id') is not None
+            and o.get('class')=='CMovingPhysicalAgentComponent'
+            and o.findtext('./properties/prop[@name="name"]')=='man_base']
+        if len(nodes)!=1:raise ValueError('Expected one flattened Geralt moving-agent root')
+        return nodes[0]
+    node,old=moving(root),moving(original)
+    resource=node.find('./properties/prop[@name="skeleton"]/resource')
+    if resource is None or resource.get('path')!=NEW_RIG:
+        raise ValueError('Effective player root still imports the stock rig')
+    def resources(obj,name):return [(r.get('class'),r.get('path'))
+        for r in obj.findall('./properties/prop[@name="'+name+'"]//resource')]
+    for name in ('animationSets','behaviorInstanceSlots','runtimeBehaviorInstanceSlots','ragdoll','steeringBehavior'):
+        if old.find('./properties/prop[@name="'+name+'"]') is None or resources(old,name)!=resources(node,name):
+            raise ValueError('Effective player lost stock '+name)
+    # Slot names, flags and graph order must survive, not just the graph paths.
+    def slots(obj,name):return [(p.get('name'),p.get('type'),p.text)
+        for p in obj.findall('./properties/prop[@name="'+name+'"]//object/properties/prop')
+        if len(p)==0]
+    for name in ('behaviorInstanceSlots','runtimeBehaviorInstanceSlots'):
+        if slots(node,name)!=slots(old,name):raise ValueError('Effective player changed stock slot scheduling')
+    return dict(privateRigImportVerified=True,stockRootBindingsPreserved=True,
+        stockSlotSchedulingPreserved=True,rootClass=node.get('class'))
+
+
 def verify_native_player(cooked, probe):
     cooked=Path(cooked)
     if probe.get('executionPhase')!='player-stack':raise ValueError('Input node must follow existing player graphs')
@@ -237,11 +334,26 @@ def verify_native_player(cooked, probe):
         rigSHA256=digest(cooked/RIG),playerEntitySHA256=digest(cooked/PLAYER),
         parentEntitySHA256=digest(cooked/PARENT),observedGameplay=False)
     if probe.get('fullJointLod'):result.update(fullJointLodVerified=True,reducedDetailBoneCount=104)
+    if probe.get('effectiveTemplates'):
+        records=probe.get('effectiveTemplateResources',[])
+        if {r['path'] for r in records}!={EFFECTIVE_PLAYER,GERALT_PLAYER}:
+            raise ValueError('Missing effective gameplay/UI Geralt templates')
+        verified=[]
+        for record in records:
+            source=ROOT/record['sourceNativeDump']
+            if digest(source)!=record['sourceNativeDumpSHA256']:raise ValueError('Effective template source evidence changed')
+            path=cooked/record['path']
+            checked=verify_template_root(Path(str(path)+'.xml'),source)
+            verified.append(dict(path=record['path'],sha256=digest(path),**checked))
+        result.update(nativeEffectivePlayerTemplatesVerified=True,effectiveTemplates=verified)
     return result
 
 
-def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=False, full_joint_lod=False):
+def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=False, full_joint_lod=False,
+         effective_templates=False):
     if measure_pose and not rest_joints:raise ValueError('Pose measurement requires the current authored-rest candidate')
+    if effective_templates and not (rest_joints and full_joint_lod):
+        raise ValueError('Effective template repair requires authored rest and full joint LOD')
     cfg=settings();pin=base_checkout(cfg);probe_dir=Path(probe_dir).resolve()
     if not probe_dir.is_relative_to(ROOT/'build/motion'):raise ValueError('Expected owned probe')
     probe=json.loads((probe_dir/'deformation-probe.json').read_text())
@@ -276,6 +388,23 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     parent_data,parent_rig_patch=redirect(parent_source.read_bytes())
     parent_dest=workspace/PARENT;parent_dest.write_bytes(parent_data)
     write_json(job/'parent-import-patch.json',dict(sourceSHA256=digest(parent_source),outputSHA256=digest(parent_dest),**parent_rig_patch))
+    effective=[]
+    if effective_templates:
+        for path,source_hash,version,inspection_path in EFFECTIVE_TEMPLATES:
+            source=cfg['redkit']/'r4data'/path
+            if digest(source)!=source_hash:raise ValueError('Observed effective player template changed')
+            if (ROOT/inspection_path).exists():
+                inspected=json.loads((ROOT/inspection_path).read_text())
+            else:
+                from inspect_native import inspect
+                inspected=inspect(source)
+            dump=Path(inspected['output'])
+            if inspected['sourceSHA256']!=source_hash or digest(dump)!=inspected['outputSHA256']:
+                raise ValueError('Reinspect effective player source')
+            patched,record=redirect(source.read_bytes(),expected_version=version)
+            dest=workspace/path;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(patched)
+            effective.append(dict(path=path,sourceSHA256=source_hash,patchedSHA256=digest(dest),
+                sourceNativeDump=dump.relative_to(ROOT).as_posix(),sourceNativeDumpSHA256=digest(dump),patch=record))
     for record in probe['resources']:
         if record['path'] not in (GRAPH,'characters/malemod/body/geralt_motion.w2mesh','characters/malemod/physics/geralt_motion.w3dyng'):continue
         source=probe_dir/'intake'/record['path']
@@ -298,6 +427,7 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     script.write_text(player_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(),names,pose_rest),encoding='utf-8')
     evidence=dict(probe,baseCommit=pin['commit'],executionPhase='player-stack',authoredRestMask=rest_joints,
         fullJointLod=full_joint_lod,poseMeasurement=measure_pose,
+        effectiveTemplates=effective_templates,effectiveTemplateResources=effective,
         playerRigRecipe=(job/'player-rig.json').relative_to(ROOT).as_posix(),
         playerRigRecipeSHA256=digest(job/'player-rig.json'),
         sourcePlayerNativeDump=source_dump.relative_to(ROOT).as_posix(),
@@ -312,11 +442,16 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     evidence['resources']=[dict(path=p.relative_to(workspace).as_posix(),sourceSHA256=digest(p))
         for p in workspace.rglob('*') if p.is_file() and p.suffix!='.ws']
     write_json(job/'deformation-probe.json',evidence)
-    project=dict(name='modMaleMod',version='0.4.18-boot-recovery-test' if full_joint_lod else '0.4.16-pose-measurement' if measure_pose else '0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
-        scriptedCook=True,motionEntity=BODY,motionOutput='player',additionalNativeDumps=[RIG,PLAYER,PARENT],
+    project=dict(name='modMaleMod',version='0.4.19-effective-player-test' if effective_templates else '0.4.18-boot-recovery-test' if full_joint_lod else '0.4.16-pose-measurement' if measure_pose else '0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
+        scriptedCook=True,motionEntity=BODY,motionOutput='player',additionalNativeDumps=[RIG,PLAYER,PARENT]+[r['path'] for r in effective],
+        isolatedNativeDumps=[r['path'] for r in effective],
+        isolatedNativeResources=[r['path'] for r in effective],
+        preserveCompiledPlayerTemplates=effective_templates,
+        nativeSourceBaseline=STOCK_BASELINE if effective_templates else None,
         deformationBridge=dict(sourceProbe=job.relative_to(ROOT).as_posix(),sourceProbeSHA256=digest(job/'deformation-probe.json'),
             lateActivation=False,identityRoot=probe['identityRoot'],fullTransformChannels=False,parentPoseSpace='attached',
             executionPhase='player-stack',authoredRestMask=rest_joints,fullJointLod=full_joint_lod,
+            effectiveTemplates=effective_templates,
             poseMeasurement=measure_pose,cageBaseCommit=probe['cageBaseCommit']),
         scope='Player stack pose/scale probe. Full source controls, dynamic pelvis and secondary motion remain incomplete.')
     package=build(cfg,project,workspace);verify_package(package)
@@ -331,4 +466,5 @@ if __name__=='__main__':
     parser.add_argument('--rest-joints',action='store_true')
     parser.add_argument('--measure-pose',action='store_true')
     parser.add_argument('--full-joint-lod',action='store_true')
-    args=parser.parse_args();main(args.probe,args.player_inspection,args.rest_joints,args.measure_pose,args.full_joint_lod)
+    parser.add_argument('--effective-templates',action='store_true')
+    args=parser.parse_args();main(args.probe,args.player_inspection,args.rest_joints,args.measure_pose,args.full_joint_lod,args.effective_templates)
