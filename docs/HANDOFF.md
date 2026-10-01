@@ -17,38 +17,39 @@ Wolverine has not yet migrated its authoritative runtime to consume Base.
 
 ## Current implementation
 
-Installed 0.4.15 uses Base `466aebb`; source pin `3b10594` records the newer
-installed checkpoint only. Cage geometry remains
-`ca78de0`. Recent Base commits record observations and a shared pose-authority
-lesson only. Shared root-profile preparation is not executed in this package.
+**0.4.17-full-joint-lod is installed; observed gameplay is pending.**
+Package `publish/20261001-021142-cf7e81`, source job
+`build/motion/player-stack-c38bc5dd963b`, Base `3b10594`, cage `ca78de0`.
+Source pin `09d7cf5` adopts the shared LOD requirement/checkpoint only.
 
-**0.4.15-authored-rest-test is installed; gameplay observations are pending.**
-Package `publish/20261001-014011-2cda1b`, source job
-`build/motion/player-stack-20081c8e8f65`. This appends the same owned player layer,
-then restores reference local transforms only on the ten authored joint indices
-94..103 before applying scale. Stock pose and root motion remain the preceding
-graph's output. Native full-weight mask/name/index checks, 23 connected pose nodes,
-private player rig/control metadata, eight exact unpacked resources, five
-installed hashes and 46 tests pass. No additional per-frame script work.
+**0.4.15 FAILED:** the user reports no attachment-follow improvement; the model
+tracks WASD but stays steady during idle sway, stretching its base. 0.4.14 had
+the same failure, despite observed scaling. Do not report either as working.
 
-**0.4.14 FAILED authored joint animation follow:** the user confirms scaling,
-but anatomy stays steady during idle sway and its base stretches. Waist/ankle
-parity was not independently reported. Historical package
-`publish/20261001-005951-7981b3`, Base `0af9e5c`, cage `ca78de0`.
-Its 21-node graph kept incoming authored local transforms unchanged; the new
-mask tests that path without changing the correct pelvis parent indices.
-One 0.4.15 build was rejected before packaging/installation because its Float
-constant/mask weights cooked as zero. Vendor CFloat ignores integer JSON tokens;
-`prepare_motion.scalar` now emits float tokens. A converter binary round-trip
-regression catches this silent loss; the strict native gate was preserved.
+Review found a concrete omitted extension: the private 104-joint rig kept the
+stock 40-joint reduced-detail update limit. Native CalcTransforms clamps the
+model-space update range by GetLodBoneNum, excluding all authored joints at
+indices 94..103 in that mode. `--full-joint-lod` raises the private limit to 104.
+Native verification requires the cooked limit to cover every added joint.
+47 tests, stock rest-frame/control metadata preservation, 23 connected pose
+nodes, eight exact unpacked resources and five installed hashes pass.
 
-F6 -> **MaleMod - player pose test** has one scale probe and three disabled
-diagnostic rows. Full 18 controls, dynamic pelvis and active secondary motion
-remain incomplete. Test idle sway, walk/run/turn, waist/ankle continuity, scale
-.8/1.2 and appearance reattachment. No CPU performance claim yet.
-Previous 0.4.14 archive: `local/uninstalled/modMaleMod-17851b978686`.
-Generic rollback still targets the older static baseline, not 0.4.14/0.4.4.
-See PLAYER-STACK.md for reproduction and exact-package recovery.
+The candidate also includes `--measure-pose`: after a two-second settling delay,
+60 read-only samples at 0.1 seconds capture actor-relative pelvis/root movement
+and root position error in pelvis coordinates. This stops after six seconds;
+there is no permanent script polling. Re-equip trousers to start another capture.
+F6 -> **MaleMod - player pose test** contains the original scale probe, three
+old diagnostics and three new measurement rows. Wait ten seconds in gameplay
+before opening it. Samples=0 needs investigation, not an assumption of zero error.
+0.4.16 measurement-only package `publish/20261001-020823-8b1758` was never installed.
+
+The LOD omission is an observed native data defect; its causal role in gameplay
+must still be verified. Shared Base REST-GRAFT.md adds update-range coverage to
+all spoke adoption checks. Full 18 controls, dynamic pelvis and active secondary
+motion remain incomplete. Test idle, walk/run/turn, waist/ankles and scale .8/1.2.
+Previous 0.4.15 archive: `local/uninstalled/modMaleMod-fdf18dbc0c66`.
+Generic rollback still targets the older static baseline. Use exact-package
+verification/deployment for a deliberate recovery; see PLAYER-STACK.md.
 
 **0.4.13-attached-pose-test is HELD, NEVER INSTALLED**, package
 `publish/20261001-000237-219d76`: PrepareForSample resets a helper's first graph

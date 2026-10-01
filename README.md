@@ -8,18 +8,17 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-The installed candidate is **0.4.15-authored-rest-test**. F6 ->
-**MaleMod - player pose test** exposes one scale probe plus visible diagnostics.
-The user confirms 0.4.14 scaling, but authored joints stayed steady during idle
-sway and stretched at their base. The new test restores reference local poses
-only on those ten joints before scaling, preserving all 94 stock bone poses
-and root motion. Native cooking verifies the exact full-weight bone mask and
-23 connected pose nodes; eight packed resources, five installed hashes and
-46 tests pass. Idle/gait following, waist/ankle continuity and scale retention
-await gameplay observations. Active physics and all 18 controls remain unfinished.
-See [the player stack route](docs/PLAYER-STACK.md) and
-[native findings](docs/NATIVE-POSE-GRAPH.md). The 0.4.13 helper InputNode package
-is held/uninstalled because its first graph would reset stock animation.
+The installed candidate is **0.4.17-full-joint-lod**. F6 ->
+**MaleMod - player pose test** exposes the scale probe and diagnostics.
+0.4.14 and 0.4.15 failed animation following: the attachment followed WASD
+movement but stayed steady during idle sway. Review found that the private
+104-joint rig retained the stock 40-joint reduced-detail update limit, excluding
+all added joints. The candidate raises that private limit to 104. Native cook,
+LOD coverage, 23 pose nodes, eight packed resources, five installed hashes and
+47 tests pass. **Gameplay is pending.** After re-equipping, a bounded six-second
+measurement reports pelvis/root motion and parent-follow error in the bottom
+menu rows, then stops. Full controls, coupled pelvis and active physics remain
+unfinished. See [the player stack route](docs/PLAYER-STACK.md).
 
 Recovery baseline: **0.4.4-native-sliders-test**, whose menu is user-confirmed.
 Full source controls, coupled pelvis, numerical physics parity and an unpaused

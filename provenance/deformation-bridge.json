@@ -1,9 +1,9 @@
 {
   "checkpoint": "2026-10-01",
-  "baseCommit": "3b10594cc441cb80000dbbc3e2e133c2ec1f3b25",
-  "installedVersion": "0.4.15-authored-rest-test",
-  "installedPackage": "publish/20261001-014011-2cda1b",
-  "installedBaseCommit": "466aebb4a3e9cc68c78670c1e966c1008a43c0cd",
+  "baseCommit": "09d7cf55697bf2e6c45a418a79e66a95fa31abc3",
+  "installedVersion": "0.4.17-full-joint-lod",
+  "installedPackage": "publish/20261001-021142-cf7e81",
+  "installedBaseCommit": "3b10594cc441cb80000dbbc3e2e133c2ec1f3b25",
   "attempts": [
     {
       "version": "0.4.5-deformation-bridge-test",
@@ -307,8 +307,8 @@
       "installedFilesVerified": 5,
       "adapterTestsPassed": 46,
       "installed": true,
-      "currentlyInstalled": true,
-      "observedGameplay": false,
+      "currentlyInstalled": false,
+      "observedGameplay": true,
       "hypothesis": "Restore reference local transforms only on the ten authored joints before scale; preserve the preceding player graph stock pose and root motion",
       "scope": "Player stack pose/scale probe. Full source controls, dynamic pelvis and secondary motion remain incomplete.",
       "previousArchive": "local/uninstalled/modMaleMod-17851b978686",
@@ -319,12 +319,82 @@
           "installed": false,
           "failure": "Native full-weight rest gate rejected zero constant and mask weights: CFloat.SetValue silently ignores integer JSON tokens. Fixed scalar authoring to emit floats; binary round-trip regression and native cook verify full weights and indices."
         }
-      ]
+      ],
+      "observedResult": "failed: tracks WASD movement but stays steady during idle animation, stretching the base; no attachment-follow improvement"
+    },
+    {
+      "version": "0.4.16-pose-measurement",
+      "package": "publish/20261001-020823-8b1758",
+      "nativeCook": true,
+      "packageVerified": true,
+      "installed": false,
+      "currentlyInstalled": false,
+      "observedGameplay": false,
+      "heldReason": "Measurement-only candidate superseded by explicit private rig LOD correction",
+      "rejectedBuild": "Initial measurement compilation rejected implicit Int16-to-int conversion; used parent-array count instead, without modifying native data"
+    },
+    {
+      "version": "0.4.17-full-joint-lod",
+      "package": "publish/20261001-021142-cf7e81",
+      "baseCommit": "3b10594cc441cb80000dbbc3e2e133c2ec1f3b25",
+      "cageBaseCommit": "ca78de046a7be63ccb316c7a9b9c12bc7ce3293f",
+      "sourceProbe": "build/motion/player-stack-c38bc5dd963b",
+      "nativeCook": true,
+      "nativeBindingVerified": true,
+      "motionBinding": {
+        "cookedControllerBindingVerified": true,
+        "sameConstraintReference": true,
+        "cookedDeformationBindingVerified": true,
+        "deformationOutput": "player",
+        "cookedPlayerStackBindingVerified": true,
+        "stockAppearanceAutobindingExpected": true,
+        "meshSkinningAttachmentVerified": false,
+        "runtimeHandleBindingVerified": false,
+        "observedGameplay": false,
+        "dumpSHA256": "38e79d324fd77b02731a2d9829bf478b153377f94ebe0e2b6f840969ddd1ec3f",
+        "poseGraph": {
+          "cookedPoseConnectionsVerified": true,
+          "stockAlignmentNodes": 0,
+          "authoredScaleNodes": 10,
+          "authoredScalarNodes": 0,
+          "identityRoot": "Root",
+          "parentPoseSpace": "attached",
+          "authoredRestMaskVerified": true,
+          "connectedPoseNodes": 23,
+          "dumpSHA256": "edcbb4baf69bb8dd1101fa29d7b31ce2d51f643a1c29c2b4a8357479bbf2ca52",
+          "observedGameplay": false
+        },
+        "playerRig": {
+          "nativePlayerRigVerified": true,
+          "playerRigPath": "characters\\base_entities\\man_base\\malebase.w2rig",
+          "stockJointCount": 94,
+          "authoredJointCount": 10,
+          "stockRootBindingsPreserved": true,
+          "maximumRestFrameError": 5.7571411193890754e-08,
+          "rigSHA256": "673079ea6830a2a66b561da723d679bc4c1c283456fe96230eb0094dc5d109f4",
+          "playerEntitySHA256": "5053f4f149faaa657a001791d9716ccdbfc1b17961c5e193b1dc7c2d89a84723",
+          "parentEntitySHA256": "b8bb003f5992944e86efb8509000b8813dea66c4c5644f8acc04259b4268a4f2",
+          "observedGameplay": false,
+          "fullJointLodVerified": true,
+          "reducedDetailBoneCount": 104
+        }
+      },
+      "packageVerified": true,
+      "packedResourcesAndBuffersVerified": 8,
+      "installedFilesVerified": 5,
+      "adapterTestsPassed": 47,
+      "installed": true,
+      "currentlyInstalled": true,
+      "observedGameplay": false,
+      "correction": "Raise private player reduced-detail update limit from 40 to all 104 joints so appended indices 94..103 are computed in both native pose LODs",
+      "poseMeasurement": "60 read-only samples at 0.1 seconds after a two-second settling delay; reports actor-relative pelvis/root motion and authored root position error in pelvis coordinates; stops afterward",
+      "previousArchive": "local/uninstalled/modMaleMod-fdf18dbc0c66",
+      "scope": "Player stack pose/scale probe. Full source controls, dynamic pelvis and secondary motion remain incomplete."
     }
   ],
   "remaining": [
     "full native deformation channels beyond the observed single scale bridge",
-    "Observe authored-rest-mask candidate during idle sway and gait; scale was observed in 0.4.14 but authored joint animation follow failed",
+    "Observe full-joint-LOD candidate during idle and gait; use bounded native pose measurements if attachment still floats",
     "all 18 independent source controls",
     "coupled dynamic pelvis",
     "native persistence and performance observations",
@@ -344,11 +414,12 @@
     "tools/mod.py": "105973b5b217e1833489db06e56619d66d2be4698d5d41725964e4cadb767d63",
     "tools/verify_motion_package.py": "6117ed4bff2ec401ad16083ba64c42d587652de2d44c9b8c7663903e374e9713",
     "tools/deploy_motion.py": "2322bbbef120af81d23f5ee69210b471679ca4ebdddf63c74ca821871e044db3",
-    "tools/player_stack.py": "35ccfe88970dafe6459a4d7289f1393b7a69a8c868b49fce1632838e97cd8e8f",
+    "tools/player_stack.py": "81a448c1d0bcb6474fa8445728b02ec8268afda6fbdedee79af818e987926642",
     "tools/player_rig_redirect.py": "e0225a727ce9da4e92a5bfbc149a1a57637941c72b6a1cb654a6998dbaddb829",
     "tools/native/MaleModPhysicsItem.cs": "cf9b62e0ff2731741a2207750d45bc5e5a6e4bf6be9ab0b0227be37b2de3faf2",
     "tools/build_native_converter.py": "3198d1ef4a8e8626e8047e1e82805898fcc749db91c63327b81631db755dee0e",
-    "tools/prepare_motion.py": "2131fefd3aeb7db8fe8f789a3626bb2d673927041f157a0f2c2c6c0912f90c43"
+    "tools/prepare_motion.py": "2131fefd3aeb7db8fe8f789a3626bb2d673927041f157a0f2c2c6c0912f90c43",
+    "tools/pose_diagnostics.py": "2f4629f073b6bca029a0fd0105e4162e5c8fbc867c5ee3466257c822792bc0f0"
   },
   "baselineRestoredBeforeCandidate": {
     "version": "0.4.4-native-sliders-test",
@@ -388,7 +459,13 @@
       "CBehaviorGraphBlendOverrideNode::Sample",
       "CBehaviorGraphTPoseNode::Sample",
       "CPose::SyncMSFromLS",
-      "CPose::MakeAllChildrenLocalSpace"
+      "CPose::MakeAllChildrenLocalSpace",
+      "CAnimatedComponent::CalcTransforms",
+      "CAnimatedComponent::GetLodBoneNum",
+      "CSkeleton::GetLodBoneNum_0",
+      "CSkeleton::GetBonesNum",
+      "SBehaviorGraphOutput::GetBonesModelSpace",
+      "SkeletonBonesUtils::GetBoneMatricesModelSpace"
     ],
     "findings": [
       "ParentAlign caches transform parent at instance initialization; OnActivated does not rerun FindParent",
@@ -409,9 +486,12 @@
       "BlendOverride samples the reference LS branch and replaces only its weighted authored bone indices; getDeltaMotionFromOverride=false retains stock root motion",
       "TPose copies skeleton reference local transforms; Reset translation/rotation produces zero/identity rather than authored rest transforms",
       "Child pose propagation scans later parent indices; an interleaved subtree alone does not justify reordering the private rig",
-      "Pinned vendor CFloat.SetValue accepts float/double but silently ignores integers; authored Float values must use float JSON tokens and survive native round-trip"
+      "Pinned vendor CFloat.SetValue accepts float/double but silently ignores integers; authored Float values must use float JSON tokens and survive native round-trip",
+      "Native CalcTransforms passes min(output count, GetLodBoneNum()) to model-space calculation; the inherited reduced-detail limit 40 excludes appended indices 94..103",
+      "Private rig fullJointLod option raises the observed reduced-detail limit to 104; native loaded dump must retain it; shared man_base rig and stock rest frames are untouched",
+      "Root seam average stock weights include pelvis, both thighs and leg-roll joints. Parent-relative measurements distinguish absent hierarchy motion from attachment skin-field mismatch; a valid pelvis parent alone is not full surface-follow proof"
     ],
     "observedGameplay": false
   },
-  "currentBaseAdoption": "Installed 0.4.15 uses Base 466aebb and unchanged ca78de0 cage. Source pin 3b10594 records the installed checkpoint only. Recent Base commits record pose lessons and observations only; shared root-profile/preparation and full source sliders/pelvis are not executed by installed scale probe. Native rest-mask and float serialization changes belong to the Witcher adapter."
+  "currentBaseAdoption": "Installed 0.4.17 uses Base 3b10594 and unchanged ca78de0 cage. Full native joint LOD and bounded pose measurement are adapter-owned. Base REST-GRAFT.md records update-range coverage as a requirement for Wolverine and future spokes; shared anatomy/physics algorithms are unchanged. Source pin 09d7cf5 adopts that documentation/checkpoint; installed assets remain built against 3b10594."
 }

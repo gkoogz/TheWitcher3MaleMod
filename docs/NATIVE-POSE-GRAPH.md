@@ -29,13 +29,31 @@ the object tree. Verification excludes only its disconnected output, never an
 authored output. Graph buffers choose the authored top and output. More than one
 such default, a connected default or multiple authored outputs are rejected.
 
+## Extended skeleton update coverage (October 1)
+
+0.4.15 also failed observed animation follow. Reviewing the preserved stock rig
+metadata found `lodBoneNum_1=40` in the private 104-joint skeleton. Offline native
+inspection shows CAnimatedComponent::CalcTransforms bounds model-space conversion
+by GetLodBoneNum; all ten appended joints lie outside the reduced-detail prefix.
+0.4.17 sets that private limit to 104 and verifies it after official cooking.
+The original shared rig is untouched. Keep stock bind data and control metadata,
+but do not preserve a cutoff that excludes newly referenced joints.
+
+A bounded native script measurement reports actor-relative pelvis/root motion
+and parent-relative root-position error. It is read-only and stops after 60
+samples. It distinguishes a native bone update failure from a rendered skin
+binding failure. Gameplay confirmation is pending; 0.4.16 measurement-only was
+never installed. Symbol evidence: CalcTransforms at 0x142700160,
+GetLodBoneNum at 0x1426fa950 and skeleton GetBonesModelSpace at 0x1426eabb0 in
+the hashed licensed offline editor. Reports remain under ignored build/probe.
+
 ## Authored joint follow and numeric serialization (October 1)
 
 0.4.14 scaling is user-confirmed, but added joints stay steady during idle sway,
 stretching their base. It is a failed animation-follow test, not pose parity.
 0.4.15 adds a reference LS branch masked onto only authored indices 94..103,
 then scale; it keeps the preceding player's stock pose and root motion. The
-connected native output has 23 pose nodes. Playback is still pending.
+connected native output has 23 pose nodes. Its playback subsequently FAILED; see the LOD correction above.
 
 The first rest-mask cook was rejected: constant and mask weights became zero.
 Pinned vendor CFloat.SetValue accepts float/double, but ignores integer JSON

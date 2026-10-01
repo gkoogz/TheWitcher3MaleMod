@@ -30,7 +30,7 @@ RIG_SHA='a127b0b3ae7beb84d14bc940a2198a93b31d333397f5c4f59cf452cd5d29be1d'
 PARENT_SHA='2fa3b1f381c85059b2f583925ee1c4ed59ccfce98ba5be20ea05531c6c4443b0'
 
 
-def merge_rig(original, extension):
+def merge_rig(original, extension, full_joint_lod=False):
     result=copy.deepcopy(original)
     stock=result['_chunks']['CSkeleton #0']['_vars']
     extended=extension['_chunks']['CSkeleton #0']['_vars']
@@ -40,6 +40,13 @@ def merge_rig(original, extension):
         if stock[field]['_elements']!=extended[field]['_elements'][:94]:
             raise ValueError('Stock '+field+' changed in extension')
         stock[field]=copy.deepcopy(extended[field])
+    if full_joint_lod:
+        if stock.get('lodBoneNum_1') != scalar('Int32',40):
+            raise ValueError('Observed stock reduced-detail bone limit changed')
+        # CalcTransforms limits model-space updates to GetLodBoneNum(). The
+        # stock prefix of 40 excludes every appended joint (indices 94..103).
+        # Keep all required joints in this private player's update range.
+        stock['lodBoneNum_1']=scalar('Int32',len(stock['bones']['_elements']))
     return result
 
 
@@ -79,7 +86,7 @@ def player_entity(source):
     return result
 
 
-def player_script(source, names):
+def player_script(source, names, pose_rest=None):
     result=probe_script(source,direct=True,late=True)
     result=result.replace('    editable var dynamicConstraint',
         '    editable var deformationGraph : CBehaviorGraph;\n    private var ownsPoseLayer : bool;\n    editable var dynamicConstraint',1)
@@ -132,6 +139,9 @@ def player_script(source, names):
     # No replacement of the player's stock graphs, freeze state or sampling.
     for forbidden in ('ActivateBehaviors(', 'UpdateByOtherAnimatedComponent(', 'UnfreezePose('):
         if forbidden in result:raise ValueError('Player script mutates stock animation scheduling: '+forbidden)
+    if pose_rest is not None:
+        from pose_diagnostics import add_pose_measurement
+        result=add_pose_measurement(result,pose_rest)
     return result
 
 
@@ -164,7 +174,7 @@ def native_rig_frames(path, dump, expected):
     error=float(np.max(np.abs(actual-records)))
     if not np.isfinite(error) or error>1e-6:raise ValueError('Native player rig reference records changed')
     if skel.findtext('./properties/prop[@name="lodBoneNum_1"]')!=str(expected['lodBoneNum_1']['_value']):
-        raise ValueError('Native stock LOD policy changed')
+        raise ValueError('Native rig LOD policy differs from the verified recipe')
     for prop in ('controlRigDefinition','controlRigDefaultPropertySet','controlRigSettings','teleportDetectorData'):
         if skel.find('./properties/prop[@name="'+prop+'"]/reference') is None:raise ValueError('Lost stock rig metadata '+prop)
     return error
@@ -194,14 +204,19 @@ def verify_native_player(cooked, probe):
     if digest(recipe)!=probe['playerRigRecipeSHA256']:raise ValueError('Private rig recipe changed')
     authored=json.loads(recipe.read_text())
     expected=authored['_chunks']['CSkeleton #0']['_vars']
+    if probe.get('fullJointLod') and expected['lodBoneNum_1']['_value']!=len(expected['bones']['_elements']):
+        raise ValueError('Private player LOD excludes required authored joints')
     error=native_rig_frames(cooked/RIG,Path(str(cooked/RIG)+'.xml'),expected)
-    return dict(nativePlayerRigVerified=True,playerRigPath=NEW_RIG,stockJointCount=94,
+    result=dict(nativePlayerRigVerified=True,playerRigPath=NEW_RIG,stockJointCount=94,
         authoredJointCount=10,stockRootBindingsPreserved=True,maximumRestFrameError=error,
         rigSHA256=digest(cooked/RIG),playerEntitySHA256=digest(cooked/PLAYER),
         parentEntitySHA256=digest(cooked/PARENT),observedGameplay=False)
+    if probe.get('fullJointLod'):result.update(fullJointLodVerified=True,reducedDetailBoneCount=104)
+    return result
 
 
-def main(probe_dir, player_inspection=None, rest_joints=False):
+def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=False, full_joint_lod=False):
+    if measure_pose and not rest_joints:raise ValueError('Pose measurement requires the current authored-rest candidate')
     cfg=settings();pin=base_checkout(cfg);probe_dir=Path(probe_dir).resolve()
     if not probe_dir.is_relative_to(ROOT/'build/motion'):raise ValueError('Expected owned probe')
     probe=json.loads((probe_dir/'deformation-probe.json').read_text())
@@ -220,7 +235,7 @@ def main(probe_dir, player_inspection=None, rest_joints=False):
     converter=ROOT/'build/research/wkit-current/MaleModCR2W.exe'
     original_rig=job/'stock-rig.json'
     subprocess.run([str(converter),'export',str(source_rig),str(original_rig)],check=True,capture_output=True)
-    rig=merge_rig(json.loads(original_rig.read_text()),json.loads((probe_dir/'deformation-rig.json').read_text()))
+    rig=merge_rig(json.loads(original_rig.read_text()),json.loads((probe_dir/'deformation-rig.json').read_text()),full_joint_lod)
     write_json(job/'player-rig.json',rig)
     body=player_entity(json.loads((probe_dir/'scripted-motion-entity.json').read_text()))
     write_json(job/'player-body.json',body)
@@ -251,8 +266,13 @@ def main(probe_dir, player_inspection=None, rest_joints=False):
         subprocess.run([str(converter),'import',str(job/'deformation-graph.json'),str(workspace/GRAPH)],check=True,capture_output=True)
     names,_parents,_worlds=rig_world(rig['_chunks']['CSkeleton #0']['_vars'])
     script=workspace/'scripts/local/maleModPhysics.ws';script.parent.mkdir(parents=True)
-    script.write_text(player_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(),names),encoding='utf-8')
+    pose_rest=None
+    if measure_pose:
+        root_frame=rig['_chunks']['CSkeleton #0']['_vars']['rigdata']['_elements'][94]['_vars']['Position']['_vars']
+        pose_rest=[root_frame[c]['_value'] for c in 'XYZ']
+    script.write_text(player_script((ROOT/'probes/runtime/maleModPhysics.ws').read_text(),names,pose_rest),encoding='utf-8')
     evidence=dict(probe,baseCommit=pin['commit'],executionPhase='player-stack',authoredRestMask=rest_joints,
+        fullJointLod=full_joint_lod,poseMeasurement=measure_pose,
         playerRigRecipe=(job/'player-rig.json').relative_to(ROOT).as_posix(),
         playerRigRecipeSHA256=digest(job/'player-rig.json'),
         sourcePlayerNativeDump=source_dump.relative_to(ROOT).as_posix(),
@@ -267,11 +287,12 @@ def main(probe_dir, player_inspection=None, rest_joints=False):
     evidence['resources']=[dict(path=p.relative_to(workspace).as_posix(),sourceSHA256=digest(p))
         for p in workspace.rglob('*') if p.is_file() and p.suffix!='.ws']
     write_json(job/'deformation-probe.json',evidence)
-    project=dict(name='modMaleMod',version='0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
+    project=dict(name='modMaleMod',version='0.4.17-full-joint-lod' if full_joint_lod else '0.4.16-pose-measurement' if measure_pose else '0.4.15-authored-rest-test' if rest_joints else '0.4.14-player-stack-test',platform='pc',cacheBuilders=['textures','physics'],
         scriptedCook=True,motionEntity=BODY,motionOutput='player',additionalNativeDumps=[RIG,PLAYER,PARENT],
         deformationBridge=dict(sourceProbe=job.relative_to(ROOT).as_posix(),sourceProbeSHA256=digest(job/'deformation-probe.json'),
             lateActivation=False,identityRoot=probe['identityRoot'],fullTransformChannels=False,parentPoseSpace='attached',
-            executionPhase='player-stack',authoredRestMask=rest_joints,cageBaseCommit=probe['cageBaseCommit']),
+            executionPhase='player-stack',authoredRestMask=rest_joints,fullJointLod=full_joint_lod,
+            poseMeasurement=measure_pose,cageBaseCommit=probe['cageBaseCommit']),
         scope='Player stack pose/scale probe. Full source controls, dynamic pelvis and secondary motion remain incomplete.')
     package=build(cfg,project,workspace);verify_package(package)
     write_json(job/'candidate-provenance.json',dict(package=package.relative_to(ROOT).as_posix(),installed=False,observedGameplay=False))
@@ -283,4 +304,6 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('probe',type=Path)
     parser.add_argument('--player-inspection',type=Path)
     parser.add_argument('--rest-joints',action='store_true')
-    args=parser.parse_args();main(args.probe,args.player_inspection,args.rest_joints)
+    parser.add_argument('--measure-pose',action='store_true')
+    parser.add_argument('--full-joint-lod',action='store_true')
+    args=parser.parse_args();main(args.probe,args.player_inspection,args.rest_joints,args.measure_pose,args.full_joint_lod)

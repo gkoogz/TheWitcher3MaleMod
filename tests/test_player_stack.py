@@ -100,3 +100,19 @@ class PlayerStackTests(unittest.TestCase):
         self.assertEqual(merged['_chunks']['CSkeleton #0']['_vars']['metadata'],vars['metadata'])
         extended['_chunks']['CSkeleton #0']['_vars']['parentIndices']['_elements'][2]=0
         with self.assertRaises(ValueError):merge_rig(original,extended)
+
+    def test_extended_player_lod_updates_every_weighted_authored_joint(self):
+        fields={k:{'_elements':list(range(94))} for k in ('bones','parentIndices','rigdata')}
+        fields['lodBoneNum_1']={'_type':'Int32','_value':40}
+        original={'_chunks':{'CSkeleton #0':{'_vars':fields},'Control #1':{'_vars':{'native':'unchanged'}}}}
+        extension=copy.deepcopy(original)
+        for k in ('bones','parentIndices','rigdata'):
+            extension['_chunks']['CSkeleton #0']['_vars'][k]['_elements']+=list(range(94,104))
+        merged=merge_rig(original,extension,full_joint_lod=True)
+        actual=merged['_chunks']['CSkeleton #0']['_vars']
+        # Model-space computation uses this exclusive upper bound: each added
+        # joint must be evaluated even when the player selects reduced detail.
+        for weighted_joint in range(94,104):self.assertLess(weighted_joint,actual['lodBoneNum_1']['_value'])
+        self.assertEqual(actual['bones']['_elements'][:94],fields['bones']['_elements'])
+        self.assertEqual(merged['_chunks']['Control #1'],original['_chunks']['Control #1'])
+        self.assertEqual(fields['lodBoneNum_1']['_value'],40)

@@ -22,7 +22,7 @@ autobinding and rendered pose parity still require observed gameplay.
 
 The player's private rig has the original 94 bones followed by the ten existing
 authored joints. All stock rest transforms, parents and other rig objects are
-preserved. Only Geralt's `player_base_m.w2ent` imports that private rig. Shared
+preserved, except the explicit private LOD extension described below. Only Geralt's `player_base_m.w2ent` imports that private rig. Shared
 `man_base.w2rig` is not overridden for other characters.
 
 The observed player and parent resources are format 164. Do not rewrite them through the
@@ -39,7 +39,8 @@ The cooked private rig is also format 164. The converter deliberately rejects
 that format. Its 104 names/parents come from the official native XML dump;
 `native_rig_frames` verifies the native export CRC/bounds and its trailing
 104 x 48-byte position/quaternion/scale records against the authored recipe.
-All stock control-rig metadata handles and LOD policy must survive native loading.
+All stock control-rig metadata handles must survive native loading. The LOD
+limit must match the recipe and cover the authored joints when fullJointLod is enabled.
 
 At startup the script verifies all 104 observed/authored names, adds one owned
 runtime slot and calls AttachBehavior. It never replaces existing player
@@ -48,26 +49,38 @@ detaches and erases only its own slot. There is no per-frame script polling.
 
 ## Reproduction and gates
 
-Installed test: **0.4.15**, `publish/20261001-014011-2cda1b`, built against Base
-`466aebb`; cage geometry remains `ca78de0`. 46 tests pass, 23 native pose nodes
+Installed test: **0.4.17**, `publish/20261001-021142-cf7e81`, built against Base
+`3b10594`; cage geometry remains `ca78de0`. 47 tests pass, 23 native pose nodes
 are connected, eight resources round-trip exactly and five installed hashes
 match. Gameplay observations are pending.
 
-**0.4.14 FAILED authored joint follow:** scaling works, but idle sway leaves the
-anatomy unnaturally steady, stretching its base. Waist/ankle parity was not
-separately reported. 0.4.15 tests a reference-pose branch plus BlendOverride
-with constant full weight on exactly authored indices 94..103; all stock bones
-and root motion retain preceding player output. Native TPose copies reference
-LS transforms; Reset translation/rotation instead produces zero/identity and
-must not be used to reconstruct rest transforms. Native child propagation scans
-later parent indices, so there is no evidence for reordering the rig's subtrees.
-This remains an unobserved fix hypothesis.
+**0.4.14 and 0.4.15 FAILED authored joint follow.** Restoring reference local
+transforms did not fix the steady attachment during idle sway. Native review
+then found the private 104-joint rig still used the stock reduced-detail limit
+of 40. CalcTransforms calls GetLodBoneNum and passes that bound into model-space
+bone computation. Thus indices 94..103 are outside that update range. The
+`--full-joint-lod` candidate raises only the private rig's limit to 104, preserving
+stock names, parents, rest frames and control metadata. Native verification
+rejects a cooked limit that excludes an authored joint. This is a demonstrated
+native omission; observed gameplay must establish whether it explains the symptom.
 
-The first rest-mask cook was rejected before packaging because integer-valued
-Float JSON properties were silently omitted by vendor CFloat.SetValue. The
-constant and weights became zero. `scalar` now emits float tokens and the binary
-converter round-trip regression plus strict native mask gate require full weights,
-correct names/indices, an active unsynchronized rest branch and preserved root motion.
+`--measure-pose` adds a bounded read-only capture after attachment: two seconds
+settling plus 60 samples spaced by 0.1 seconds, then no polling. It compares the
+native added root position in animated pelvis coordinates against its authored
+local rest position and records both bones' motion relative to the actor.
+This measurement checks joint positions; orientation still requires gameplay
+inspection. The menu's last three rows show sample count/motion, first/max parent-follow
+error, and native bone indices/parent-array count. Wait ten seconds in gameplay
+after re-equipping. Samples=0 is not a pass. Significant pelvis motion with a
+steady added root indicates hierarchy/update failure; correct native bone motion
+with a steady rendered surface points to skin binding. Skin-field following
+can also differ from one pelvis parent because the seam blends thighs/roll bones.
+The measurement-only 0.4.16 package was built but never installed.
+
+The earlier rest-mask float serialization repair remains: vendor CFloat.SetValue
+silently ignores integer JSON tokens. The scalar helper emits floats, a native
+converter round-trip regression checks them, and the cooked mask gate requires
+full weights, exact bone names/indices and unchanged root-motion policy.
 
 Use the pinned Base and licensed inputs recorded in the candidate's provenance.
 The input-node graph probe is generated with:
@@ -75,12 +88,13 @@ The input-node graph probe is generated with:
 ```powershell
 python tools/build_native_converter.py
 python tools/probe_deformation_bridge.py --identity-root --attached-pose
-python tools/player_stack.py build/motion/deformation-<new job id>
+python tools/player_stack.py build/motion/deformation-<new job id> --rest-joints --measure-pose --full-joint-lod
 python tools/verify_motion_package.py --directory publish/<candidate>
 python tools/deploy_motion.py install --directory publish/<candidate>
 ```
 
-Use `--rest-joints` for the authored-only reference-pose mask test (0.4.15).
+The flags reproduce the 0.4.17 route; omitting them reproduces historical
+intermediate candidates and must not be mistaken for the current repair.
 
 The builder currently requires the locally observed player native dump/hash;
 on a new machine reproduce `tools/inspect_native.py` for the recorded stock

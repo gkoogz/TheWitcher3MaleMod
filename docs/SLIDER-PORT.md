@@ -12,14 +12,14 @@ runtime port. Do not tell the user it does.
 
 ## Latest bridge failures and continuation
 
-October 1: **0.4.12 FAILED gait parity** (smaller gap, still bobs with each step).
-**0.4.14 FAILED authored joint follow**, despite user-confirmed scaling: idle
-sway leaves anatomy steady and stretches its base. **0.4.15-authored-rest-test
-is installed, gameplay pending**. Its player InputNode layer masks reference
-local pose onto only ten authored joints before scale, preserving stock pose
-and root motion. Native mask weights/names/indices, 23 connected pose nodes,
-eight packed resources, five installed hashes and 46 tests pass. Full controls,
-coupled pelvis and active secondary motion remain incomplete. See PLAYER-STACK.md.
+October 1: **0.4.14 and 0.4.15 FAILED authored joint animation follow**:
+the model follows WASD but stays steady during idle sway, stretching its base.
+**0.4.17-full-joint-lod is installed; gameplay pending.** Its private 104-joint
+rig now includes all added joints in the reduced-detail update range (previously
+40). Native LOD coverage, 23 connected pose nodes, eight packed resources, five
+installed hashes and 47 tests pass. Bounded read-only pose measurements appear
+in the bottom three menu rows. Full controls, coupled pelvis and active secondary
+motion remain incomplete. See PLAYER-STACK.md and the current handoff.
 
 **0.4.10 FAILED**: user reports waist separation remains and an ankle gap too.
 0.4.11 native motion candidate is held/uninstalled because it uses the same local
