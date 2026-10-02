@@ -4,7 +4,10 @@
 
 Sliders, tuning menus and owned hotkeys are removed. Never use or rebind F12.
 The user approved .26 geometry but rejected sideways/wavy motion and low heft.
-The .27 candidate corrects pelvis-relative dynamics while retaining that shape.
+The user also rejected .27 warping. Installed .28 corrects bone-local rotation
+and axis order while retaining that shape and the physics constants. A rotating
+centerline alone is insufficient: watch the surface thickness, crown and
+cross-sections for lateral stretch/twist during movement.
 Compare steady straight travel, starts/stops, direction reversals and turns;
 look for unnecessary lateral offset or waves, natural lag that settles, and
 thigh clearance. Include idle and uneven frame pacing in this comparison.

@@ -225,6 +225,10 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
             else { position = physicsPosition[i+4]; rotation = lobeRotations[i-8]; }
             localPoint = position;
             delta = VecTransformDir(MatrixGetInverted(restFrames[i]),localPoint-jointRestPoints[i]);
+            // Native local RotateBone right-multiplies the incoming bind.
+            // Conjugation rotates only the quaternion axis into bone space.
+            direction = VecTransformDir(MatrixGetInverted(restFrames[i]),Vector(rotation.X,rotation.Y,rotation.Z,0.0));
+            rotation.X = direction.X; rotation.Y = direction.Y; rotation.Z = direction.Z;
             angles = QuaternionAngles(rotation);
             PublishJoint(i,delta,angles);
             physicsMotion = MaxF(physicsMotion,VecDistance(localPoint,jointRestPoints[i]));
@@ -235,9 +239,10 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     private function QuaternionAngles(q : Vector) : Vector
     {
         var result : Vector;
-        result.X = Rad2Deg(AtanF(2.0*(q.W*q.X+q.Y*q.Z),1.0-2.0*(q.X*q.X+q.Y*q.Y)));
-        result.Y = Rad2Deg(AsinF(ClampF(2.0*(q.W*q.Y-q.Z*q.X),-1.0,1.0)));
-        result.Z = Rad2Deg(AtanF(2.0*(q.W*q.Z+q.X*q.Y),1.0-2.0*(q.Y*q.Y+q.Z*q.Z)));
+        // Ordered native local X/Y/Z nodes compose Rx*Ry*Rz (intrinsic XYZ).
+        result.X = Rad2Deg(AtanF(2.0*(q.W*q.X-q.Y*q.Z),1.0-2.0*(q.X*q.X+q.Y*q.Y)));
+        result.Y = Rad2Deg(AsinF(ClampF(2.0*(q.W*q.Y+q.Z*q.X),-1.0,1.0)));
+        result.Z = Rad2Deg(AtanF(2.0*(q.W*q.Z-q.X*q.Y),1.0-2.0*(q.Y*q.Y+q.Z*q.Z)));
         return result;
     }
 

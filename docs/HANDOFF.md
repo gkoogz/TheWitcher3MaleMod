@@ -7,7 +7,49 @@ the installed package still matches this record.
 
 ## Current phase: fixed unit scale and Base secondary physics
 
-### Latest checkpoint: 0.4.27 pelvis-relative physics
+### Latest checkpoint: .28 bone-local rotation correction
+
+User rejected .27: shaft stretches/warps left and right. Its centerline-only
+numerical success did not establish acceptable mesh deformation. The native
+local RotateBone multiplication convention previously recorded was wrong.
+Read-only interpretation of the current editor's actual SIMD block proves
+`current * localDelta` (right multiplication); signed XYZ axes and degree
+half-angle scale are read from the executable, including the XYZ mask's data
+initializer. Source editor SHA `422cebbcefde36375908cdd78d097a4672ef26f28494b2f1dc09b66b7a72aa46`.
+Evidence: `build/probe/disassembly-91473ede7871` and
+`build/motion/pose-surface-test-7c095bb1d1a4/verification.json`.
+
+.28 conjugates the parent-space simulated rotation into each bone's bind frame
+and uses intrinsic XYZ for the sequential native local nodes. Translation and
+all source physics constants remain unchanged. Both shaft and lobe rotations
+use the corrected delivery. Approved geometry, weights, size, graph ownership
+and 104-joint player rig are preserved. Base stays pinned to `2c23134`; this is
+engine-owned pose delivery, not a new shared physics feature.
+
+60 adapter tests pass. Both approved skinned LODs were exercised at neutral,
+signed 30-degree X/Y/Z and a combined rotation using the controller's actual
+angle expressions and native instruction oracle. Old maximum surface error
+0.0700277 native units and excess edge strain 4.8346 are reproduced; corrected
+surface error is at most 1.007e-8, excess interior-edge strain below 9.44e-7.
+These tests cover coherent transport and native rotation semantics, not every
+nonuniform bend, collision response or native frame cost. Linear skinning under
+sharp bends can still lose volume. No claim of full Wolverine physics parity.
+
+Complete native player cook: `build/motion/player-stack-a52737e5911c`, package
+`publish/20261001-205324-ceab2a`, version `0.4.28-bone-local-physics`. Compile,
+cook and native player/rig/graph binding pass. Official unbundle matches all ten
+resources/buffers; .28 is installed and all five installed file hashes match.
+The installed controller also equals current generated source. Revert restores
+the approved-shape .26 baseline from `local/uninstalled/modMaleMod-fbf2d8f35baf`;
+the replaced .27 is archived at `local/uninstalled/modMaleMod-84856543ac55`.
+The authoring mesh and cooked
+vertex/index buffer are byte-identical to .27; spatial/binding resource bytes
+and physics coefficients match. Only native nonspatial bound W/CRC bytes differ.
+See `provenance/fixed-physics.json` for installation/unbundle status and rollback.
+**.28 gameplay remains pending.** Preserve the approved form, keep controls
+absent, and do not use F12 or modify Wolverine.
+
+### Previous checkpoint: 0.4.27 pelvis-relative physics
 
 User approved .26 shape and form but reports wavy sideways translation and
 insufficient weight. Installed `publish/20261001-202305-0c6dda`, version
@@ -43,7 +85,7 @@ No native geometry rebuild or source default change was made. Revert restores
 records the user's .26 load/shape feedback so rollback selects that baseline.
 Wolverine checkout remains clean at `f57fccf`; its runtime/install were not edited.
 
-**.27 gameplay, perceived weight and frame cost remain pending user feedback.**
+**.27 FAILED user comparison:** lateral stretching and warping persist.
 Check steady travel, starts/stops, reversals, turning, idle and thigh clearance.
 Do not add sliders/toggles or use F12. See `provenance/fixed-physics.json` and
 `FIXED-PHYSICS.md` for precise motion calibration and remaining point-mass limits.

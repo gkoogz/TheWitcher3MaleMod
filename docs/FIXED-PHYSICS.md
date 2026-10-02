@@ -15,6 +15,32 @@ functions are translated directly from the pinned Base headers by
 `physics_codegen.py`. The adapter supplies observed rest frames, skin envelopes,
 bone mapping, world sampling, fixed-step scheduling and native pose delivery.
 
+## Bone rotation correction (.28)
+
+The user rejected .27: sideways motion visibly stretches/warps the shaft. Its
+centerline tests passed but did not validate the surrounding rendered surface.
+The earlier native rotation interpretation was incorrect. Read-only emulation
+of the installed editor's actual local RotateBone SIMD block proves
+`currentQuaternion * localDelta`, not parent-frame left multiplication. The
+positive XYZ axes, half-angle degree conversion and initialized XYZ bit mask
+are read from the executable/map and its initializer. No process is attached.
+
+The controller now conjugates each parent-space guide/lobe delta by that bone's
+bind rotation and sends intrinsic XYZ (`Rx*Ry*Rz`) angles. Translation remains in
+the observed bind axes. Physics forces, geometry, weights, scale and graph/rig
+bindings are unchanged. This is adapter-owned pose delivery; Base pin stays fixed.
+
+`tools/verify_pose_surface.py <approved-cage> <player-rig.json>` evaluates the
+controller's actual angle expressions and native instruction block on both
+skinned LODs at neutral, signed 30-degree X/Y/Z and combined rotations. The old
+delivery reproduced up to 0.07003 native surface error and 4.835 maximum excess
+interior-edge stretch. Corrected surface error is at most 1.007e-8 native units;
+maximum excess interior-edge strain is below 9.44e-7. It tests coherent rigid
+transport, not all nonlinear bend/contact cases or game frame cost. General
+linear-skinning volume loss under nonuniform bending remains a limitation.
+
+## Physics frame correction (.27)
+
 The .27 motion revision keeps the approved .26 geometry and material constants.
 Particles, velocity/history, attachment offsets, guide sampling and contacts
 now all use pelvis coordinates. Gravity and animated thigh endpoints are

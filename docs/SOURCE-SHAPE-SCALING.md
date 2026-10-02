@@ -47,10 +47,14 @@ Only the ten authored joints become direct children of observed pelvis index 9.
 Their rest world frames are preserved (max error 6.11e-16); the 94 stock bones,
 native mesh palette/inverse binds and shipped-template loading repair remain.
 The attached rest-mask graph delivers ten scale vectors and 60 scalar translation
-and rotation channels. Native localSpace rotation left-multiplies the current
-quaternion; XYZ delivery uses parent-space extrinsic XYZ angles. Read-only native
-evidence is in build/probe/disassembly-0952265e37e1/function.txt and the TranslateBone
-skinning audit. Default input/rest mask resets rotations and positions on sampling.
+and rotation channels. **Correction in .28:** the earlier interpretation of the
+localSpace branch as left multiplication was wrong. Read-only emulation of the
+current native SIMD block proves right multiplication by each local XYZ delta.
+Convert parent deltas into bone bind space and deliver intrinsic XYZ angles.
+The old neutral-only tests hid this because identity deltas work in either frame.
+See FIXED-PHYSICS.md and tools/verify_pose_surface.py. The original disassembly
+and TranslateBone audit remain historical evidence. Default input/rest mask
+resets rotations and positions on sampling.
 
 Lookup evaluation happens on boot/input, not each animation frame. Initializers
 are bounded to 96 values per method, with short dispatchers. Source preferences

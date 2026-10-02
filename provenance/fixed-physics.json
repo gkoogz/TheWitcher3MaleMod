@@ -1,12 +1,12 @@
 {
   "checkpoint": "2026-10-01",
-  "version": "0.4.27-pelvis-relative-physics",
-  "package": "publish/20261001-202305-0c6dda",
+  "version": "0.4.28-bone-local-physics",
+  "package": "publish/20261001-205324-ceab2a",
   "baseCommit": "2c23134d8e8530cf2bb87758ad96d00a8a4c5194",
   "installed": true,
   "installedFilesVerified": 5,
   "packedResourcesAndBuffersVerified": 10,
-  "adapterTestsPassed": 58,
+  "adapterTestsPassed": 60,
   "basePythonTestsPassed": 56,
   "baseProvenanceVerified": true,
   "secondaryKernelTestsPassed": true,
@@ -163,6 +163,12 @@
     "bendTarget": "zero curvature",
     "neutralGuideToRenderJointError": 4.594451743643115e-16,
     "solverSpace": "pelvis local; relative velocity damping; local gravity and thigh capsules",
+    "poseDelivery": {
+      "rotationSpace": "bone bind local",
+      "rotationOperator": "current quaternion right-multiplied by local delta",
+      "axisOrder": "intrinsic XYZ",
+      "conversion": "conjugate parent-space delta by bind rotation"
+    },
     "frameMotion": {
       "response": 20,
       "linearAccelerationLimit": 4.512296177022073,
@@ -216,7 +222,7 @@
   "baselineFit": "build/attachment/fit-20261001-193459-664950/geralt-anatomy.fit.json",
   "defaultCage": "build/motion/cage-3b54cb1c3143",
   "inputProbe": "build/motion/deformation-f04abe7e9fc4",
-  "playerCook": "build/motion/player-stack-1e02d32b0841",
+  "playerCook": "build/motion/player-stack-a52737e5911c",
   "freeGuideVerification": {
     "frames": 600,
     "nodes": 12,
@@ -240,11 +246,10 @@
     "guideIsolationPassed": true
   },
   "previousAttempt": {
-    "version": "0.4.26-wolverine-default-physics",
-    "package": "publish/20261001-194607-3fc4a2",
-    "userApprovedShape": true,
-    "userRejectedWavySidewaysMotion": true,
-    "userRequestedMoreWeight": true
+    "version": "0.4.27-pelvis-relative-physics",
+    "package": "publish/20261001-202305-0c6dda",
+    "userRejected": true,
+    "observedComplaint": "lateral stretching and warping persist"
   },
   "rollback": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\local\\uninstalled\\modMaleMod-fbf2d8f35baf",
   "observedGameplay": false,
@@ -256,8 +261,8 @@
     "pressure deformation",
     "dynamic pelvic collar",
     "source gait/side filtering and live root spring response",
-    "measured bounded frame drive differs from source gait filtering",
-    "new gameplay perceived weight and native frame cost pending"
+    "nonuniform bending can lose volume with native linear skinning",
+    "corrected pose delivery gameplay and native frame cost pending"
   ],
   "guideMotionVerification": {
     "frames": 1800,
@@ -282,14 +287,14 @@
     "observedGameplay": false
   },
   "geometryPreservation": {
-    "previousPackage": "publish/20261001-194607-3fc4a2",
-    "newPackage": "publish/20261001-202305-0c6dda",
+    "previousPackage": "publish/20261001-202305-0c6dda",
+    "newPackage": "publish/20261001-205324-ceab2a",
     "inputMeshByteIdentical": true,
     "cookedVertexIndexBufferByteIdentical": true,
     "cookedMeshSpatialAndBindingBytesIdentical": true,
     "cookedMeshByteIdentical": false,
-    "nonspatialDifferences": [
-      "boundingBox Min.W float and dependent resource/export/table CRCs"
+    "nonspatialDifferenceAllowance": [
+      "boundingBox W float and dependent resource/export/table CRCs"
     ],
     "changedOffsets": [
       32,
@@ -304,13 +309,190 @@
       1697,
       1698,
       1699,
-      1803,
-      1804,
       1805,
       1806
     ],
+    "physicsCoefficientsUnchanged": true,
     "cookedVertexBufferSHA256": "5d52dc91aab6a00ab26e778329a556ebee058480b9ec12a9652ba61e8a8ebdcc"
   },
   "geometryBaseCommit": "5f0cd9408e03221db9f684e5aeb3545af5857a06",
-  "installedControllerMatchesCurrentGenerator": true
+  "installedControllerMatchesCurrentGenerator": true,
+  "poseSurfaceVerification": {
+    "nativeOracle": {
+      "executableSHA256": "422cebbcefde36375908cdd78d097a4672ef26f28494b2f1dc09b66b7a72aa46",
+      "mapSHA256": "dd852cf4cde03402c41a103cb67e08fb7b87b21beb7cfc9959088bf66168e450",
+      "symbol": "?Sample@CBehaviorGraphRotateBoneNode@@",
+      "address": "0x143094690",
+      "blockStart": "0x143094814",
+      "blockEnd": "0x1430948ac",
+      "halfAngleRadiansPerDegree": 0.00872664712369442,
+      "readOnlyInstructionEmulation": true,
+      "observedGameplay": false
+    },
+    "nativeRightProductError": 1.1000328925535146e-07,
+    "nativeLeftProductError": 1.3769466943801087,
+    "nativeRotationOperator": "current quaternion right-multiplied by local delta",
+    "nativeXYZOrder": "intrinsic XYZ",
+    "parentToBoneConversion": "inverse bind rotation * parent delta * bind rotation",
+    "rigSHA256": "25250b92fe95bcac628c76e951c5c6ac05bc27a046515447de362f19038ebbe5",
+    "cage": "build/motion/cage-3b54cb1c3143",
+    "results": [
+      {
+        "lod": 0,
+        "case": "neutral",
+        "oldMaximumSurfaceErrorNative": 1.8977541989228107e-09,
+        "correctedMaximumSurfaceErrorNative": 1.8977541989228107e-09,
+        "oldMaximumInteriorEdgeStrain": 2.1046242948408178e-07,
+        "correctedMaximumInteriorEdgeStrain": 2.1046242948408178e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 0,
+        "case": "x-30",
+        "oldMaximumSurfaceErrorNative": 0.051327649627695725,
+        "correctedMaximumSurfaceErrorNative": 4.9773640480931484e-09,
+        "oldMaximumInteriorEdgeStrain": 2.464967759136313,
+        "correctedMaximumInteriorEdgeStrain": 2.9999336792485565e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 0,
+        "case": "x30",
+        "oldMaximumSurfaceErrorNative": 0.05126495516159228,
+        "correctedMaximumSurfaceErrorNative": 6.70574160908857e-09,
+        "oldMaximumInteriorEdgeStrain": 1.8732140929724945,
+        "correctedMaximumInteriorEdgeStrain": 3.412106912570323e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 0,
+        "case": "y-30",
+        "oldMaximumSurfaceErrorNative": 0.0367416265040893,
+        "correctedMaximumSurfaceErrorNative": 5.493818304172578e-09,
+        "oldMaximumInteriorEdgeStrain": 2.4909189798270446,
+        "correctedMaximumInteriorEdgeStrain": 5.456120313329649e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 0,
+        "case": "y30",
+        "oldMaximumSurfaceErrorNative": 0.03732412713959992,
+        "correctedMaximumSurfaceErrorNative": 8.096147647706968e-09,
+        "oldMaximumInteriorEdgeStrain": 2.4476626891728994,
+        "correctedMaximumInteriorEdgeStrain": 9.436216966696165e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 0,
+        "case": "z-30",
+        "oldMaximumSurfaceErrorNative": 0.036630134489980995,
+        "correctedMaximumSurfaceErrorNative": 1.0068436780057355e-08,
+        "oldMaximumInteriorEdgeStrain": 2.4248797908018593,
+        "correctedMaximumInteriorEdgeStrain": 7.635658545446233e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 0,
+        "case": "z30",
+        "oldMaximumSurfaceErrorNative": 0.037250741961240195,
+        "correctedMaximumSurfaceErrorNative": 7.198567523927221e-09,
+        "oldMaximumInteriorEdgeStrain": 2.277753322851958,
+        "correctedMaximumInteriorEdgeStrain": 2.9705253878908877e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 0,
+        "case": "combined",
+        "oldMaximumSurfaceErrorNative": 0.06999918980596435,
+        "correctedMaximumSurfaceErrorNative": 9.179020314182417e-09,
+        "oldMaximumInteriorEdgeStrain": 4.834635108453397,
+        "correctedMaximumInteriorEdgeStrain": 6.521454154473361e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 1,
+        "case": "neutral",
+        "oldMaximumSurfaceErrorNative": 1.8977541989228107e-09,
+        "correctedMaximumSurfaceErrorNative": 1.8977541989228107e-09,
+        "oldMaximumInteriorEdgeStrain": 2.0964637825748866e-07,
+        "correctedMaximumInteriorEdgeStrain": 2.0964637825748866e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 1,
+        "case": "x-30",
+        "oldMaximumSurfaceErrorNative": 0.051327649627695725,
+        "correctedMaximumSurfaceErrorNative": 4.9773640480931484e-09,
+        "oldMaximumInteriorEdgeStrain": 2.4287500464310026,
+        "correctedMaximumInteriorEdgeStrain": 3.0181110544091894e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 1,
+        "case": "x30",
+        "oldMaximumSurfaceErrorNative": 0.05126495516159228,
+        "correctedMaximumSurfaceErrorNative": 6.70574160908857e-09,
+        "oldMaximumInteriorEdgeStrain": 1.8704959730086523,
+        "correctedMaximumInteriorEdgeStrain": 3.432114656920504e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 1,
+        "case": "y-30",
+        "oldMaximumSurfaceErrorNative": 0.03748497494181625,
+        "correctedMaximumSurfaceErrorNative": 5.493818304172578e-09,
+        "oldMaximumInteriorEdgeStrain": 2.4962577363165566,
+        "correctedMaximumInteriorEdgeStrain": 5.379158927176775e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 1,
+        "case": "y30",
+        "oldMaximumSurfaceErrorNative": 0.03812324990397893,
+        "correctedMaximumSurfaceErrorNative": 8.10196933289072e-09,
+        "oldMaximumInteriorEdgeStrain": 2.4194025713016702,
+        "correctedMaximumInteriorEdgeStrain": 9.372565569210067e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 1,
+        "case": "z-30",
+        "oldMaximumSurfaceErrorNative": 0.0374288022207994,
+        "correctedMaximumSurfaceErrorNative": 1.0068436780057355e-08,
+        "oldMaximumInteriorEdgeStrain": 2.418389664955133,
+        "correctedMaximumInteriorEdgeStrain": 7.570653342003908e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 1,
+        "case": "z30",
+        "oldMaximumSurfaceErrorNative": 0.03803744504023706,
+        "correctedMaximumSurfaceErrorNative": 7.198567523927221e-09,
+        "oldMaximumInteriorEdgeStrain": 2.273286232481925,
+        "correctedMaximumInteriorEdgeStrain": 2.9434456316757007e-07,
+        "edges": 22285
+      },
+      {
+        "lod": 1,
+        "case": "combined",
+        "oldMaximumSurfaceErrorNative": 0.07002771375292229,
+        "correctedMaximumSurfaceErrorNative": 9.179020314182417e-09,
+        "oldMaximumInteriorEdgeStrain": 4.827665598513287,
+        "correctedMaximumInteriorEdgeStrain": 6.400315759602648e-07,
+        "edges": 22285
+      }
+    ],
+    "maximumOldSurfaceErrorNative": 0.07002771375292229,
+    "maximumCorrectedSurfaceErrorNative": 1.0068436780057355e-08,
+    "maximumCorrectedInteriorEdgeStrain": 9.436216966696165e-07,
+    "geometryAndPhysicsUnchanged": true,
+    "observedGameplay": false,
+    "omissions": [
+      "nonuniform bending volume loss from linear skinning",
+      "gameplay collision response",
+      "native gameplay/frame cost"
+    ],
+    "controllerTemplateSHA256": "ce45ed0c340edef75e4daf41e0dfc012aa05a4ad1ba3bb79cc77b73e13dd5768",
+    "controllerAngleExpressionsEvaluated": true
+  }
 }

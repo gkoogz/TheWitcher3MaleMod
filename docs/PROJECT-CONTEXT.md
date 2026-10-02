@@ -1,7 +1,7 @@
 # Project purpose and continuity
 
-Current refinement: the user approved .26 shape and form, but reports wavy,
-incorrect sideways translation and insufficient weight/solidness. Keep the
+Current refinement: the user approved .26 shape and form, then rejected both .26
+and .27 motion: wavy sideways stretching/warping and insufficient weight/solidness. Keep the
 approved evaluated mesh, size and source material coefficients. Correct frame
 consistency and inertia before restoring sliders. Wolverine remains unchanged.
 

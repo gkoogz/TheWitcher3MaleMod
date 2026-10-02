@@ -120,6 +120,7 @@ def generate(base,rig,job,enabled=True,cage=None):
         sourceBaseline=fit['sourceBaseline'],physicsNodes=14,renderJoints=10,bendTarget='zero curvature',
         neutralGuideToRenderJointError=neutral_error,
         solverSpace='pelvis local; relative velocity damping; local gravity and thigh capsules',
+        poseDelivery=dict(rotationSpace='bone bind local',rotationOperator='current quaternion right-multiplied by local delta',axisOrder='intrinsic XYZ',conversion='conjugate parent-space delta by bind rotation'),
         frameMotion=dict(response=20,linearAccelerationLimit=coefficients['linear_acceleration_limit'],totalAccelerationLimit=coefficients['total_acceleration_limit'],angularVelocityLimit=10,angularAccelerationLimit=40,units='native length/time; angular radians/time',sourceParity=False),
         colliderCalibration='95th percentile stock thigh radial envelope; source default ovoid radii and shaft radius times 0.85',
         omissions=['full source surface deformation','angular contact effective mass and reaction torques','Hermite guide Jacobian','pressure deformation','dynamic pelvic collar','source gait/side filtering and live root spring response'],
