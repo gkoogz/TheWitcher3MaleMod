@@ -15,10 +15,57 @@ functions are translated directly from the pinned Base headers by
 `physics_codegen.py`. The adapter supplies observed rest frames, skin envelopes,
 bone mapping, world sampling, fixed-step scheduling and native pose delivery.
 
+## Current volume-bearing distal body (.30)
+
+Base `bb53610` adds an SDK-free proper-rotation covariance fit and solid cluster
+projection. This is a new reduced numerical backend, inspired by the source's
+volumetric material and generalized inertia, not an exact extraction of the
+full Wolverine solver. Its adoption contract is documented in Base's
+`docs/RIGID-CLUSTER.md`; Wolverine's implementation and installation are unchanged.
+
+The twelve guide points and two suspended centers remain. Seven measured
+off-axis supports (center and signed extrema on three rest axes) add volume to
+the distal guide points 8..11: 21 total physics points, 11 in the solid body.
+Equal cluster masses preserve the former four distal stations' total mass.
+Four orientation fits and 24 solid projections per fixed step couple inertia
+and contact torque to the flexible proximal guide. Internal distal bend
+constraints are superseded by the volume constraint. Existing render joints
+5..7 use the accepted body translation and rotation, including independent roll.
+The rig still has 104 joints, ten authored render joints and 60 scalar channels.
+
+Rest positions/faces are byte-identical to the approved .26/.28 mesh in both
+LODs. Eight shaft knots and the shaft binding law remain unchanged. The source
+`ApplySuspendedSkin` Smooth01 lateral partition replaces the adapter's broad
+lobe blend, so pure lobe cores retain their dimensions. Overall lobe influence
+is retained; native four-influence truncation can change weights near mixed
+boundaries. This does not reintroduce .29's protected shaft knot remapping.
+
+Verification separates three questions:
+
+- Base solid-fit test: 540 three-axis frames, maximum internal distance error
+  4.471e-8 native units. Measured coupled guide test: 1,800 gravity/XYZ linear
+  and angular motion frames, solid distance error 3.726e-8 and segment error
+  1.795e-4. The coupled test excludes contact trajectories.
+- Actual native transform instruction replay on 49 nonuniform guide/lobe poses
+  per LOD: old head edge strain .4494 and lobe strain up to 2.738; new maximum
+  absolute head edge error 7.018e-8 native units, lobe error below 2e-16.
+  Relative head maximum .001032 remains recorded: near-coincident folded edges
+  amplify tiny donor-weight/float residuals. The absolute gate is 1e-7; no head
+  weight cutoff is used to erase that residual. These are controlled body poses,
+  not gameplay captures.
+- Full native script-aware cook, connected graph traversal, player templates,
+  ten unpacked resources/buffers, five installed hashes and combined compilation
+  with the existing startup addon all pass.
+
+The flexible shaft/web still use linear skinning and can lose volume. Reduced
+support contacts are not the full source contact/pressure model. Native frame
+cost and gameplay acceptance remain unmeasured. No per-vertex runtime script
+work or new controls are added. Use the handoff and provenance for exact receipts.
+
 ## Rejected historical material binding (.29)
 
 The user rejected this change as a workaround. It is removed from active source
-and installation; .28 and its uniform render stations are restored. See
+and installation; .28 was restored before the .30 physics correction. See
 [MOTION-AXIS-AUDIT.md](MOTION-AXIS-AUDIT.md) for the subsequent investigation.
 The following description is retained only as failure history.
 

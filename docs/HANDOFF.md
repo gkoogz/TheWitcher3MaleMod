@@ -7,7 +7,50 @@ the installed package still matches this record.
 
 ## Current phase: fixed unit scale and Base secondary physics
 
-### Latest checkpoint: .29 removed; .28 restored; axis audit
+### Latest checkpoint: .30 volume-bearing distal physics installed
+
+User rejected .28's continued deformation after the axis audit and asked to fix
+it. Installed: `publish/20261001-225248-1c962b`, version
+`0.4.30-solid-distal-physics`, Base `bb53610a3d41c010ad1ee5f85703a6fc9ce8b017`.
+All five installed hashes match. Startup addon is unchanged. No sliders,
+hotkeys, Wolverine modifications or gameplay-success claims accompany this build.
+
+The approved rest mesh/size and original eight shaft binding knots remain.
+A shared 3D solid-cluster fit/projection now couples measured off-axis head
+supports to the flexible guide. Existing render joints 5..7 follow the accepted
+physical body transform, supplying independent roll and solid form rather than
+independently bending head stations. Original total distal mass is preserved.
+Lobe partition now follows the exact source Smooth01 side split. Source shaft
+binding law is retained; native four-influence truncation can change seam weights.
+The rejected .29 protected knot remapping remains removed.
+
+Evidence:
+
+- `build/motion/solid-physics-test-031a13f995ff/verification.json`: 1,800 XYZ
+  inertia/gravity frames; maximum internal solid error 3.726e-8 native units.
+  Contact trajectories and native script cost are excluded.
+- `build/motion/solid-surface-20c43ea0c054/verification.json`: actual native
+  instruction replay, 49 nonuniform poses per LOD, byte-identical rest geometry;
+  head edge absolute error <=7.018e-8, lobe error <2e-16. Relative head residual
+  .001032 is retained in the report and arises on tiny edges with donor float
+  residuals. This uses controlled solid poses, not gameplay trajectories.
+- Cage `build/motion/cage-ddbc92e9f40f`: official import/export verifies both
+  LODs, positions, weights, binds and unchanged seam.
+- Full cook `build/motion/player-stack-257de2350512`; exact native unbundle
+  receipt `local/motion-package-verification.json` verifies ten resources/buffers.
+- `build/startup-integration/40a67e987d63/verification.json`: stock scripts,
+  candidate and installed startup addon compile together.
+- 60 adapter tests, 56 Base Python tests, standalone shared solid test and full
+  Base provenance verification pass. Tracked summaries: `provenance/fixed-physics.json`
+  and `provenance/solid-physics.json`.
+
+Immediate .28 rollback is `local/uninstalled/modMaleMod-8ac18755efe1`; stable
+.26 is `local/uninstalled/modMaleMod-fbf2d8f35baf`. Native gameplay/frame cost and
+user visual acceptance remain pending. Flexible shaft/web volume loss and full
+source contact/pressure parity remain limitations. Do not infer user acceptance
+from native cooking or these offline results.
+
+### Historical checkpoint: .29 removed; .28 restored; axis audit
 
 User rejected the protected head/lobe binding as a workaround and suspected a
 missing movement axis. .29 is removed from the game and active source. Restored

@@ -1,8 +1,8 @@
 {
   "checkpoint": "2026-10-01",
-  "version": "0.4.28-bone-local-physics",
-  "package": "publish/20261001-205324-ceab2a",
-  "baseCommit": "2c23134d8e8530cf2bb87758ad96d00a8a4c5194",
+  "version": "0.4.30-solid-distal-physics",
+  "package": "publish/20261001-225248-1c962b",
+  "baseCommit": "bb53610a3d41c010ad1ee5f85703a6fc9ce8b017",
   "installed": true,
   "installedFilesVerified": 5,
   "packedResourcesAndBuffersVerified": 10,
@@ -10,8 +10,6 @@
   "basePythonTestsPassed": 56,
   "baseProvenanceVerified": true,
   "secondaryKernelTestsPassed": true,
-  "sourceSupportCases": 5000,
-  "maximumSourceSupportError": 1.09387e-05,
   "fixedScale": 1,
   "slidersRemoved": true,
   "physics": {
@@ -27,12 +25,16 @@
       {
         "path": "include/malemod/physics/ovoid_support.hpp",
         "sha256": "c9a1e48807ecbc60e2ec293478f7a178a54e656c1e1b07782217cfc9ae719560"
+      },
+      {
+        "path": "include/malemod/physics/rigid_cluster.hpp",
+        "sha256": "f9c58e4a9dc07e74445aed859408feeec79b664cfd13d27bc6a44ded7fa09a74"
       }
     ],
     "numericalCodeGeneratedFromBase": true,
     "fixedScale": 1,
     "enabled": true,
-    "solver": "pelvis-relative 12-node source guide with measured frame acceleration, Base XPBD bend and C1 rendering; point suspension and support contacts",
+    "solver": "pelvis-relative flexible source guide coupled to a volume-bearing distal body; point suspension and support contacts",
     "coefficients": {
       "shaft_mass": 1.825,
       "lobe_mass": 1.925,
@@ -141,6 +143,41 @@
         0.036447867368076294,
         0.03094967149771399,
         0.04817066423786235
+      ],
+      [
+        0.0002563804646035269,
+        0.0002563804646035269,
+        0.0002563804646035269
+      ],
+      [
+        0.0002563804646035269,
+        0.0002563804646035269,
+        0.0002563804646035269
+      ],
+      [
+        0.0002563804646035269,
+        0.0002563804646035269,
+        0.0002563804646035269
+      ],
+      [
+        0.0002563804646035269,
+        0.0002563804646035269,
+        0.0002563804646035269
+      ],
+      [
+        0.0002563804646035269,
+        0.0002563804646035269,
+        0.0002563804646035269
+      ],
+      [
+        0.0002563804646035269,
+        0.0002563804646035269,
+        0.0002563804646035269
+      ],
+      [
+        0.0002563804646035269,
+        0.0002563804646035269,
+        0.0002563804646035269
       ]
     ],
     "thighRadii": [
@@ -155,12 +192,79 @@
     ],
     "fitReceipt": "build/attachment/fit-20261001-193459-664950/geralt-anatomy.fit.json",
     "fitSHA256": "b0bd95711831b64e4f49ac6885d1ae2cbd8e0159e6f7f059fd711fa99a66b2bf",
-    "cage": "build/motion/cage-3b54cb1c3143/motion-lod0.npz",
-    "cageSHA256": "3e93ee54bf9d18c5c2a02f3a6cc50e6d5796723b668fceaf77634ab9ad6a9859",
+    "cage": "build/motion/cage-ddbc92e9f40f/motion-lod0.npz",
+    "cageSHA256": "eaea15164abeb18668d554e7117a573a23aa2bcacb5ea1c8fc689d942fb2f2d2",
     "sourceBaseline": "Wolverine ResetStudyControls; state 2, all UI 50, 120 source frames",
-    "physicsNodes": 14,
+    "physicsNodes": 21,
     "renderJoints": 10,
-    "bendTarget": "zero curvature",
+    "bendTarget": "zero curvature in flexible shaft; rigid distal material",
+    "distalBody": {
+      "supportIndices": [
+        8,
+        9,
+        10,
+        11,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "offAxisSupports": [
+        [
+          -0.2977124020287897,
+          0.19016658349155213,
+          0.0016442057277983404
+        ],
+        [
+          -0.2859748728853796,
+          0.1564504010582241,
+          0.0015940890345781326
+        ],
+        [
+          -0.30944993117219977,
+          0.22388276592488016,
+          0.0016943224210185482
+        ],
+        [
+          -0.29772899937243175,
+          0.19021425550495552,
+          -0.03431447370175935
+        ],
+        [
+          -0.2976958046851476,
+          0.19011891147814874,
+          0.03760288515735603
+        ],
+        [
+          -0.330869786230498,
+          0.1786235873584227,
+          0.0016442070246616882
+        ],
+        [
+          -0.26455501782708135,
+          0.20170957962468156,
+          0.0016442044309349926
+        ]
+      ],
+      "restCenter": [
+        -0.2926312735193198,
+        0.17888683528515778,
+        0.0016751845086056512
+      ],
+      "renderJoints": [
+        "mm_shaft_05",
+        "mm_shaft_06",
+        "mm_shaft_07"
+      ],
+      "originalHeadMassPreserved": true,
+      "orientation": "3D covariance fit with independent roll",
+      "restGeometryUnchanged": true,
+      "shaftBindingLawAndKnotsUnchanged": true,
+      "suspensionPartition": "source ApplySuspendedSkin Smooth01 split; native four-influence truncation"
+    },
     "neutralGuideToRenderJointError": 4.594451743643115e-16,
     "solverSpace": "pelvis local; relative velocity damping; local gravity and thigh capsules",
     "poseDelivery": {
@@ -218,291 +322,86 @@
       "stockPrefixUnchanged": true
     }
   },
-  "sourceDefaultExport": "../MaleMod/build/wolverine-default-guide-v2",
-  "baselineFit": "build/attachment/fit-20261001-193459-664950/geralt-anatomy.fit.json",
-  "defaultCage": "build/motion/cage-3b54cb1c3143",
-  "inputProbe": "build/motion/deformation-f04abe7e9fc4",
-  "playerCook": "build/motion/player-stack-a52737e5911c",
-  "freeGuideVerification": {
-    "frames": 600,
-    "nodes": 12,
-    "maximumSegmentErrorNative": 0.000152787194,
-    "tipSagNative": 0.0503188968,
-    "passed": true,
-    "baseCommit": "5f0cd9408e03221db9f684e5aeb3545af5857a06",
-    "sourceGuide": "evaluated default at 120 source frames",
-    "sourceFitSHA256": "b0bd95711831b64e4f49ac6885d1ae2cbd8e0159e6f7f059fd711fa99a66b2bf",
-    "sourceSHA256": "e28d2a77a62862e711ed2667fb3a08ec036804e25d6556905f7a56dd29de0d2f",
-    "executableSHA256": "bef5f1756b92a4777e350a9bfe2d2710e51ec9af3713548d25a8b913b6c8deec",
-    "omissions": [
-      "lobe/body contacts",
-      "WitcherScript runtime and frame cost"
-    ],
-    "observedGameplay": false
-  },
-  "defaultSurfaceVerification": {
-    "physicsCases": 33,
-    "maximumSourcePositionError": 7.62939453125e-06,
-    "guideIsolationPassed": true
-  },
-  "previousAttempt": {
-    "version": "0.4.27-pelvis-relative-physics",
-    "package": "publish/20261001-202305-0c6dda",
-    "userRejected": true,
-    "observedComplaint": "lateral stretching and warping persist"
-  },
-  "rollback": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\local\\uninstalled\\modMaleMod-fbf2d8f35baf",
+  "evidence": "provenance/solid-physics.json",
+  "sourceBaselineRestGeometryByteIdentical": true,
+  "status": "Installed volume-bearing distal physics candidate; gameplay acceptance pending",
   "observedGameplay": false,
   "runtimeParity": false,
-  "knownLimitations": [
-    "full source surface deformation",
-    "angular contact effective mass and reaction torques",
-    "Hermite guide Jacobian",
-    "pressure deformation",
-    "dynamic pelvic collar",
-    "source gait/side filtering and live root spring response",
-    "nonuniform bending can lose volume with native linear skinning",
-    "corrected pose delivery gameplay and native frame cost pending"
-  ],
-  "guideMotionVerification": {
-    "frames": 1800,
-    "nodes": 12,
-    "constantTravelTrajectoryError": 1.14734294e-05,
-    "maximumSegmentErrorNative": 0.000152751803,
-    "maximumExcursionNative": 0.177430838,
-    "passed": true,
-    "baseCommit": "2c23134d8e8530cf2bb87758ad96d00a8a4c5194",
-    "sourceFitSHA256": "b0bd95711831b64e4f49ac6885d1ae2cbd8e0159e6f7f059fd711fa99a66b2bf",
-    "sourceSHA256": "5473fecb980e1e9f8a7cf9cf8cb627fb7afb77b518b8174a257ad7b709e7160c",
-    "executableSHA256": "ad953bd0e5af3a33f7ae46faf8ff548aa004a0b50efbb23f75d690df6a837628",
-    "phases": [
-      "stationary/constant-travel equivalence",
-      "lateral acceleration",
-      "oscillating frame rotation"
-    ],
-    "omissions": [
-      "lobe/body contacts",
-      "WitcherScript runtime and frame cost"
-    ],
-    "observedGameplay": false
-  },
-  "geometryPreservation": {
-    "previousPackage": "publish/20261001-202305-0c6dda",
-    "newPackage": "publish/20261001-205324-ceab2a",
-    "inputMeshByteIdentical": true,
-    "cookedVertexIndexBufferByteIdentical": true,
-    "cookedMeshSpatialAndBindingBytesIdentical": true,
-    "cookedMeshByteIdentical": false,
-    "nonspatialDifferenceAllowance": [
-      "boundingBox W float and dependent resource/export/table CRCs"
-    ],
-    "changedOffsets": [
-      32,
-      33,
-      34,
-      35,
-      96,
-      97,
-      98,
-      99,
-      1696,
-      1697,
-      1698,
-      1699,
-      1805,
-      1806
-    ],
-    "physicsCoefficientsUnchanged": true,
-    "cookedVertexBufferSHA256": "5d52dc91aab6a00ab26e778329a556ebee058480b9ec12a9652ba61e8a8ebdcc"
-  },
-  "geometryBaseCommit": "5f0cd9408e03221db9f684e5aeb3545af5857a06",
-  "installedControllerMatchesCurrentGenerator": true,
-  "poseSurfaceVerification": {
-    "nativeOracle": {
-      "executableSHA256": "422cebbcefde36375908cdd78d097a4672ef26f28494b2f1dc09b66b7a72aa46",
-      "mapSHA256": "dd852cf4cde03402c41a103cb67e08fb7b87b21beb7cfc9959088bf66168e450",
-      "symbol": "?Sample@CBehaviorGraphRotateBoneNode@@",
-      "address": "0x143094690",
-      "blockStart": "0x143094814",
-      "blockEnd": "0x1430948ac",
-      "halfAngleRadiansPerDegree": 0.00872664712369442,
-      "readOnlyInstructionEmulation": true,
-      "observedGameplay": false
-    },
-    "nativeRightProductError": 1.1000328925535146e-07,
-    "nativeLeftProductError": 1.3769466943801087,
-    "nativeRotationOperator": "current quaternion right-multiplied by local delta",
-    "nativeXYZOrder": "intrinsic XYZ",
-    "parentToBoneConversion": "inverse bind rotation * parent delta * bind rotation",
-    "rigSHA256": "25250b92fe95bcac628c76e951c5c6ac05bc27a046515447de362f19038ebbe5",
-    "cage": "build/motion/cage-3b54cb1c3143",
-    "results": [
-      {
-        "lod": 0,
-        "case": "neutral",
-        "oldMaximumSurfaceErrorNative": 1.8977541989228107e-09,
-        "correctedMaximumSurfaceErrorNative": 1.8977541989228107e-09,
-        "oldMaximumInteriorEdgeStrain": 2.1046242948408178e-07,
-        "correctedMaximumInteriorEdgeStrain": 2.1046242948408178e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 0,
-        "case": "x-30",
-        "oldMaximumSurfaceErrorNative": 0.051327649627695725,
-        "correctedMaximumSurfaceErrorNative": 4.9773640480931484e-09,
-        "oldMaximumInteriorEdgeStrain": 2.464967759136313,
-        "correctedMaximumInteriorEdgeStrain": 2.9999336792485565e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 0,
-        "case": "x30",
-        "oldMaximumSurfaceErrorNative": 0.05126495516159228,
-        "correctedMaximumSurfaceErrorNative": 6.70574160908857e-09,
-        "oldMaximumInteriorEdgeStrain": 1.8732140929724945,
-        "correctedMaximumInteriorEdgeStrain": 3.412106912570323e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 0,
-        "case": "y-30",
-        "oldMaximumSurfaceErrorNative": 0.0367416265040893,
-        "correctedMaximumSurfaceErrorNative": 5.493818304172578e-09,
-        "oldMaximumInteriorEdgeStrain": 2.4909189798270446,
-        "correctedMaximumInteriorEdgeStrain": 5.456120313329649e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 0,
-        "case": "y30",
-        "oldMaximumSurfaceErrorNative": 0.03732412713959992,
-        "correctedMaximumSurfaceErrorNative": 8.096147647706968e-09,
-        "oldMaximumInteriorEdgeStrain": 2.4476626891728994,
-        "correctedMaximumInteriorEdgeStrain": 9.436216966696165e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 0,
-        "case": "z-30",
-        "oldMaximumSurfaceErrorNative": 0.036630134489980995,
-        "correctedMaximumSurfaceErrorNative": 1.0068436780057355e-08,
-        "oldMaximumInteriorEdgeStrain": 2.4248797908018593,
-        "correctedMaximumInteriorEdgeStrain": 7.635658545446233e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 0,
-        "case": "z30",
-        "oldMaximumSurfaceErrorNative": 0.037250741961240195,
-        "correctedMaximumSurfaceErrorNative": 7.198567523927221e-09,
-        "oldMaximumInteriorEdgeStrain": 2.277753322851958,
-        "correctedMaximumInteriorEdgeStrain": 2.9705253878908877e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 0,
-        "case": "combined",
-        "oldMaximumSurfaceErrorNative": 0.06999918980596435,
-        "correctedMaximumSurfaceErrorNative": 9.179020314182417e-09,
-        "oldMaximumInteriorEdgeStrain": 4.834635108453397,
-        "correctedMaximumInteriorEdgeStrain": 6.521454154473361e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 1,
-        "case": "neutral",
-        "oldMaximumSurfaceErrorNative": 1.8977541989228107e-09,
-        "correctedMaximumSurfaceErrorNative": 1.8977541989228107e-09,
-        "oldMaximumInteriorEdgeStrain": 2.0964637825748866e-07,
-        "correctedMaximumInteriorEdgeStrain": 2.0964637825748866e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 1,
-        "case": "x-30",
-        "oldMaximumSurfaceErrorNative": 0.051327649627695725,
-        "correctedMaximumSurfaceErrorNative": 4.9773640480931484e-09,
-        "oldMaximumInteriorEdgeStrain": 2.4287500464310026,
-        "correctedMaximumInteriorEdgeStrain": 3.0181110544091894e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 1,
-        "case": "x30",
-        "oldMaximumSurfaceErrorNative": 0.05126495516159228,
-        "correctedMaximumSurfaceErrorNative": 6.70574160908857e-09,
-        "oldMaximumInteriorEdgeStrain": 1.8704959730086523,
-        "correctedMaximumInteriorEdgeStrain": 3.432114656920504e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 1,
-        "case": "y-30",
-        "oldMaximumSurfaceErrorNative": 0.03748497494181625,
-        "correctedMaximumSurfaceErrorNative": 5.493818304172578e-09,
-        "oldMaximumInteriorEdgeStrain": 2.4962577363165566,
-        "correctedMaximumInteriorEdgeStrain": 5.379158927176775e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 1,
-        "case": "y30",
-        "oldMaximumSurfaceErrorNative": 0.03812324990397893,
-        "correctedMaximumSurfaceErrorNative": 8.10196933289072e-09,
-        "oldMaximumInteriorEdgeStrain": 2.4194025713016702,
-        "correctedMaximumInteriorEdgeStrain": 9.372565569210067e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 1,
-        "case": "z-30",
-        "oldMaximumSurfaceErrorNative": 0.0374288022207994,
-        "correctedMaximumSurfaceErrorNative": 1.0068436780057355e-08,
-        "oldMaximumInteriorEdgeStrain": 2.418389664955133,
-        "correctedMaximumInteriorEdgeStrain": 7.570653342003908e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 1,
-        "case": "z30",
-        "oldMaximumSurfaceErrorNative": 0.03803744504023706,
-        "correctedMaximumSurfaceErrorNative": 7.198567523927221e-09,
-        "oldMaximumInteriorEdgeStrain": 2.273286232481925,
-        "correctedMaximumInteriorEdgeStrain": 2.9434456316757007e-07,
-        "edges": 22285
-      },
-      {
-        "lod": 1,
-        "case": "combined",
-        "oldMaximumSurfaceErrorNative": 0.07002771375292229,
-        "correctedMaximumSurfaceErrorNative": 9.179020314182417e-09,
-        "oldMaximumInteriorEdgeStrain": 4.827665598513287,
-        "correctedMaximumInteriorEdgeStrain": 6.400315759602648e-07,
-        "edges": 22285
-      }
-    ],
-    "maximumOldSurfaceErrorNative": 0.07002771375292229,
-    "maximumCorrectedSurfaceErrorNative": 1.0068436780057355e-08,
-    "maximumCorrectedInteriorEdgeStrain": 9.436216966696165e-07,
-    "geometryAndPhysicsUnchanged": true,
-    "observedGameplay": false,
-    "omissions": [
-      "nonuniform bending volume loss from linear skinning",
-      "gameplay collision response",
-      "native gameplay/frame cost"
-    ],
-    "controllerTemplateSHA256": "ce45ed0c340edef75e4daf41e0dfc012aa05a4ad1ba3bb79cc77b73e13dd5768",
-    "controllerAngleExpressionsEvaluated": true
-  },
-  "status": "Restored pre-workaround .28; user-rejected surface deformation remains unresolved",
-  "sourceBaseCommit": "41c7362012ab55ee9fef4cf3c5f4ab1e0532dbf3",
   "rejectedCandidate": {
     "version": "0.4.29-protected-head-physics",
-    "package": "publish/20261001-214042-acbb4d",
-    "reason": "User rejected protected head/lobe binding as a workaround and requested an axis investigation",
     "removedFromInstallation": true,
     "removedFromActiveSource": true
   },
-  "axisAudit": "provenance/motion-axis-audit.json"
+  "historicalAxisAudit": "provenance/motion-axis-audit.json",
+  "rollback": {
+    "previous": {
+      "target": "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3\\Mods\\modMaleMod",
+      "project": "modMaleMod",
+      "version": "0.4.26-wolverine-default-physics",
+      "baseCommit": "5f0cd9408e03221db9f684e5aeb3545af5857a06",
+      "package": "publish/20261001-194607-3fc4a2",
+      "files": [
+        {
+          "path": "content/bundles/blob0.bundle",
+          "sha256": "9c3eebbb59e74cf725d7e746d91499413b63d0a48fd2b985f26fd8efe6863280"
+        },
+        {
+          "path": "content/bundles/buffers0.bundle",
+          "sha256": "abd3897a0685857316e6e33ee9baed86ee7292897a5c7fc816ae8f360144faf0"
+        },
+        {
+          "path": "content/dep.cache",
+          "sha256": "ca0daa6c98d47c9c0d373aaa1d02c4f4cb9ef127856c7bb83ab1b77f5f86cf1b"
+        },
+        {
+          "path": "content/metadata.store",
+          "sha256": "afc40b3c1eba818b3d5d7d1e238b08e6eb312eb34d3df0b59d31210c9eaed69d"
+        },
+        {
+          "path": "content/scripts/local/maleModPhysics.ws",
+          "sha256": "803dfe0b499f17fef6da32d4fa719e4bdf948a788135374120bb5233f4a4c836"
+        }
+      ],
+      "gameplayTested": false,
+      "observedLoadAndPose": true,
+      "observedFeedback": {
+        "shape": "approved by user",
+        "motion": "wavy, incorrect lateral translation and insufficient weight",
+        "overallAccepted": false
+      }
+    },
+    "backup": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\local\\uninstalled\\modMaleMod-fbf2d8f35baf",
+    "replaced": {
+      "target": "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3\\Mods\\modMaleMod",
+      "project": "modMaleMod",
+      "version": "0.4.28-bone-local-physics",
+      "baseCommit": "2c23134d8e8530cf2bb87758ad96d00a8a4c5194",
+      "package": "publish/20261001-205324-ceab2a",
+      "files": [
+        {
+          "path": "content/bundles/blob0.bundle",
+          "sha256": "3aeb87506acf3edcdec91e0a8e8e5523036a29fd5eb27e144639b8420a1fea8f"
+        },
+        {
+          "path": "content/bundles/buffers0.bundle",
+          "sha256": "abd3897a0685857316e6e33ee9baed86ee7292897a5c7fc816ae8f360144faf0"
+        },
+        {
+          "path": "content/dep.cache",
+          "sha256": "ca0daa6c98d47c9c0d373aaa1d02c4f4cb9ef127856c7bb83ab1b77f5f86cf1b"
+        },
+        {
+          "path": "content/metadata.store",
+          "sha256": "83e10031231598c956cf1f1682c655369b3a3547694d0b679401b154580f7a27"
+        },
+        {
+          "path": "content/scripts/local/maleModPhysics.ws",
+          "sha256": "c9e251692400ce4ab24fc35749aa5b50e0a05658a3396a47f490993bf8b91784"
+        }
+      ],
+      "gameplayTested": false
+    },
+    "replacedBackup": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\local\\uninstalled\\modMaleMod-8ac18755efe1",
+    "newPackage": "publish/20261001-225248-1c962b"
+  }
 }

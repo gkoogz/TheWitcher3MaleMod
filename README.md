@@ -8,14 +8,15 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-Installed baseline: **0.4.28-bone-local-physics**, restored after the user
-rejected .29's protected head/lobe binding as a workaround. That binding is
-removed from active source and the default cage is restored. Shape deformation
-remains unresolved. The [axis investigation](docs/MOTION-AXIS-AUDIT.md) verifies
-XYZ delivery in the cooked graph and native instruction replay, and reproduces
-head strain under nonuniform bending despite accurate joint targets. These are
-offline findings; running-game pose readback and visual acceptance are separate.
-Wolverine is unchanged and Witcher sliders/toggles remain absent.
+Installed candidate: **0.4.30-solid-distal-physics**, Base `bb53610`.
+The flexible guide now carries a volume-bearing distal body with independent
+3D orientation and off-axis contact supports. Existing head render joints follow
+that accepted physical transform; the approved rest mesh, size and eight shaft
+binding knots remain unchanged. Lobe blending uses the source suspension split.
+Numerical motion, native surface replay, full cooking, packed recovery and
+combined startup-script checks pass. Gameplay appearance and frame cost still
+require observation. Wolverine is unchanged; Witcher controls remain absent.
+The rejected .29 material-binding change remains removed.
 
 See [fixed-rest physics](docs/FIXED-PHYSICS.md) for Base-derived rod/suspension
 kernels, animated-thigh contacts, native verification and current gameplay gates.

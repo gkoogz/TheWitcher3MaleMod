@@ -5,10 +5,16 @@ and .27 motion: wavy sideways stretching/warping and insufficient weight/solidne
 approved evaluated mesh, size and source material coefficients. Correct frame
 consistency and inertia before restoring sliders. Wolverine remains unchanged.
 
-Latest correction: the user rejected .29's protected head/lobe binding as a
+Latest request: after the axis investigation and .28 restoration, the user
+explicitly asked for an actual deformation fix. The new .30 candidate couples
+the flexible guide to a volume-bearing distal body with full 3D orientation.
+Preserve the approved rest geometry and size. Native/offline checks do not
+establish that the user accepts its motion. Controls remain deferred.
+
+Prior correction: the user rejected .29's protected head/lobe binding as a
 workaround and requested investigation of a possibly missing motion axis.
-Restore .28 and remove the protected binding from active generation before any
-further correction. Establish actual 3D motion and surface transport; preserve
+The .28 restoration and removal of protected binding were completed before the
+next correction. Establish actual 3D motion and surface transport; preserve
 the approved size and shape. Controls remain deferred.
 
 Latest October 1 clarification: the fixed Witcher baseline must closely

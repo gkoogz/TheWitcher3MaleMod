@@ -58,6 +58,7 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     private var previousFrameVelocity, previousAngularVelocity : Vector;
     private var linearAcceleration, angularVelocity, angularAcceleration : Vector;
     private var localGravity : Vector;
+    private var headRestCenter, headRotation : Vector;
 
     event OnComponentAttached() { bootTime = 0.0; StartTicking(); }
     event OnComponentAttachFinished() { StartTicking(); }
@@ -170,9 +171,10 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     {
         var i : int;
         physicsTime = 0.0;
-        for (i = 0; i < 14; i += 1)
+        for (i = 0; i < 21; i += 1)
         { physicsPosition[i] = targets[i]; physicsOld[i] = targets[i]; physicsVelocity[i] = Vector(0.0,0.0,0.0,0.0); }
         oldTargets = targets; oldCapsules = capsules;
+        headRotation = Vector(0.0,0.0,0.0,1.0);
         for (i = 0; i < 2; i += 1)
         { lobeRotations[i] = Vector(0.0,0.0,0.0,1.0); previousAnchors[i] = AttachmentTarget(i,false); previousMaterial[i] = AttachmentTarget(i,true); }
         previousRoot = Point(pelvis,targets[0]); previousPelvis = pelvis; frameSamples = 0;
@@ -196,7 +198,7 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         for (j = 0; j < steps; j += 1)
         {
             fraction = (j+1.0)/steps;
-            for (i = 0; i < 14; i += 1) { targets[i] = startTargets[i]+(frameTargets[i]-startTargets[i])*fraction; }
+            for (i = 0; i < 21; i += 1) { targets[i] = startTargets[i]+(frameTargets[i]-startTargets[i])*fraction; }
             for (i = 0; i < 4; i += 1) { capsules[i] = startCapsules[i]+(frameCapsules[i]-startCapsules[i])*fraction; }
             PhysicsStep(0.0166666667); physicsSteps += 1;
             oldTargets = targets; oldCapsules = capsules;
@@ -211,12 +213,18 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     private function PublishPose()
     {
         var i : int;
-        var localPoint, delta, direction, rotation, position : Vector;
+        var localPoint, delta, direction, rotation, position, headCenter : Vector;
         var angles : Vector;
         physicsAccepted = true;
+        headCenter = ClusterCenter(8,4,14,7);
         for (i = 0; i < 10; i += 1)
         {
-            if (i < 8)
+            if (i >= 5 && i < 8)
+            {
+                position = headCenter+RotateCluster(headRotation,jointRestPoints[i]-headRestCenter);
+                rotation = headRotation;
+            }
+            else if (i < 8)
             {
                 SampleGuide(12,i/7.0,position,direction);
                 direction = VecNormalize(direction);

@@ -54,7 +54,18 @@ def generate(base,rig,job,enabled=True,cage=None):
     from malemod_base.controls import VERSION
     controls=evaluate({'format':'malemod.controls','version':VERSION,'values':{}},mode=2,rest_length=source['restLength'])
     data=np.load(cage);mesh=data['points']/100;weights=data['weights'];body_count=len(mesh)-len(data['fields'])
+    # A measured, volume-bearing distal body supplies a complete orientation.
+    # Keep the approved mesh and shaft binding law; render bones 5..7 recover
+    # one accepted physical transform rather than independent tangent guesses.
+    fields=data['fields'];head_mask=(fields[:,2]>=.78)&(fields[:,0]>.9)&(fields[:,1]<.05)
+    head_skin=local(mesh[body_count:][head_mask]);head_axes=frames[7,:3,:3]
+    head_origin=head_skin.mean(0)
+    bounds=(head_skin-head_origin)@head_axes
+    head_extent=np.maximum(np.ptp(bounds,axis=0)*.5,1e-4)
+    supports=np.vstack([head_origin]+[head_origin+sign*head_axes[:,axis]*head_extent[axis] for axis in range(3) for sign in [-1,1]])
+    points=np.vstack([points,supports]);head_rest_center=np.vstack([points[8:12],points[14:21]]).mean(0)
     radii=[[source['proximalRadius']*k*.85]*3 for i in range(12)]+(np.asarray(source['lobeRadii'])*k).tolist()
+    radii += [[.025*k]*3]*7
     thighs=['r_thigh','r_shin','l_thigh','l_shin'];indices=[names.index(n) for n in thighs]
     thigh_radii=[]
     for side in range(2):
@@ -64,16 +75,18 @@ def generate(base,rig,job,enabled=True,cage=None):
         t=np.clip((p-a)@ab/(ab@ab),0,1);dist=np.linalg.norm(p-a-t[:,None]*ab,axis=1)
         thigh_radii.append(float(np.quantile(dist,.95)))
     init=['physicsEnabled = '+str(enabled).lower()+';']
-    sizes={'restPoints':14,'restFrames':10,'jointRestPoints':10,'restDirections':8,'lengths':11,'radii':14,'thighRadii':2,'thighIndices':4,
-           'physicsPosition':14,'physicsOld':14,'physicsVelocity':14,'physicsInvMass':14,'targets':14,'oldTargets':14,
+    sizes={'restPoints':21,'restFrames':10,'jointRestPoints':10,'restDirections':8,'lengths':11,'radii':21,'thighRadii':2,'thighIndices':4,
+           'physicsPosition':21,'physicsOld':21,'physicsVelocity':21,'physicsInvMass':21,'targets':21,'oldTargets':21,
            'capsules':4,'oldCapsules':4,'bendLambda':10,'bendCompliance':10,'materialLambda':2,'lengthLambda':11,'bends':10,'lobeRotations':2,
            'anchorOffsets':2,'materialOffsets':2,'previousAnchors':2,'previousMaterial':2,
            'tetherRest':2,'tetherLimit':2,'suspensionLambda':2,'shearLambdaX':2,'shearLambdaY':2}
     init += [f'{key}.Resize({n});' for key,n in sizes.items()]
-    for i in range(14):
+    for i in range(21):
         init += [f'restPoints[{i}] = {vector(points[i])};',f'radii[{i}] = {vector(radii[i])};']
-        mass=controls.shaft_mass if i<12 else controls.lobe_mass
+        mass=controls.lobe_mass if 12<=i<14 else controls.shaft_mass
+        if 8<=i<12 or i>=14:mass*=4/11 # eleven supports share the original four station masses
         init += [f'physicsInvMass[{i}] = {number(0 if i<2 else 1/mass)};']
+    init += [f'headRestCenter = {vector(head_rest_center)};', 'headRotation = Vector(0.0,0.0,0.0,1.0);']
     for i in range(10):
         init += [f'jointRestPoints[{i}] = {vector(joint_points[i])};',f'restFrames[{i}] = MatrixIdentity();',f"deformationRoot.SetBehaviorVectorVariable('{names[94+i]}_scale',Vector(1.0,1.0,1.0,0.0));"]
         for j,axis in enumerate('XYZ'):init += [f'restFrames[{i}].{axis} = {vector(frames[i,:3,j])};']
@@ -114,10 +127,14 @@ def generate(base,rig,job,enabled=True,cage=None):
             publish += [f"physicsAccepted = deformationRoot.SetBehaviorVariable('{name}_translate_{axis.lower()}',delta.{axis}) && physicsAccepted;",f"physicsAccepted = deformationRoot.SetBehaviorVariable('{name}_rotate_{axis.lower()}',angles.{axis}) && physicsAccepted;"]
         publish.append('}')
     source=source.replace('// PUBLISH_JOINTS','\n'.join(publish))
-    receipt.update(fixedScale=1,enabled=enabled,solver='pelvis-relative 12-node source guide with measured frame acceleration, Base XPBD bend and C1 rendering; point suspension and support contacts',
+    receipt.update(fixedScale=1,enabled=enabled,solver='pelvis-relative flexible source guide coupled to a volume-bearing distal body; point suspension and support contacts',
         coefficients=coefficients,sourceToNativeLength=k,restLengths=lengths.tolist(),jointRadii=radii,thighRadii=thigh_radii,
         thighBones=thighs,fitReceipt=fit_path.relative_to(ROOT).as_posix(),fitSHA256=digest(fit_path),cage=cage.relative_to(ROOT).as_posix(),cageSHA256=digest(cage),
-        sourceBaseline=fit['sourceBaseline'],physicsNodes=14,renderJoints=10,bendTarget='zero curvature',
+        sourceBaseline=fit['sourceBaseline'],physicsNodes=21,renderJoints=10,bendTarget='zero curvature in flexible shaft; rigid distal material',
+        distalBody=dict(supportIndices=[8,9,10,11,14,15,16,17,18,19,20],offAxisSupports=supports.tolist(),restCenter=head_rest_center.tolist(),
+                       renderJoints=names[99:102],originalHeadMassPreserved=True,orientation='3D covariance fit with independent roll',
+                       restGeometryUnchanged=True,shaftBindingLawAndKnotsUnchanged=True,
+                       suspensionPartition='source ApplySuspendedSkin Smooth01 split; native four-influence truncation'),
         neutralGuideToRenderJointError=neutral_error,
         solverSpace='pelvis local; relative velocity damping; local gravity and thigh capsules',
         poseDelivery=dict(rotationSpace='bone bind local',rotationOperator='current quaternion right-multiplied by local delta',axisOrder='intrinsic XYZ',conversion='conjugate parent-space delta by bind rotation'),

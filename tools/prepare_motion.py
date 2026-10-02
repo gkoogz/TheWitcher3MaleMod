@@ -112,7 +112,7 @@ def add_bones(document, mesh, names, worlds, parents, weights):
 
 def prepare():
     cfg=settings();pin=base_checkout(cfg);sys.path.insert(0,str(cfg['base']))
-    from malemod_base.motion_binding import reference_fields,reference_cage_centres,reference_cage_weights,sample_mechanical_guide
+    from malemod_base.motion_binding import reference_fields,reference_cage_centres,reference_cage_weights,sample_mechanical_guide,source_lobe_partition
     from malemod_base.graft import topology_ids,limit_influences
     rest=json.loads((ROOT/'generated/attachment.json').read_text())
     fitpath=ROOT/rest['fitReport'];fit=json.loads(fitpath.read_text());fbx=fitpath.with_suffix('.fbx')
@@ -168,6 +168,10 @@ def prepare():
             # Mechanical lobe order must match the corresponding skin donors.
             lateral=-(module[:,0]-profile['targetRoot'][0])
         dynamic=reference_cage_weights(mf,lateral,2.,distance,5.)
+        if fit.get('sourceMechanics'):
+            # Source ApplySuspendedSkin uses its narrow central material web,
+            # not a 2-FBX-unit blend through both independently moving contents.
+            dynamic[:,8:]=source_lobe_partition(lateral/fit['sourceToFBXScale'])*dynamic[:,8:].sum(1)[:,None]
         _,aliases=topology_ids(points)
         fixed=np.isin(aliases,aliases[b['body_seam']])
         dynamic[fixed[body_count:]]=0
@@ -235,7 +239,8 @@ def prepare():
             'authoredWorldRestFBX':worlds.tolist(),'nativeRestAxes':verify_rest_axes(worlds),'nativeProfile':native_profile,'nativeVerified':False,'observedGameplay':False,
             'limitations':['native secondary-motion approximation; no XPBD parity','body contacts not calibrated',
                            'live rest shape bridge pending'],'fbx':str(output),'dyng':str(dyng_out)}
-    report.update(fitReport=fitpath.relative_to(ROOT).as_posix(),fitSHA256=digest(fitpath),sourceMechanics=fit.get('sourceMechanics'))
+    report.update(fitReport=fitpath.relative_to(ROOT).as_posix(),fitSHA256=digest(fitpath),sourceMechanics=fit.get('sourceMechanics'),
+                  suspensionPartition='source Smooth01 lateral web at reset-default BallShapeScale=1; shaft and total dynamic influence unchanged')
     write_json(job/'motion.json',report);print(job);return job
 
 

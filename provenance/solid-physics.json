@@ -1,0 +1,330 @@
+{
+  "checkpoint": "2026-10-01",
+  "version": "0.4.30-solid-distal-physics",
+  "baseCommit": "bb53610a3d41c010ad1ee5f85703a6fc9ce8b017",
+  "package": "publish/20261001-225248-1c962b",
+  "installedFiles": [
+    {
+      "path": "content/bundles/blob0.bundle",
+      "sha256": "a4cc57ad32e4d3c3487cd428d0f5b4aa2995b261a30b9542362aedf772921ad4"
+    },
+    {
+      "path": "content/bundles/buffers0.bundle",
+      "sha256": "3e192b6708fdc93dfb5f45163c7f1798e0c009b379ad15c5d936268cb6683280"
+    },
+    {
+      "path": "content/dep.cache",
+      "sha256": "ca0daa6c98d47c9c0d373aaa1d02c4f4cb9ef127856c7bb83ab1b77f5f86cf1b"
+    },
+    {
+      "path": "content/metadata.store",
+      "sha256": "9e850dcdc2355e986b28cde008de0aaaf718c99b673f4c011affa8c53c852064"
+    },
+    {
+      "path": "content/scripts/local/maleModPhysics.ws",
+      "sha256": "98aec303070644a9b50a8f712f58d1f13d581d22369ff04bb413295b6909f3da"
+    }
+  ],
+  "startupAddonSHA256": "cb77200e62b8576229c158400cb9f911c4f18491fb9c55d745dc19c89a339e9d",
+  "evidence": {
+    "coupled": {
+      "path": "build/motion/solid-physics-test-031a13f995ff/verification.json",
+      "sha256": "5307b502f91b1768c6d6b43903173e22bc42fd8e78a5dbf9f64b76b737093c27",
+      "result": {
+        "frames": 1800,
+        "maximumSegmentError": 0.000179454684,
+        "maximumSolidPairError": 3.7252903e-08,
+        "maximumExcursion": 0.289067924,
+        "baseCommit": "bb53610a3d41c010ad1ee5f85703a6fc9ce8b017",
+        "sourceSHA256": "9ce5be93182e7e6368f6d94e9b558b6712343d57f262681cbfa112d0d020725b",
+        "cageSHA256": "d374a423cd6cae943ec03e5acf12914f72f1654ea0b0e66c60bf690181d0c977",
+        "passed": true,
+        "observedGameplay": false,
+        "omissions": [
+          "lobe/body contact trajectories",
+          "native script frame cost"
+        ]
+      }
+    },
+    "surface": {
+      "path": "build/motion/solid-surface-20c43ea0c054/verification.json",
+      "sha256": "6963de2817a82d3f14935c55d78d0e2611de6e391286ccb82ba86d08e068f36a",
+      "result": {
+        "results": [
+          {
+            "lod": 0,
+            "cases": 49,
+            "vertices": {
+              "head": 5447,
+              "lobe0": 1457,
+              "lobe1": 1119
+            },
+            "edges": {
+              "head": 16242,
+              "lobe0": 4218,
+              "lobe1": 3131
+            },
+            "oldMaximumEdgeStrain": {
+              "head": 0.4493950036924048,
+              "lobe0": 2.5587002571894746,
+              "lobe1": 1.6568239217653695
+            },
+            "solidBodyMaximumEdgeStrain": {
+              "head": 0.0010321868403924128,
+              "lobe0": 2.1671553440683056e-13,
+              "lobe1": 1.7208456881689926e-13
+            },
+            "oldMaximumAbsoluteEdgeError": {
+              "head": 0.003314178191267952,
+              "lobe0": 0.015732523395577312,
+              "lobe1": 0.012112710991461854
+            },
+            "solidBodyMaximumAbsoluteEdgeError": {
+              "head": 7.017404214171904e-08,
+              "lobe0": 1.95590071916385e-16,
+              "lobe1": 1.973247953923618e-16
+            }
+          },
+          {
+            "lod": 1,
+            "cases": 49,
+            "vertices": {
+              "head": 5447,
+              "lobe0": 1479,
+              "lobe1": 1132
+            },
+            "edges": {
+              "head": 16242,
+              "lobe0": 4281,
+              "lobe1": 3169
+            },
+            "oldMaximumEdgeStrain": {
+              "head": 0.4493950036924048,
+              "lobe0": 2.737833196795625,
+              "lobe1": 1.714958385934311
+            },
+            "solidBodyMaximumEdgeStrain": {
+              "head": 0.0010321868403924128,
+              "lobe0": 2.1671553440683056e-13,
+              "lobe1": 1.7208456881689926e-13
+            },
+            "oldMaximumAbsoluteEdgeError": {
+              "head": 0.003314178191267952,
+              "lobe0": 0.015732523395577312,
+              "lobe1": 0.012112710991461854
+            },
+            "solidBodyMaximumAbsoluteEdgeError": {
+              "head": 7.017404214171904e-08,
+              "lobe0": 1.95590071916385e-16,
+              "lobe1": 1.947227101783966e-16
+            }
+          }
+        ],
+        "restGeometryByteIdentical": true,
+        "nativeOracle": {
+          "executableSHA256": "422cebbcefde36375908cdd78d097a4672ef26f28494b2f1dc09b66b7a72aa46",
+          "mapSHA256": "dd852cf4cde03402c41a103cb67e08fb7b87b21beb7cfc9959088bf66168e450",
+          "symbol": "?Sample@CBehaviorGraphRotateBoneNode@@",
+          "address": "0x143094690",
+          "blockStart": "0x143094814",
+          "blockEnd": "0x1430948ac",
+          "halfAngleRadiansPerDegree": 0.00872664712369442,
+          "readOnlyInstructionEmulation": true,
+          "observedGameplay": false,
+          "translationSymbol": "?Sample@CBehaviorGraphTranslateBoneNode@@",
+          "translationAddress": "0x14309de30",
+          "translationBlockStart": "0x14309df54",
+          "translationBlockEnd": "0x14309dff8"
+        },
+        "nativeTranslationError": 2.683505396907816e-08,
+        "oldCage": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\motion\\cage-3b54cb1c3143",
+        "newCage": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\motion\\cage-ddbc92e9f40f",
+        "controllerSHA256": "1ba3cd12ff903f6de1cfb6a70a39715e97f34ce9837c33696156ec03e25653b8",
+        "observedGameplay": false,
+        "shaftBindingKnotsUnchanged": true,
+        "distalPoseRecovery": "existing bones 5..7 follow the full accepted solid-body transform",
+        "omissions": [
+          "flexible shaft volume loss",
+          "full source pressure/cross-section solver",
+          "live frame cost"
+        ]
+      }
+    },
+    "roundTrip": {
+      "path": "build/motion/cage-ddbc92e9f40f/native-verification.json",
+      "sha256": "9fb57acc9f2d7bc6f594e41bb9012a390073c9a85df451a21a76ff69c1a99e03",
+      "result": {
+        "sourceSHA256": "974c5c957ba0c621002c525a55775604b7c749eaf7005b875ca8d1c695d5cafe",
+        "nativeSHA256": "a4260ac8428ab45766d3457c3fdbb2165ac30775997579a4de642e84ad029ce8",
+        "lods": [
+          {
+            "lod": 0,
+            "bones": [
+              "r_thigh",
+              "r_shin",
+              "r_kneeRoll",
+              "pelvis",
+              "r_legRoll",
+              "r_legRoll2",
+              "l_thigh",
+              "torso",
+              "l_legRoll",
+              "r_foot",
+              "l_shin",
+              "l_kneeRoll",
+              "l_legRoll2",
+              "mm_shaft_00",
+              "mm_shaft_01",
+              "mm_shaft_02",
+              "mm_shaft_03",
+              "mm_shaft_04",
+              "mm_shaft_05",
+              "mm_shaft_06",
+              "mm_shaft_07",
+              "mm_scrotum_l",
+              "mm_scrotum_r"
+            ],
+            "maximumPositionError": 1.1649945088207033e-05,
+            "maximumBindError": 2.9071007883629818e-05,
+            "maximumBindRotationError": 2.91086492743009e-07,
+            "maximumBindTranslationError": 2.9071007883629818e-05,
+            "nativeRestAxes": {
+              "nativeChildAxis": "positive X",
+              "maximumRestAxisError": 3.5236369578999176e-06,
+              "restAxisVerified": true
+            },
+            "maximumWeightError": 2.980232227667301e-08,
+            "maximumSeamPositionError": 0.0,
+            "maximumSeamWeightError": 0.0
+          },
+          {
+            "lod": 1,
+            "bones": [
+              "r_thigh",
+              "r_shin",
+              "r_kneeRoll",
+              "pelvis",
+              "r_legRoll",
+              "r_legRoll2",
+              "l_thigh",
+              "torso",
+              "l_legRoll",
+              "r_foot",
+              "l_shin",
+              "l_kneeRoll",
+              "l_legRoll2",
+              "mm_shaft_00",
+              "mm_shaft_01",
+              "mm_shaft_02",
+              "mm_shaft_03",
+              "mm_shaft_04",
+              "mm_shaft_05",
+              "mm_shaft_06",
+              "mm_shaft_07",
+              "mm_scrotum_l",
+              "mm_scrotum_r"
+            ],
+            "maximumPositionError": 1.1649945088207033e-05,
+            "maximumBindError": 2.9071007883629818e-05,
+            "maximumBindRotationError": 2.91086492743009e-07,
+            "maximumBindTranslationError": 2.9071007883629818e-05,
+            "nativeRestAxes": {
+              "nativeChildAxis": "positive X",
+              "maximumRestAxisError": 3.5236369578999176e-06,
+              "restAxisVerified": true
+            },
+            "maximumWeightError": 2.980232227667301e-08,
+            "maximumSeamPositionError": 0.0,
+            "maximumSeamWeightError": 0.0
+          }
+        ],
+        "nativeRestAxes": {
+          "nativeChildAxis": "positive X",
+          "maximumRestAxisError": 0.0,
+          "restAxisVerified": true
+        },
+        "nativeMeshRoundtripVerified": true,
+        "nativeDynamicsVerified": false,
+        "observedGameplay": false
+      }
+    },
+    "combinedScripts": {
+      "path": "build/startup-integration/40a67e987d63/verification.json",
+      "sha256": "b72b4e4f107635311d4b22a3e6d76d1f82e4a0838ea0f5edd379f9dcdb335324",
+      "result": {
+        "package": "publish/20261001-225248-1c962b",
+        "inputs": [
+          {
+            "mod": "modLocalSkipStartupMovies",
+            "path": "game/r4Game.ws",
+            "sha256": "cb77200e62b8576229c158400cb9f911c4f18491fb9c55d745dc19c89a339e9d"
+          },
+          {
+            "mod": "modMaleMod",
+            "path": "local/maleModPhysics.ws",
+            "sha256": "98aec303070644a9b50a8f712f58d1f13d581d22369ff04bb413295b6909f3da"
+          }
+        ],
+        "native": {
+          "command": "compilescripts",
+          "args": [
+            "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3 REDkit\\bin\\x64_RedKit\\wcc_lite.exe",
+            "compilescripts",
+            "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\scripts-28cfc7226255",
+            "-out=C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\scripts-28cfc7226255-compiled",
+            "-uncookDir",
+            "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\jobs\\depot-836bc53e2473\\",
+            "-workspaceDir",
+            "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\build\\startup-integration\\40a67e987d63\\workspace\\",
+            "-noninteractivecrash"
+          ],
+          "exitCode": 0,
+          "seconds": 27.265,
+          "logSHA256": "e17a0d53bbb8c34c07b6b3b8e4863d9ba8c01d5592ab59c3c4ff2c1a5cf2cbd7",
+          "logPath": "build/logs/20261001-225901-scripts-f4ba29.log",
+          "wccSHA256": "37ac28519adc8bc234653fcf973ba76935096aea50003b0f3a03af4007788f7d"
+        },
+        "observedGameplay": false
+      }
+    }
+  },
+  "sourceFiles": [
+    {
+      "path": "tools/fixed_physics.py",
+      "sha256": "3bad39f434fa3185b45a18cb7e14815b18a1357994540fcf103aed9cc35464fb"
+    },
+    {
+      "path": "tools/physics_codegen.py",
+      "sha256": "74b325dd1569915267bfdde6b95dcbfef56ae49545a7a39500ac095989880441"
+    },
+    {
+      "path": "probes/runtime/fixedPhysics.ws",
+      "sha256": "1ba3cd12ff903f6de1cfb6a70a39715e97f34ce9837c33696156ec03e25653b8"
+    },
+    {
+      "path": "probes/runtime/physicsStep.ws.inc",
+      "sha256": "d98feaa1768269e994ef8d668e8037325025d67344e069141e95713402584af6"
+    },
+    {
+      "path": "tools/prepare_motion.py",
+      "sha256": "ca3f2f40e37db5ab7e4ea483475e848769e13374e4b9bf78871c679c75b6d23d"
+    },
+    {
+      "path": "tools/verify_solid_physics.py",
+      "sha256": "0900f5d6ee468d2700d2c01752b0826d3b12c315013014b5e46f36313062e7ce"
+    },
+    {
+      "path": "tools/verify_solid_surface.py",
+      "sha256": "a74c69aa2a2643472b7108ea26f0cab24f9a1f7527319c571d01fd3c5f287f92"
+    }
+  ],
+  "observedGameplay": false,
+  "runtimeParity": false,
+  "nativeFrameCostMeasured": false,
+  "omissions": [
+    "flexible shaft/web linear-skinning volume loss",
+    "full source pressure/contact/surface solver",
+    "coupled regression excludes contact trajectories",
+    "native gameplay/frame cost"
+  ]
+}

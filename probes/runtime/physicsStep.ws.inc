@@ -7,13 +7,13 @@
         linear = VecTransformDir(worldToPelvis,linearAcceleration);
         omega = VecTransformDir(worldToPelvis,angularVelocity);
         alpha = VecTransformDir(worldToPelvis,angularAcceleration);
-        for (i = 0; i < 14; i += 1)
+        for (i = 0; i < 21; i += 1)
         {
             physicsOld[i] = physicsPosition[i];
             if (i < 2) { physicsPosition[i] = targets[i]; }
             else
             {
-                if (i < 12) { gravity = @shaft_gravity@; drag = @shaft_drag@; }
+                if (i < 12 || i >= 14) { gravity = @shaft_gravity@; drag = @shaft_drag@; }
                 else { gravity = @lobe_gravity@; drag = @lobe_drag@; }
                 IntegrateRelative(i,localGravity*gravity,linear,omega,alpha,@total_acceleration_limit@,drag,dt);
             }
@@ -30,7 +30,7 @@
         {
             for (i = 1; i < 11; i += 1)
             { lambda = lengthLambda[i]; SolveDistance(i,i+1,lengths[i],0.0000001,lambda,dt); lengthLambda[i] = lambda; }
-            for (i = 0; i < 10; i += 1)
+            for (i = 0; i < 8; i += 1)
             {
                 current = bendLambda[i]; SolveBendPrepared(i+1,bends[i],current); bendLambda[i] = current;
             }
@@ -47,8 +47,13 @@
             }
             // Broad phase prevents support queries for separated resources.
             ResolveContacts();
+            // The distal body carries actual off-axis material supports. Fit
+            // four times per step; project its solid shape every iteration.
+            if (iteration == 0 || iteration == 8 || iteration == 16 || iteration == 23)
+            { headRotation = FitCluster(restPoints,headRestCenter,8,4,14,7,headRotation); }
+            ProjectCluster(restPoints,headRestCenter,8,4,14,7,headRotation);
         }
-        for (i = 2; i < 14; i += 1)
+        for (i = 2; i < 21; i += 1)
         {
             physicsVelocity[i] = (physicsPosition[i]-physicsOld[i])/dt;
             stretch = VecDistance(physicsPosition[i],targets[i]);
@@ -100,7 +105,7 @@
         var i, side, a, j : int;
         var t, distance, gap, radius : float;
         var closest, delta, normal, support, surfaceMove : Vector;
-        for (i = 2; i < 14; i += 1)
+        for (i = 2; i < 21; i += 1)
         {
             radius = MaxF(radii[i].X,MaxF(radii[i].Y,radii[i].Z))*1.15;
             for (side = 0; side < 2; side += 1)
@@ -111,7 +116,7 @@
                 delta = physicsPosition[i]-closest; distance = VecLength(delta);
                 if (distance > radius+thighRadii[side] || distance < 0.000001) { continue; }
                 normal = delta/distance;
-                if (i < 12) { gap = distance-radii[i].X-thighRadii[side]; }
+                if (i < 12 || i >= 14) { gap = distance-radii[i].X-thighRadii[side]; }
                 else
                 {
                     support = LobeSupport(i,-normal);
@@ -122,6 +127,19 @@
                     surfaceMove = closest-(oldCapsules[a]+(oldCapsules[a+1]-oldCapsules[a])*t);
                     ProjectMovingContact(i,normal,gap,surfaceMove); physicsContacts += 1;
                 }
+            }
+        }
+        // Off-axis distal supports supply contact torque in all three axes.
+        for (j = 14; j < 21; j += 1)
+        {
+            for (i = 12; i < 14; i += 1)
+            {
+                delta = physicsPosition[i]-physicsPosition[j]; distance = VecLength(delta);
+                radius = MaxF(radii[i].X,MaxF(radii[i].Y,radii[i].Z))*1.15;
+                if (distance < 0.000001 || distance > radius+radii[j].X) { continue; }
+                normal = delta/distance;
+                gap = VecDot(delta+LobeSupport(i,-normal),normal)-radii[j].X;
+                if (gap < 0.0) { ProjectPairContact(j,i,normal,gap); physicsContacts += 1; }
             }
         }
         delta = physicsPosition[13]-physicsPosition[12]; distance = VecLength(delta);
