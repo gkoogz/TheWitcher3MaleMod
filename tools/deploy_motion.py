@@ -34,6 +34,11 @@ def install(directory):
         raise RuntimeError('Deformation package lacks connected native pose/scale output verification')
     packed=read_json(ROOT/'local/motion-package-verification.json')
     if packed['package']!=directory.relative_to(ROOT).as_posix():raise RuntimeError('Run native unbundle verification for this exact package first')
+    if manifest.get('overall'):
+        if not manifest['overall'].get('method','').startswith('native morphRatio property'):
+            raise RuntimeError('Superseded Overall endpoint/authored-fraction route is blocked')
+        if not (manifest.get('motionBinding') or {}).get('cookedOverallMorphBindingVerified') or not (packed.get('additionalMotionBinding') or {}).get('cookedOverallMorphBindingVerified'):
+            raise RuntimeError('Overall requires verified native and packed morph pairs')
     if (manifest.get('motionBinding') or {}).get('deformationOutput')=='player':
         native=(manifest['motionBinding'].get('playerRig') or {})
         round_trip=(packed.get('additionalMotionBinding') or {}).get('playerRig') or {}
@@ -60,7 +65,7 @@ def install(directory):
         install_package(cfg,directory)
         if fixed:
             bindings=input_bindings.uninstall() if (ROOT/'local/input-bindings.json').exists() else []
-            print('Installed fixed-scale physics candidate; removed owned MaleMod hotkeys. Previous build:',backup)
+            print('Installed '+('Overall anatomy controls' if manifest.get('overall') else 'fixed-scale physics candidate')+'; no owned hotkeys. Previous build:',backup)
             return bindings
         bindings=input_bindings.install(input_path)
         print('Installed motion test and hotkeys; previous build archived at:',backup)

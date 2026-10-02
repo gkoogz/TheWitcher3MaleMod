@@ -24,6 +24,9 @@ def verify(directory):
     # Recheck delayed-slot ownership from the native dump even for the first
     # 0.4.8 candidate built before lateActivation metadata was introduced.
     binding=None
+    if manifest.get('overall'):
+        binding=verify_binding(Path(str(cooked/'items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent')+'.xml'),output='player')
+        if not binding.get('cookedOverallMorphBindingVerified'):raise ValueError('Missing native Overall pairs')
     if (manifest.get('deformationBridge') or {}).get('lateActivation') or manifest['version']=='0.4.8-late-graph-test':
         dumps=list(cooked.rglob('*.w2ent.xml'))
         if len(dumps)!=1:raise ValueError('Late graph candidate requires one native entity dump')

@@ -41,6 +41,7 @@ def emit(base):
         ('ClusterIndex',3,'i : int, firstA : int, countA : int, firstB : int','int'),
         ('ClusterCenter',3,'firstA : int, countA : int, firstB : int, countB : int','Vector'),
         ('RotateCluster',3,'q : Vector, p : Vector','Vector'),
+        ('VirtualBindTranslation',3,'bind : Vector, material : Vector, current : Vector, rotation : Vector','Vector'),
         ('FitCluster',3,'rest : array<Vector>, restCenter : Vector, firstA : int, countA : int, firstB : int, countB : int, seed : Vector','Vector'),
         ('ProjectCluster',3,'rest : array<Vector>, restCenter : Vector, firstA : int, countA : int, firstB : int, countB : int, rotation : Vector','')]
     methods=[]

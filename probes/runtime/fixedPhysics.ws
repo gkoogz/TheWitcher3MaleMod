@@ -1,4 +1,10 @@
-// Fixed rest scale. No menu, sliders, tuning preferences or hotkey binding.
+// Base secondary physics. Optional Overall morph bank is added by the adapter.
+import class CMeshTypeComponent extends CDrawableComponent {}
+import class CMorphedMeshComponent extends CMeshTypeComponent
+{
+    import var morphRatio : float;
+}
+
 import class IAnimDangleConstraint extends CObject {}
 import class CAnimSkeletalDangleConstraint extends IAnimDangleConstraint {}
 import class CAnimDangleConstraint_Dyng extends CAnimSkeletalDangleConstraint {}
@@ -28,6 +34,8 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     private var thighIndices : array<int>;
     private var restPoints : array<Vector>;
     private var jointRestPoints : array<Vector>;
+    private var bindJointPoints : array<Vector>;
+    private var lobeRestFrames : array<Matrix>;
     private var restFrames : array<Matrix>;
     private var restDirections : array<Vector>;
     private var lengths : array<float>;
@@ -232,7 +240,7 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
             }
             else { position = physicsPosition[i+4]; rotation = lobeRotations[i-8]; }
             localPoint = position;
-            delta = VecTransformDir(MatrixGetInverted(restFrames[i]),localPoint-jointRestPoints[i]);
+            delta = VecTransformDir(MatrixGetInverted(restFrames[i]),VirtualBindTranslation(bindJointPoints[i],jointRestPoints[i],localPoint,rotation));
             // Native local RotateBone right-multiplies the incoming bind.
             // Conjugation rotates only the quaternion axis into bone space.
             direction = VecTransformDir(MatrixGetInverted(restFrames[i]),Vector(rotation.X,rotation.Y,rotation.Z,0.0));

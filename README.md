@@ -8,15 +8,18 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-Installed candidate: **0.4.30-solid-distal-physics**, Base `bb53610`.
-The flexible guide now carries a volume-bearing distal body with independent
-3D orientation and off-axis contact supports. Existing head render joints follow
-that accepted physical transform; the approved rest mesh, size and eight shaft
-binding knots remain unchanged. Lobe blending uses the source suspension split.
-Numerical motion, native surface replay, full cooking, packed recovery and
-combined startup-script checks pass. Gameplay appearance and frame cost still
-require observation. Wolverine is unchanged; Witcher controls remain absent.
-The rejected .29 material-binding change remains removed.
+Installed candidate: **0.4.31-overall-recruitment**, Base `643846f`.
+The native pause menu now has **MaleMod - anatomy / Overall** (1..100, neutral
+50). Wolverine's evaluated overall shape and final pelvic recruitment expand the
+fitted attachment and surrounding body together. Guides, pivots and collision
+sizes track the selected native morph. The approved neutral mesh is unchanged.
+Only Overall is restored; Wolverine remains unchanged.
+
+Native shape layout, weld/pivot checks, cooking, exact packed recovery and
+combined startup-script compilation pass. The user accepts .30 motion as
+serviceable; .31 gameplay and frame cost remain pending. Large-size normal
+transport and nonlinear intermediate shape evaluation remain limitations.
+See [Overall](docs/OVERALL.md) and the handoff for evidence and rollback.
 
 See [fixed-rest physics](docs/FIXED-PHYSICS.md) for Base-derived rod/suspension
 kernels, animated-thigh contacts, native verification and current gameplay gates.

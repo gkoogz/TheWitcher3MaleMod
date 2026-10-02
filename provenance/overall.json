@@ -1,0 +1,175 @@
+{
+  "version": "0.4.31-overall-recruitment",
+  "package": "publish/20261002-002434-ec4612",
+  "baseCommit": "643846f54b59f2d44d191a9a75ee68f333eb726d",
+  "installedHashesVerified": [
+    {
+      "path": "content/bundles/blob0.bundle",
+      "sha256": "cfa7393bde48202f6c23610da34dc7f98ce3817036546e97b216c16c804be6c0"
+    },
+    {
+      "path": "content/bundles/buffers0.bundle",
+      "sha256": "e98b3d1ce3e80a55de80873bb5a8bd0256f0371f218fd992d241987e31f81110"
+    },
+    {
+      "path": "content/dep.cache",
+      "sha256": "5d91bffb0139d7192ab2443f9a90a55d64c1deb678ee2896acbd9279636b9239"
+    },
+    {
+      "path": "content/metadata.store",
+      "sha256": "35977ccd6a5894ede2e40fe66eed8419ac694153f5c48b493774e5aa10ae68e7"
+    },
+    {
+      "path": "content/scripts/local/maleModPhysics.ws",
+      "sha256": "c1b75d3e6c537c0ba0e89bd16761a9eea588455feccc667c6c8e2fe1fd908d52"
+    }
+  ],
+  "startupAddonUnchangedSHA256": "cb77200e62b8576229c158400cb9f911c4f18491fb9c55d745dc19c89a339e9d",
+  "sourceBankSHA256": "f37d21af1363588794e0931bcffe67a55ad628453b04a9baa8030cb2ba4b7aa4",
+  "nativeBankSHA256": "9e92e3e00367c5927545456177822f32047d18573077049bfad4a13166e55bed",
+  "targetBankSHA256": "3f4c771d7a422d13c4a880896918f3dd2a8e8897ecd9484b5657a77787c67859",
+  "nativeLayoutVerified": true,
+  "neutralPointsByteIdentical": true,
+  "maximumInterpolatedSeamErrorFBX": 0.0,
+  "minimumInterpolatedTwiceAreaFBX": 1.1063129051830677e-07,
+  "nativePivotCases": 990,
+  "maximumNativePivotError": 3.7903523597559996e-08,
+  "intermediateSamples": [
+    {
+      "ui": 5,
+      "lod": 0,
+      "maximumErrorFBX": 0.308761768029087,
+      "p95ErrorFBX": 0.025394153739881988,
+      "rmsErrorFBX": 0.019778229461533233
+    },
+    {
+      "ui": 5,
+      "lod": 1,
+      "maximumErrorFBX": 0.3087617680290967,
+      "p95ErrorFBX": 0.025340219182657612,
+      "rmsErrorFBX": 0.020349137749041228
+    },
+    {
+      "ui": 55,
+      "lod": 0,
+      "maximumErrorFBX": 0.4219499831449491,
+      "p95ErrorFBX": 0.2701850106989633,
+      "rmsErrorFBX": 0.1675898873584038
+    },
+    {
+      "ui": 55,
+      "lod": 1,
+      "maximumErrorFBX": 0.42194998314494925,
+      "p95ErrorFBX": 0.27033175467264736,
+      "rmsErrorFBX": 0.16969221796073217
+    },
+    {
+      "ui": 95,
+      "lod": 0,
+      "maximumErrorFBX": 0.30992041325698005,
+      "p95ErrorFBX": 0.10168158485488843,
+      "rmsErrorFBX": 0.06373183562955674
+    },
+    {
+      "ui": 95,
+      "lod": 1,
+      "maximumErrorFBX": 0.3098229905952091,
+      "p95ErrorFBX": 0.10305219732083082,
+      "rmsErrorFBX": 0.06446890803503855
+    }
+  ],
+  "sourceAndTargetRecipeReproduced": {
+    "baseCommit": "643846f54b59f2d44d191a9a75ee68f333eb726d",
+    "recipeSHA256": "1d8aa8d9e4e5e05fa3aa02d7653e05078605f7ce965f830fe0c63058df25a084",
+    "reproducedBank": "build/overall/56204fc12292",
+    "files": [
+      {
+        "ui": 1,
+        "fbxByteIdentical": true
+      },
+      {
+        "ui": 10,
+        "fbxByteIdentical": true
+      },
+      {
+        "ui": 20,
+        "fbxByteIdentical": true
+      },
+      {
+        "ui": 30,
+        "fbxByteIdentical": true
+      },
+      {
+        "ui": 40,
+        "fbxByteIdentical": true
+      },
+      {
+        "ui": 50,
+        "fbxByteIdentical": true
+      },
+      {
+        "ui": 60,
+        "fbxByteIdentical": true
+      },
+      {
+        "ui": 70,
+        "fbxByteIdentical": true
+      },
+      {
+        "ui": 80,
+        "fbxByteIdentical": true
+      },
+      {
+        "ui": 90,
+        "fbxByteIdentical": true
+      },
+      {
+        "ui": 100,
+        "fbxByteIdentical": true
+      }
+    ]
+  },
+  "cookedOverallBinding": true,
+  "cookedPairCount": 10,
+  "runtimeControl": "native imported morphRatio float; selected pair SetVisible(false), native property assignment, SetVisible(true) refreshes render proxy",
+  "engineInspection": [
+    {
+      "path": "build/probe/disassembly-71014d97a65c/evidence.json",
+      "sha256": "1083c22843ae4898dfbc6f62e720e94f751058b68bb00da611ec98fb01a8570b"
+    },
+    {
+      "path": "build/probe/disassembly-2c65f1e1ba22/evidence.json",
+      "sha256": "c0a5108f0272fbeff10087efda8f31828fdf319e8139289aa45ebcc6ed0e5e65"
+    },
+    {
+      "path": "build/probe/disassembly-3c473569866c/evidence.json",
+      "sha256": "33ca065e3f370ff1da6f816d8aa9e451246c32381e3903146b2555beb500efa2"
+    },
+    {
+      "path": "build/probe/disassembly-c19ef683c2d5/evidence.json",
+      "sha256": "ed838d1c0f9ee885c5984a954ed634a012344f84f6cfbfc17591c99d938cc7ca"
+    },
+    {
+      "path": "build/probe/disassembly-db49090fe643/evidence.json",
+      "sha256": "91cef2becd79604f8ff59ea71f2d310fe65513cb8894f374b3ebe7e18edc0a64"
+    }
+  ],
+  "physicsNodes": 21,
+  "renderJoints": 10,
+  "perFrameVertexLoop": false,
+  "proxyRefreshOnlyOnSizeEdits": true,
+  "normalPolicy": "shared approved neutral normal frame to preserve native attribute merge classes; changed-size normal transport deferred",
+  "packedResources": 32,
+  "combinedStartupCompilation": "build/startup-integration/5aeb1c20be0a/verification.json",
+  "adapterTests": 60,
+  "baseTests": 59,
+  "observedGameplay": false,
+  "wolverineModified": false,
+  "rollback": ".30 at local/uninstalled/modMaleMod-8a093389b627",
+  "omissions": [
+    "live morph/physics visual acceptance and native frame cost",
+    "recomputed large-size normals",
+    "nonlinear source evaluation between keys",
+    "full source live posed-body contact/pressure parity"
+  ]
+}

@@ -1,3 +1,50 @@
+# Current checkpoint: .31 Overall installed
+
+Latest UI preference: the user wants a separate overlay instead of the native
+menu and requested a feasibility assessment. Historical .4.0-.4.3 F6/debug-HUD
+attempts never established a visible interactive panel. See OVERLAY.md. No
+overlay is implemented or installed; .31 retains its pause-menu test interface.
+
+Installed `publish/20261002-002434-ec4612`, version
+`0.4.31-overall-recruitment`, Base `643846f54b59f2d44d191a9a75ee68f333eb726d`.
+All five installed hashes match. Startup addon hash is unchanged. The user
+accepted .30 physics as serviceable; .31 gameplay acceptance is pending.
+Wolverine remains unchanged. No hotkeys or other controls were introduced.
+Pause menu: **MaleMod - anatomy / Overall**, UI 1..100, neutral 50. Owned
+MaleModOverall namespace version 1 excludes historical rejected slider settings.
+
+Eleven evaluated source keys include the prepared anatomy, final UnifiedCollar
+and both body sections. Existing attachment lineage and source-body material
+field transfer feed Base's coupled original-edge displacement reconciliation.
+Default point bytes are identical; native waist/ankle boundaries stay fixed.
+The ten native morph pairs share vertex order, indices, UVs, skin and binds.
+Physical guides, pivots, supports, dimensions and cords track the same size.
+
+Actual native SetMorphBlend thresholds its target at .5. Saved component
+morphRatio is transient and cooker removes nonzero values. Those two attempts
+were rejected before installation. The active route imports existing native
+morphRatio and refreshes the selected proxy via visibility ONLY on size edits.
+Read OVERALL.md and provenance/overall.json for native constructor/refresh proof.
+The same 21-node physics and ten render joints remain; no per-frame vertex loop.
+
+Evidence: `build/overall/overall-stable-layout/verification.json`, 22 native LOD
+layout checks, 990 native pivot cases (max error 3.79e-8), zero interpolation weld
+error/no triangle collapse. Current recipe reproduces all eleven importer FBXs
+byte-identically. Full cook: `build/motion/player-stack-138649950289`; exact unbundle verifies
+32 resources/buffers. Combined startup compilation:
+`build/startup-integration/5aeb1c20be0a/verification.json`. 60 adapter tests,
+59 Base tests, shared C++ solid test and full Base provenance gate pass.
+
+Limits: neutral normal frame is retained to preserve native merge classes;
+large-size lighting needs future normal transport. Intermediate sampled source
+error up to .42195 FBX units (~4.2 mm); full live contact/pressure, posed-body
+recruitment and native frame cost are not established. Observe the new build
+before claiming successful live deformation or shader/skin performance.
+
+Immediate .30 rollback: `local/uninstalled/modMaleMod-8a093389b627`.
+Stable .26 rollback remains preserved. Restart the game; refresh cached outfit
+by equipping/removing trousers if needed.
+
 # Resume here: Witcher adapter
 
 Checkpoint: 2026-10-01. Read `AGENTS.md`, `README.md`, `HEADLESS-WORKFLOW.md`

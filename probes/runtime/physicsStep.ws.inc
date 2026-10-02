@@ -93,9 +93,9 @@
         var localPoint : Vector;
         localPoint = n;
         localPoint = v_SetRotatedDir(q_SetInv(lobeRotations[i-12]),localPoint);
-        localPoint = VecTransformDir(MatrixGetInverted(restFrames[i-4]),localPoint);
+        localPoint = VecTransformDir(MatrixGetInverted(lobeRestFrames[i-12]),localPoint);
         localPoint = OvoidSupport(localPoint,radii[i]);
-        localPoint = VecTransformDir(restFrames[i-4],localPoint);
+        localPoint = VecTransformDir(lobeRestFrames[i-12],localPoint);
         localPoint = v_SetRotatedDir(lobeRotations[i-12],localPoint);
         return localPoint;
     }

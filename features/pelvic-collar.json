@@ -6,27 +6,32 @@
   "contract": "modules/pelvic-collar.json",
   "dependency": "dependencies/base.lock.json",
   "character": "geralt",
-  "status": "shared fitted dynamic domain with protected part boundaries and checked correction; native output and full control envelope pending",
-  "calibration": null,
+  "status": "Overall 1..100 installed with evaluated source coupled recruitment, native mesh pairs and size-matched physics; gameplay pending",
+  "calibration": {
+    "profile": "characters/geralt-attachment.json",
+    "sourceToFBXScale": 1.0255218584141075,
+    "protectedPartBoundaries": [
+      "waist",
+      "ankles"
+    ]
+  },
   "seamBindings": {
     "restBindings": "generated/attachment.json",
     "dynamicCollarDomain": "Base malemod_base/graft_collar.py via tools/probe_pelvic_domain.py"
   },
-  "nativeDeformationBridge": null,
+  "nativeDeformationBridge": "native CMorphedMeshComponent pairs; imported morphRatio with edit-time proxy refresh",
   "verification": {
-    "sourceMath": "shared fixtures passed",
-    "targetOfflineFit": "both fitted LODs: synthetic correction has zero inversions/seam/boundary drift; original donor error below 1.5e-14; only 17-36 percent correction accepted; full shape envelope pending",
-    "nativeRuntime": "pending",
-    "observedGameplay": "pending",
+    "sourceMath": "complete strict Win32 source evaluation including final UnifiedCollar and both body sections",
+    "targetOfflineFit": "eleven source/target keys, byte-identical default, zero weld drift, protected native boundaries; no interpolation triangle collapse",
+    "nativeRuntime": "compiled/cooked imported field, ten morph pairs, private 104-joint rig, 60 graph channels and 32 exact packed resources verified; live readback pending",
+    "observedGameplay": "pending for .31; user accepted .30 physics as serviceable",
     "nativeGraphResource": "isolated scale graph accepted by WCC; not installed or runtime verified"
   },
   "next": [
-    "derive actual source collar root/guide frame separately from rest boundary alignment",
-    "build target dynamic support domain from preserved rest lineage",
-    "implement verified native deformation or morph bridge",
-    "coordinate torso/legs boundary if recruitment reaches waist",
-    "test maximum-radius and moving poses including normals and contacts"
+    "observe minimum/default/maximum and intermediate Overall during idle/running",
+    "measure native cost and memory",
+    "calibrate native-safe changed-size normal transport"
   ],
   "restGraftFeature": "features/rest-graft.json",
-  "probeProvenance": "provenance/pelvic-domain-probe.json"
+  "probeProvenance": "provenance/overall.json"
 }

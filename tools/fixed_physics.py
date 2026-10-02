@@ -25,7 +25,7 @@ def independent_rig(rig):
 def number(v):return format(float(v),'.12f')
 def vector(v):return 'Vector('+','.join(number(x) for x in v)+',0.0)'
 
-def generate(base,rig,job,enabled=True,cage=None):
+def generate(base,rig,job,enabled=True,cage=None,mechanics=None,surface_points=None):
     sys.path.insert(0,str(base))
     from malemod_base.physics_controls import evaluate,suspension_limits
     from malemod_base.motion_binding import sample_mechanical_guide
@@ -37,15 +37,16 @@ def generate(base,rig,job,enabled=True,cage=None):
     fit=json.loads(fit_path.read_text())
     if not fit.get('sourceMechanics'):raise ValueError('Rebuild cage from evaluated Wolverine defaults, not posed reference')
     if cage_receipt['fitSHA256']!=digest(fit_path):raise ValueError('Cage baseline fit changed')
-    source=fit['sourceMechanics'];profile=json.loads((ROOT/'characters/geralt-attachment.json').read_text())
+    source=mechanics if mechanics is not None else fit['sourceMechanics'];profile=json.loads((ROOT/'characters/geralt-attachment.json').read_text())
     names,parents,worlds=rig_world(rig['_chunks']['CSkeleton #0']['_vars'])
     frames=np.array([np.linalg.inv(worlds[9])@w for w in worlds[94:]])
-    joint_points=frames[:,:3,3];wp=np.array(worlds)[94:,:3,3]
+    bind_points=frames[:,:3,3].copy();joint_points=bind_points.copy();wp=np.array(worlds)[94:,:3,3]
     k=fit['sourceToFBXScale']/100;basis=np.asarray(profile['basis'])
     convert=lambda p:((np.asarray(p)-fit['sourceRoot'])@basis.T*fit['sourceToFBXScale']+profile['targetRoot'])/100
     local=lambda p:(p-worlds[9][:3,3])@worlds[9][:3,:3]
     points=local(convert(np.vstack([source['shaftGuide'],source['lobeCenters']])))
     sample_points,_=sample_mechanical_guide(points[:12],np.linspace(0,1,8))
+    if mechanics is not None:joint_points=np.vstack([sample_points,points[12:14]])
     neutral_error=float(np.linalg.norm(np.vstack([sample_points,points[12:]])-joint_points,axis=1).max())
     if neutral_error>1e-5:raise ValueError('Default guide and authored skin frames disagree')
     lengths=np.full(11,source['restLength']*k/11)
@@ -53,7 +54,7 @@ def generate(base,rig,job,enabled=True,cage=None):
     directions/=np.linalg.norm(directions,axis=1)[:,None]
     from malemod_base.controls import VERSION
     controls=evaluate({'format':'malemod.controls','version':VERSION,'values':{}},mode=2,rest_length=source['restLength'])
-    data=np.load(cage);mesh=data['points']/100;weights=data['weights'];body_count=len(mesh)-len(data['fields'])
+    data=np.load(cage);mesh=(data['points'] if surface_points is None else surface_points)/100;weights=data['weights'];body_count=len(mesh)-len(data['fields'])
     # A measured, volume-bearing distal body supplies a complete orientation.
     # Keep the approved mesh and shaft binding law; render bones 5..7 recover
     # one accepted physical transform rather than independent tangent guesses.
@@ -75,7 +76,7 @@ def generate(base,rig,job,enabled=True,cage=None):
         t=np.clip((p-a)@ab/(ab@ab),0,1);dist=np.linalg.norm(p-a-t[:,None]*ab,axis=1)
         thigh_radii.append(float(np.quantile(dist,.95)))
     init=['physicsEnabled = '+str(enabled).lower()+';']
-    sizes={'restPoints':21,'restFrames':10,'jointRestPoints':10,'restDirections':8,'lengths':11,'radii':21,'thighRadii':2,'thighIndices':4,
+    sizes={'restPoints':21,'restFrames':10,'bindJointPoints':10,'jointRestPoints':10,'lobeRestFrames':2,'restDirections':8,'lengths':11,'radii':21,'thighRadii':2,'thighIndices':4,
            'physicsPosition':21,'physicsOld':21,'physicsVelocity':21,'physicsInvMass':21,'targets':21,'oldTargets':21,
            'capsules':4,'oldCapsules':4,'bendLambda':10,'bendCompliance':10,'materialLambda':2,'lengthLambda':11,'bends':10,'lobeRotations':2,
            'anchorOffsets':2,'materialOffsets':2,'previousAnchors':2,'previousMaterial':2,
@@ -88,8 +89,12 @@ def generate(base,rig,job,enabled=True,cage=None):
         init += [f'physicsInvMass[{i}] = {number(0 if i<2 else 1/mass)};']
     init += [f'headRestCenter = {vector(head_rest_center)};', 'headRotation = Vector(0.0,0.0,0.0,1.0);']
     for i in range(10):
-        init += [f'jointRestPoints[{i}] = {vector(joint_points[i])};',f'restFrames[{i}] = MatrixIdentity();',f"deformationRoot.SetBehaviorVectorVariable('{names[94+i]}_scale',Vector(1.0,1.0,1.0,0.0));"]
+        init += [f'bindJointPoints[{i}] = {vector(bind_points[i])};',f'jointRestPoints[{i}] = {vector(joint_points[i])};',f'restFrames[{i}] = MatrixIdentity();',f"deformationRoot.SetBehaviorVectorVariable('{names[94+i]}_scale',Vector(1.0,1.0,1.0,0.0));"]
         for j,axis in enumerate('XYZ'):init += [f'restFrames[{i}].{axis} = {vector(frames[i,:3,j])};']
+    for i in range(2):
+        lobe_frame=worlds[9][:3,:3].T@basis@np.asarray(source['lobeAxes'][i]).T
+        init += [f'lobeRestFrames[{i}] = MatrixIdentity();']
+        for j,axis in enumerate('XYZ'):init += [f'lobeRestFrames[{i}].{axis} = {vector(lobe_frame[:,j])};']
     _,sample_directions=sample_mechanical_guide(np.asarray(source['shaftGuide']),np.linspace(0,1,8))
     sample_directions=sample_directions@basis.T@worlds[9][:3,:3]
     for i in range(8):init += [f'restDirections[{i}] = {vector(sample_directions[i])};']

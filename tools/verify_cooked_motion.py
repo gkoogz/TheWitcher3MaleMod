@@ -14,7 +14,28 @@ def verify_binding(path,output='dangle',require_late=False):
         return found[0]
     item=one('MaleModMotionComponent')
     component=one('CAnimDangleComponent') if output!='player' else None
-    constraint=one('CAnimDangleConstraint_Dyng');mesh=one('CMeshComponent')
+    constraint=one('CAnimDangleConstraint_Dyng')
+    morphs=[o for o in objects if o.get('class')=='CMorphedMeshComponent' and o.get('id') is not None]
+    mesh=morphs[0] if morphs else one('CMeshComponent')
+    morph_evidence={}
+    if morphs:
+        if output!='player' or len(morphs)!=10:raise ValueError('Expected ten native player Overall pairs')
+        if any(o.get('class')=='CMorphedMeshManagerComponent' and o.get('id') is not None for o in objects):raise ValueError('Endpoint manager would overwrite authored fractions')
+        if any(o.get('class')=='CMeshComponent' and o.get('id') is not None for o in objects):raise ValueError('Duplicate original body mesh')
+        pairs=[];visible=[]
+        for i in range(10):
+            found=[m for m in morphs if m.findtext('./properties/prop[@name="name"]')=='MaleModOverallPair_'+str(i)]
+            if len(found)!=1:raise ValueError('Missing named Overall pair')
+            m=found[0]
+            a=m.find('./properties/prop[@name="morphSource"]/resource');b=m.find('./properties/prop[@name="morphTarget"]/resource')
+            if a is None or b is None or a.get('class')!='CMesh' or b.get('class')!='CMesh':raise ValueError('Lost native morph resources')
+            if m.findtext('./properties/prop[@name="useControlTexturesForMorph"]')!='false':raise ValueError('Unexpected textured morph')
+            if m.find('./properties/prop[@name="transformParent"]/reference') is not None:raise ValueError('Morph pair has another transform parent')
+            flags=m.findtext('./properties/prop[@name="drawableFlags"]') or ''
+            if 'DF_IsVisible' in flags:visible.append(i)
+            pairs.append(dict(source=a.get('path').replace('\\','/'),target=b.get('path').replace('\\','/'),ratio=float(m.findtext('./properties/prop[@name="morphRatio"]'))))
+        if visible!=[5]:raise ValueError('Default must show only neutral Overall 50')
+        morph_evidence=dict(cookedOverallMorphBindingVerified=True,overallPairs=pairs,visibleDefaultPair=5)
     link=one('CMeshSkinningAttachment') if output!='player' else None
     def ref(node,prop):
         p=node.find('./properties/prop[@name="'+prop+'"]')
@@ -39,7 +60,7 @@ def verify_binding(path,output='dangle',require_late=False):
             cookedDeformationBindingVerified=True,deformationOutput=output,
             cookedPlayerStackBindingVerified=True,stockAppearanceAutobindingExpected=True,
             meshSkinningAttachmentVerified=False,runtimeHandleBindingVerified=False,
-            observedGameplay=False,dumpSHA256=digest(path))
+            observedGameplay=False,dumpSHA256=digest(path),**morph_evidence)
     if ref(component,'constraint')[1]!=binding:raise ValueError('Script and component point to different constraints')
     if (output=='dangle' and ref(link,'parent')[1]!=component.get('id')) or ref(link,'child')[1]!=mesh.get('id'):
         raise ValueError('Motion output is not attached to the mesh')

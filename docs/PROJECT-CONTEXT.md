@@ -1,3 +1,15 @@
+# Current authorized Overall phase
+
+The user now accepts .30 physics as serviceable and asks for ONLY the Overall
+slider and Wolverine-derived pelvic recruitment. Preserve the accepted neutral
+shape, working pose attachment, full-floppy defaults and all existing physics.
+Other controls/toggles remain deferred. Wolverine must remain unchanged.
+The user now requests a separate overlay instead of the in-game menu and asks
+for an assessment because prior attempts struggled. The installed .31 pause
+menu is the current test interface, not the desired final UI. Read OVERLAY.md
+for the prior failures and current investigation. Do not bind F12 or introduce
+other hotkeys without an explicit input choice.
+
 # Project purpose and continuity
 
 Current refinement: the user approved .26 shape and form, then rejected both .26

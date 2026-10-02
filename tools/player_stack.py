@@ -353,7 +353,7 @@ def verify_native_player(cooked, probe):
 
 
 def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=False, full_joint_lod=False,
-         effective_templates=False, shipped_player=None, physics=False):
+         effective_templates=False, shipped_player=None, physics=False, overall=None):
     if not (rest_joints and full_joint_lod and effective_templates):
         raise ValueError('Fixed-rest builds require the observed rest mask, full joint LOD and shipped player template repair')
     if measure_pose and not rest_joints:raise ValueError('Pose measurement requires the current authored-rest candidate')
@@ -389,6 +389,20 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     rig,hierarchy=independent_rig(rig)
     write_json(job/'player-rig.json',rig)
     body=player_entity(json.loads((probe_dir/'scripted-motion-entity.json').read_text()))
+    overall_bank=None
+    if overall:
+        overall_bank=Path(overall).resolve()
+        if not overall_bank.is_relative_to(ROOT/'build/overall'):raise ValueError('Expected owned Overall bank')
+        from overall_controls import morph_entity
+        native_bank=json.loads((overall_bank/'native-bank.json').read_text())
+        if not native_bank['complete']:raise ValueError('Incomplete Overall bank')
+        verified=json.loads((overall_bank/'verification.json').read_text())
+        if not verified.get('nativeMorphLayoutVerified'):raise ValueError('Unverified native morph vertex layout')
+        body=morph_entity(body,native_bank['states'],overall_bank)
+        for state in native_bank['states']:
+            source=ROOT/'generated/workspace'/state['resource']
+            if digest(source)!=state['sha256']:raise ValueError('Overall resource changed')
+            dest=workspace/state['resource'];dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,dest)
     write_json(job/'player-body.json',body)
     for recipe,path in [('player-rig.json',RIG),('player-body.json',BODY)]:
         dest=workspace/path;dest.parent.mkdir(parents=True,exist_ok=True)
@@ -438,6 +452,13 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     from fixed_physics import generate
     runtime,physics_contract=generate(cfg['base'],rig,job,enabled=physics,cage=ROOT/probe['sourceCage'])
     physics_contract['independentHierarchy']=hierarchy
+    overall_contract=None
+    if overall_bank:
+        from overall_controls import augment
+        runtime,overall_contract=augment(cfg['base'],rig,job,ROOT/probe['sourceCage'],overall_bank,runtime)
+        physics_contract['fixedScale']=None
+        physics_contract['sizeSource']='same evaluated Overall bank as mesh morphs'
+        physics_contract['omissions'].remove('dynamic pelvic collar')
     script.write_text(runtime,encoding='utf-8')
     evidence=dict(probe,baseCommit=pin['commit'],executionPhase='player-stack',authoredRestMask=rest_joints,
         fullJointLod=full_joint_lod,poseMeasurement=measure_pose,
@@ -460,7 +481,7 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     evidence['resources']=[dict(path=p.relative_to(workspace).as_posix(),sourceSHA256=digest(p))
         for p in workspace.rglob('*') if p.is_file() and p.suffix!='.ws']
     write_json(job/'deformation-probe.json',evidence)
-    project=dict(name='modMaleMod',version='0.4.30-solid-distal-physics' if physics else '0.4.30-wolverine-default-rest',platform='pc',cacheBuilders=['textures','physics'],
+    project=dict(name='modMaleMod',version='0.4.31-overall-recruitment' if overall_bank else ('0.4.30-solid-distal-physics' if physics else '0.4.30-wolverine-default-rest'),platform='pc',cacheBuilders=['textures','physics'],
         scriptedCook=True,motionEntity=BODY,motionOutput='player',additionalNativeDumps=[RIG,PLAYER,PARENT]+[r['path'] for r in effective],
         isolatedNativeDumps=[r['path'] for r in effective],
         isolatedNativeResources=[r['path'] for r in effective],
@@ -472,7 +493,8 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
             effectiveTemplates=effective_templates,
             poseMeasurement=measure_pose,cageBaseCommit=probe['cageBaseCommit']),
         fixedPhysics=physics_contract,
-        scope='Fixed unit rest scale; Base-derived secondary motion and collisions, pending in-game validation.' if physics else 'Fixed unit rest scale; no sliders or dynamic motion.')
+        overall=overall_contract,
+        scope='Overall 1..100 with evaluated source pelvic recruitment, native shape morphs and size-matched secondary physics; gameplay pending.' if overall_bank else ('Fixed unit rest scale; Base-derived secondary motion and collisions, pending in-game validation.' if physics else 'Fixed unit rest scale; no sliders or dynamic motion.'))
     package=build(cfg,project,workspace);verify_package(package)
     write_json(job/'candidate-provenance.json',dict(package=package.relative_to(ROOT).as_posix(),installed=False,observedGameplay=False))
     print(package)
@@ -488,4 +510,5 @@ if __name__=='__main__':
     parser.add_argument('--effective-templates',action='store_true')
     parser.add_argument('--shipped-player',type=Path)
     parser.add_argument('--physics',action='store_true')
-    args=parser.parse_args();main(args.probe,args.player_inspection,args.rest_joints,args.measure_pose,args.full_joint_lod,args.effective_templates,args.shipped_player,args.physics)
+    parser.add_argument('--overall',type=Path)
+    args=parser.parse_args();main(args.probe,args.player_inspection,args.rest_joints,args.measure_pose,args.full_joint_lod,args.effective_templates,args.shipped_player,args.physics,args.overall)

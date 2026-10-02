@@ -447,6 +447,11 @@ def build(cfg, project_override=None, workspace_override=None):
                 required_file(Path(str(item)+'.xml'))
             binding=verify_binding(Path(str(entity)+'.xml'),output=project.get('motionOutput','dangle'),
                 require_late=(project.get('deformationBridge') or {}).get('lateActivation',False))
+            if project.get('overall'):
+                if not binding.get('cookedOverallMorphBindingVerified'):raise ValueError('Overall lost native morph binding')
+                states=project['overall']['states']
+                expected=[dict(source=a['resource'],target=b['resource'],ratio=0.0) for a,b in zip(states,states[1:])]
+                if binding['overallPairs']!=expected:raise ValueError('Cooked Overall resources differ from verified bank')
             if project.get('deformationBridge') and not binding.get('cookedDeformationBindingVerified'):
                 raise RuntimeError('Deformation candidate lacks verified native skeleton/graph/output references')
             if graph:
@@ -513,7 +518,7 @@ def build(cfg, project_override=None, workspace_override=None):
                 'nativeOverrides': override_records,'attachment':attachment_record,
                 'motionBinding':binding if project.get('scriptedCook') else None,
                 'deformationBridge':project.get('deformationBridge'),
-                'fixedPhysics':project.get('fixedPhysics')}
+                'fixedPhysics':project.get('fixedPhysics'),'overall':project.get('overall')}
     write_json(publish / 'build-manifest.json', manifest)
     archive = publish.with_suffix('.zip')
     with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as package:
