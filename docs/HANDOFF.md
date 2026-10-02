@@ -1,5 +1,35 @@
 # Current checkpoint: .31 Overall installed
 
+Latest observed result: user confirms .31 scaling works but rejects physics
+performance as abysmal, asking how it differs from Wolverine. No new build or
+physics change accompanies the following source audit; FPS versus motion
+quality remains to be clarified.
+
+Source audit (October 2): canonical compliant_dynamics.h runs fixed 1/240 s
+steps and 24 coupled iterations, exact Hermite suspension reaction gradients,
+angular effective masses, lobe orientation dynamics, positional contacts plus
+a ten-pass contact velocity solve, pelvis contacts and ventral recovery.
+anatomy_surface.h reconstructs logical cross-sections, resolves suspended-skin
+contacts, preserves ovoid support and rebuilds normals. Its d3d9_proxy.cpp
+supplies filtered gait/side forces and a dynamic root spring.
+
+Our physicsStep.ws.inc runs fixed 1/60 s steps and 24 iterations, with point
+suspension (no reaction Jacobian), center-only lobe contact response and a
+post-solve shortest-rotation orientation. It lacks the source contact velocity
+solver, pelvis contact/ventral recovery and live surface reconstruction.
+fixedPhysics.ws prescribes the first two guide nodes and publishes ten render
+joints (eight shaft/two lobes), six scalar channels each. fixed_physics.py
+explicitly records these omissions and sourceParity=false. The new distal
+cluster is a different approximation, not Wolverine's complete solver.
+
+CPU risk, not a measured attribution: these inner loops execute in generated
+WitcherScript; each step includes 24 contact sweeps and cluster projections,
+four cluster fits with 24 power iterations each, repeated Hermite attachment
+samples, and per-frame pose variable/native math calls. Native frame cost has
+not been measured. Do not claim a percentage, blame the engine or increase
+substeps blindly. The shared full solver/surface parity belongs in Base; any
+native engine bridge and render delivery belong in the adapter.
+
 Latest UI preference: the user wants a separate overlay instead of the native
 menu and requested a feasibility assessment. Historical .4.0-.4.3 F6/debug-HUD
 attempts never established a visible interactive panel. See OVERLAY.md. No
@@ -8,7 +38,8 @@ overlay is implemented or installed; .31 retains its pause-menu test interface.
 Installed `publish/20261002-002434-ec4612`, version
 `0.4.31-overall-recruitment`, Base `643846f54b59f2d44d191a9a75ee68f333eb726d`.
 All five installed hashes match. Startup addon hash is unchanged. The user
-accepted .30 physics as serviceable; .31 gameplay acceptance is pending.
+accepted .30 physics as serviceable during slider work; latest .31 scaling is
+confirmed, physics is rejected. Full gameplay acceptance is pending.
 Wolverine remains unchanged. No hotkeys or other controls were introduced.
 Pause menu: **MaleMod - anatomy / Overall**, UI 1..100, neutral 50. Owned
 MaleModOverall namespace version 1 excludes historical rejected slider settings.

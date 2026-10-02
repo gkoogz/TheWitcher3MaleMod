@@ -1,5 +1,10 @@
 # Current authorized Overall phase
 
+Latest user observation: .31 scaling works. The user rejects physics performance
+as abysmal and asks why it differs from Wolverine. Motion quality versus frame
+cost is not yet distinguished. Investigate the actual implementation rather
+than treating copied coefficients or offline shape tests as solver parity.
+
 The user now accepts .30 physics as serviceable and asks for ONLY the Overall
 slider and Wolverine-derived pelvic recruitment. Preserve the accepted neutral
 shape, working pose attachment, full-floppy defaults and all existing physics.
