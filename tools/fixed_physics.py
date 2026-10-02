@@ -33,6 +33,7 @@ def generate(base,rig,job,enabled=True,cage=None):
     cage_dir=cage.parent if cage.suffix=='.npz' else cage
     cage=cage_dir/'motion-lod0.npz'
     cage_receipt=json.loads((cage_dir/'motion.json').read_text())
+    render_coordinates=np.asarray(cage_receipt.get('renderCoordinates',np.linspace(0,1,8)))
     fit_path=ROOT/cage_receipt.get('fitReport',FIT)
     fit=json.loads(fit_path.read_text())
     if not fit.get('sourceMechanics'):raise ValueError('Rebuild cage from evaluated Wolverine defaults, not posed reference')
@@ -45,7 +46,7 @@ def generate(base,rig,job,enabled=True,cage=None):
     convert=lambda p:((np.asarray(p)-fit['sourceRoot'])@basis.T*fit['sourceToFBXScale']+profile['targetRoot'])/100
     local=lambda p:(p-worlds[9][:3,3])@worlds[9][:3,:3]
     points=local(convert(np.vstack([source['shaftGuide'],source['lobeCenters']])))
-    sample_points,_=sample_mechanical_guide(points[:12],np.linspace(0,1,8))
+    sample_points,_=sample_mechanical_guide(points[:12],render_coordinates)
     neutral_error=float(np.linalg.norm(np.vstack([sample_points,points[12:]])-joint_points,axis=1).max())
     if neutral_error>1e-5:raise ValueError('Default guide and authored skin frames disagree')
     lengths=np.full(11,source['restLength']*k/11)
@@ -64,7 +65,7 @@ def generate(base,rig,job,enabled=True,cage=None):
         t=np.clip((p-a)@ab/(ab@ab),0,1);dist=np.linalg.norm(p-a-t[:,None]*ab,axis=1)
         thigh_radii.append(float(np.quantile(dist,.95)))
     init=['physicsEnabled = '+str(enabled).lower()+';']
-    sizes={'restPoints':14,'restFrames':10,'jointRestPoints':10,'restDirections':8,'lengths':11,'radii':14,'thighRadii':2,'thighIndices':4,
+    sizes={'restPoints':14,'restFrames':10,'jointRestPoints':10,'restDirections':8,'renderCoordinates':8,'lengths':11,'radii':14,'thighRadii':2,'thighIndices':4,
            'physicsPosition':14,'physicsOld':14,'physicsVelocity':14,'physicsInvMass':14,'targets':14,'oldTargets':14,
            'capsules':4,'oldCapsules':4,'bendLambda':10,'bendCompliance':10,'materialLambda':2,'lengthLambda':11,'bends':10,'lobeRotations':2,
            'anchorOffsets':2,'materialOffsets':2,'previousAnchors':2,'previousMaterial':2,
@@ -77,9 +78,9 @@ def generate(base,rig,job,enabled=True,cage=None):
     for i in range(10):
         init += [f'jointRestPoints[{i}] = {vector(joint_points[i])};',f'restFrames[{i}] = MatrixIdentity();',f"deformationRoot.SetBehaviorVectorVariable('{names[94+i]}_scale',Vector(1.0,1.0,1.0,0.0));"]
         for j,axis in enumerate('XYZ'):init += [f'restFrames[{i}].{axis} = {vector(frames[i,:3,j])};']
-    _,sample_directions=sample_mechanical_guide(np.asarray(source['shaftGuide']),np.linspace(0,1,8))
+    _,sample_directions=sample_mechanical_guide(np.asarray(source['shaftGuide']),render_coordinates)
     sample_directions=sample_directions@basis.T@worlds[9][:3,:3]
-    for i in range(8):init += [f'restDirections[{i}] = {vector(sample_directions[i])};']
+    for i in range(8):init += [f'restDirections[{i}] = {vector(sample_directions[i])};',f'renderCoordinates[{i}] = {number(render_coordinates[i])};']
     for i in range(11):init += [f'lengths[{i}] = {number(lengths[i])};']
     for i in range(10):
         t=i/10
@@ -119,6 +120,7 @@ def generate(base,rig,job,enabled=True,cage=None):
         thighBones=thighs,fitReceipt=fit_path.relative_to(ROOT).as_posix(),fitSHA256=digest(fit_path),cage=cage.relative_to(ROOT).as_posix(),cageSHA256=digest(cage),
         sourceBaseline=fit['sourceBaseline'],physicsNodes=14,renderJoints=10,bendTarget='zero curvature',
         neutralGuideToRenderJointError=neutral_error,
+        bindingContract=cage_receipt.get('bindingContract',1),renderCoordinates=render_coordinates.tolist(),protectedHeadStart=cage_receipt.get('protectedHeadStart'),
         solverSpace='pelvis local; relative velocity damping; local gravity and thigh capsules',
         poseDelivery=dict(rotationSpace='bone bind local',rotationOperator='current quaternion right-multiplied by local delta',axisOrder='intrinsic XYZ',conversion='conjugate parent-space delta by bind rotation'),
         frameMotion=dict(response=20,linearAccelerationLimit=coefficients['linear_acceleration_limit'],totalAccelerationLimit=coefficients['total_acceleration_limit'],angularVelocityLimit=10,angularAccelerationLimit=40,units='native length/time; angular radians/time',sourceParity=False),

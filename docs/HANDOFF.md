@@ -7,7 +7,42 @@ the installed package still matches this record.
 
 ## Current phase: fixed unit scale and Base secondary physics
 
-### Latest checkpoint: .28 bone-local rotation correction
+### Latest checkpoint: .29 protected head/lobe binding
+
+User rejects .28: glans and other parts severely deform during motion. The old
+coherent rigid-transport check did not cover differing joint transforms.
+Base pin `5a8038d` adds opt-in protected binding: eight shaft stations end at
+source flex .78; pure distal head material uses one transform. Pure lobe cores
+smoothly reach single-lobe ownership; the connecting web remains flexible.
+Witcher samples those exact stations. Rest positions/faces are byte-identical
+in both LODs; size, physics constants, twelve-particle solver and contacts stay
+unchanged. Wolverine remains unchanged and controls remain absent.
+
+Evidence: `build/motion/protected-surface-6e008d20bfe5/verification.json`.
+49 nonuniform bends/independent lobe poses in each LOD reproduce old head edge
+strain .4494 and old lobe strain up to 2.738. Protected head/lobe interiors
+retain dimensions (offline normalized-rotation strain below 3.7e-10). Tests
+cover 5,447 head vertices and more than 3,100 lobe-core vertices per LOD.
+Actual native TranslateBone and RotateBone SIMD blocks are interpreted read-only;
+translation replay error is 2.684e-8 native units. This is not a gameplay proof.
+
+Cage: `build/motion/cage-197ba377c461`; native round-trip weights/binds/seam pass.
+Complete player cook: `build/motion/player-stack-38b68ffa00a4`.
+Candidate package: `publish/20261001-214042-acbb4d`, version
+`0.4.29-protected-head-physics`. 60 adapter tests and 59 Base Python tests pass;
+Base provenance passes. Official unbundle matches all ten resources/buffers. .29 is installed; all five
+file hashes match. The installed controller matches the current generator.
+Compilation with the separate startup-video addon passes and that addon remains
+hash-identical. `provenance/fixed-physics.json` records receipts. Rollback keeps
+the approved-shape .26 in `local/uninstalled/modMaleMod-fbf2d8f35baf`; replaced
+.28 is archived at `local/uninstalled/modMaleMod-1a733f2dbb28`.
+
+Limits: flexible shaft volume loss, stretching web/collar, and point-guide
+collision mismatch remain. Full source cross-section/pressure surface evaluation
+is not in the native renderer. .29 visual acceptance and native frame cost need
+user gameplay testing. Do not mark this solved from offline or cooked results.
+
+### Historical checkpoint: .28 bone-local rotation correction
 
 User rejected .27: shaft stretches/warps left and right. Its centerline-only
 numerical success did not establish acceptable mesh deformation. The native
@@ -46,7 +81,7 @@ The authoring mesh and cooked
 vertex/index buffer are byte-identical to .27; spatial/binding resource bytes
 and physics coefficients match. Only native nonspatial bound W/CRC bytes differ.
 See `provenance/fixed-physics.json` for installation/unbundle status and rollback.
-**.28 gameplay remains pending.** Preserve the approved form, keep controls
+**.28 gameplay FAILED shape retention, per the latest user observation.** Preserve the approved form, keep controls
 absent, and do not use F12 or modify Wolverine.
 
 ### Previous checkpoint: 0.4.27 pelvis-relative physics

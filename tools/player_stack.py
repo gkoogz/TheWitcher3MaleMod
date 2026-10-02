@@ -460,7 +460,7 @@ def main(probe_dir, player_inspection=None, rest_joints=False, measure_pose=Fals
     evidence['resources']=[dict(path=p.relative_to(workspace).as_posix(),sourceSHA256=digest(p))
         for p in workspace.rglob('*') if p.is_file() and p.suffix!='.ws']
     write_json(job/'deformation-probe.json',evidence)
-    project=dict(name='modMaleMod',version='0.4.28-bone-local-physics' if physics else '0.4.28-wolverine-default-rest',platform='pc',cacheBuilders=['textures','physics'],
+    project=dict(name='modMaleMod',version='0.4.29-protected-head-physics' if physics else '0.4.29-wolverine-default-rest',platform='pc',cacheBuilders=['textures','physics'],
         scriptedCook=True,motionEntity=BODY,motionOutput='player',additionalNativeDumps=[RIG,PLAYER,PARENT]+[r['path'] for r in effective],
         isolatedNativeDumps=[r['path'] for r in effective],
         isolatedNativeResources=[r['path'] for r in effective],

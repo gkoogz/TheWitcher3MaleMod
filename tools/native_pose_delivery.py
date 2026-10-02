@@ -29,6 +29,12 @@ class NativeRotationOracle:
         start=next(i for i,x in enumerate(ins) if x.mnemonic=='vshufps' and x.op_str=='xmm1, xmm8, xmm8, 0xc9')
         stop=next(i for i in range(start,len(ins)) if ins[i].mnemonic=='vmovups' and ins[i].op_str=='xmmword ptr [rax + rcx*8 + 0x10], xmm1')
         self.instructions=ins[start:stop+1]
+        translation=next(a for a,n in functions if '?Sample@CBehaviorGraphTranslateBoneNode@@' in n)
+        translation_end=min(a for a,n in functions if a>translation)
+        move=list(decoder.disasm(self.bytes(translation,translation_end-translation),translation))
+        begin=next(i for i,x in enumerate(move) if x.mnemonic=='vbroadcastss' and x.op_str=='xmm7, dword ptr [rax + rcx*8 + 0x1c]')
+        finish=next(i for i in range(begin,len(move)) if move[i].mnemonic=='vmovups' and move[i].op_str=='xmmword ptr [rax + rcx*8], xmm0')
+        self.translation_instructions=move[begin:finish+1]
         # XYZ_MASK is initialized in .bss from the named read-only DATA symbol.
         find=lambda name:int(re.search(r'\s'+re.escape(name)+r'\s+([0-9a-f]{16})\s',map_text)[1],16)
         mask_address=find('?XYZ_MASK@SIMD@RedMath@@3T__m128@@B')
@@ -53,6 +59,8 @@ class NativeRotationOracle:
         self.evidence=dict(executableSHA256=hashlib.sha256(self.data).hexdigest(),mapSHA256=hashlib.sha256(symbols.read_bytes()).hexdigest(),
             symbol=SYMBOL,address=hex(address),blockStart=hex(ins[start].address),blockEnd=hex(ins[stop].address),
             halfAngleRadiansPerDegree=self.half_angle,readOnlyInstructionEmulation=True,observedGameplay=False)
+        self.evidence.update(translationSymbol='?Sample@CBehaviorGraphTranslateBoneNode@@',translationAddress=hex(translation),
+                             translationBlockStart=hex(move[begin].address),translationBlockEnd=hex(move[finish].address))
 
     def bytes(self,address,count):
         offset=self.pe.get_offset_from_rva(address-self.base);return self.data[offset:offset+count]
@@ -62,8 +70,19 @@ class NativeRotationOracle:
     def update(self,current,delta):
         registers={'xmm8':np.asarray(current,dtype=np.float32),'xmm6':np.asarray(delta,dtype=np.float32),
             'xmm9':np.array([delta[3],0,0,0],dtype=np.float32)}
+        return self._evaluate(self.instructions,registers,current)
+
+    def translate(self,current,position,delta):
+        delta=np.r_[np.asarray(delta,dtype=np.float32),0].astype(np.float32)
+        registers={'xmm9':np.asarray(current,dtype=np.float32),'xmm10':delta,
+                   'xmm8':np.array([delta[0],0,0,0],dtype=np.float32),
+                   'xmm11':np.array([delta[1],0,0,0],dtype=np.float32),
+                   'xmm12':np.array([delta[2],0,0,0],dtype=np.float32)}
+        return self._evaluate(self.translation_instructions,registers,current,np.r_[position,0].astype(np.float32))[:3]
+
+    def _evaluate(self,instructions,registers,current,position=None):
         output=None
-        for ins in self.instructions:
+        for ins in instructions:
             ops=ins.operands
             def read(op):
                 if op.type==capstone.CS_OP_REG:return registers[ins.reg_name(op.reg)].copy()
@@ -74,6 +93,8 @@ class NativeRotationOracle:
                     address=ins.address+ins.size+op.mem.disp
                     raw=self.initialized_constants[address] if address in self.initialized_constants else self.bytes(address,op.size or 16)
                 elif base=='rax' and op.mem.disp==0x1c:raw=struct.pack('<f',float(current[3]))
+                elif base=='rax' and op.mem.disp==0 and position is not None:raw=position.tobytes()
+                elif base=='rsp' and position is not None:raw=np.zeros(4,dtype=np.float32).tobytes()
                 else:raise ValueError('Uncalibrated memory operand '+ins.op_str)
                 return np.frombuffer(raw,dtype='<f4').copy()
             values=[read(op) for op in ops[1:]];mn=ins.mnemonic
@@ -83,6 +104,7 @@ class NativeRotationOracle:
             elif mn in ('vmulss','vsubss'):
                 result=values[0].copy();result[0]=(values[0][0]*values[1][0]) if mn=='vmulss' else (values[0][0]-values[1][0])
             elif mn=='vandps':result=np.bitwise_and(values[0].view(np.uint32),values[1].view(np.uint32)).view(np.float32)
+            elif mn=='vxorps':result=np.bitwise_xor(values[0].view(np.uint32),values[1].view(np.uint32)).view(np.float32)
             elif mn=='vhaddps':
                 a,b=values;result=np.array([a[0]+a[1],a[2]+a[3],b[0]+b[1],b[2]+b[3]],dtype=np.float32)
             elif mn=='vshufps':

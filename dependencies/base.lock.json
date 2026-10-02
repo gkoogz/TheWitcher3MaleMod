@@ -1,7 +1,7 @@
 {
   "contractVersion": 1,
   "repository": "https://github.com/gkoogz/MaleModBase.git",
-  "commit": "2c23134d8e8530cf2bb87758ad96d00a8a4c5194",
+  "commit": "5a8038d476c0dd1bfb63aa76591dc98d414c3cf9",
   "defaultCheckout": "../MaleMod",
   "referenceAsset": "assets/generic-male/reference.glb",
   "preferenceProfile": "profiles/default-preferences.json",

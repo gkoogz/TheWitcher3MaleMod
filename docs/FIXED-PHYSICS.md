@@ -15,7 +15,37 @@ functions are translated directly from the pinned Base headers by
 `physics_codegen.py`. The adapter supplies observed rest frames, skin envelopes,
 bone mapping, world sampling, fixed-step scheduling and native pose delivery.
 
-## Bone rotation correction (.28)
+## Protected material binding (.29)
+
+The user observed that .28 still severely deforms the glans and other parts
+during motion. Correct rotation delivery did not solve nonuniform skin blending.
+The old eight-station binding extended through the whole head and mixed medial
+lobe vertices between independently moving lobe transforms. Wolverine instead
+reasserts complete shaft cross-sections in `ConstructLogicalShaftSurface(true)`.
+
+Base's opt-in protected binding contract 2 ends eight shaft render stations at
+source flex .78, the boundary used by `ScaleGlansIndependently`. Pure distal
+head material follows the last station with one transform. Pure lobe interiors
+smoothly reach one lobe transform; the connecting web remains flexible. Witcher
+places and samples the exact same knots, including rest tangents. The twelve
+physics stations, masses, forces, bend constants and contact kernels are unchanged.
+No new joints or controls are introduced. Wolverine is not modified.
+
+`verify_protected_surface.py` compares the approved mesh topology in both LODs
+through 49 different nonuniform bends and independent lobe translations/rotations.
+It replays actual local RotateBone and TranslateBone SIMD instructions, including
+the controller's angle expressions. The old head has maximum edge-length strain
+.4494; old lobe interiors reach 2.738. Protected head/lobe strain is below 3.7e-10
+in this offline normalized rotation model. Rest vertex positions and faces are
+byte-identical. Native round-trip separately checks imported weights/bindings.
+
+This is rigid material-region protection, not full source surface parity.
+Flexible shaft blends still lose some volume; web/collar tissue can stretch.
+The physics point guide does not yet provide a rigid head collision mesh, and
+native gameplay/frame cost must be observed separately. Do not claim the user
+accepted .29 because native cooking or these offline checks pass.
+
+## Historical bone rotation correction (.28)
 
 The user rejected .27: sideways motion visibly stretches/warps the shaft. Its
 centerline tests passed but did not validate the surrounding rendered surface.

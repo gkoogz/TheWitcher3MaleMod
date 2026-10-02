@@ -1,13 +1,13 @@
 {
   "checkpoint": "2026-10-01",
-  "version": "0.4.28-bone-local-physics",
-  "package": "publish/20261001-205324-ceab2a",
-  "baseCommit": "2c23134d8e8530cf2bb87758ad96d00a8a4c5194",
+  "version": "0.4.29-protected-head-physics",
+  "package": "publish/20261001-214042-acbb4d",
+  "baseCommit": "5a8038d476c0dd1bfb63aa76591dc98d414c3cf9",
   "installed": true,
   "installedFilesVerified": 5,
   "packedResourcesAndBuffersVerified": 10,
   "adapterTestsPassed": 60,
-  "basePythonTestsPassed": 56,
+  "basePythonTestsPassed": 59,
   "baseProvenanceVerified": true,
   "secondaryKernelTestsPassed": true,
   "sourceSupportCases": 5000,
@@ -155,13 +155,25 @@
     ],
     "fitReceipt": "build/attachment/fit-20261001-193459-664950/geralt-anatomy.fit.json",
     "fitSHA256": "b0bd95711831b64e4f49ac6885d1ae2cbd8e0159e6f7f059fd711fa99a66b2bf",
-    "cage": "build/motion/cage-3b54cb1c3143/motion-lod0.npz",
-    "cageSHA256": "3e93ee54bf9d18c5c2a02f3a6cc50e6d5796723b668fceaf77634ab9ad6a9859",
+    "cage": "build/motion/cage-197ba377c461/motion-lod0.npz",
+    "cageSHA256": "f96d03dc658267f933677e0a058251c57a96266b70a8ee47815225b0f7080b3d",
     "sourceBaseline": "Wolverine ResetStudyControls; state 2, all UI 50, 120 source frames",
     "physicsNodes": 14,
     "renderJoints": 10,
     "bendTarget": "zero curvature",
-    "neutralGuideToRenderJointError": 4.594451743643115e-16,
+    "neutralGuideToRenderJointError": 7.216637307999838e-16,
+    "bindingContract": 2,
+    "renderCoordinates": [
+      0.0,
+      0.11142857142857143,
+      0.22285714285714286,
+      0.3342857142857143,
+      0.44571428571428573,
+      0.5571428571428572,
+      0.6685714285714286,
+      0.78
+    ],
+    "protectedHeadStart": 0.78,
     "solverSpace": "pelvis local; relative velocity damping; local gravity and thigh capsules",
     "poseDelivery": {
       "rotationSpace": "bone bind local",
@@ -188,41 +200,13 @@
       "source gait/side filtering and live root spring response"
     ],
     "runtimeParity": false,
-    "observedGameplay": false,
-    "independentHierarchy": {
-      "originalParents": [
-        9,
-        94,
-        95,
-        96,
-        97,
-        98,
-        99,
-        100,
-        9,
-        9
-      ],
-      "independentParents": [
-        9,
-        9,
-        9,
-        9,
-        9,
-        9,
-        9,
-        9,
-        9,
-        9
-      ],
-      "neutralWorldFrameMaxError": 6.661338147750939e-16,
-      "stockPrefixUnchanged": true
-    }
+    "observedGameplay": false
   },
   "sourceDefaultExport": "../MaleMod/build/wolverine-default-guide-v2",
   "baselineFit": "build/attachment/fit-20261001-193459-664950/geralt-anatomy.fit.json",
-  "defaultCage": "build/motion/cage-3b54cb1c3143",
-  "inputProbe": "build/motion/deformation-f04abe7e9fc4",
-  "playerCook": "build/motion/player-stack-a52737e5911c",
+  "defaultCage": "build/motion/cage-197ba377c461",
+  "inputProbe": "build/motion/deformation-ce4540d9b697",
+  "playerCook": "build/motion/player-stack-38b68ffa00a4",
   "freeGuideVerification": {
     "frames": 600,
     "nodes": 12,
@@ -246,23 +230,24 @@
     "guideIsolationPassed": true
   },
   "previousAttempt": {
-    "version": "0.4.27-pelvis-relative-physics",
-    "package": "publish/20261001-202305-0c6dda",
-    "userRejected": true,
-    "observedComplaint": "lateral stretching and warping persist"
+    "version": "0.4.28-bone-local-physics",
+    "observed": "FAILED: glans and other parts severely deform during motion",
+    "package": "publish/20261001-205324-ceab2a"
   },
-  "rollback": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\local\\uninstalled\\modMaleMod-fbf2d8f35baf",
+  "rollback": {
+    "stablePackage": "publish/20261001-194607-3fc4a2",
+    "stableBackup": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\local\\uninstalled\\modMaleMod-fbf2d8f35baf",
+    "replacedPackage": "publish/20261001-205324-ceab2a",
+    "replacedBackup": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\local\\uninstalled\\modMaleMod-1a733f2dbb28"
+  },
   "observedGameplay": false,
   "runtimeParity": false,
   "knownLimitations": [
-    "full source surface deformation",
-    "angular contact effective mass and reaction torques",
-    "Hermite guide Jacobian",
-    "pressure deformation",
-    "dynamic pelvic collar",
-    "source gait/side filtering and live root spring response",
-    "nonuniform bending can lose volume with native linear skinning",
-    "corrected pose delivery gameplay and native frame cost pending"
+    "flexible shaft linear-skinning volume loss",
+    "web and collar stretching",
+    "point-guide versus rigid head collision mismatch",
+    "full source cross-section/pressure surface evaluation omitted",
+    "live frame cost and gameplay acceptance pending"
   ],
   "guideMotionVerification": {
     "frames": 1800,
@@ -287,37 +272,22 @@
     "observedGameplay": false
   },
   "geometryPreservation": {
-    "previousPackage": "publish/20261001-202305-0c6dda",
-    "newPackage": "publish/20261001-205324-ceab2a",
-    "inputMeshByteIdentical": true,
-    "cookedVertexIndexBufferByteIdentical": true,
-    "cookedMeshSpatialAndBindingBytesIdentical": true,
-    "cookedMeshByteIdentical": false,
-    "nonspatialDifferenceAllowance": [
-      "boundingBox W float and dependent resource/export/table CRCs"
-    ],
-    "changedOffsets": [
-      32,
-      33,
-      34,
-      35,
-      96,
-      97,
-      98,
-      99,
-      1696,
-      1697,
-      1698,
-      1699,
-      1805,
-      1806
-    ],
-    "physicsCoefficientsUnchanged": true,
-    "cookedVertexBufferSHA256": "5d52dc91aab6a00ab26e778329a556ebee058480b9ec12a9652ba61e8a8ebdcc"
+    "proof": "build/motion/protected-surface-6e008d20bfe5/verification.json",
+    "restPositionsAndFacesByteIdentical": true,
+    "skinWeightsAndBindFramesChanged": true
   },
   "geometryBaseCommit": "5f0cd9408e03221db9f684e5aeb3545af5857a06",
   "installedControllerMatchesCurrentGenerator": true,
-  "poseSurfaceVerification": {
+  "protectedSurfaceVerification": {
+    "path": "build/motion/protected-surface-6e008d20bfe5/verification.json",
+    "sha256": "a8365f4287cfde2078fb5f953a67023517d325268f41c0bcf69aea1afaadbc54"
+  },
+  "combinedStartupScriptCompilation": {
+    "path": "build/startup-integration/0ccd994b3230/verification.json",
+    "sha256": "9f4ab83bb5ec3406c8d8d45e4a14f9901e14cc8c9bcba5af5657bfac11f26f85"
+  },
+  "kernelChecksInheritedFromPreviousRevision": true,
+  "poseSurfaceVerificationPreviousRevision": {
     "nativeOracle": {
       "executableSHA256": "422cebbcefde36375908cdd78d097a4672ef26f28494b2f1dc09b66b7a72aa46",
       "mapSHA256": "dd852cf4cde03402c41a103cb67e08fb7b87b21beb7cfc9959088bf66168e450",
