@@ -53,6 +53,11 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     private var worldToPelvis : Matrix;
     private var pelvis : Matrix;
     private var previousRoot : Vector;
+    private var previousPelvis : Matrix;
+    private var frameSamples : int;
+    private var previousFrameVelocity, previousAngularVelocity : Vector;
+    private var linearAcceleration, angularVelocity, angularAcceleration : Vector;
+    private var localGravity : Vector;
 
     event OnComponentAttached() { bootTime = 0.0; StartTicking(); }
     event OnComponentAttachFinished() { StartTicking(); }
@@ -139,9 +144,26 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         var i : int;
         pelvis = thePlayer.GetBoneWorldMatrixByIndex(pelvisIndex);
         worldToPelvis = MatrixGetInverted(pelvis);
-        for (i = 0; i < 14; i += 1) { targets[i] = Point(pelvis, restPoints[i]); }
+        targets = restPoints;
+        localGravity = VecTransformDir(worldToPelvis,Vector(0.0,0.0,-1.0,0.0));
         for (i = 0; i < 4; i += 1)
-        { capsules[i] = thePlayer.GetBoneWorldPositionByIndex(thighIndices[i]); capsules[i].W = 0.0; }
+        { capsules[i] = Point(worldToPelvis,thePlayer.GetBoneWorldPositionByIndex(thighIndices[i])); }
+    }
+
+    private function UpdateFrameMotion(dt : float)
+    {
+        var velocity, omega, zero : Vector;
+        zero = Vector(0.0,0.0,0.0,0.0);
+        velocity = (Point(pelvis,zero)-Point(previousPelvis,zero))/dt;
+        omega = (VecCross(previousPelvis.X,pelvis.X)+VecCross(previousPelvis.Y,pelvis.Y)+VecCross(previousPelvis.Z,pelvis.Z))*(0.5/dt);
+        if (frameSamples > 0)
+        {
+            linearAcceleration = FilterMotion(linearAcceleration,(velocity-previousFrameVelocity)/dt,20.0,@linear_acceleration_limit@,dt);
+            angularAcceleration = FilterMotion(angularAcceleration,(omega-previousAngularVelocity)/dt,20.0,40.0,dt);
+        }
+        angularVelocity = FilterMotion(angularVelocity,omega,20.0,10.0,dt);
+        previousFrameVelocity = velocity; previousAngularVelocity = omega;
+        previousPelvis = pelvis; frameSamples += 1;
     }
 
     private function ResetPhysics()
@@ -153,7 +175,10 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         oldTargets = targets; oldCapsules = capsules;
         for (i = 0; i < 2; i += 1)
         { lobeRotations[i] = Vector(0.0,0.0,0.0,1.0); previousAnchors[i] = AttachmentTarget(i,false); previousMaterial[i] = AttachmentTarget(i,true); }
-        previousRoot = targets[0]; initialized = true; physicsResets += 1;
+        previousRoot = Point(pelvis,targets[0]); previousPelvis = pelvis; frameSamples = 0;
+        previousFrameVelocity = Vector(0.0,0.0,0.0,0.0); previousAngularVelocity = previousFrameVelocity;
+        linearAcceleration = previousFrameVelocity; angularVelocity = previousFrameVelocity; angularAcceleration = previousFrameVelocity;
+        initialized = true; physicsResets += 1;
     }
 
     private function AdvancePhysics(dt : float)
@@ -162,8 +187,9 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         var frameTargets, frameCapsules, startTargets, startCapsules : array<Vector>;
         var fraction : float;
         UpdateTargets();
-        if (!initialized || dt > 0.15 || VecDistance(previousRoot, targets[0]) > 1.0) { ResetPhysics(); }
-        previousRoot = targets[0]; physicsTime += MinF(dt,0.05);
+        if (!initialized || dt > 0.15 || VecDistance(previousRoot, Point(pelvis,targets[0])) > 1.0) { ResetPhysics(); }
+        else { UpdateFrameMotion(dt); }
+        previousRoot = Point(pelvis,targets[0]); physicsTime += MinF(dt,0.05);
         steps = Min(FloorF((physicsTime+0.0000001) / 0.0166666667),3);
         frameTargets = targets; frameCapsules = capsules;
         startTargets = oldTargets; startCapsules = oldCapsules;
@@ -193,11 +219,11 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
             if (i < 8)
             {
                 SampleGuide(12,i/7.0,position,direction);
-                direction = VecNormalize(VecTransformDir(worldToPelvis,direction));
+                direction = VecNormalize(direction);
                 rotation = q_SetShortestRotation(restDirections[i],direction);
             }
             else { position = physicsPosition[i+4]; rotation = lobeRotations[i-8]; }
-            localPoint = Point(worldToPelvis, position);
+            localPoint = position;
             delta = VecTransformDir(MatrixGetInverted(restFrames[i]),localPoint-jointRestPoints[i]);
             angles = QuaternionAngles(rotation);
             PublishJoint(i,delta,angles);

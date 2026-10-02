@@ -8,15 +8,17 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-Installed candidate: **0.4.26-wolverine-default-physics** (compiled/cooked/packed and
+Installed candidate: **0.4.27-pelvis-relative-physics** (compiled/cooked/packed and
 installed hashes verified; gameplay pending). The current phase is
 **fixed unit scale and secondary physics**, per the user's
 October 1 reset. Witcher sliders, size tables and tuning UI are removed from the
 active build. The fixed mesh now comes from Wolverine's actual all-50/state-2
 evaluated default at the measured character scale. A 12-node source physics
-guide feeds the working 104-joint player attachment. The previous build moved
-in game but its shape did not match these defaults; the new comparison is
-pending. Wolverine's runtime, sliders and installation are unchanged.
+guide feeds the working 104-joint player attachment. The user approved .26
+shape/form but reported wavy sideways motion and insufficient weight. The new
+build preserves that geometry and corrects relative velocity damping, frame
+inertia and local pose publication; motion feel and frame cost need in-game
+comparison. Wolverine's runtime, sliders and installation are unchanged.
 
 See [fixed-rest physics](docs/FIXED-PHYSICS.md) for Base-derived rod/suspension
 kernels, animated-thigh contacts, native verification and current gameplay gates.

@@ -1,8 +1,8 @@
 {
   "checkpoint": "2026-10-01",
-  "version": "0.4.26-wolverine-default-physics",
-  "package": "publish/20261001-194607-3fc4a2",
-  "baseCommit": "5f0cd9408e03221db9f684e5aeb3545af5857a06",
+  "version": "0.4.27-pelvis-relative-physics",
+  "package": "publish/20261001-202305-0c6dda",
+  "baseCommit": "2c23134d8e8530cf2bb87758ad96d00a8a4c5194",
   "installed": true,
   "installedFilesVerified": 5,
   "packedResourcesAndBuffersVerified": 10,
@@ -22,7 +22,7 @@
       },
       {
         "path": "include/malemod/physics/rig_kernels.hpp",
-        "sha256": "fb39d10e3c676376590c00e7cf44dac8e605f0c8975b5d0870c886984e876523"
+        "sha256": "c20b9dd19da5d81819646f1ddc37bd772a0bb56e33fa287d93132c796bb6e959"
       },
       {
         "path": "include/malemod/physics/ovoid_support.hpp",
@@ -32,7 +32,7 @@
     "numericalCodeGeneratedFromBase": true,
     "fixedScale": 1,
     "enabled": true,
-    "solver": "12-node source guide, zero-curvature Base XPBD bend and C1 rendering samples; point suspension and support contacts",
+    "solver": "pelvis-relative 12-node source guide with measured frame acceleration, Base XPBD bend and C1 rendering; point suspension and support contacts",
     "coefficients": {
       "shaft_mass": 1.825,
       "lobe_mass": 1.925,
@@ -53,7 +53,9 @@
       "root_damping": 8.510407233805424,
       "root_droop": 0.28,
       "root_motion_drive": 12.0,
-      "root_pitch_limit": 0.92
+      "root_pitch_limit": 0.92,
+      "linear_acceleration_limit": 4.512296177022073,
+      "total_acceleration_limit": 6.768444265533109
     },
     "sourceToNativeLength": 0.010255218584141074,
     "restLengths": [
@@ -160,13 +162,24 @@
     "renderJoints": 10,
     "bendTarget": "zero curvature",
     "neutralGuideToRenderJointError": 4.594451743643115e-16,
+    "solverSpace": "pelvis local; relative velocity damping; local gravity and thigh capsules",
+    "frameMotion": {
+      "response": 20,
+      "linearAccelerationLimit": 4.512296177022073,
+      "totalAccelerationLimit": 6.768444265533109,
+      "angularVelocityLimit": 10,
+      "angularAccelerationLimit": 40,
+      "units": "native length/time; angular radians/time",
+      "sourceParity": false
+    },
     "colliderCalibration": "95th percentile stock thigh radial envelope; source default ovoid radii and shaft radius times 0.85",
     "omissions": [
       "full source surface deformation",
       "angular contact effective mass and reaction torques",
       "Hermite guide Jacobian",
       "pressure deformation",
-      "dynamic pelvic collar"
+      "dynamic pelvic collar",
+      "source gait/side filtering and live root spring response"
     ],
     "runtimeParity": false,
     "observedGameplay": false,
@@ -203,7 +216,7 @@
   "baselineFit": "build/attachment/fit-20261001-193459-664950/geralt-anatomy.fit.json",
   "defaultCage": "build/motion/cage-3b54cb1c3143",
   "inputProbe": "build/motion/deformation-f04abe7e9fc4",
-  "playerCook": "build/motion/player-stack-f22b33a4e7eb",
+  "playerCook": "build/motion/player-stack-1e02d32b0841",
   "freeGuideVerification": {
     "frames": 600,
     "nodes": 12,
@@ -227,12 +240,13 @@
     "guideIsolationPassed": true
   },
   "previousAttempt": {
-    "version": "0.4.25-fixed-rest-physics",
-    "package": "publish/20261001-185931-7366b3",
-    "userReportedMovement": true,
-    "userRejectedDefaultMatch": true
+    "version": "0.4.26-wolverine-default-physics",
+    "package": "publish/20261001-194607-3fc4a2",
+    "userApprovedShape": true,
+    "userRejectedWavySidewaysMotion": true,
+    "userRequestedMoreWeight": true
   },
-  "rollback": "local/uninstalled/modMaleMod-efe5e435c85c",
+  "rollback": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\local\\uninstalled\\modMaleMod-fbf2d8f35baf",
   "observedGameplay": false,
   "runtimeParity": false,
   "knownLimitations": [
@@ -242,6 +256,61 @@
     "pressure deformation",
     "dynamic pelvic collar",
     "source gait/side filtering and live root spring response",
-    "in-game shape comparison and frame cost pending"
-  ]
+    "measured bounded frame drive differs from source gait filtering",
+    "new gameplay perceived weight and native frame cost pending"
+  ],
+  "guideMotionVerification": {
+    "frames": 1800,
+    "nodes": 12,
+    "constantTravelTrajectoryError": 1.14734294e-05,
+    "maximumSegmentErrorNative": 0.000152751803,
+    "maximumExcursionNative": 0.177430838,
+    "passed": true,
+    "baseCommit": "2c23134d8e8530cf2bb87758ad96d00a8a4c5194",
+    "sourceFitSHA256": "b0bd95711831b64e4f49ac6885d1ae2cbd8e0159e6f7f059fd711fa99a66b2bf",
+    "sourceSHA256": "5473fecb980e1e9f8a7cf9cf8cb627fb7afb77b518b8174a257ad7b709e7160c",
+    "executableSHA256": "ad953bd0e5af3a33f7ae46faf8ff548aa004a0b50efbb23f75d690df6a837628",
+    "phases": [
+      "stationary/constant-travel equivalence",
+      "lateral acceleration",
+      "oscillating frame rotation"
+    ],
+    "omissions": [
+      "lobe/body contacts",
+      "WitcherScript runtime and frame cost"
+    ],
+    "observedGameplay": false
+  },
+  "geometryPreservation": {
+    "previousPackage": "publish/20261001-194607-3fc4a2",
+    "newPackage": "publish/20261001-202305-0c6dda",
+    "inputMeshByteIdentical": true,
+    "cookedVertexIndexBufferByteIdentical": true,
+    "cookedMeshSpatialAndBindingBytesIdentical": true,
+    "cookedMeshByteIdentical": false,
+    "nonspatialDifferences": [
+      "boundingBox Min.W float and dependent resource/export/table CRCs"
+    ],
+    "changedOffsets": [
+      32,
+      33,
+      34,
+      35,
+      96,
+      97,
+      98,
+      99,
+      1696,
+      1697,
+      1698,
+      1699,
+      1803,
+      1804,
+      1805,
+      1806
+    ],
+    "cookedVertexBufferSHA256": "5d52dc91aab6a00ab26e778329a556ebee058480b9ec12a9652ba61e8a8ebdcc"
+  },
+  "geometryBaseCommit": "5f0cd9408e03221db9f684e5aeb3545af5857a06",
+  "installedControllerMatchesCurrentGenerator": true
 }

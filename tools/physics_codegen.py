@@ -25,6 +25,9 @@ def emit(base):
     specs=[('SolveDistance',0,'a : int, b : int, rest : float, compliance : float, out lambda : float, dt : float',''),
         ('PrepareBend',0,'i : int, compliance : float, dt : float, bounce01 : float','MaleModPDBendData'),
         ('SolveBendPrepared',0,'i : int, data : MaleModPDBendData, out lambda : Vector',''),
+        ('FilterMotion',1,'previous : Vector, measured : Vector, response : float, limit : float, dt : float','Vector'),
+        ('FrameAcceleration',1,'position : Vector, velocity : Vector, linear : Vector, angularVelocity : Vector, angularAcceleration : Vector','Vector'),
+        ('IntegrateRelative',1,'i : int, gravity : Vector, linear : Vector, angularVelocity : Vector, angularAcceleration : Vector, accelerationLimit : float, drag : float, dt : float',''),
         ('SampleGuide',1,'count : int, t : float, out center : Vector, out tangent : Vector',''),
         ('SolveRestBend',1,'i : int, data : MaleModPDBendData, rest : Vector, oldRest : Vector, out lambda : Vector',''),
         ('SolveMaterial',1,'i : int, target : Vector, oldTarget : Vector, compliance : float, ratio : float, dt : float, out lambda : Vector',''),
@@ -38,7 +41,7 @@ def emit(base):
     methods=[]
     for name,source,params,result in specs:
         body=function(texts[source],name);body=re.sub(r'//[^\n]*','',body)
-        body=body.replace('state.oldPosition','physicsOld').replace('state.position','physicsPosition').replace('state.invMass','physicsInvMass')
+        body=body.replace('state.oldPosition','physicsOld').replace('state.position','physicsPosition').replace('state.invMass','physicsInvMass').replace('state.velocity','physicsVelocity')
         declarations={}
         def declare(m):
             kind,members=m.groups();assign=[]
@@ -52,7 +55,7 @@ def emit(base):
         body=re.sub(r'(\w+)\+\+',r'\1 += 1',body)
         body=re.sub(r'\bfloat\(', '(',body)
         body=re.sub(r'\bint\(', 'FloorF(',body)
-        for cpp,ws in [('sqrtf','SqrtF'),('Length','VecLength'),('Dot','VecDot'),('min','MinF'),('max','MaxF')]:body=re.sub(r'\b'+cpp+r'\(',ws+'(',body)
+        for cpp,ws in [('sqrtf','SqrtF'),('expf','ExpF'),('Cross','VecCross'),('Length','VecLength'),('Dot','VecDot'),('min','MinF'),('max','MaxF')]:body=re.sub(r'\b'+cpp+r'\(',ws+'(',body)
         body=re.sub(r'\bUnit\(', 'VecNormalize(',body)
         body=re.sub(r'\.([xyz])\b',lambda m:'.'+m[1].upper(),body)
         if name=='PrepareBend':

@@ -37,6 +37,14 @@ class FixedPhysicsTests(unittest.TestCase):
         np.testing.assert_allclose(r['restLengths'],r['restLengths'][0])
         self.assertLess(r['restLengths'][0],.03)
         self.assertIn('SampleGuide(12,i/7.0,position,direction)',s)
+        self.assertIn('targets = restPoints;',s)
+        self.assertIn('localPoint = position;',s)
+        self.assertIn('IntegrateRelative(i,localGravity*gravity,linear,omega,alpha,',s)
+        self.assertNotIn('physicsVelocity[i].Z -=',s)
+        self.assertNotIn('localPoint = Point(worldToPelvis, position)',s)
+        self.assertNotIn('return center+VecTransformDir(pelvis,',s)
+        self.assertIn('pelvis local',r['solverSpace'])
+        self.assertFalse(r['frameMotion']['sourceParity'])
 
     def test_posed_reference_cannot_be_called_default(self):
         path=ROOT/'build/motion/player-stack-b2060381bc21/player-rig.json'

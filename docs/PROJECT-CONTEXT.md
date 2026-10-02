@@ -1,5 +1,10 @@
 # Project purpose and continuity
 
+Current refinement: the user approved .26 shape and form, but reports wavy,
+incorrect sideways translation and insufficient weight/solidness. Keep the
+approved evaluated mesh, size and source material coefficients. Correct frame
+consistency and inertia before restoring sliders. Wolverine remains unchanged.
+
 Latest October 1 clarification: the fixed Witcher baseline must closely
 approximate Wolverine ResetStudyControls defaults: full-floppy state 2, all UI
 values 50, its default size and relaxed form. The first physics build moves in

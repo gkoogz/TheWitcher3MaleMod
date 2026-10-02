@@ -2,8 +2,11 @@
     {
         var i, iteration, lobe : int;
         var gravity, drag, t, lambda, stretch : float;
-        var zero, cord, axisX, axisY, current, desired, anchor, material : Vector;
+        var zero, cord, axisX, axisY, current, desired, anchor, material, linear, omega, alpha : Vector;
         zero = Vector(0.0,0.0,0.0,0.0);
+        linear = VecTransformDir(worldToPelvis,linearAcceleration);
+        omega = VecTransformDir(worldToPelvis,angularVelocity);
+        alpha = VecTransformDir(worldToPelvis,angularAcceleration);
         for (i = 0; i < 14; i += 1)
         {
             physicsOld[i] = physicsPosition[i];
@@ -12,9 +15,7 @@
             {
                 if (i < 12) { gravity = @shaft_gravity@; drag = @shaft_drag@; }
                 else { gravity = @lobe_gravity@; drag = @lobe_drag@; }
-                physicsVelocity[i].Z -= gravity*dt;
-                physicsVelocity[i] *= ExpF(-drag*dt);
-                physicsPosition[i] += physicsVelocity[i]*dt;
+                IntegrateRelative(i,localGravity*gravity,linear,omega,alpha,@total_acceleration_limit@,drag,dt);
             }
         }
         for (i = 0; i < 11; i += 1) { lengthLambda[i] = 0.0; }
@@ -37,7 +38,7 @@
             {
                 i = lobe+12; anchor = AttachmentTarget(lobe,false); material = AttachmentTarget(lobe,true);
                 cord = VecNormalize(material-anchor);
-                axisX = VecNormalize(VecCross(cord,VecTransformDir(pelvis,Vector(0.0,1.0,0.0,0.0))));
+                axisX = VecNormalize(VecCross(cord,Vector(0.0,1.0,0.0,0.0)));
                 axisY = VecNormalize(VecCross(cord,axisX));
                 lambda = shearLambdaX[lobe]; SolveMaterialAxis(i,material,previousMaterial[lobe],axisX,@suspension_shear_compliance@,dt,lambda); shearLambdaX[lobe] = lambda;
                 lambda = shearLambdaY[lobe]; SolveMaterialAxis(i,material,previousMaterial[lobe],axisY,@suspension_shear_compliance@,dt,lambda); shearLambdaY[lobe] = lambda;
@@ -56,7 +57,7 @@
         for (lobe = 0; lobe < 2; lobe += 1)
         {
             cord = materialOffsets[lobe]-anchorOffsets[lobe];
-            current = VecTransformDir(worldToPelvis,physicsPosition[lobe+12]-AttachmentTarget(lobe,false));
+            current = physicsPosition[lobe+12]-AttachmentTarget(lobe,false);
             desired = q_SetShortestRotation(VecNormalize(cord),VecNormalize(current));
             lobeRotations[lobe] = q_SetSlerp(lobeRotations[lobe],desired,1.0-ExpF(-@lobe_torsion@*dt));
             previousAnchors[lobe] = AttachmentTarget(lobe,false); previousMaterial[lobe] = AttachmentTarget(lobe,true);
@@ -67,10 +68,10 @@
     {
         var center, tangent, offset, rotation : Vector;
         SampleGuide(12,0.12,center,tangent);
-        tangent = VecNormalize(VecTransformDir(worldToPelvis,tangent));
+        tangent = VecNormalize(tangent);
         rotation = q_SetShortestRotation(attachmentRestTangent,tangent);
         if (material) { offset = materialOffsets[lobe]; } else { offset = anchorOffsets[lobe]; }
-        return center+VecTransformDir(pelvis,v_SetRotatedDir(rotation,offset));
+        return center+v_SetRotatedDir(rotation,offset);
     }
 
     private function SegmentPart(p, a, b : Vector) : float
@@ -85,13 +86,13 @@
     private function LobeSupport(i : int, n : Vector) : Vector
     {
         var localPoint : Vector;
-        localPoint = VecTransformDir(worldToPelvis,n);
+        localPoint = n;
         localPoint = v_SetRotatedDir(q_SetInv(lobeRotations[i-12]),localPoint);
         localPoint = VecTransformDir(MatrixGetInverted(restFrames[i-4]),localPoint);
         localPoint = OvoidSupport(localPoint,radii[i]);
         localPoint = VecTransformDir(restFrames[i-4],localPoint);
         localPoint = v_SetRotatedDir(lobeRotations[i-12],localPoint);
-        return VecTransformDir(pelvis,localPoint);
+        return localPoint;
     }
 
     private function ResolveContacts()

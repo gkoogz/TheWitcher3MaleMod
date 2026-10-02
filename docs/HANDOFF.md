@@ -7,7 +7,48 @@ the installed package still matches this record.
 
 ## Current phase: fixed unit scale and Base secondary physics
 
-### Latest checkpoint: 0.4.26 Wolverine defaults
+### Latest checkpoint: 0.4.27 pelvis-relative physics
+
+User approved .26 shape and form but reports wavy sideways translation and
+insufficient weight. Installed `publish/20261001-202305-0c6dda`, version
+`0.4.27-pelvis-relative-physics`, deliberately pinned Base `2c23134`. Geometry,
+size, source masses/drag/bends/suspension and approved cage remain unchanged.
+Complete player cook: `build/motion/player-stack-1e02d32b0841`; the .26 input
+probe/cage are reused, explicitly retaining their geometry Base revision.
+
+Diagnosis: .26 damped absolute world velocity toward zero while roots followed
+the pelvis, creating false locomotion drag. Publishing old world positions with
+a new pelvis matrix on ticks without a substep also created artificial relative
+motion. All particle positions, velocities, guide/attachment/contact histories
+now live in pelvis space. Gravity and animated thigh capsules use that space;
+publishing uses local points directly. Base contract 2 supplies measured frame
+acceleration with Euler, centrifugal and Coriolis terms. Adapter input filtering
+and bounded transients preserve inertia without damping player world travel.
+This measured-frame drive is not exact source gait/root-spring parity.
+
+58 adapter tests, 56 Base Python tests, full Base provenance and C++ secondary
+tests pass. The actual default guide passed 1,800 frames: sampled float constant
+travel differs from stationary by at most 0.0000114734 native units; source
+segment-length error stays below 0.000152752 during lateral acceleration/turning.
+The free-guide fixture excludes lobe/body contacts and native frame cost.
+Existing shared contact/suspension regressions also pass. Native script compile,
+full cook, graph/player/rig binding and official unbundle all pass; ten resource
+and buffer hashes match. Five installed files are hash verified.
+
+Geometry proof: authoring mesh and cooked vertex/index buffer are byte-identical
+to .26. All cooked spatial/binding bytes also match; only boundingBox Min.W and
+dependent native CRCs differ. Evidence: player cook `geometry-preservation.json`.
+No native geometry rebuild or source default change was made. Revert restores
+.26 from `local/uninstalled/modMaleMod-fbf2d8f35baf`. Local installation metadata
+records the user's .26 load/shape feedback so rollback selects that baseline.
+Wolverine checkout remains clean at `f57fccf`; its runtime/install were not edited.
+
+**.27 gameplay, perceived weight and frame cost remain pending user feedback.**
+Check steady travel, starts/stops, reversals, turning, idle and thigh clearance.
+Do not add sliders/toggles or use F12. See `provenance/fixed-physics.json` and
+`FIXED-PHYSICS.md` for precise motion calibration and remaining point-mass limits.
+
+### Previous checkpoint: 0.4.26 Wolverine defaults
 
 Installed `publish/20261001-194607-3fc4a2`, version
 `0.4.26-wolverine-default-physics`, pinned Base `5f0cd94`. User reported the
@@ -40,7 +81,8 @@ binding verification passed. Official unbundle matched all ten resources and
 buffers; five installed file hashes are verified in local/installation.json.
 Rollback preserves .25 in `local/uninstalled/modMaleMod-efe5e435c85c`.
 
-**New gameplay and frame pacing are pending user comparison.** This remains a
+**User subsequently approved the shape but rejected wavy/sideways motion and low
+heft.** This remains a
 point-mass/native-skinning approximation. Source angular effective mass, full
 Hermite reaction Jacobian, pressure, dynamic collar, source gait/side filtering
 and live root spring response are absent. Root droop starts from the evaluated

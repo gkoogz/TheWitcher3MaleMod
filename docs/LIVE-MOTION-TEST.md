@@ -3,6 +3,11 @@
 ## Current fixed-default phase
 
 Sliders, tuning menus and owned hotkeys are removed. Never use or rebind F12.
+The user approved .26 geometry but rejected sideways/wavy motion and low heft.
+The .27 candidate corrects pelvis-relative dynamics while retaining that shape.
+Compare steady straight travel, starts/stops, direction reversals and turns;
+look for unnecessary lateral offset or waves, natural lag that settles, and
+thigh clearance. Include idle and uneven frame pacing in this comparison.
 The current default candidate uses Wolverine state 2/all-50 geometry and its
 12-node mechanical guide at the measured character scale. Restart the game,
 load the usual save and compare the relaxed size and shape while idle. Then

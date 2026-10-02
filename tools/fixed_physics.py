@@ -97,11 +97,14 @@ def generate(base,rig,job,enabled=True,cage=None):
         init += [f'thighRadii[{i}] = {number(thigh_radii[i])};',f'tetherRest[{i}] = {number(rest*k)};',f'tetherLimit[{i}] = {number(limit*k)};',f'lobeRotations[{i}] = Vector(0.0,0.0,0.0,1.0);']
     coefficients=asdict(controls)
     for key in ('shaft_gravity','lobe_gravity'):coefficients[key]*=k
+    coefficients['linear_acceleration_limit']=4*coefficients['shaft_gravity']
+    coefficients['total_acceleration_limit']=6*coefficients['shaft_gravity']
     methods,receipt=emit(base)
     step=(ROOT/'probes/runtime/physicsStep.ws.inc').read_text()
     for key,value in coefficients.items():step=step.replace('@'+key+'@',number(value))
     step=step.replace('@padding@',number(.025*k))
     source=(ROOT/'probes/runtime/fixedPhysics.ws').read_text()
+    for key,value in coefficients.items():source=source.replace('@'+key+'@',number(value))
     source=source.replace('// OBSERVED_RIG_CHECKS','\n'.join(f"if (deformationRoot.skeleton.bones[{i}].nameAsCName != '{name}') {{ reason = \"rig mapping changed\"; return false; }}" for i,name in enumerate(names)))
     source=source.replace('// INITIALIZE_CONSTANTS','\n'.join(init)).replace('// PHYSICS_METHODS',methods+'\n'+step)
     publish=[]
@@ -111,11 +114,13 @@ def generate(base,rig,job,enabled=True,cage=None):
             publish += [f"physicsAccepted = deformationRoot.SetBehaviorVariable('{name}_translate_{axis.lower()}',delta.{axis}) && physicsAccepted;",f"physicsAccepted = deformationRoot.SetBehaviorVariable('{name}_rotate_{axis.lower()}',angles.{axis}) && physicsAccepted;"]
         publish.append('}')
     source=source.replace('// PUBLISH_JOINTS','\n'.join(publish))
-    receipt.update(fixedScale=1,enabled=enabled,solver='12-node source guide, zero-curvature Base XPBD bend and C1 rendering samples; point suspension and support contacts',
+    receipt.update(fixedScale=1,enabled=enabled,solver='pelvis-relative 12-node source guide with measured frame acceleration, Base XPBD bend and C1 rendering; point suspension and support contacts',
         coefficients=coefficients,sourceToNativeLength=k,restLengths=lengths.tolist(),jointRadii=radii,thighRadii=thigh_radii,
         thighBones=thighs,fitReceipt=fit_path.relative_to(ROOT).as_posix(),fitSHA256=digest(fit_path),cage=cage.relative_to(ROOT).as_posix(),cageSHA256=digest(cage),
         sourceBaseline=fit['sourceBaseline'],physicsNodes=14,renderJoints=10,bendTarget='zero curvature',
         neutralGuideToRenderJointError=neutral_error,
+        solverSpace='pelvis local; relative velocity damping; local gravity and thigh capsules',
+        frameMotion=dict(response=20,linearAccelerationLimit=coefficients['linear_acceleration_limit'],totalAccelerationLimit=coefficients['total_acceleration_limit'],angularVelocityLimit=10,angularAccelerationLimit=40,units='native length/time; angular radians/time',sourceParity=False),
         colliderCalibration='95th percentile stock thigh radial envelope; source default ovoid radii and shaft radius times 0.85',
         omissions=['full source surface deformation','angular contact effective mass and reaction torques','Hermite guide Jacobian','pressure deformation','dynamic pelvic collar','source gait/side filtering and live root spring response'],
         runtimeParity=False,observedGameplay=False)

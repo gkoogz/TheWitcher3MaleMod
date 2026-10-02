@@ -15,6 +15,24 @@ functions are translated directly from the pinned Base headers by
 `physics_codegen.py`. The adapter supplies observed rest frames, skin envelopes,
 bone mapping, world sampling, fixed-step scheduling and native pose delivery.
 
+The .27 motion revision keeps the approved .26 geometry and material constants.
+Particles, velocity/history, attachment offsets, guide sampling and contacts
+now all use pelvis coordinates. Gravity and animated thigh endpoints are
+transformed into that same space. Published points are already local, including
+render frames with no physics substep. Previously world particles were damped
+toward zero world velocity, creating false lateral drag during character travel;
+stale world positions also changed local appearance on ticks without a substep.
+
+Pinned Base supplies relative integration with measured linear/angular frame
+acceleration, centrifugal and Coriolis terms. Witcher samples the animated pelvis
+frame, filters measured acceleration at response 20/second and limits input
+transients (linear 4 times source-native shaft gravity, total 6 times, angular
+velocity 10 radians/second and acceleration 40 radians/second squared). These
+are documented motion calibration limits, not exact source gait-filter parity.
+No mass, drag, bend, suspension, rest scale or geometry tuning accompanies this
+frame correction. First velocity measurement seeds history without an impulse;
+teleports/hitches reset the same frame history as particles.
+
 - Existing stock 94-bone prefix is retained; ten authored joints are independent
   pelvis children with identical world bind frames. Full 104-bone LOD is retained.
 - Scale graph variables are assigned `(1,1,1)` once. Per-frame translation and
@@ -34,7 +52,7 @@ bone mapping, world sampling, fixed-step scheduling and native pose delivery.
   lobe/lobe separation and
   symmetric rod/lobe reactions. Contact correction is excluded from recovery
   velocity; moving thigh surfaces supply relative normal/friction response.
-- Physics uses 60 fixed steps/second, 24 coupled iterations, interpolated pose
+- Physics uses 60 fixed steps/second, 24 coupled iterations, interpolated local collider
   history, at most three steps per tick and resets on teleports or large hitches.
   Broad phase rejects separated resources before ovoid support queries.
 - The controller owns only `MaleModAnatomyLayer`; detach removes that layer and
@@ -49,6 +67,13 @@ default, with a bounded local seam repair and unchanged stock outer boundaries.
 The shared `secondary_test` exercises a 600-step moving guide and suspended
 lobes, source support agreement, contacts, length conversion and rest bend.
 Native compile/cook/unbundle and gameplay must be recorded separately.
+
+`tools/verify_frame_motion.py <approved-cage-directory>` exercises 1,800 frames
+with the actual exported guide: stationary/constant-travel equivalence, lateral
+acceleration and oscillating frame rotation. It checks fixed proximal stations,
+finite C1 samples and source segment metrics. It excludes lobe/body contacts and
+native script frame cost. Base tests separately cover signed acceleration lag,
+angular terms, coordinate covariance and source contact/suspension kernels.
 
 ## Reproduce locally
 
