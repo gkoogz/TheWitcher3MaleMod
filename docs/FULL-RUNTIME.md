@@ -1,5 +1,10 @@
 # Full Base runtime development
 
+October 2: SDK-first rendering correction is in SDK-RENDERING.md. Native stream
+decoding and inverse blended-skin output now have an independent comparison with
+the installed REDkit shader functions. This is offline conversion proof, not
+installed output. Stop the graphics restart/inventory loop; v6 stays offline.
+
 Authorized scope: full source solver/surface, all 17 sliders and the 3-state
 selector, separate overlay. Wolverine stays unchanged. No replacement for .31
 has been installed; the user confirms its Overall scaling and rejects physics.
@@ -139,6 +144,33 @@ all five native imports. This removes the reported state-machine warning in the
 verified source; the installed .31 script is preserved pending the full package.
 
 ## Remaining gates
+
+October 2 measured-input checkpoint: the automatic six-import script probe
+compiles through official WCC and runs in the hash-locked game. It skips pause
+and captures 240 actor-local pelvis/thigh poses over 4.25 seconds of foreground
+movement. The adapter now applies the native pelvis inverse bind, Base's full
+affine origin/basis/scale calibration and its exact source motion filter. The
+240-frame offline two-LOD replay passes with 216 nonzero force frames, maximum
+force 2.35261, and contact-coordinate round-trip error 3.87e-8 native units.
+Median source/transport cost is 32.8ms and both target LODs 9.1ms in this replay.
+It deliberately uses source default contacts as a diagnostic: Geralt's pelvis
+capsule remains uncalibrated. No measured contact or live solver output is claimed.
+
+Exact SHA256 matching of owned upload ranges identifies the installed anatomy
+resource family, including Overall 50 and 60 vertex buffers. All family index
+buffers share the same topology, and preload uploads do not establish which
+mesh is currently drawn. Created indirect signatures are Dispatch/12 bytes,
+Draw/16 and DrawIndexed/20; they contain no vertex-view or root changes. The
+current live observer sees UI draws but has not identified the anatomy draw.
+v4 includes bundles, returned graphics interfaces and multiple device methods,
+but still saw only UI draws. Read-only prologue inspection showed its hooks
+were intact. v5 observes Reset and all supported graphics versions: list reuse
+exposes another implementation and live indexed draws/root SRVs/57 vertex
+formats are now visible. This identifies the missing observer coverage.
+v6 associates exact owned upload ranges with actual vertex/index bindings and
+indexed draws, clears state on Reset and retains matched resources against GPU
+address reuse. Its SDK tests pass without GPU submission, including simulated
+draw metadata and proof that Reset clears ownership. v6 has not run in game.
 
 1. Native performance: source-global strict arithmetic failed scrotum-100 at
    0.00011677211. Matching the original `/fp:precise` recipe passes all 37 shape,

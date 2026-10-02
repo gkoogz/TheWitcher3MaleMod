@@ -8,6 +8,9 @@
 #include <string>
 #include <vector>
 #include <mutex>
+#include <cmath>
+#include <cstdio>
+#include <share.h>
 #include <malemod/surface/wire.hpp>
 #include "game_profile.hpp"
 #include "graphics_probe.hpp"
@@ -27,6 +30,11 @@ malemod::surface::Controls controls;
 // REDengine Vector has four binary32 components. It is not Base's Point3.
 struct alignas(16) ScriptVector {float x=0,y=0,z=0,w=0;};
 static_assert(sizeof(ScriptVector)==16);
+std::mutex poseMutex;
+unsigned poseSamples=0;
+float poseLastTime=0;
+FILE* poseLog=nullptr;
+void PoseSample(void*,void* frame,void* result);
 
 bool VerifyExecutable(){
  wchar_t path[32768]{};if(!GetModuleFileNameW(nullptr,path,32768))return false;
@@ -64,6 +72,34 @@ template<class T> void Parameter(void* frame,T& value){
  const auto opcode=*code++;
  auto* table=reinterpret_cast<NativeCallback*>(engineBase+profile::opcodeTableRVA);
  if(table[opcode])table[opcode](*static_cast<void**>(frame),frame,&value);
+}
+void PoseSample(void*,void* frame,void* result){
+ float seconds=0;bool paused=false;std::array<ScriptVector,8> vectors{};
+ Parameter(frame,seconds);Parameter(frame,paused);
+ for(auto& value:vectors)Parameter(frame,value);FinishParameters(frame);
+ bool keepSampling=true;
+ std::lock_guard<std::mutex> lock(poseMutex);
+ if(poseSamples>=240)keepSampling=false;
+ else if(!paused&&std::isfinite(seconds)){
+  bool finite=true;
+  for(const auto& v:vectors)for(float x:{v.x,v.y,v.z,v.w})if(!std::isfinite(x))finite=false;
+  // Reject zero/degenerate bases during player/rig initialization. This is
+  // observation only: no inferred bind transform, contacts or motion force.
+  for(unsigned i=0;i<3;i++){const auto& v=vectors[i];const auto length=v.x*v.x+v.y*v.y+v.z*v.z;if(length<.25f||length>4.f)finite=false;}
+  if(finite&&(poseSamples==0||seconds-poseLastTime>=.008f)){
+   if(!poseLog){wchar_t path[32768]{};HMODULE module=nullptr;
+    if(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&PoseSample),&module)&&GetModuleFileNameW(module,path,32768)){
+     auto* last=wcsrchr(path,L'\\');if(last){swprintf_s(last+1,32768-std::size_t(last+1-path),L"pose-probe-%lu.jsonl",GetCurrentProcessId());poseLog=_wfsopen(path,L"wb",_SH_DENYNO);}
+    }
+   }
+   if(poseLog){std::fprintf(poseLog,"{\"sample\":%u,\"seconds\":%.9g,\"paused\":false,\"actorLocal\":[",poseSamples,seconds);
+    for(unsigned i=0;i<vectors.size();i++){const auto& v=vectors[i];if(i)std::fputc(',',poseLog);std::fprintf(poseLog,"[%.9g,%.9g,%.9g,%.9g]",v.x,v.y,v.z,v.w);}
+    std::fprintf(poseLog,"]}\n");std::fflush(poseLog);
+   }
+   ++poseSamples;poseLastTime=seconds;typedFlags.fetch_or(128);
+  }
+ }
+ if(result)*static_cast<bool*>(result)=keepSampling;
 }
 void SetControl(void*,void* frame,void* result){
  std::int32_t index=-1;float value=0;
@@ -136,10 +172,10 @@ bool Register(const char* name,NativeCallback callback){
 void RegisterHook(){
  originalRegisterGlobals();
  if(registered.load()||registrationFailed.load())return;
- for(const auto& entry:std::array<std::pair<const char*,NativeCallback>,5>{{
+ for(const auto& entry:std::array<std::pair<const char*,NativeCallback>,6>{{
   {"MaleModNativeReady",Ready},{"MaleModNativeSetControl",SetControl},
   {"MaleModNativeGetControl",GetControl},{"MaleModNativeTypedProbe",TypedProbe},
-  {"MaleModNativeTypedProbeResult",TypedProbeResult}}}){
+  {"MaleModNativeTypedProbeResult",TypedProbeResult},{"MaleModNativePoseSample",PoseSample}}}){
   if(!Register(entry.first,entry.second)){registrationFailed=true;OutputDebugStringW(L"MaleMod: native function registration/name readback failed\n");return;}
  }
  registered.store(true,std::memory_order_release);

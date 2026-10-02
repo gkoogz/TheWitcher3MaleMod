@@ -1,7 +1,40 @@
 # Current checkpoint: .31 Overall installed
 
+Latest user correction: stop repeated graphics inventory/restart probes. Read
+SDK-RENDERING.md. Installed REDkit shaders establish packing, quantization,
+normalized weights, matrix lookup and tangent decoding. New native stream and
+inverse blended-skin conversion pass an actual installed-shader WARP comparison
+over both owned LODs. This remains offline proof; GPU output/overlay are unfinished.
+No new game launch or install was performed for this correction. v6 stays offline.
+
+Latest October 2 checkpoint: Base now pins 4a808e3. Read Base's
+FRAME-CALIBRATION.md and adapter FULL-RUNTIME.md. The live read-only v3 probe in
+process 28232 captured 240 unpaused actor-local pelvis/thigh poses during user
+movement and matched exact owned anatomy vertex uploads. The full offline
+two-LOD replay of those poses passes through Base's exact source motion filter
+and complete affine mapping, including native inverse bind and model origins.
+Geralt pelvis contacts remain uncalibrated; replay uses source default contacts
+only as a diagnostic. Visible anatomy draw ownership and native output are open.
+
+The v4 probe in process 26680 still saw only UI draws. Read-only checks showed
+its four recorded SDK draw/vertex detours still targeted the owned module.
+The v5 probe in process 6564 then covered Reset and all supported graphics
+interfaces. Reset exposed another method implementation, and indexed draws,
+root SRVs and 57 distinct vertex stream slot/stride combinations are now seen.
+Its live graphics flags are 3007; 240 unpaused poses span 4.267 seconds.
+
+Candidate v6 retains exactly identified owned resources to prevent GPU-address
+reuse, associates vertex/index/root-SRV bindings with indexed draws and clears
+that state on Reset. SDK copy/direct/bundle, Reset, owned upload and synthetic
+draw-metadata tests pass (3087/7695 flags) without GPU submission. This candidate
+has not run in game. Do not end the user's game or overwrite a loaded module.
+No hotkey is used. Ignore frozen poses while the game is unfocused: Witcher
+auto-pauses on loss of focus. Current artifacts: build/native-observer-v6,
+build/native-observer-v5, build/native-x86-motion,
+build/full-runtime/geralt-bindings-4a808e3 and pose-replay-4a808e3.
+
 October 2 full-runtime authorization supersedes the narrow scope below. Read
-FULL-RUNTIME.md. Base is pinned to 58876e2. The verified parallel source core and complete
+FULL-RUNTIME.md. The previous 58876e2 checkpoint's verified parallel source core and complete
 C++ Geralt lineage/body-field/collar composition pass offline checks: 162
 cases across both LODs, all existing shape/physics controls. CPU composition
 is not native upload/lighting or observed gameplay.

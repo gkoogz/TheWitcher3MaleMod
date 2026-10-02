@@ -61,7 +61,7 @@ def read(receipt_path):
         flags=values['MaleModProbeStatus']
         record=dict(processID=pid,scriptInvocationObserved=bool(flags&8),typedArgumentsObserved=bool(flags&16),
             typedRoundtripObserved=bool(flags&64),typedProbeFailed=bool(flags&32),registrationFailed=bool(flags&2),
-            graphicsFlags=values['MaleModGraphicsProbeStatus'],rawFlags=flags,readOnlyStatus=True)
+            poseSamplingObserved=bool(flags&128),graphicsFlags=values['MaleModGraphicsProbeStatus'],rawFlags=flags,readOnlyStatus=True)
         write_json(receipt_path.parent/'status.json',record);print(json.dumps(record,indent=2));return record
     finally:
         if local:free(local)

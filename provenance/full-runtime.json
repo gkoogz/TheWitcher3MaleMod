@@ -1,6 +1,6 @@
 {
   "contractVersion": 1,
-  "baseCommit": "58876e24136d3d2c941fa144aa4c7651c98cbb75",
+  "baseCommit": "4a808e3595e53d28ffb5002aecf2a04833986fb8",
   "files": [
     {
       "path": "characters/compiler-native-profile.json",
@@ -12,11 +12,11 @@
     },
     {
       "path": "characters/geralt-runtime-bindings.json",
-      "sha256": "fa8012fc4c0cb3ab590d524f1b59458d3db616a39ebefe06716bfe5f6917c03c"
+      "sha256": "49f379d655e62a3c693b849c3ab77d7836d5d6f61aa34ad8a880380805bfb1e6"
     },
     {
       "path": "dependencies/base.lock.json",
-      "sha256": "caf808bee06b62c2f48ec09e0f5ebfcd68cd8ef8b46e44a449d792cd674d0593"
+      "sha256": "ff4193d1f7e7feb0803556a93cd0b96a64d9821209ba2e31a34a415f669848cf"
     },
     {
       "path": "dependencies/native.lock.json",
@@ -24,31 +24,51 @@
     },
     {
       "path": "native/CMakeLists.txt",
-      "sha256": "85e6e25ba837ee6c7da39586637281dd8916d61be045d552301a009e10a69141"
+      "sha256": "4f2aceac8593f266df71c5264ea113f4dd7b06fbc534607506a906766e314e04"
     },
     {
       "path": "native/engine_bridge.cpp",
-      "sha256": "5070c5e9ee1c0d99abb32e7c599fd68b3caf37659293509862a5331ae5d1b556"
+      "sha256": "c0d6cfae883750bac40147a8909619d9ef3b8a64ff6bdcdcfa7fe84cf73b7647"
     },
     {
       "path": "native/game_profile.hpp",
       "sha256": "74416ffcd1a4e0310a2a8b1162ae2f8d3f942d9c4606e612f893857143d2b255"
     },
     {
+      "path": "native/graphics_fingerprints.hpp",
+      "sha256": "600954585030fb661be71ac7fc2577b0873ef024441b67a3e81130bda47132ee"
+    },
+    {
       "path": "native/graphics_probe.cpp",
-      "sha256": "4b1ebf899839eafeb5ad987827c723c1d4253975bca8b0018cbb6afb100a066c"
+      "sha256": "ed963ec4c49b09c436ea8b91dc912adb6b11eb6f47e09bc7fca00f3e72644cff"
     },
     {
       "path": "native/graphics_probe.hpp",
-      "sha256": "8d1485cab610db61838259bfb1d4968f4a8bdb4758bd121fabfcdc3ac04b21de"
+      "sha256": "fafae227cce99be816457b03e5a5d3693f6ce86e2b8c776865218061a4648024"
     },
     {
       "path": "native/graphics_probe_test.cpp",
-      "sha256": "801f5a22872cce89f4059d174c61b48b8207eac3c94cad322c5682ac607790b2"
+      "sha256": "734c48fc708aa48ac26fb7310d961574513631bc0b12e732fd4f2a5e39f0837c"
     },
     {
       "path": "native/launch_native.cpp",
       "sha256": "199cdb15ddfc4b83ac468a63db434895456bd948d5af21190856dc0fbfb23ccb"
+    },
+    {
+      "path": "native/pose_input.hpp",
+      "sha256": "eaea9f4ea23e907c8a2c2bad48aa5c3bb129f2fb947842d8f76e52eea74abd9b"
+    },
+    {
+      "path": "native/pose_replay_test.cpp",
+      "sha256": "b524f2cb6a18a7036348bec1303eef7ab5fac554a9ab439f27ed32a8f5094d2f"
+    },
+    {
+      "path": "native/skin_output.hpp",
+      "sha256": "1bcfc2963013554eaa229c146f3ba1dc16ca4f2b14ee7451989bae91f986cdbc"
+    },
+    {
+      "path": "native/skin_sdk_test.cpp",
+      "sha256": "2dce6e495ba42c1fd126aa2db4ccc85a64db4e7a350f15938b209d4831f4234f"
     },
     {
       "path": "native/surface_client_test.cpp",
@@ -91,6 +111,10 @@
       "sha256": "904e85c23e4c06e01b181738866e1c2cf22c61621a5c65ec17cc7e89529cdc18"
     },
     {
+      "path": "probes/native/pose.ws",
+      "sha256": "c76caf2622bada115954068d694d0d75616800b7704ad208476e4c93863c521c"
+    },
+    {
       "path": "probes/native/ready.ws",
       "sha256": "9f6fa322a3ba7b0f89547c9d3e74056fb4b458eef03ec7f07cf4a03e05388fa7"
     },
@@ -103,12 +127,28 @@
       "sha256": "7fdc6c66ddf1c5fa5491f73565d26244bdfc81f3f1ec6a8819f2f25c7570e697"
     },
     {
+      "path": "tools/inspect_graphics_hooks.py",
+      "sha256": "647f5162b7110fbb9fe76d3ba242f52ee0ad99763979b5e08be4df86e75c65eb"
+    },
+    {
       "path": "tools/inspect_packed_mesh.py",
       "sha256": "0c9f1725465f90cab469142ca62405facb500dad05c2f128b3f468b65827b2b7"
     },
     {
       "path": "tools/packed_mesh_format.py",
       "sha256": "03b26f0bdadd8099b3b1ef5bedd456e58367feaf144320cebb46c8622c0b8d28"
+    },
+    {
+      "path": "tools/prepare_graphics_fingerprints.py",
+      "sha256": "6a2e7dc55c7cca1d14d4331596468ebc3302575854bb74f7ab76a5cc6bc28cc3"
+    },
+    {
+      "path": "tools/prepare_pose_replay.py",
+      "sha256": "a79c45636931f03f3c401a193b5194fff9a37fadf914fc854eeef17c8b40859e"
+    },
+    {
+      "path": "tools/prepare_skin_contract.py",
+      "sha256": "337f1a3e376968882fa33efeda30f88c4155de0bfe9d46fac4fd8b38353cfd8d"
     },
     {
       "path": "tools/probe_game_functions.py",
@@ -120,15 +160,15 @@
     },
     {
       "path": "tools/read_native_probe.py",
-      "sha256": "96f6c11d9eeeba4967e7268aaa3345a7386fa5bac5d5362f4a2e7f67612ea85c"
+      "sha256": "e130f78c2d597547c9a7e9c5614a812392c6d2e6b9b4ad830114558d1ccc6618"
     },
     {
       "path": "tools/record_full_runtime.py",
-      "sha256": "3c90a3ff2e00a99ea67a9ed272b724673febdb2ba8b43e6f681dbf9d34264063"
+      "sha256": "d0ffe4ad2693e9ddd36bb1b0c7168a02d07fbf4df14ad0a4d048c57046a4a13b"
     },
     {
       "path": "tools/run_native_probe.py",
-      "sha256": "70efe57bc9df2d99c40a410b1c313f7aba99b3fa7e406ba395479b00c0b58801"
+      "sha256": "8b7ef3495af70a3223365912d66510f16614638b342dbac6abdb7837412e70d1"
     },
     {
       "path": "tools/verify_live_graft.py",
@@ -2012,10 +2052,10 @@
   },
   "targetBindingArtifact": {
     "contractVersion": 2,
-    "baseCommit": "58876e24136d3d2c941fa144aa4c7651c98cbb75",
+    "baseCommit": "4a808e3595e53d28ffb5002aecf2a04833986fb8",
     "sourceGeometryCommit": "dc64bdc44e75fd5521f066cdb2975277e9c34302",
     "artifact": "geralt.bindings",
-    "artifactSHA256": "0d6f2055273d5e8fac361a1f50853627e2e1c175e128a385b714910a8ef44b19",
+    "artifactSHA256": "1bdfb7bbe35e7717931fcc690f97521aa9844ac420756373cd1107ab82fc4229",
     "recipeSHA256": "7fdc6c66ddf1c5fa5491f73565d26244bdfc81f3f1ec6a8819f2f25c7570e697",
     "neutralSourceSHA256": "ecae3a9acea247502c6182a0cd6c1688f687c059dc0557d7d9bfdb11fbbafb4d",
     "sourceBankSHA256": "16f50136b2cecf3cd2eaeff4c7aad9c18dded51851ad7f360a38c1371c509044",
@@ -2075,7 +2115,7 @@
     "observedGameplay": false
   },
   "targetCollarVerificationBaseCommit": "676a9b8846fa65cd9462126b5ec1f4f0a41be29d",
-  "targetCompositionAdoptionNote": "162 fixtures verified Base 46ac00f; 58876e2 changes only exact wire packing. The current-pin 180-frame pipeline is separately verified.",
+  "targetCompositionAdoptionNote": "162 fixtures verified Base 46ac00f; 58876e2 changes exact wire packing. Base 4a808e3 adds the exact motion filter and affine calibration without changing surface/collar arithmetic. The current-pin 240 observed-pose replay is separately verified.",
   "changingPipelineVerification": {
     "baseCommit": "58876e24136d3d2c941fa144aa4c7651c98cbb75",
     "reportSHA256": "2f952b4c9e8c0c1e93ca19e00963b5d075c596db34b5699f8911d40aa576afc8",
@@ -2184,30 +2224,169 @@
     "observedGameInvocation": false
   },
   "latestTypedProbe": {
-    "receiptSHA256": "b8bb3fe18297d862b97891e46c538ca698760965e7ddf8600835fccdd0d182ea",
-    "statusSHA256": "3a97f359ef06676bbb85b525f73c928b50fab4110463ea650fcdc8e64c88098a",
-    "moduleSHA256": "84e4eadd92e98b184cfbc4ccfee3f012077875a52050caba1d81748259e2aabd",
+    "receiptSHA256": "4313f86d7d31cf1d6b628c43617ef0b4cdc97f6d0df23310cacb7602272b7c3d",
+    "statusSHA256": "1655ef9c29c70d3a240579e6dcc5e86112ffb7c3039012b0178db7d14e82cdff",
+    "moduleSHA256": "6e9cf66356a2465104533463d4b886904f99ac57110cdf4c734ff3f5692f2652",
     "scriptSHA256": "9f6fa322a3ba7b0f89547c9d3e74056fb4b458eef03ec7f07cf4a03e05388fa7",
-    "processID": 21512,
+    "processID": 6564,
     "scriptInvocationObserved": true,
     "typedArgumentsObserved": true,
     "typedRoundtripObserved": true,
     "typedProbeFailed": false,
     "registrationFailed": false,
-    "graphicsFlags": 11,
-    "rawFlags": 93,
+    "poseSamplingObserved": true,
+    "graphicsFlags": 3007,
+    "rawFlags": 221,
     "readOnlyStatus": true,
-    "lateInvocationAfterLauncherTimeout": true,
+    "lateInvocationAfterLauncherTimeout": false,
     "controlsDriveSolver": false,
     "addonRemoved": true
   },
   "candidateObserver": {
-    "moduleSHA256": "c119dcb0b6620d08771e5465f66106d05d5adeedca6326fcc2894d7e1185eaf8",
-    "sdkTestReportSHA256": "2859ea828405bd41c31e449239a8858319adedc6b503bb546df8523ef6cc76f2",
-    "sdkTestExecutableSHA256": "eb6d820d6e056007c36cec94ad59b694607d2a4961e24944c1b61e281ca274f4",
-    "multiImplementationHooks": true,
-    "SDKCopyDirectSmokeTestPassed": true,
+    "moduleSHA256": "7ae9b5c80fd75b448917dc269bd50c24680a2d5d5a138d0b7d6746652865f730",
+    "sdkTestReportSHA256": "6b47a1d10b460b6fb12c967acc25bc07b08f775cf46b05e60cadf40f252fb5d1",
+    "sdkTestExecutableSHA256": "4202dd171d3abea8a47cf71a7b7abea0e28a01f20dd6780f2ddaf256fd433b7b",
+    "multiImplementationDeviceAndListHooks": true,
+    "returnedGraphicsInterfaceCoverage": true,
+    "supportedGraphicsVersionCoverage": true,
+    "SDKCopyDirectBundleSmokeTestPassed": true,
+    "commandListResetSmokeTestPassed": true,
+    "ownedDrawMetadataAndResetTestPassed": true,
+    "ownedUploadFingerprintTestPassed": true,
     "observedInGame": false,
     "vertexWrites": false
+  },
+  "poseInputReplayVerification": {
+    "manifest": {
+      "baseCommit": "4a808e3595e53d28ffb5002aecf2a04833986fb8",
+      "poseSamples": 240,
+      "spanSeconds": 4.250980000000027,
+      "poseProbeSHA256": "4ee2171d73e1c52758f7fab0a29571543c01390651022315ed9447752b7b6c4c",
+      "probeReceiptSHA256": "cade30a48055bc2c0970eaf0249ca608c5f3941ffe3f863d5861af99eeee56b4",
+      "probeModuleSHA256": "6f0cb48579848f594670f283f0a16591abead6a608ef32fb9ea0f7057679567e",
+      "cookedMeshSHA256": "35654adc1e7a2369274063c66fe8aa3b5c5ca0ab3d126df27d504708b2290301",
+      "recipeSHA256": "a79c45636931f03f3c401a193b5194fff9a37fadf914fc854eeef17c8b40859e",
+      "readerSHA256": "03b26f0bdadd8099b3b1ef5bedd456e58367feaf144320cebb46c8622c0b8d28",
+      "packetSHA256": "958d8f1bab36a127a5bd6fec776cead48a8bdadf7013ceaa289d025aa38634ce",
+      "actorWorldRemoved": true,
+      "skinDeltaIncludesNativeInverseBind": true,
+      "characterContactsCalibrated": false,
+      "nativeVertexOutput": false,
+      "observedGameplayOutput": false
+    },
+    "reportSHA256": "2b2ad50b4bba1ba22045b4fb50b2a30ddf094e152d57e7e927a16b1cfc614c08",
+    "executableSHA256": "f941fa8e346a3359eedbac6ecd76e224b1f7f27696f39cd9122d248f9672f256",
+    "workerSHA256": "d81cce14477a34fe98e942fb22bff94d87a1694ed2f39e9dcf033aac1f92e8a1",
+    "passed": true,
+    "frames": 240,
+    "movingForceFrames": 216,
+    "maximumForce": 2.35261,
+    "contactRoundTripErrorNative": 3.86644e-08,
+    "sourceMedianMs": 32.8197,
+    "bothLODsMedianMs": 9.1112,
+    "characterContactsCalibrated": false,
+    "diagnosticSourceDefaultContacts": true,
+    "nativeVertexOutput": false,
+    "observedGameplayOutput": false
+  },
+  "liveReadOnlyObserver": {
+    "receiptSHA256": "4313f86d7d31cf1d6b628c43617ef0b4cdc97f6d0df23310cacb7602272b7c3d",
+    "graphicsReportSHA256": "a0f3acbebf2ea3786edf9d9577f365ffc8eca914a6268adb1a078b496103e94e",
+    "moduleSHA256": "6e9cf66356a2465104533463d4b886904f99ac57110cdf4c734ff3f5692f2652",
+    "fingerprintPacketSHA256": "17a0020ebd301abbc8a565e88352f6b237d86de1062902147f3efcb5fc7c49c4",
+    "matchedOwnedUploadLabels": [
+      "geralt_motion_indices",
+      "geralt_motion_vertices",
+      "overall_100_indices",
+      "overall_100_vertices",
+      "overall_10_indices",
+      "overall_10_vertices",
+      "overall_1_indices",
+      "overall_1_vertices",
+      "overall_20_indices",
+      "overall_20_vertices",
+      "overall_30_indices",
+      "overall_30_vertices",
+      "overall_40_indices",
+      "overall_40_vertices",
+      "overall_50_indices",
+      "overall_50_vertices",
+      "overall_60_indices",
+      "overall_60_vertices",
+      "overall_70_indices",
+      "overall_70_vertices",
+      "overall_80_indices",
+      "overall_80_vertices",
+      "overall_90_indices",
+      "overall_90_vertices"
+    ],
+    "commandSignatureRecordStrides": [
+      12,
+      16,
+      20
+    ],
+    "poseReportSHA256": "9c029a4959990a9d078e7ed7f1090603c550ac8a456c8b4038a08e803fec1dd5",
+    "poseSamples": 240,
+    "unpausedPoseSpanSeconds": 4.267090000000053,
+    "indexedDrawObserved": true,
+    "commandListResetObserved": true,
+    "distinctListMethodImplementations": 3,
+    "visibleMeshDrawOwnershipVerified": false,
+    "vertexWrites": false,
+    "observedGameplayOutput": false
+  },
+  "installedShaderConversionVerification": {
+    "recipeSHA256": "337f1a3e376968882fa33efeda30f88c4155de0bfe9d46fac4fd8b38353cfd8d",
+    "conversionSHA256": "1bcfc2963013554eaa229c146f3ba1dc16ca4f2b14ee7451989bae91f986cdbc",
+    "oracleSHA256": "2dce6e495ba42c1fd126aa2db4ccc85a64db4e7a350f15938b209d4831f4234f",
+    "sdkFiles": [
+      {
+        "path": "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3 REDkit\\bin\\shaders\\include\\vertexFactory.fx",
+        "sha256": "733c2d81556bc320414e4d74a3c9b4f50ab2b1654399100d7e1c1e34dd837719"
+      },
+      {
+        "path": "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3 REDkit\\bin\\shaders\\include\\vertexFactoryMeshSkinned.fx",
+        "sha256": "f6165d27d3370c9f1c4cfe3a9164614f8f3c4ab6ca2ec62dce18c380e66da63c"
+      },
+      {
+        "path": "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3 REDkit\\bin\\shaders\\include\\include_computeRTData.fx",
+        "sha256": "c379162784515cc12d41c7bc7dba63b854296ef24c17ccc7ee486c090c3ed1ae"
+      },
+      {
+        "path": "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3 REDkit\\bin\\shaders\\include\\globalConstantsVS.fx",
+        "sha256": "feacf30898ee7e05c06a7dd4f39dd92b05cca28269e706af714cc6e6563e60b8"
+      },
+      {
+        "path": "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3 REDkit\\bin\\shaders\\include\\common.fx",
+        "sha256": "2028d1b2f85aead0c6fdffe86c10b9cb3a2a50662ff879446bdc281f81f09bac"
+      }
+    ],
+    "meshSHA256": "35654adc1e7a2369274063c66fe8aa3b5c5ca0ab3d126df27d504708b2290301",
+    "bufferSHA256": "2dfbd4e4c0ecb4e09d4234e7a096639aebce464b9dd46fcced8b5e5115ed2a8d",
+    "packetSHA256": "b9204739a7fa59289451461e0877bf7af1c2c3ab8bbde5d60a8a6c7821a0ad7b",
+    "lodVertexCounts": [
+      18498,
+      18049
+    ],
+    "vertices": 36547,
+    "paletteSize": 46,
+    "shaderNormalizesWeights": true,
+    "shaderSkinBufferSlot": 0,
+    "frequentConstantBufferSlot": 2,
+    "quantizationScaleByteOffset": 128,
+    "quantizationOffsetByteOffset": 144,
+    "skinningDataByteOffset": 176,
+    "nativeVertexOutput": false,
+    "observedGameplay": false,
+    "testReportSHA256": "d840abec8dfc8ba977271651a86e3a446c295fc02dc17efe984abe70ae2a395d",
+    "executableSHA256": "7cc71c854abfd72d58a8f62a05a32f17c9b03777c731cfe7d1cfa33a5d14b3cf",
+    "oracleUsesInstalledShaderFunctions": true,
+    "threeAxisSyntheticPoses": 3,
+    "nonuniformScaling": true,
+    "normalizedByteWeightsVerified": true,
+    "inverseBlendedSkinVerified": true,
+    "unclampedFloatPositionVerified": true,
+    "liveGPUPaletteLayoutVerified": false,
+    "engineOutputConnected": false
   }
 }
