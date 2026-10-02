@@ -36,7 +36,7 @@ class FixedPhysicsTests(unittest.TestCase):
         self.assertLess(r['neutralGuideToRenderJointError'],1e-5)
         np.testing.assert_allclose(r['restLengths'],r['restLengths'][0])
         self.assertLess(r['restLengths'][0],.03)
-        self.assertIn('SampleGuide(12,renderCoordinates[i],position,direction)',s)
+        self.assertIn('SampleGuide(12,i/7.0,position,direction)',s)
         self.assertIn('targets = restPoints;',s)
         self.assertIn('localPoint = position;',s)
         self.assertIn('IntegrateRelative(i,localGravity*gravity,linear,omega,alpha,',s)

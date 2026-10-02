@@ -15,7 +15,12 @@ functions are translated directly from the pinned Base headers by
 `physics_codegen.py`. The adapter supplies observed rest frames, skin envelopes,
 bone mapping, world sampling, fixed-step scheduling and native pose delivery.
 
-## Protected material binding (.29)
+## Rejected historical material binding (.29)
+
+The user rejected this change as a workaround. It is removed from active source
+and installation; .28 and its uniform render stations are restored. See
+[MOTION-AXIS-AUDIT.md](MOTION-AXIS-AUDIT.md) for the subsequent investigation.
+The following description is retained only as failure history.
 
 The user observed that .28 still severely deforms the glans and other parts
 during motion. Correct rotation delivery did not solve nonuniform skin blending.
@@ -162,7 +167,7 @@ status counters in the handoff; do not mark them successful from a cooked build.
 
 ## Historical native checkpoint: 0.4.25
 
-Current .26 install: `publish/20261001-194607-3fc4a2`, Base `5f0cd94`.
+Historical .26 install: `publish/20261001-194607-3fc4a2`, Base `5f0cd94`.
 58 adapter and 56 Base Python tests passed; native round-trips, full scripted
 cook and ten unpacked resources/buffers passed. See HANDOFF.md and
 provenance/fixed-physics.json for exact default-source and cage receipts.

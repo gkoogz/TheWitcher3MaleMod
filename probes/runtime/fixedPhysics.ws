@@ -30,7 +30,6 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
     private var jointRestPoints : array<Vector>;
     private var restFrames : array<Matrix>;
     private var restDirections : array<Vector>;
-    private var renderCoordinates : array<float>;
     private var lengths : array<float>;
     private var radii : array<Vector>;
     private var thighRadii : array<float>;
@@ -219,7 +218,7 @@ class MaleModMotionComponent extends CSelfUpdatingComponent
         {
             if (i < 8)
             {
-                SampleGuide(12,renderCoordinates[i],position,direction);
+                SampleGuide(12,i/7.0,position,direction);
                 direction = VecNormalize(direction);
                 rotation = q_SetShortestRotation(restDirections[i],direction);
             }

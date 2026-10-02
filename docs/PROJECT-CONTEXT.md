@@ -5,9 +5,11 @@ and .27 motion: wavy sideways stretching/warping and insufficient weight/solidne
 approved evaluated mesh, size and source material coefficients. Correct frame
 consistency and inertia before restoring sliders. Wolverine remains unchanged.
 
-Latest observation rejects .28 shape retention: the glans and other parts
-severely deform during motion. Validate the actual nonuniformly bent surface,
-not only guide trajectories or coherent rigid motion. Controls stay deferred.
+Latest correction: the user rejected .29's protected head/lobe binding as a
+workaround and requested investigation of a possibly missing motion axis.
+Restore .28 and remove the protected binding from active generation before any
+further correction. Establish actual 3D motion and surface transport; preserve
+the approved size and shape. Controls remain deferred.
 
 Latest October 1 clarification: the fixed Witcher baseline must closely
 approximate Wolverine ResetStudyControls defaults: full-floppy state 2, all UI

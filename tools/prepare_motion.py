@@ -112,11 +112,10 @@ def add_bones(document, mesh, names, worlds, parents, weights):
 
 def prepare():
     cfg=settings();pin=base_checkout(cfg);sys.path.insert(0,str(cfg['base']))
-    from malemod_base.motion_binding import reference_fields,reference_cage_centres,reference_cage_weights,protected_cage_weights,sample_mechanical_guide,PROTECTED_SHAFT_KNOTS
+    from malemod_base.motion_binding import reference_fields,reference_cage_centres,reference_cage_weights,sample_mechanical_guide
     from malemod_base.graft import topology_ids,limit_influences
     rest=json.loads((ROOT/'generated/attachment.json').read_text())
     fitpath=ROOT/rest['fitReport'];fit=json.loads(fitpath.read_text());fbx=fitpath.with_suffix('.fbx')
-    render_coordinates=PROTECTED_SHAFT_KNOTS if fit.get('sourceMechanics') else np.linspace(0,1,8)
     # fit report uses .fit.json; source has the same stem without .fit.
     fbx=fitpath.with_name(fitpath.name.replace('.fit.json','.fbx'))
     if digest(fbx)!=fit['outputSHA256']:raise ValueError('Rest FBX changed')
@@ -152,7 +151,7 @@ def prepare():
             centres=reference_cage_centres(module,mf,points[b['body_seam']].mean(0),module[:,0],1.)
             if fit.get('sourceMechanics'):
                 mechanical=fit['sourceMechanics'];guide=np.asarray(mechanical['shaftGuide'])
-                sampled,_=sample_mechanical_guide(guide,render_coordinates)
+                sampled,_=sample_mechanical_guide(guide,np.linspace(0,1,8))
                 centres=np.vstack([sampled,mechanical['lobeCenters']])
                 profile=json.loads((ROOT/'characters/geralt-attachment.json').read_text())
                 centres=(centres-np.asarray(fit['sourceRoot']))@np.asarray(profile['basis']).T*fit['sourceToFBXScale']+profile['targetRoot']
@@ -168,13 +167,12 @@ def prepare():
             # Source Y maps to native -X in this measured character basis.
             # Mechanical lobe order must match the corresponding skin donors.
             lateral=-(module[:,0]-profile['targetRoot'][0])
-        weight_law=protected_cage_weights if fit.get('sourceMechanics') else reference_cage_weights
-        dynamic=weight_law(mf,lateral,2.,distance,5.)
+        dynamic=reference_cage_weights(mf,lateral,2.,distance,5.)
         _,aliases=topology_ids(points)
         fixed=np.isin(aliases,aliases[b['body_seam']])
         dynamic[fixed[body_count:]]=0
         new_weights=np.zeros((len(points),len(names)));new_weights[body_count:]=dynamic
-        original=b['weights'];amount=np.clip(new_weights.sum(1),0,1)
+        original=b['weights'];amount=new_weights.sum(1)
         full=np.column_stack([original*(1-amount[:,None]),new_weights*original.sum(1)[:,None]])
         full,discard=limit_influences(full,4,.3)
         np.testing.assert_allclose(full[b['body_seam']],full[b['module_seam']],atol=1e-12)
@@ -237,9 +235,7 @@ def prepare():
             'authoredWorldRestFBX':worlds.tolist(),'nativeRestAxes':verify_rest_axes(worlds),'nativeProfile':native_profile,'nativeVerified':False,'observedGameplay':False,
             'limitations':['native secondary-motion approximation; no XPBD parity','body contacts not calibrated',
                            'live rest shape bridge pending'],'fbx':str(output),'dyng':str(dyng_out)}
-    report.update(fitReport=fitpath.relative_to(ROOT).as_posix(),fitSHA256=digest(fitpath),sourceMechanics=fit.get('sourceMechanics'),
-                  bindingContract=2 if fit.get('sourceMechanics') else 1,renderCoordinates=render_coordinates.tolist(),
-                  protectedHeadStart=float(render_coordinates[-1]) if fit.get('sourceMechanics') else None)
+    report.update(fitReport=fitpath.relative_to(ROOT).as_posix(),fitSHA256=digest(fitpath),sourceMechanics=fit.get('sourceMechanics'))
     write_json(job/'motion.json',report);print(job);return job
 
 

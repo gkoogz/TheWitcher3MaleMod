@@ -1,0 +1,294 @@
+{
+  "installedVersion": "0.4.28-bone-local-physics",
+  "installedHashesVerified": true,
+  "cookedGraph": {
+    "cookedPoseConnectionsVerified": true,
+    "stockAlignmentNodes": 0,
+    "authoredScaleNodes": 10,
+    "authoredScalarNodes": 60,
+    "identityRoot": "Root",
+    "parentPoseSpace": "attached",
+    "authoredRestMaskVerified": true,
+    "connectedPoseNodes": 83,
+    "dumpSHA256": "02354d7b1b82e958edc5a816d66e03a9b0398c22c7cea8ebe195a03f76c257d3",
+    "observedGameplay": false
+  },
+  "cage": "build/motion/cage-3b54cb1c3143",
+  "cageSHA256": "7cd5ac0c8379b884050e715995b5e813f4489632b7a441fc986bb3b7020dbe77",
+  "controllerSHA256": "ce45ed0c340edef75e4daf41e0dfc012aa05a4ad1ba3bb79cc77b73e13dd5768",
+  "nativeOracle": {
+    "executableSHA256": "422cebbcefde36375908cdd78d097a4672ef26f28494b2f1dc09b66b7a72aa46",
+    "mapSHA256": "dd852cf4cde03402c41a103cb67e08fb7b87b21beb7cfc9959088bf66168e450",
+    "symbol": "?Sample@CBehaviorGraphRotateBoneNode@@",
+    "address": "0x143094690",
+    "blockStart": "0x143094814",
+    "blockEnd": "0x1430948ac",
+    "halfAngleRadiansPerDegree": 0.00872664712369442,
+    "readOnlyInstructionEmulation": true,
+    "observedGameplay": false,
+    "translationSymbol": "?Sample@CBehaviorGraphTranslateBoneNode@@",
+    "translationAddress": "0x14309de30",
+    "translationBlockStart": "0x14309df54",
+    "translationBlockEnd": "0x14309dff8"
+  },
+  "joints": [
+    {
+      "joint": 0,
+      "translationRank": 3,
+      "rotationRank": 3,
+      "translationSingularValues": [
+        1.0000008207781037,
+        1.0000000834422484,
+        0.9999996451241907
+      ],
+      "rotationSingularValues": [
+        1.0000032233494782,
+        1.0000005713701146,
+        0.9999989312796703
+      ],
+      "maximumTranslationError": 7.457435807822068e-09,
+      "maximumRotationMatrixError": 1.9643009417309808e-07
+    },
+    {
+      "joint": 1,
+      "translationRank": 3,
+      "rotationRank": 3,
+      "translationSingularValues": [
+        1.0000003096772694,
+        0.9999998932803137,
+        0.9999995746105168
+      ],
+      "rotationSingularValues": [
+        1.000001350812397,
+        0.9999997555637715,
+        0.9999991316128949
+      ],
+      "maximumTranslationError": 6.175479930031764e-09,
+      "maximumRotationMatrixError": 6.59129416908531e-08
+    },
+    {
+      "joint": 2,
+      "translationRank": 3,
+      "rotationRank": 3,
+      "translationSingularValues": [
+        1.0000005544290218,
+        1.0000001053661154,
+        0.999999733089371
+      ],
+      "rotationSingularValues": [
+        1.000001919852179,
+        0.9999997340223742,
+        0.9999994024725951
+      ],
+      "maximumTranslationError": 5.562913473022077e-09,
+      "maximumRotationMatrixError": 1.0386092996165315e-07
+    },
+    {
+      "joint": 3,
+      "translationRank": 3,
+      "rotationRank": 3,
+      "translationSingularValues": [
+        1.000000378029701,
+        0.9999998813432392,
+        0.9999994570778495
+      ],
+      "rotationSingularValues": [
+        1.0000036337217906,
+        1.0000002366689407,
+        0.9999999634784705
+      ],
+      "maximumTranslationError": 7.019090299337185e-09,
+      "maximumRotationMatrixError": 1.6379260989879407e-07
+    },
+    {
+      "joint": 4,
+      "translationRank": 3,
+      "rotationRank": 3,
+      "translationSingularValues": [
+        1.0000003857224853,
+        1.0000000358130265,
+        0.9999995358355467
+      ],
+      "rotationSingularValues": [
+        1.000003137144867,
+        0.9999999095043505,
+        0.9999987065222065
+      ],
+      "maximumTranslationError": 4.354503015301145e-09,
+      "maximumRotationMatrixError": 1.3130137553649082e-07
+    },
+    {
+      "joint": 5,
+      "translationRank": 3,
+      "rotationRank": 3,
+      "translationSingularValues": [
+        1.00000005649913,
+        0.9999999059480789,
+        0.9999993126513328
+      ],
+      "rotationSingularValues": [
+        1.0000016953993398,
+        0.999999008442826,
+        0.9999983005048851
+      ],
+      "maximumTranslationError": 5.210462423983068e-09,
+      "maximumRotationMatrixError": 1.026367843595268e-07
+    },
+    {
+      "joint": 6,
+      "translationRank": 3,
+      "rotationRank": 3,
+      "translationSingularValues": [
+        1.0000009921892172,
+        1.0000002084550825,
+        0.9999981813532348
+      ],
+      "rotationSingularValues": [
+        1.0000018990225703,
+        1.0000009363831721,
+        0.9999992931309988
+      ],
+      "maximumTranslationError": 1.7813259768148503e-08,
+      "maximumRotationMatrixError": 6.631747610492466e-08
+    },
+    {
+      "joint": 7,
+      "translationRank": 3,
+      "rotationRank": 3,
+      "translationSingularValues": [
+        1.0000021650413702,
+        1.0000002206458123,
+        0.999999436012812
+      ],
+      "rotationSingularValues": [
+        1.0000018990225703,
+        1.0000009363831721,
+        0.9999992931309988
+      ],
+      "maximumTranslationError": 1.839774325961097e-08,
+      "maximumRotationMatrixError": 6.631747610492466e-08
+    },
+    {
+      "joint": 8,
+      "translationRank": 3,
+      "rotationRank": 3,
+      "translationSingularValues": [
+        1.0000005371122915,
+        1.000000042428712,
+        0.9999991032191913
+      ],
+      "rotationSingularValues": [
+        1.000000652356026,
+        1.0000000993907063,
+        0.9999961450539324
+      ],
+      "maximumTranslationError": 8.55227339845276e-09,
+      "maximumRotationMatrixError": 1.5015827064396303e-07
+    },
+    {
+      "joint": 9,
+      "translationRank": 3,
+      "rotationRank": 3,
+      "translationSingularValues": [
+        1.0000014334154566,
+        1.0000004256965742,
+        0.9999997848614464
+      ],
+      "rotationSingularValues": [
+        1.0000010298433388,
+        1.0000002655436524,
+        0.9999994376638974
+      ],
+      "maximumTranslationError": 1.1990869918011121e-08,
+      "maximumRotationMatrixError": 3.868162960284686e-08
+    }
+  ],
+  "tangentOrientationRank": 2,
+  "tangentSingularValues": [
+    1.0000001927344633,
+    0.9999998072630398,
+    1.455226830813074e-14
+  ],
+  "independentRollRequested": false,
+  "surface": [
+    {
+      "lod": 0,
+      "headVertices": 5447,
+      "headEdges": 16242,
+      "nonuniformBendTests": [
+        {
+          "pelvisAxis": "X",
+          "guideExcursion": 0.0813411224658379,
+          "maximumHeadEdgeStrain": 0.2025017353687235,
+          "maximumDeliveredJointPositionError": 1.6254931502827898e-08
+        },
+        {
+          "pelvisAxis": "Y",
+          "guideExcursion": 0.053710672205909096,
+          "maximumHeadEdgeStrain": 0.030865579137417942,
+          "maximumDeliveredJointPositionError": 2.0205645025238394e-08
+        },
+        {
+          "pelvisAxis": "Z",
+          "guideExcursion": 0.10009325034331255,
+          "maximumHeadEdgeStrain": 0.14473291398758348,
+          "maximumDeliveredJointPositionError": 1.9316373349881288e-08
+        }
+      ]
+    },
+    {
+      "lod": 1,
+      "headVertices": 5447,
+      "headEdges": 16242,
+      "nonuniformBendTests": [
+        {
+          "pelvisAxis": "X",
+          "guideExcursion": 0.0813411224658379,
+          "maximumHeadEdgeStrain": 0.2025017353687235,
+          "maximumDeliveredJointPositionError": 1.6254931502827898e-08
+        },
+        {
+          "pelvisAxis": "Y",
+          "guideExcursion": 0.053710672205909096,
+          "maximumHeadEdgeStrain": 0.030865579137417942,
+          "maximumDeliveredJointPositionError": 2.0205645025238394e-08
+        },
+        {
+          "pelvisAxis": "Z",
+          "guideExcursion": 0.10009325034331255,
+          "maximumHeadEdgeStrain": 0.14473291398758348,
+          "maximumDeliveredJointPositionError": 1.9316373349881288e-08
+        }
+      ]
+    }
+  ],
+  "missingDeliveredAxisFound": false,
+  "observedGameplay": false,
+  "limitations": [
+    "REDkit instruction emulation is not running-game pose readback",
+    "surface tests use controlled 3D bends, not a captured gameplay trajectory",
+    "no independent torsional material state in tangent-only reconstruction"
+  ],
+  "auditScriptSHA256": "40c7ded56864ee457a90e6dcc42a44b9a44bbe7b854f28f05bec4de03ddbc52e",
+  "checkpoint": "2026-10-01",
+  "evidencePath": "build/motion/axis-audit-1ee42e543d6d/verification.json",
+  "startupMovieAddonSHA256": "cb77200e62b8576229c158400cb9f911c4f18491fb9c55d745dc19c89a339e9d",
+  "sourceBaseCommit": "41c7362012ab55ee9fef4cf3c5f4ab1e0532dbf3",
+  "nativeMathInspection": [
+    {
+      "symbol": "VecTransformDir",
+      "evidencePath": "build/probe/disassembly-1a2732032d10/evidence.json",
+      "evidenceSHA256": "7248f36dbfe2a3837d898cad354ceeabafc83a2d503f04ab7b2fb41e86fb2e67"
+    },
+    {
+      "symbol": "RedQuaternion.SetShortestRotation",
+      "evidencePath": "build/probe/disassembly-984b9bafa33b/evidence.json",
+      "evidenceSHA256": "668228e3dd51773f0ac1c61c9fce9c22d0bd310c36e0a41bb543c63a78978129"
+    },
+    {
+      "symbol": "AtanF",
+      "evidencePath": "build/probe/disassembly-d6d2cb4563e7/evidence.json",
+      "evidenceSHA256": "6dc367fd96648e0db2f7315bac67e185710d2075edf82b329ab7c8bd47cf44f1"
+    }
+  ]
+}

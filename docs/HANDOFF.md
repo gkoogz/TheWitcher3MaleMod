@@ -7,7 +7,40 @@ the installed package still matches this record.
 
 ## Current phase: fixed unit scale and Base secondary physics
 
-### Latest checkpoint: .29 protected head/lobe binding
+### Latest checkpoint: .29 removed; .28 restored; axis audit
+
+User rejected the protected head/lobe binding as a workaround and suspected a
+missing movement axis. .29 is removed from the game and active source. Restored
+package: `publish/20261001-205324-ceab2a` (.28), installed Base `2c23134`, original
+cage `build/motion/cage-3b54cb1c3143`. All five installed hashes match its receipt.
+Rejected .29 is archived at `local/uninstalled/modMaleMod-3c2d70708ffa`; .26
+rollback remains at `local/uninstalled/modMaleMod-fbf2d8f35baf`. The startup movie
+addon remains unchanged. Active source pins Base `41c7362`, which removes the
+rejected binding API; it does not pretend the old package was rebuilt at this pin.
+
+`python tools/audit_motion_axes.py` verifies all 60 connected scalar channels,
+replays actual native translation/rotation instructions on all ten observed
+bind frames and evaluates the controller's Euler expressions. XYZ translation
+and rotation have rank 3 at every joint. Controlled nonuniform bends about all
+three pelvis axes move the guide and reproduce head edge strain up to .2025
+while delivered joint-position error stays below 2.03e-8 native units, in both
+LODs (5,447 head vertices / 16,242 edges). No missing delivered axis was found.
+
+Tangent-only reconstruction has two bending freedoms and no independent axial
+roll. Wolverine also uses shortest tangent rotation, so absence of roll alone
+is not a demonstrated explanation for this user's observation. Its additional
+`ConstructLogicalShaftSurface(true)` stage reconstructs cross-sections; the
+native cage's blended transforms do not reproduce that stage. Read
+[MOTION-AXIS-AUDIT.md](MOTION-AXIS-AUDIT.md). Evidence:
+`build/motion/axis-audit-1ee42e543d6d/verification.json` and tracked
+`provenance/motion-axis-audit.json`. This is REDkit instruction replay, not
+running-game readback. The deformation problem remains open; do not add another
+material lock or claim success from these checks.
+
+Current rollback checks: 60 adapter tests, 56 Base Python tests and full Base
+provenance verification pass. No new gameplay observation is claimed.
+
+### Historical rejected checkpoint: .29 protected head/lobe binding
 
 User rejects .28: glans and other parts severely deform during motion. The old
 coherent rigid-transport check did not cover differing joint transforms.
@@ -30,8 +63,8 @@ Cage: `build/motion/cage-197ba377c461`; native round-trip weights/binds/seam pas
 Complete player cook: `build/motion/player-stack-38b68ffa00a4`.
 Candidate package: `publish/20261001-214042-acbb4d`, version
 `0.4.29-protected-head-physics`. 60 adapter tests and 59 Base Python tests pass;
-Base provenance passes. Official unbundle matches all ten resources/buffers. .29 is installed; all five
-file hashes match. The installed controller matches the current generator.
+Base provenance passes. Official unbundle matched all ten resources/buffers. .29 was installed with five
+matching hashes, then rejected and removed; this is historical evidence.
 Compilation with the separate startup-video addon passes and that addon remains
 hash-identical. `provenance/fixed-physics.json` records receipts. Rollback keeps
 the approved-shape .26 in `local/uninstalled/modMaleMod-fbf2d8f35baf`; replaced
@@ -39,8 +72,8 @@ the approved-shape .26 in `local/uninstalled/modMaleMod-fbf2d8f35baf`; replaced
 
 Limits: flexible shaft volume loss, stretching web/collar, and point-guide
 collision mismatch remain. Full source cross-section/pressure surface evaluation
-is not in the native renderer. .29 visual acceptance and native frame cost need
-user gameplay testing. Do not mark this solved from offline or cooked results.
+is not in the native renderer. .29 was rejected by the user and is not the installed or active source baseline.
+Do not revive this change from its offline or cooked results.
 
 ### Historical checkpoint: .28 bone-local rotation correction
 
