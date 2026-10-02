@@ -1,0 +1,2213 @@
+{
+  "contractVersion": 1,
+  "baseCommit": "58876e24136d3d2c941fa144aa4c7651c98cbb75",
+  "files": [
+    {
+      "path": "characters/compiler-native-profile.json",
+      "sha256": "185226a3ce7611e803e76e59ce308f319dfe3387994a79275441c18336ee5f85"
+    },
+    {
+      "path": "characters/game-native-profile.json",
+      "sha256": "3954d4e2704222673f5fb96d8cf4b514e7112b5ce060c2f39addb3893ed4624e"
+    },
+    {
+      "path": "characters/geralt-runtime-bindings.json",
+      "sha256": "fa8012fc4c0cb3ab590d524f1b59458d3db616a39ebefe06716bfe5f6917c03c"
+    },
+    {
+      "path": "dependencies/base.lock.json",
+      "sha256": "caf808bee06b62c2f48ec09e0f5ebfcd68cd8ef8b46e44a449d792cd674d0593"
+    },
+    {
+      "path": "dependencies/native.lock.json",
+      "sha256": "edbc0bdf7fba3bbf0e0c776f66e3dd39b63c50cad0d31266e3c41edd3b41c976"
+    },
+    {
+      "path": "native/CMakeLists.txt",
+      "sha256": "85e6e25ba837ee6c7da39586637281dd8916d61be045d552301a009e10a69141"
+    },
+    {
+      "path": "native/engine_bridge.cpp",
+      "sha256": "5070c5e9ee1c0d99abb32e7c599fd68b3caf37659293509862a5331ae5d1b556"
+    },
+    {
+      "path": "native/game_profile.hpp",
+      "sha256": "74416ffcd1a4e0310a2a8b1162ae2f8d3f942d9c4606e612f893857143d2b255"
+    },
+    {
+      "path": "native/graphics_probe.cpp",
+      "sha256": "4b1ebf899839eafeb5ad987827c723c1d4253975bca8b0018cbb6afb100a066c"
+    },
+    {
+      "path": "native/graphics_probe.hpp",
+      "sha256": "8d1485cab610db61838259bfb1d4968f4a8bdb4758bd121fabfcdc3ac04b21de"
+    },
+    {
+      "path": "native/graphics_probe_test.cpp",
+      "sha256": "801f5a22872cce89f4059d174c61b48b8207eac3c94cad322c5682ac607790b2"
+    },
+    {
+      "path": "native/launch_native.cpp",
+      "sha256": "199cdb15ddfc4b83ac468a63db434895456bd948d5af21190856dc0fbfb23ccb"
+    },
+    {
+      "path": "native/surface_client_test.cpp",
+      "sha256": "3090e3ad6dea44031c94b7cb614ba6c944beadd036e287a31327b55317431d62"
+    },
+    {
+      "path": "native/surface_pipeline.hpp",
+      "sha256": "fd59b9b49c097eae78b450d82749c0dc6c7a1b1c3ab2530eaf4bfa9179d0e035"
+    },
+    {
+      "path": "native/surface_pipeline_test.cpp",
+      "sha256": "78e53c35c080dc530bc245bf78d1ea7445eedc1aa4dee71364c6cf512bd5a1a3"
+    },
+    {
+      "path": "native/surface_service.hpp",
+      "sha256": "a1ff419c907dbf68ce7d2e4db2388bac6f3394d6f90220d6525bcaa7fdd0c850"
+    },
+    {
+      "path": "native/surface_service_test.cpp",
+      "sha256": "122db306df98c5e9b9a16e166a47273a3d844e3f505012d3fb53ad3ce036e50b"
+    },
+    {
+      "path": "native/surface_transport.hpp",
+      "sha256": "24145c7453879c51e77f946c80f283339a4a67deaffd2d21bad9da8e826bc083"
+    },
+    {
+      "path": "native/surface_worker.cpp",
+      "sha256": "bcbed59356a7ffc9b6c9e867cc6fe5708692f01eab57cd4f199723d15a955d61"
+    },
+    {
+      "path": "native/target_surface.cpp",
+      "sha256": "329c10268288a836b11cdcf72cc307e9abfda5b54c473c264ad885a0e6d46900"
+    },
+    {
+      "path": "native/target_surface.hpp",
+      "sha256": "c3e90cdae32e8dd5097c1eefcbaf1eb74913d21928414573f9e3ab1d64fa1bfe"
+    },
+    {
+      "path": "native/target_surface_test.cpp",
+      "sha256": "904e85c23e4c06e01b181738866e1c2cf22c61621a5c65ec17cc7e89529cdc18"
+    },
+    {
+      "path": "probes/native/ready.ws",
+      "sha256": "9f6fa322a3ba7b0f89547c9d3e74056fb4b458eef03ec7f07cf4a03e05388fa7"
+    },
+    {
+      "path": "tools/compile_native_scripts.py",
+      "sha256": "1216ddf5cd7b415169112d159d700f50820efab2a9e424037f1975dd504afea5"
+    },
+    {
+      "path": "tools/export_live_bindings.py",
+      "sha256": "7fdc6c66ddf1c5fa5491f73565d26244bdfc81f3f1ec6a8819f2f25c7570e697"
+    },
+    {
+      "path": "tools/inspect_packed_mesh.py",
+      "sha256": "0c9f1725465f90cab469142ca62405facb500dad05c2f128b3f468b65827b2b7"
+    },
+    {
+      "path": "tools/packed_mesh_format.py",
+      "sha256": "03b26f0bdadd8099b3b1ef5bedd456e58367feaf144320cebb46c8622c0b8d28"
+    },
+    {
+      "path": "tools/probe_game_functions.py",
+      "sha256": "d24d47af1aa9b4bb69c47be9ddfcfc46eca7b92813b6c702081762c1535504da"
+    },
+    {
+      "path": "tools/probe_game_name_refs.py",
+      "sha256": "9c3f693a530e42c9a2d11559bbac8330f1a1883f52a6441c10126cb7cd7a0b88"
+    },
+    {
+      "path": "tools/read_native_probe.py",
+      "sha256": "96f6c11d9eeeba4967e7268aaa3345a7386fa5bac5d5362f4a2e7f67612ea85c"
+    },
+    {
+      "path": "tools/record_full_runtime.py",
+      "sha256": "3c90a3ff2e00a99ea67a9ed272b724673febdb2ba8b43e6f681dbf9d34264063"
+    },
+    {
+      "path": "tools/run_native_probe.py",
+      "sha256": "70efe57bc9df2d99c40a410b1c313f7aba99b3fa7e406ba395479b00c0b58801"
+    },
+    {
+      "path": "tools/verify_live_graft.py",
+      "sha256": "909d1793cc7bd383bc1ff0ea4837943fcb46cd2beaeab49d235bd8cd28da175c"
+    },
+    {
+      "path": "tools/verify_target_surface.py",
+      "sha256": "6f42e10247f8d72de2885d4da3a33ff9c1fc801791e794f1efe14c979bb73ebb"
+    }
+  ],
+  "targetCollarVerification": {
+    "offlineOnly": true,
+    "observedGameplay": false,
+    "nativeVertexOutput": false,
+    "sourceBankSHA256": "f37d21af1363588794e0931bcffe67a55ad628453b04a9baa8030cb2ba4b7aa4",
+    "fitSHA256": "b0bd95711831b64e4f49ac6885d1ae2cbd8e0159e6f7f059fd711fa99a66b2bf",
+    "characterProfileSHA256": "b85863f56f07cdf47816c699a7d9b1c6b5cea8d41dbc4049dc60e0110abca24c",
+    "executableSHA256": "1b6333c5249b510bafb4618f744f7df7a3c3b7ab195f58a254b99ee022ba01ee",
+    "cases": [
+      {
+        "ui": 1,
+        "lod": 0,
+        "maximumSourcePositionError": 2.125434780572686e-12,
+        "recruitmentWeightError": 9.992007221626409e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 149.77449999423698,
+        "planMilliseconds": 56.4167,
+        "cachedSolveMilliseconds": 2.66228,
+        "fixtureSHA256": "993f67936762715da0574e0b274d578864f51be61c5b1fc8b0b8f10fb56ca13b",
+        "resultSHA256": "7cd8f3537d1e2dd43fce9a4068a4eb120fe4377bcf5fda269c63c5ea0e99de7d"
+      },
+      {
+        "ui": 10,
+        "lod": 0,
+        "maximumSourcePositionError": 2.411705002674989e-12,
+        "recruitmentWeightError": 1.0169816377914032e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 118.42600000090897,
+        "planMilliseconds": 56.5001,
+        "cachedSolveMilliseconds": 2.98778,
+        "fixtureSHA256": "fbcec17b39b732a7be1ecabcd4e06ad5ef73606445d5d8df566db3e86a3edc0b",
+        "resultSHA256": "55f48660c88d70048e1c590f0646f6e01b40564c8d8bded5709cbf5544b1c7c3"
+      },
+      {
+        "ui": 20,
+        "lod": 0,
+        "maximumSourcePositionError": 5.696853437721081e-12,
+        "recruitmentWeightError": 7.771561172376096e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 117.47230001492426,
+        "planMilliseconds": 58.6772,
+        "cachedSolveMilliseconds": 2.80334,
+        "fixtureSHA256": "c2a32c0563b87eadffe72f7dfc798ad1ce0c63490dff050ab79d209cccbf01c6",
+        "resultSHA256": "2cddbb55bcd9ad27c1f96fa4a893eb923df8837dafdcf7fed5bfd8225ba74c57"
+      },
+      {
+        "ui": 30,
+        "lod": 0,
+        "maximumSourcePositionError": 3.1413532248163223e-12,
+        "recruitmentWeightError": 7.316196259932184e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 128.3248999970965,
+        "planMilliseconds": 58.269,
+        "cachedSolveMilliseconds": 3.29062,
+        "fixtureSHA256": "8b1b69865b926cf4cba5d39c1b2b27aa2ce74fc6f8d8a6a56cc4a310fc4137ec",
+        "resultSHA256": "7aa9bc28bc66bb1b1b1d56fa45e891a6c90d59c9ed64188e80f59e1e4cb6d998"
+      },
+      {
+        "ui": 40,
+        "lod": 0,
+        "maximumSourcePositionError": 1.0836296100499113e-12,
+        "recruitmentWeightError": 2.3314683517128287e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 122.98769998596981,
+        "planMilliseconds": 60.3746,
+        "cachedSolveMilliseconds": 3.08459,
+        "fixtureSHA256": "f5fbf4e02ed3f5e9b742c6de47b3cb4a02817619018ffcd4e22fe4c973f38f10",
+        "resultSHA256": "b371a5b1aa1df7a4f5811af891fc4a035b12920a0da38bf797a1f650c5f7f356"
+      },
+      {
+        "ui": 50,
+        "lod": 0,
+        "maximumSourcePositionError": 0.0,
+        "recruitmentWeightError": 1.1379786002407855e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 122.59949999861419,
+        "planMilliseconds": 60.9281,
+        "cachedSolveMilliseconds": 2.64832,
+        "fixtureSHA256": "f7f4e897e2e54d5c089a57e6316dd44de18fb8f76ab403e339fa5b0628ddf633",
+        "resultSHA256": "0c7cf469e9bb8bac95622f39119108a777ea9bc098dbfa48452365a3bf0b59c7"
+      },
+      {
+        "ui": 60,
+        "lod": 0,
+        "maximumSourcePositionError": 8.498265844145573e-12,
+        "recruitmentWeightError": 1.6020882808321507e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 110.29550002422184,
+        "planMilliseconds": 57.1011,
+        "cachedSolveMilliseconds": 2.51155,
+        "fixtureSHA256": "17bf5d1d3b8d72124836c2f8dcb9e0fc5886323c7cb051d21d25ef685e63b0fe",
+        "resultSHA256": "193ca96aef80972c7050751ce016f1ecdc0888c241e1f5d8fc4426746e06d105"
+      },
+      {
+        "ui": 70,
+        "lod": 0,
+        "maximumSourcePositionError": 4.250209572751082e-11,
+        "recruitmentWeightError": 1.865691710281267e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 140.51180001115426,
+        "planMilliseconds": 67.5154,
+        "cachedSolveMilliseconds": 3.5423,
+        "fixtureSHA256": "257ffb0be9656366c1b9f8706b48d603e5f18ba4df26402cd421357e3778edda",
+        "resultSHA256": "7e9aac6f5e6687e78749417d4555fde68900d4df5e48bedacbc52b44665b8862"
+      },
+      {
+        "ui": 80,
+        "lod": 0,
+        "maximumSourcePositionError": 4.1172475018201863e-10,
+        "recruitmentWeightError": 2.220446049250313e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 179.26400000578724,
+        "planMilliseconds": 69.3223,
+        "cachedSolveMilliseconds": 3.79596,
+        "fixtureSHA256": "c3703268878d09b1809e5d1689f021ae1b108f117533772795bc23210fba2ff6",
+        "resultSHA256": "8b10f1b651d647012d2db8f02538b49ab20f93a79bf0dee817b6d12346f12cd0"
+      },
+      {
+        "ui": 90,
+        "lod": 0,
+        "maximumSourcePositionError": 5.104205903078379e-10,
+        "recruitmentWeightError": 2.3314683517128287e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 155.34369999659248,
+        "planMilliseconds": 72.3091,
+        "cachedSolveMilliseconds": 4.26714,
+        "fixtureSHA256": "a48f0b05f92dcabf64125bb40df5a12994d4613069251ce0caa51dc5e93418ad",
+        "resultSHA256": "54ccf06de010209d784efbd94c03f8669ce0559b9837949a389b3dc6141b2a5f"
+      },
+      {
+        "ui": 100,
+        "lod": 0,
+        "maximumSourcePositionError": 1.2086954185030168e-09,
+        "recruitmentWeightError": 2.6645352591003757e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 180.508200020995,
+        "planMilliseconds": 78.7353,
+        "cachedSolveMilliseconds": 5.32727,
+        "fixtureSHA256": "ad802d5b6a6535e2cf7fa03d99190ea15e42d8b561c707c85a6488b964579180",
+        "resultSHA256": "0077612fd5eddbbe63b37d23b5e1142321ff416af74d27fa1b99bfd58a4d11eb"
+      },
+      {
+        "ui": 1,
+        "lod": 1,
+        "maximumSourcePositionError": 2.094626791238964e-12,
+        "recruitmentWeightError": 8.777700788442644e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 110.85649998858571,
+        "planMilliseconds": 55.3683,
+        "cachedSolveMilliseconds": 2.51058,
+        "fixtureSHA256": "31c557078c1bc86bd497116fe9caea6a5b466f1226d780b71b3a4feca7da0701",
+        "resultSHA256": "6c166b928cd864e8840f8331ed0d6836f2405597f6a3db58d29ee1682f9c590e"
+      },
+      {
+        "ui": 10,
+        "lod": 1,
+        "maximumSourcePositionError": 1.5629525198566545e-12,
+        "recruitmentWeightError": 1.4606371667724716e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 102.65960000106134,
+        "planMilliseconds": 51.6471,
+        "cachedSolveMilliseconds": 2.32578,
+        "fixtureSHA256": "695f89c19aa068479bc94d274d05ec45911b15a8a4de145947dd1f10527eed30",
+        "resultSHA256": "309cc87f5a9593eed8fcab399a5c6aa640c3e819804a70faeea2557f4331c7d3"
+      },
+      {
+        "ui": 20,
+        "lod": 1,
+        "maximumSourcePositionError": 1.9998684264353162e-12,
+        "recruitmentWeightError": 9.055256544598933e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 112.38740000408143,
+        "planMilliseconds": 56.1341,
+        "cachedSolveMilliseconds": 2.58781,
+        "fixtureSHA256": "a5c06d2c20d805f66c3af86413f907a7973f821e1ec2a2f2ff4f2bab77d2dfa3",
+        "resultSHA256": "4197ae15eeb7d22c5bc5aba3c9a4970a4c63e31a58e40a118274c0c851259fe3"
+      },
+      {
+        "ui": 30,
+        "lod": 1,
+        "maximumSourcePositionError": 1.6345921122142723e-12,
+        "recruitmentWeightError": 1.2351231148954867e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 118.84859998826869,
+        "planMilliseconds": 57.7611,
+        "cachedSolveMilliseconds": 2.80593,
+        "fixtureSHA256": "df65318c21a7aba9fc523a2b58a5d05d05be8460d2e0f00b2fc44671c656a6e8",
+        "resultSHA256": "dc0612971286a00418afed478d295c816901e5126edad3343c60971e4162599c"
+      },
+      {
+        "ui": 40,
+        "lod": 1,
+        "maximumSourcePositionError": 2.199739954047935e-12,
+        "recruitmentWeightError": 1.0623741334347611e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 124.87050000345334,
+        "planMilliseconds": 58.6105,
+        "cachedSolveMilliseconds": 3.11239,
+        "fixtureSHA256": "9689120d73f5c02b06eb41fbf5d2051d4a98d9dcf838148dac2e0773fd1a255a",
+        "resultSHA256": "0a4f4becafbed3ef3c7a5047463d8ee028fe6ce7b49806f1a5663d2900b17461"
+      },
+      {
+        "ui": 50,
+        "lod": 1,
+        "maximumSourcePositionError": 0.0,
+        "recruitmentWeightError": 9.228728892196614e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 114.37840000144206,
+        "planMilliseconds": 60.3622,
+        "cachedSolveMilliseconds": 2.48151,
+        "fixtureSHA256": "009e80de0e1aafd1a1857c4d97cb6c48d912521a215328e769be54a08ad726fc",
+        "resultSHA256": "8af47061450b45fbf65bc470fbc321fc7463103aea670a8617edc8085207da1e"
+      },
+      {
+        "ui": 60,
+        "lod": 1,
+        "maximumSourcePositionError": 8.190445251979727e-12,
+        "recruitmentWeightError": 2.365724058165687e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 147.88190001854673,
+        "planMilliseconds": 55.7378,
+        "cachedSolveMilliseconds": 2.67078,
+        "fixtureSHA256": "427c12406ceb3d2cbc2bd0d83ae7e4b86b3782f4d4aa3b661a06e7f845ce3cc4",
+        "resultSHA256": "0cdfd919924ffb0aebab8ee106f0b4b35ef0431670f26cf9694db358c250ee9f"
+      },
+      {
+        "ui": 70,
+        "lod": 1,
+        "maximumSourcePositionError": 5.6340986339194144e-11,
+        "recruitmentWeightError": 2.3052442116658356e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 129.91979997605085,
+        "planMilliseconds": 63.9748,
+        "cachedSolveMilliseconds": 3.23589,
+        "fixtureSHA256": "cf4a28bc019225842cbbceb85f7fee0b3daf6bb44fd03763f9fd53065e7b248f",
+        "resultSHA256": "31e8b26cc8ca6026ed3991326902e472a6b641cb308f7135134d7e05f907b98d"
+      },
+      {
+        "ui": 80,
+        "lod": 1,
+        "maximumSourcePositionError": 1.4496698388756329e-10,
+        "recruitmentWeightError": 2.1094237467877974e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 143.28129999921657,
+        "planMilliseconds": 68.861,
+        "cachedSolveMilliseconds": 3.69957,
+        "fixtureSHA256": "b3de6c7dc38906601f33549eb4162164c4907bd37ad41fb1ab8d8ff12d023426",
+        "resultSHA256": "bca425c83f9cfb92eafff02c732deaef596adc7d77c923b52df9d8b5d33e7a4d"
+      },
+      {
+        "ui": 90,
+        "lod": 1,
+        "maximumSourcePositionError": 1.8202317090652204e-09,
+        "recruitmentWeightError": 2.3314683517128287e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 168.22700001648627,
+        "planMilliseconds": 75.1051,
+        "cachedSolveMilliseconds": 4.27543,
+        "fixtureSHA256": "9d1b45a6a6e197c39a8a24e9a6494f0746d71580f90920147b5e2e5411715845",
+        "resultSHA256": "47af916ccb364ca2c293306ebf7be42fb7a172eeed9908faab88762e27274375"
+      },
+      {
+        "ui": 100,
+        "lod": 1,
+        "maximumSourcePositionError": 5.854184814883728e-10,
+        "recruitmentWeightError": 2.6645352591003757e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "processMilliseconds": 182.32520000310615,
+        "planMilliseconds": 86.4806,
+        "cachedSolveMilliseconds": 4.93007,
+        "fixtureSHA256": "17c118e3c27b904d8ab08bc51eaddf724dcfb7e00a226b8202c5b8f9eaa15042",
+        "resultSHA256": "dd24dd1d55108d3d9ad7a3f74ab69b79bd93b4e520b92955f55d6f2495959120"
+      }
+    ]
+  },
+  "compiledNativeProbe": {
+    "moduleSHA256": "ef1995ec09580b431e21dce1f9a582181bf636a4bc103072ff2a3324dfa5ea96",
+    "launcherSHA256": "4327f9c1756ef36b8330e45a99d3ee16224f955319a727c415382ef70a81f448",
+    "nativeRegistrationObserved": true,
+    "nativeScriptInvocationObserved": true,
+    "initialRegistrationClaimCorrected": "Initial UTF-16 call registered the wrong name; first flag was only callback completion. Process 16836 missing-import error confirmed failure.",
+    "registrationTests": [
+      {
+        "purpose": "Observe script native call and read-only graphics API",
+        "scriptSHA256": "dab8c95b771a0c803c259f5891d12e3998fcb2909a02a91450f89d3c7ec87f66",
+        "compilerProofSHA256": "ff4f58c33580ca20b5e5b8ccf5e40fc50853f4a69098b40c03241e78e1fe1c9c",
+        "moduleSHA256": "92390294514fe6f1711f6ea13b30a7e1a02b066e63955c74b8aa4cbae18925c7",
+        "launcherSHA256": "4327f9c1756ef36b8330e45a99d3ee16224f955319a727c415382ef70a81f448",
+        "baselineVersion": "0.4.31-overall-recruitment",
+        "fullRuntimeInstalled": false,
+        "addonRemoved": true,
+        "exitCode": 0,
+        "output": "Native probe initialized in owned process 16836; registration and script invocation still require live verification.\n{\"processID\":16836,\"initialized\":true,\"registrationObserved\":true,\"registrationFailed\":false,\"scriptInvocationObserved\":false}\n",
+        "stderr": "",
+        "observations": {
+          "processID": 16836,
+          "initialized": true,
+          "registrationObserved": true,
+          "registrationFailed": false,
+          "scriptInvocationObserved": false
+        },
+        "installedBaselineHashesPreserved": true
+      },
+      {
+        "purpose": "Observe script native call and read-only graphics API",
+        "scriptSHA256": "dab8c95b771a0c803c259f5891d12e3998fcb2909a02a91450f89d3c7ec87f66",
+        "compilerProofSHA256": "ff4f58c33580ca20b5e5b8ccf5e40fc50853f4a69098b40c03241e78e1fe1c9c",
+        "moduleSHA256": "94a406a032fd08a6644f42e188d2b7c30b6159e1549f874256271784502306bf",
+        "launcherSHA256": "4327f9c1756ef36b8330e45a99d3ee16224f955319a727c415382ef70a81f448",
+        "baselineVersion": "0.4.31-overall-recruitment",
+        "fullRuntimeInstalled": false,
+        "addonRemoved": true,
+        "exitCode": 0,
+        "output": "Native probe initialized in owned process 11604; registration and script invocation still require live verification.\n{\"processID\":11604,\"initialized\":true,\"registrationObserved\":true,\"registrationFailed\":false,\"scriptInvocationObserved\":true}\n",
+        "stderr": "",
+        "observations": {
+          "processID": 11604,
+          "initialized": true,
+          "registrationObserved": true,
+          "registrationFailed": false,
+          "scriptInvocationObserved": true
+        },
+        "installedBaselineHashesPreserved": true
+      },
+      {
+        "purpose": "Observe script native call and read-only graphics API",
+        "scriptSHA256": "dab8c95b771a0c803c259f5891d12e3998fcb2909a02a91450f89d3c7ec87f66",
+        "compilerProofSHA256": "ff4f58c33580ca20b5e5b8ccf5e40fc50853f4a69098b40c03241e78e1fe1c9c",
+        "moduleSHA256": "54511097872aa34a765b9f1056feb0eaa90b6d28972410d25f4bb95337a72535",
+        "launcherSHA256": "4327f9c1756ef36b8330e45a99d3ee16224f955319a727c415382ef70a81f448",
+        "baselineVersion": "0.4.31-overall-recruitment",
+        "fullRuntimeInstalled": false,
+        "addonRemoved": true,
+        "exitCode": 0,
+        "output": "Native probe initialized in owned process 23868; registration and script invocation still require live verification.\n{\"processID\":23868,\"initialized\":true,\"registrationObserved\":true,\"registrationFailed\":false,\"scriptInvocationObserved\":true}\n",
+        "stderr": "",
+        "observations": {
+          "processID": 23868,
+          "initialized": true,
+          "registrationObserved": true,
+          "registrationFailed": false,
+          "scriptInvocationObserved": true
+        },
+        "installedBaselineHashesPreserved": true
+      }
+    ],
+    "compilerImportVerification": {
+      "command": "native-compilescripts",
+      "exitCode": 0,
+      "seconds": 41.030999999988126,
+      "imports": [
+        "MaleModNativeReady"
+      ],
+      "compilerSHA256": "37ac28519adc8bc234653fcf973ba76935096aea50003b0f3a03af4007788f7d",
+      "profileSHA256": "185226a3ce7611e803e76e59ce308f319dfe3387994a79275441c18336ee5f85",
+      "wrapperSHA256": "264cce0c30d0e586e6d2278b94fddd09c616303d32252feeaef919e17e86674a",
+      "sourceSignature": "9018673b2efe4cf19b0fa50387c74126feac49ffc4b7c78be45534aa6c1b7bd6",
+      "logPath": "build/logs/20261002-025938-native-scripts-fbc12e.log",
+      "logSHA256": "76e123986d9b6bb92a86982895b0a91c6c7c022fb9ee4900fd208bd29090fcbf",
+      "artifact": "build/jobs/native-scripts-01e0dff22721-compiled/cooked-00000000f5abced8.redscripts",
+      "artifactSHA256": "33f01ed8edca73e30ec7950e825576f2c1e4b161216a14eb5fd4efa82dd5c833",
+      "sdkModified": false,
+      "gameModified": false,
+      "scriptImportsStubbed": false,
+      "observedGameInvocation": false
+    }
+  },
+  "fullNativeVertexOutput": false,
+  "overlayImplemented": false,
+  "fullRuntimeInstalled": false,
+  "fullRuntimeObservedGameplay": false,
+  "installedBaseline": {
+    "version": "0.4.31-overall-recruitment",
+    "baseCommit": "643846f54b59f2d44d191a9a75ee68f333eb726d",
+    "changedThisPhase": false,
+    "userObservedOverall": true,
+    "userRejectedReducedPhysics": true,
+    "allFiveHashesPreserved": true
+  },
+  "completeTargetCompositionVerification": {
+    "baseCommit": "46ac00fa524b71101cea7f30a248b2103757a816",
+    "artifactSHA256": "0128ca5a2030b518579bd88bd6906df71e0498e60b83fae5afc500c552c89b46",
+    "recipeSHA256": "6f42e10247f8d72de2885d4da3a33ff9c1fc801791e794f1efe14c979bb73ebb",
+    "executableSHA256": "853e5ff68a11154f643ef044813aa17a82ba0059e6378a37a4d7f20e923573fa",
+    "offlineOnly": true,
+    "nativeVertexOutput": false,
+    "nativeLightingVerified": false,
+    "observedGameplay": false,
+    "cases": [
+      {
+        "label": "overall-1",
+        "lod": 0,
+        "maximumNativePositionError": 3.753225647671309e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 69.0324,
+        "cachedMs": 5.27855
+      },
+      {
+        "label": "overall-1",
+        "lod": 1,
+        "maximumNativePositionError": 8.466713830648459e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 67.1585,
+        "cachedMs": 4.95186
+      },
+      {
+        "label": "overall-10",
+        "lod": 0,
+        "maximumNativePositionError": 4.570361821117541e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 65.5183,
+        "cachedMs": 5.3363
+      },
+      {
+        "label": "overall-10",
+        "lod": 1,
+        "maximumNativePositionError": 9.48155673569117e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.6441,
+        "cachedMs": 4.59599
+      },
+      {
+        "label": "overall-20",
+        "lod": 0,
+        "maximumNativePositionError": 9.887350400334925e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 67.7878,
+        "cachedMs": 5.30671
+      },
+      {
+        "label": "overall-20",
+        "lod": 1,
+        "maximumNativePositionError": 2.204585448997965e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 59.6678,
+        "cachedMs": 3.8499
+      },
+      {
+        "label": "overall-30",
+        "lod": 0,
+        "maximumNativePositionError": 2.4281710781739713e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.629,
+        "cachedMs": 4.90798
+      },
+      {
+        "label": "overall-30",
+        "lod": 1,
+        "maximumNativePositionError": 2.0008709658063438e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 62.4586,
+        "cachedMs": 4.21285
+      },
+      {
+        "label": "overall-40",
+        "lod": 0,
+        "maximumNativePositionError": 2.1711767147194336e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 67.3078,
+        "cachedMs": 4.87424
+      },
+      {
+        "label": "overall-40",
+        "lod": 1,
+        "maximumNativePositionError": 1.1650235486922403e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.1041,
+        "cachedMs": 4.43085
+      },
+      {
+        "label": "overall-50",
+        "lod": 0,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.232,
+        "cachedMs": 4.51642
+      },
+      {
+        "label": "overall-50",
+        "lod": 1,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.7414,
+        "cachedMs": 4.67959
+      },
+      {
+        "label": "overall-60",
+        "lod": 0,
+        "maximumNativePositionError": 3.676752787213835e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.5624,
+        "cachedMs": 4.87211
+      },
+      {
+        "label": "overall-60",
+        "lod": 1,
+        "maximumNativePositionError": 3.1441029701660994e-13,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 57.8897,
+        "cachedMs": 4.4431
+      },
+      {
+        "label": "overall-70",
+        "lod": 0,
+        "maximumNativePositionError": 8.39584057174345e-13,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 69.9007,
+        "cachedMs": 5.35411
+      },
+      {
+        "label": "overall-70",
+        "lod": 1,
+        "maximumNativePositionError": 2.372125409511417e-12,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 68.3631,
+        "cachedMs": 4.69075
+      },
+      {
+        "label": "overall-80",
+        "lod": 0,
+        "maximumNativePositionError": 3.3643749552184536e-12,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 79.4984,
+        "cachedMs": 6.03658
+      },
+      {
+        "label": "overall-80",
+        "lod": 1,
+        "maximumNativePositionError": 6.546079081742244e-12,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 72.5665,
+        "cachedMs": 5.61355
+      },
+      {
+        "label": "overall-90",
+        "lod": 0,
+        "maximumNativePositionError": 3.745661088654528e-12,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 79.7449,
+        "cachedMs": 6.16465
+      },
+      {
+        "label": "overall-90",
+        "lod": 1,
+        "maximumNativePositionError": 9.844694327313181e-12,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 83.1649,
+        "cachedMs": 6.14499
+      },
+      {
+        "label": "overall-100",
+        "lod": 0,
+        "maximumNativePositionError": 1.0125142796510756e-11,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 91.6881,
+        "cachedMs": 6.99913
+      },
+      {
+        "label": "overall-100",
+        "lod": 1,
+        "maximumNativePositionError": 6.516562396756719e-12,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 92.0009,
+        "cachedMs": 7.04446
+      },
+      {
+        "label": "surface-process-verified-shape-default",
+        "lod": 0,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 69.5816,
+        "cachedMs": 4.27844
+      },
+      {
+        "label": "surface-process-verified-shape-default",
+        "lod": 1,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 65.4561,
+        "cachedMs": 4.60733
+      },
+      {
+        "label": "surface-process-verified-shape-overall-1",
+        "lod": 0,
+        "maximumNativePositionError": 3.753225647671309e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 59.3371,
+        "cachedMs": 4.26018
+      },
+      {
+        "label": "surface-process-verified-shape-overall-1",
+        "lod": 1,
+        "maximumNativePositionError": 8.466713830648459e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 57.2764,
+        "cachedMs": 4.53216
+      },
+      {
+        "label": "surface-process-verified-shape-overall-25",
+        "lod": 0,
+        "maximumNativePositionError": 2.5141375690740006e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 63.4797,
+        "cachedMs": 4.85901
+      },
+      {
+        "label": "surface-process-verified-shape-overall-25",
+        "lod": 1,
+        "maximumNativePositionError": 8.840861578675098e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 59.0262,
+        "cachedMs": 4.00586
+      },
+      {
+        "label": "surface-process-verified-shape-overall-75",
+        "lod": 0,
+        "maximumNativePositionError": 1.500138620574673e-12,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 72.3925,
+        "cachedMs": 5.52912
+      },
+      {
+        "label": "surface-process-verified-shape-overall-75",
+        "lod": 1,
+        "maximumNativePositionError": 2.4190640725945123e-12,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 69.7884,
+        "cachedMs": 5.00524
+      },
+      {
+        "label": "surface-process-verified-shape-overall-100",
+        "lod": 0,
+        "maximumNativePositionError": 1.0125142796510756e-11,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 99.6529,
+        "cachedMs": 7.3626
+      },
+      {
+        "label": "surface-process-verified-shape-overall-100",
+        "lod": 1,
+        "maximumNativePositionError": 6.516562396756719e-12,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 89.574,
+        "cachedMs": 7.02371
+      },
+      {
+        "label": "surface-process-verified-shape-length-0",
+        "lod": 0,
+        "maximumNativePositionError": 4.3061432156260606e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.5048,
+        "cachedMs": 4.18706
+      },
+      {
+        "label": "surface-process-verified-shape-length-0",
+        "lod": 1,
+        "maximumNativePositionError": 7.629781766568579e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.5428,
+        "cachedMs": 3.94229
+      },
+      {
+        "label": "surface-process-verified-shape-length-25",
+        "lod": 0,
+        "maximumNativePositionError": 1.8280736132847246e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 62.6026,
+        "cachedMs": 5.03843
+      },
+      {
+        "label": "surface-process-verified-shape-length-25",
+        "lod": 1,
+        "maximumNativePositionError": 2.419377680575883e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 59.267,
+        "cachedMs": 4.31954
+      },
+      {
+        "label": "surface-process-verified-shape-length-75",
+        "lod": 0,
+        "maximumNativePositionError": 1.1428381958118776e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.7425,
+        "cachedMs": 5.54458
+      },
+      {
+        "label": "surface-process-verified-shape-length-75",
+        "lod": 1,
+        "maximumNativePositionError": 7.356721245227754e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 63.8041,
+        "cachedMs": 4.37568
+      },
+      {
+        "label": "surface-process-verified-shape-length-100",
+        "lod": 0,
+        "maximumNativePositionError": 1.9940941657072265e-13,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 70.2951,
+        "cachedMs": 5.18814
+      },
+      {
+        "label": "surface-process-verified-shape-length-100",
+        "lod": 1,
+        "maximumNativePositionError": 7.618768022884588e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 70.6304,
+        "cachedMs": 4.56419
+      },
+      {
+        "label": "surface-process-verified-shape-width-1",
+        "lod": 0,
+        "maximumNativePositionError": 2.5164286917686563e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.7451,
+        "cachedMs": 3.93655
+      },
+      {
+        "label": "surface-process-verified-shape-width-1",
+        "lod": 1,
+        "maximumNativePositionError": 2.912862225096001e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 56.4196,
+        "cachedMs": 4.19729
+      },
+      {
+        "label": "surface-process-verified-shape-width-25",
+        "lod": 0,
+        "maximumNativePositionError": 5.923914459777343e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 62.9389,
+        "cachedMs": 4.70282
+      },
+      {
+        "label": "surface-process-verified-shape-width-25",
+        "lod": 1,
+        "maximumNativePositionError": 1.676868812748022e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 57.3251,
+        "cachedMs": 4.08875
+      },
+      {
+        "label": "surface-process-verified-shape-width-75",
+        "lod": 0,
+        "maximumNativePositionError": 4.634038354708787e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.0343,
+        "cachedMs": 4.43345
+      },
+      {
+        "label": "surface-process-verified-shape-width-75",
+        "lod": 1,
+        "maximumNativePositionError": 1.011830641598149e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.052,
+        "cachedMs": 4.04509
+      },
+      {
+        "label": "surface-process-verified-shape-width-100",
+        "lod": 0,
+        "maximumNativePositionError": 1.768696833872519e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.6837,
+        "cachedMs": 4.50732
+      },
+      {
+        "label": "surface-process-verified-shape-width-100",
+        "lod": 1,
+        "maximumNativePositionError": 2.724444891857606e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 58.1542,
+        "cachedMs": 3.90972
+      },
+      {
+        "label": "surface-process-verified-shape-glans-0",
+        "lod": 0,
+        "maximumNativePositionError": 2.332069748210814e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 72.7396,
+        "cachedMs": 5.168
+      },
+      {
+        "label": "surface-process-verified-shape-glans-0",
+        "lod": 1,
+        "maximumNativePositionError": 1.471372777539972e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.2528,
+        "cachedMs": 4.592
+      },
+      {
+        "label": "surface-process-verified-shape-glans-25",
+        "lod": 0,
+        "maximumNativePositionError": 1.2412670766236366e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 65.1433,
+        "cachedMs": 4.31416
+      },
+      {
+        "label": "surface-process-verified-shape-glans-25",
+        "lod": 1,
+        "maximumNativePositionError": 1.2412670766236366e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.0204,
+        "cachedMs": 4.08025
+      },
+      {
+        "label": "surface-process-verified-shape-glans-75",
+        "lod": 0,
+        "maximumNativePositionError": 1.1102230246251565e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.1041,
+        "cachedMs": 4.39615
+      },
+      {
+        "label": "surface-process-verified-shape-glans-75",
+        "lod": 1,
+        "maximumNativePositionError": 1.1102230246251565e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 62.6328,
+        "cachedMs": 4.18687
+      },
+      {
+        "label": "surface-process-verified-shape-glans-100",
+        "lod": 0,
+        "maximumNativePositionError": 1.2412670766236366e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 65.0864,
+        "cachedMs": 4.44953
+      },
+      {
+        "label": "surface-process-verified-shape-glans-100",
+        "lod": 1,
+        "maximumNativePositionError": 1.2412670766236366e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.6797,
+        "cachedMs": 4.38793
+      },
+      {
+        "label": "surface-process-verified-shape-scrotum-1",
+        "lod": 0,
+        "maximumNativePositionError": 2.6866483448849097e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.0114,
+        "cachedMs": 4.61658
+      },
+      {
+        "label": "surface-process-verified-shape-scrotum-1",
+        "lod": 1,
+        "maximumNativePositionError": 1.275163309861429e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 62.3972,
+        "cachedMs": 4.42236
+      },
+      {
+        "label": "surface-process-verified-shape-scrotum-25",
+        "lod": 0,
+        "maximumNativePositionError": 9.497153338107203e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.9858,
+        "cachedMs": 4.75205
+      },
+      {
+        "label": "surface-process-verified-shape-scrotum-25",
+        "lod": 1,
+        "maximumNativePositionError": 1.4504672270479357e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.964,
+        "cachedMs": 4.50179
+      },
+      {
+        "label": "surface-process-verified-shape-scrotum-75",
+        "lod": 0,
+        "maximumNativePositionError": 1.1771763496365766e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 74.3396,
+        "cachedMs": 4.94372
+      },
+      {
+        "label": "surface-process-verified-shape-scrotum-75",
+        "lod": 1,
+        "maximumNativePositionError": 4.804572765709341e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 65.1926,
+        "cachedMs": 4.61568
+      },
+      {
+        "label": "surface-process-verified-shape-scrotum-100",
+        "lod": 0,
+        "maximumNativePositionError": 2.5085563338441133e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 68.1723,
+        "cachedMs": 4.62715
+      },
+      {
+        "label": "surface-process-verified-shape-scrotum-100",
+        "lod": 1,
+        "maximumNativePositionError": 2.2722928205158043e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.194,
+        "cachedMs": 4.79609
+      },
+      {
+        "label": "surface-process-verified-shape-hang-1",
+        "lod": 0,
+        "maximumNativePositionError": 1.0532715830645781e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 70.0437,
+        "cachedMs": 5.0609
+      },
+      {
+        "label": "surface-process-verified-shape-hang-1",
+        "lod": 1,
+        "maximumNativePositionError": 5.684992412512226e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 62.8972,
+        "cachedMs": 4.51633
+      },
+      {
+        "label": "surface-process-verified-shape-hang-25",
+        "lod": 0,
+        "maximumNativePositionError": 8.250890491044993e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.5672,
+        "cachedMs": 4.69623
+      },
+      {
+        "label": "surface-process-verified-shape-hang-25",
+        "lod": 1,
+        "maximumNativePositionError": 5.051576716074402e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.4691,
+        "cachedMs": 4.47475
+      },
+      {
+        "label": "surface-process-verified-shape-hang-75",
+        "lod": 0,
+        "maximumNativePositionError": 3.907668412937678e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.8906,
+        "cachedMs": 4.73987
+      },
+      {
+        "label": "surface-process-verified-shape-hang-75",
+        "lod": 1,
+        "maximumNativePositionError": 1.5562059951513097e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 62.2158,
+        "cachedMs": 4.49476
+      },
+      {
+        "label": "surface-process-verified-shape-hang-100",
+        "lod": 0,
+        "maximumNativePositionError": 7.934661436045202e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.5716,
+        "cachedMs": 4.82604
+      },
+      {
+        "label": "surface-process-verified-shape-hang-100",
+        "lod": 1,
+        "maximumNativePositionError": 3.1077834015003154e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 63.629,
+        "cachedMs": 4.554
+      },
+      {
+        "label": "surface-process-verified-shape-angle-1",
+        "lod": 0,
+        "maximumNativePositionError": 6.051101830698807e-13,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 59.4337,
+        "cachedMs": 4.1041
+      },
+      {
+        "label": "surface-process-verified-shape-angle-1",
+        "lod": 1,
+        "maximumNativePositionError": 5.070162244770991e-13,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 55.5486,
+        "cachedMs": 4.03949
+      },
+      {
+        "label": "surface-process-verified-shape-angle-25",
+        "lod": 0,
+        "maximumNativePositionError": 2.0321091685288835e-13,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 68.3626,
+        "cachedMs": 5.23096
+      },
+      {
+        "label": "surface-process-verified-shape-angle-25",
+        "lod": 1,
+        "maximumNativePositionError": 1.0033252418167804e-13,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.4402,
+        "cachedMs": 4.15867
+      },
+      {
+        "label": "surface-process-verified-shape-angle-75",
+        "lod": 0,
+        "maximumNativePositionError": 2.4975965498035363e-13,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 101.095,
+        "cachedMs": 7.84438
+      },
+      {
+        "label": "surface-process-verified-shape-angle-75",
+        "lod": 1,
+        "maximumNativePositionError": 3.7735351897071284e-13,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.2115,
+        "cachedMs": 4.63416
+      },
+      {
+        "label": "surface-process-verified-shape-angle-100",
+        "lod": 0,
+        "maximumNativePositionError": 5.205925829431019e-13,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 70.0091,
+        "cachedMs": 5.4685
+      },
+      {
+        "label": "surface-process-verified-shape-angle-100",
+        "lod": 1,
+        "maximumNativePositionError": 4.712792156410623e-13,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 63.4449,
+        "cachedMs": 4.71339
+      },
+      {
+        "label": "surface-process-verified-shape-forward-1",
+        "lod": 0,
+        "maximumNativePositionError": 1.3241884136819471e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.1528,
+        "cachedMs": 4.47813
+      },
+      {
+        "label": "surface-process-verified-shape-forward-1",
+        "lod": 1,
+        "maximumNativePositionError": 1.0270407448646167e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.549,
+        "cachedMs": 4.3441
+      },
+      {
+        "label": "surface-process-verified-shape-forward-25",
+        "lod": 0,
+        "maximumNativePositionError": 4.2014262280156035e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 65.6109,
+        "cachedMs": 4.68785
+      },
+      {
+        "label": "surface-process-verified-shape-forward-25",
+        "lod": 1,
+        "maximumNativePositionError": 3.187634834778473e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.8694,
+        "cachedMs": 4.65161
+      },
+      {
+        "label": "surface-process-verified-shape-forward-75",
+        "lod": 0,
+        "maximumNativePositionError": 8.053814811305745e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 71.3808,
+        "cachedMs": 4.76631
+      },
+      {
+        "label": "surface-process-verified-shape-forward-75",
+        "lod": 1,
+        "maximumNativePositionError": 7.361017271992856e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 63.8253,
+        "cachedMs": 4.98663
+      },
+      {
+        "label": "surface-process-verified-shape-forward-100",
+        "lod": 0,
+        "maximumNativePositionError": 1.5010614313572865e-13,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 67.9409,
+        "cachedMs": 5.34561
+      },
+      {
+        "label": "surface-process-verified-shape-forward-100",
+        "lod": 1,
+        "maximumNativePositionError": 1.3396841941440378e-13,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 62.0183,
+        "cachedMs": 5.41744
+      },
+      {
+        "label": "surface-process-verified-shape-vertical-1",
+        "lod": 0,
+        "maximumNativePositionError": 2.2148618915287933e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 67.212,
+        "cachedMs": 5.53509
+      },
+      {
+        "label": "surface-process-verified-shape-vertical-1",
+        "lod": 1,
+        "maximumNativePositionError": 5.083096710676802e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.4767,
+        "cachedMs": 4.51326
+      },
+      {
+        "label": "surface-process-verified-shape-vertical-25",
+        "lod": 0,
+        "maximumNativePositionError": 3.247924501295991e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.1986,
+        "cachedMs": 4.86694
+      },
+      {
+        "label": "surface-process-verified-shape-vertical-25",
+        "lod": 1,
+        "maximumNativePositionError": 1.3049054907890998e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.8227,
+        "cachedMs": 5.04721
+      },
+      {
+        "label": "surface-process-verified-shape-vertical-75",
+        "lod": 0,
+        "maximumNativePositionError": 2.7236084037611017e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 72.8921,
+        "cachedMs": 5.27487
+      },
+      {
+        "label": "surface-process-verified-shape-vertical-75",
+        "lod": 1,
+        "maximumNativePositionError": 2.1494130832775e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.108,
+        "cachedMs": 4.62985
+      },
+      {
+        "label": "surface-process-verified-shape-vertical-100",
+        "lod": 0,
+        "maximumNativePositionError": 2.2370363698566297e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 69.7199,
+        "cachedMs": 5.32046
+      },
+      {
+        "label": "surface-process-verified-shape-vertical-100",
+        "lod": 1,
+        "maximumNativePositionError": 1.6601721298600254e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 69.6483,
+        "cachedMs": 4.693
+      },
+      {
+        "label": "surface-process-verified-physics-default",
+        "lod": 0,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.9364,
+        "cachedMs": 4.09891
+      },
+      {
+        "label": "surface-process-verified-physics-default",
+        "lod": 1,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.3493,
+        "cachedMs": 4.09091
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_stiffness-1",
+        "lod": 0,
+        "maximumNativePositionError": 4.825032859401759e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 91.9872,
+        "cachedMs": 6.87784
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_stiffness-1",
+        "lod": 1,
+        "maximumNativePositionError": 2.120763125902953e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 85.0784,
+        "cachedMs": 5.09795
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_stiffness-25",
+        "lod": 0,
+        "maximumNativePositionError": 3.9565950892809514e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 69.6619,
+        "cachedMs": 4.87639
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_stiffness-25",
+        "lod": 1,
+        "maximumNativePositionError": 1.71855334708585e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 62.8819,
+        "cachedMs": 4.52045
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_stiffness-75",
+        "lod": 0,
+        "maximumNativePositionError": 2.697802329320659e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.2996,
+        "cachedMs": 4.61151
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_stiffness-75",
+        "lod": 1,
+        "maximumNativePositionError": 1.1299110408055576e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.3081,
+        "cachedMs": 4.45091
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_stiffness-100",
+        "lod": 0,
+        "maximumNativePositionError": 1.1092589671666471e-14,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.8674,
+        "cachedMs": 5.0578
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_stiffness-100",
+        "lod": 1,
+        "maximumNativePositionError": 4.442149594982449e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.4805,
+        "cachedMs": 4.61314
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_weight-1",
+        "lod": 0,
+        "maximumNativePositionError": 4.731034598081535e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 74.4794,
+        "cachedMs": 4.80214
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_weight-1",
+        "lod": 1,
+        "maximumNativePositionError": 1.987993103469421e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 63.189,
+        "cachedMs": 4.60083
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_weight-25",
+        "lod": 0,
+        "maximumNativePositionError": 8.06771381351507e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 70.9037,
+        "cachedMs": 4.91269
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_weight-25",
+        "lod": 1,
+        "maximumNativePositionError": 3.9307471273088276e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 65.7509,
+        "cachedMs": 5.07604
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_weight-75",
+        "lod": 0,
+        "maximumNativePositionError": 1.4817422638912102e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.4518,
+        "cachedMs": 4.68376
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_weight-75",
+        "lod": 1,
+        "maximumNativePositionError": 1.18774731498903e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.1966,
+        "cachedMs": 4.48172
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_weight-100",
+        "lod": 0,
+        "maximumNativePositionError": 3.0719792850046133e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.4811,
+        "cachedMs": 5.17703
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_weight-100",
+        "lod": 1,
+        "maximumNativePositionError": 1.4898437035160061e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.9947,
+        "cachedMs": 4.45026
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_bounce-1",
+        "lod": 0,
+        "maximumNativePositionError": 1.18774731498903e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.0102,
+        "cachedMs": 4.71431
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_bounce-1",
+        "lod": 1,
+        "maximumNativePositionError": 1.1449174941446927e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 62.6336,
+        "cachedMs": 4.52796
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_bounce-25",
+        "lod": 0,
+        "maximumNativePositionError": 1.1464934308770758e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 72.504,
+        "cachedMs": 4.55943
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_bounce-25",
+        "lod": 1,
+        "maximumNativePositionError": 1.119400808498433e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.8913,
+        "cachedMs": 4.40949
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_bounce-75",
+        "lod": 0,
+        "maximumNativePositionError": 1.3315627116480466e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 65.3129,
+        "cachedMs": 5.01147
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_bounce-75",
+        "lod": 1,
+        "maximumNativePositionError": 1.1491151892306092e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 67.2009,
+        "cachedMs": 4.65059
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_bounce-100",
+        "lod": 0,
+        "maximumNativePositionError": 3.64275408404521e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.7526,
+        "cachedMs": 4.96012
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_bounce-100",
+        "lod": 1,
+        "maximumNativePositionError": 1.645337435932006e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.5967,
+        "cachedMs": 4.7964
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_velocity-1",
+        "lod": 0,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 69.0232,
+        "cachedMs": 4.47899
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_velocity-1",
+        "lod": 1,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 65.4993,
+        "cachedMs": 4.39986
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_velocity-25",
+        "lod": 0,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 68.1298,
+        "cachedMs": 4.31762
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_velocity-25",
+        "lod": 1,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 62.6091,
+        "cachedMs": 4.23899
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_velocity-75",
+        "lod": 0,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 69.5837,
+        "cachedMs": 4.57453
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_velocity-75",
+        "lod": 1,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.633,
+        "cachedMs": 4.56419
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_velocity-100",
+        "lod": 0,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 69.6742,
+        "cachedMs": 4.5476
+      },
+      {
+        "label": "surface-process-verified-physics-shaft_velocity-100",
+        "lod": 1,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 63.6148,
+        "cachedMs": 4.41824
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_stiffness-1",
+        "lod": 0,
+        "maximumNativePositionError": 5.602649814075505e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.6161,
+        "cachedMs": 5.22842
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_stiffness-1",
+        "lod": 1,
+        "maximumNativePositionError": 2.2657826234704794e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.4239,
+        "cachedMs": 4.25074
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_stiffness-25",
+        "lod": 0,
+        "maximumNativePositionError": 2.009001524393962e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 65.5095,
+        "cachedMs": 4.90709
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_stiffness-25",
+        "lod": 1,
+        "maximumNativePositionError": 8.179731656614892e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.7371,
+        "cachedMs": 4.37005
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_stiffness-75",
+        "lod": 0,
+        "maximumNativePositionError": 2.8900159907665353e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 67.3685,
+        "cachedMs": 5.00427
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_stiffness-75",
+        "lod": 1,
+        "maximumNativePositionError": 1.3167499646845493e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.1342,
+        "cachedMs": 4.16036
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_stiffness-100",
+        "lod": 0,
+        "maximumNativePositionError": 5.513859432617215e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 70.9669,
+        "cachedMs": 5.13395
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_stiffness-100",
+        "lod": 1,
+        "maximumNativePositionError": 2.4131094743304574e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 63.5715,
+        "cachedMs": 4.40985
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_weight-1",
+        "lod": 0,
+        "maximumNativePositionError": 1.0580448087095524e-15,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 67.9185,
+        "cachedMs": 5.25253
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_weight-1",
+        "lod": 1,
+        "maximumNativePositionError": 5.004188655705841e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.5857,
+        "cachedMs": 4.50694
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_weight-25",
+        "lod": 0,
+        "maximumNativePositionError": 7.764123083730737e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.3715,
+        "cachedMs": 4.70383
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_weight-25",
+        "lod": 1,
+        "maximumNativePositionError": 3.379462171739212e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 63.2443,
+        "cachedMs": 4.56851
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_weight-75",
+        "lod": 0,
+        "maximumNativePositionError": 1.2177709378935645e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.1725,
+        "cachedMs": 5.04059
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_weight-75",
+        "lod": 1,
+        "maximumNativePositionError": 1.1464934308770758e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.4288,
+        "cachedMs": 5.02412
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_weight-100",
+        "lod": 0,
+        "maximumNativePositionError": 1.2648025775023737e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.9376,
+        "cachedMs": 4.85058
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_weight-100",
+        "lod": 1,
+        "maximumNativePositionError": 1.1464934308770758e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.5558,
+        "cachedMs": 4.49776
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_bounce-1",
+        "lod": 0,
+        "maximumNativePositionError": 1.2566871346510768e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 67.054,
+        "cachedMs": 4.62659
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_bounce-1",
+        "lod": 1,
+        "maximumNativePositionError": 1.1464934308770758e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.7115,
+        "cachedMs": 4.48928
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_bounce-25",
+        "lod": 0,
+        "maximumNativePositionError": 2.220513810852149e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 67.0615,
+        "cachedMs": 4.64796
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_bounce-25",
+        "lod": 1,
+        "maximumNativePositionError": 1.1449174941446927e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.2748,
+        "cachedMs": 4.7395
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_bounce-75",
+        "lod": 0,
+        "maximumNativePositionError": 1.1274368112207335e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 70.8343,
+        "cachedMs": 4.84789
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_bounce-75",
+        "lod": 1,
+        "maximumNativePositionError": 1.1443916996305594e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 63.4133,
+        "cachedMs": 4.61166
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_bounce-100",
+        "lod": 0,
+        "maximumNativePositionError": 1.6199010924212654e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 69.2075,
+        "cachedMs": 4.8398
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_bounce-100",
+        "lod": 1,
+        "maximumNativePositionError": 1.2300645156085197e-16,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 63.2789,
+        "cachedMs": 4.7061
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_velocity-1",
+        "lod": 0,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 70.6265,
+        "cachedMs": 4.77447
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_velocity-1",
+        "lod": 1,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.5505,
+        "cachedMs": 4.46706
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_velocity-25",
+        "lod": 0,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.8709,
+        "cachedMs": 4.46978
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_velocity-25",
+        "lod": 1,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 64.289,
+        "cachedMs": 3.83266
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_velocity-75",
+        "lod": 0,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 65.7116,
+        "cachedMs": 4.56586
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_velocity-75",
+        "lod": 1,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 60.7773,
+        "cachedMs": 3.92144
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_velocity-100",
+        "lod": 0,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 66.8246,
+        "cachedMs": 4.4762
+      },
+      {
+        "label": "surface-process-verified-physics-scrotum_velocity-100",
+        "lod": 1,
+        "maximumNativePositionError": 0.0,
+        "seamError": 0.0,
+        "protectedBoundaryError": 0.0,
+        "firstMs": 61.9139,
+        "cachedMs": 3.8802
+      }
+    ]
+  },
+  "targetBindingArtifact": {
+    "contractVersion": 2,
+    "baseCommit": "58876e24136d3d2c941fa144aa4c7651c98cbb75",
+    "sourceGeometryCommit": "dc64bdc44e75fd5521f066cdb2975277e9c34302",
+    "artifact": "geralt.bindings",
+    "artifactSHA256": "0d6f2055273d5e8fac361a1f50853627e2e1c175e128a385b714910a8ef44b19",
+    "recipeSHA256": "7fdc6c66ddf1c5fa5491f73565d26244bdfc81f3f1ec6a8819f2f25c7570e697",
+    "neutralSourceSHA256": "ecae3a9acea247502c6182a0cd6c1688f687c059dc0557d7d9bfdb11fbbafb4d",
+    "sourceBankSHA256": "16f50136b2cecf3cd2eaeff4c7aad9c18dded51851ad7f360a38c1371c509044",
+    "fitSHA256": "b0bd95711831b64e4f49ac6885d1ae2cbd8e0159e6f7f059fd711fa99a66b2bf",
+    "coordinateCalibration": {
+      "basis": [
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "sourceRoot": [
+        10.368809700012207,
+        0.12673234939575195,
+        83.42259979248047
+      ],
+      "targetRootNative": [
+        0.0,
+        0.11,
+        0.975
+      ],
+      "nativeUnitsPerSourceUnit": 0.010255218584141074,
+      "unitsEvidence": "approved raw FBX mesh coordinates divided by 100 to match observed rig translations"
+    },
+    "lods": [
+      {
+        "lod": 0,
+        "renderVertices": 18572,
+        "uniqueVertices": 18406,
+        "bodyVertices": 1017,
+        "bindingPath": "build/attachment/fit-20261001-193459-664950/geralt-anatomy-lod0.bindings.npz",
+        "bindingSHA256": "64179c8b720f315e67ceda28d97af8ec143615017fbb6b983e364d899e13884f",
+        "motionSHA256": "eaea15164abeb18668d554e7117a573a23aa2bcacb5ea1c8fc689d942fb2f2d2"
+      },
+      {
+        "lod": 1,
+        "renderVertices": 18113,
+        "uniqueVertices": 17977,
+        "bodyVertices": 567,
+        "bindingPath": "build/attachment/fit-20261001-193459-664950/geralt-anatomy-lod1.bindings.npz",
+        "bindingSHA256": "6dcc5e71e8642c9611a43d69f76a439e3befc4be3b93104bf71a1692fabfc69d",
+        "motionSHA256": "28b511bd95e1ab02749208c5aede19753495f817c8df5129ff78304e02620109"
+      }
+    ],
+    "nativeVertexOutput": false,
+    "observedGameplay": false
+  },
+  "targetCollarVerificationBaseCommit": "676a9b8846fa65cd9462126b5ec1f4f0a41be29d",
+  "targetCompositionAdoptionNote": "162 fixtures verified Base 46ac00f; 58876e2 changes only exact wire packing. The current-pin 180-frame pipeline is separately verified.",
+  "changingPipelineVerification": {
+    "baseCommit": "58876e24136d3d2c941fa144aa4c7651c98cbb75",
+    "reportSHA256": "2f952b4c9e8c0c1e93ca19e00963b5d075c596db34b5699f8911d40aa576afc8",
+    "passed": true,
+    "frames": 180,
+    "yawedFrames": 180,
+    "sourceMetricBuilds": 22,
+    "exactFreshPlanComparisons": 48,
+    "sourceMedianMs": 33.0046,
+    "sourceP95Ms": 236.835,
+    "targetMedianBothLODsMs": 6.5017,
+    "targetP95BothLODsMs": 40.1969,
+    "observedGameplay": false,
+    "nativeVertexOutput": false
+  },
+  "asynchronousServiceVerification": {
+    "baseCommit": "58876e24136d3d2c941fa144aa4c7651c98cbb75",
+    "frames": 48,
+    "sourceWireExact": true,
+    "bothTargetLODsExact": true,
+    "backpressureExercised": true,
+    "reportSHA256": "54bb78f4b1bf4f2220adeaab2212da23762925dd019bd6d438d72b09f8f23c54",
+    "executableSHA256": "3e8539066e65645a1e01df1555d8fa32ec773b216e4fcb7ddb545494b2c42079",
+    "engineIntegrated": false
+  },
+  "packedMeshVerification": {
+    "meshSHA256": "35654adc1e7a2369274063c66fe8aa3b5c5ca0ab3d126df27d504708b2290301",
+    "bufferSHA256": "2dfbd4e4c0ecb4e09d4234e7a096639aebce464b9dd46fcced8b5e5115ed2a8d",
+    "dumpSHA256": "2c3feaa0113dd2e9bd9f417ea8a2b3c8aa037cf0392d99e51f051a2f767b1808",
+    "fbxSHA256": "974c5c957ba0c621002c525a55775604b7c749eaf7005b875ca8d1c695d5cafe",
+    "recipeSHA256": "0c9f1725465f90cab469142ca62405facb500dad05c2f128b3f468b65827b2b7",
+    "binaryReaderSHA256": "03b26f0bdadd8099b3b1ef5bedd456e58367feaf144320cebb46c8622c0b8d28",
+    "cookedVersion": 164,
+    "exactQuantizationConstantsVerified": true,
+    "nativeVertexOutput": false,
+    "observedGameplay": false,
+    "reportSHA256": "69c4bcabbc7c1e6a9f9fda6691a60498cfddd53c5dbbaf66727c88ecc1d13ef9",
+    "activeInstalledResourceVerified": false,
+    "lods": [
+      {
+        "lod": 0,
+        "nativeVertices": 18498,
+        "authoredVertices": 18572,
+        "nativeIndices": 110232,
+        "maximumNearestPositionError": 1.6734371317858506e-05,
+        "maximumNearestUVError": 0.0006842791642419809,
+        "normalDecodeDiagnostics": {
+          "unorm8-0": 2.621503264952345,
+          "unorm8-4": 2.687318776240824,
+          "unorm10-0": 0.001954988064833074
+        },
+        "ambiguousAttributeDonors": 90,
+        "maximumAmbiguousPositionSpread": 0.0,
+        "minimumSkinWeightSum": 250,
+        "maximumSkinWeightSum": 255,
+        "maximumBoneIndex": 22,
+        "namedSkinWeightsVerified": true,
+        "maximumNamedSkinWeightError": 0.00392156259441051,
+        "exactUVTruncationVerified": true,
+        "nativeTopologyMatchesAuthored": true,
+        "inverseBindVerified": true,
+        "maximumInverseBindComponentError": 1.987648112766749e-07,
+        "mappingVerified": true,
+        "nativeLightingVerified": false
+      },
+      {
+        "lod": 1,
+        "nativeVertices": 18049,
+        "authoredVertices": 18113,
+        "nativeIndices": 107736,
+        "maximumNearestPositionError": 1.6710429739647023e-05,
+        "maximumNearestUVError": 0.0006837309154804147,
+        "normalDecodeDiagnostics": {
+          "unorm8-0": 2.621503264952345,
+          "unorm8-4": 2.68718092141864,
+          "unorm10-0": 0.001954988064833074
+        },
+        "ambiguousAttributeDonors": 73,
+        "maximumAmbiguousPositionSpread": 0.0,
+        "minimumSkinWeightSum": 249,
+        "maximumSkinWeightSum": 255,
+        "maximumBoneIndex": 45,
+        "namedSkinWeightsVerified": true,
+        "maximumNamedSkinWeightError": 0.003921543961848323,
+        "exactUVTruncationVerified": true,
+        "nativeTopologyMatchesAuthored": true,
+        "inverseBindVerified": true,
+        "maximumInverseBindComponentError": 1.987648112766749e-07,
+        "mappingVerified": true,
+        "nativeLightingVerified": false
+      }
+    ]
+  },
+  "stateMachineCorrectionVerification": {
+    "reportSHA256": "6ae15b3eeae05aa734e3360abf248d65a4f941e3f0ca3272cb2c7658ff114e15",
+    "ownedSourceHashes": {
+      "local/malemod/physics.ws": "79329c6d1fe3a9da14dfd4f12cfc893b7cc8ec31b04bf0968a8ac355f3e6917e",
+      "local/malemod/ready.ws": "9f6fa322a3ba7b0f89547c9d3e74056fb4b458eef03ec7f07cf4a03e05388fa7"
+    },
+    "compilerSHA256": "37ac28519adc8bc234653fcf973ba76935096aea50003b0f3a03af4007788f7d",
+    "profileSHA256": "185226a3ce7611e803e76e59ce308f319dfe3387994a79275441c18336ee5f85",
+    "artifactSHA256": "9f3dfe67c765ee6e7209110f2b1bbe3146f761fe81357aa3a5634ddd096b7339",
+    "sdkModified": false,
+    "gameModified": false,
+    "scriptImportsStubbed": false,
+    "observedGameInvocation": false
+  },
+  "latestTypedProbe": {
+    "receiptSHA256": "b8bb3fe18297d862b97891e46c538ca698760965e7ddf8600835fccdd0d182ea",
+    "statusSHA256": "3a97f359ef06676bbb85b525f73c928b50fab4110463ea650fcdc8e64c88098a",
+    "moduleSHA256": "84e4eadd92e98b184cfbc4ccfee3f012077875a52050caba1d81748259e2aabd",
+    "scriptSHA256": "9f6fa322a3ba7b0f89547c9d3e74056fb4b458eef03ec7f07cf4a03e05388fa7",
+    "processID": 21512,
+    "scriptInvocationObserved": true,
+    "typedArgumentsObserved": true,
+    "typedRoundtripObserved": true,
+    "typedProbeFailed": false,
+    "registrationFailed": false,
+    "graphicsFlags": 11,
+    "rawFlags": 93,
+    "readOnlyStatus": true,
+    "lateInvocationAfterLauncherTimeout": true,
+    "controlsDriveSolver": false,
+    "addonRemoved": true
+  },
+  "candidateObserver": {
+    "moduleSHA256": "c119dcb0b6620d08771e5465f66106d05d5adeedca6326fcc2894d7e1185eaf8",
+    "sdkTestReportSHA256": "2859ea828405bd41c31e449239a8858319adedc6b503bb546df8523ef6cc76f2",
+    "sdkTestExecutableSHA256": "eb6d820d6e056007c36cec94ad59b694607d2a4961e24944c1b61e281ca274f4",
+    "multiImplementationHooks": true,
+    "SDKCopyDirectSmokeTestPassed": true,
+    "observedInGame": false,
+    "vertexWrites": false
+  }
+}

@@ -6,3 +6,6 @@
 *.xml text eol=lf
 *.cs text eol=lf
 tools/native/*.cpp text eol=lf
+native/*.cpp text eol=lf
+native/*.hpp text eol=lf
+native/CMakeLists.txt text eol=lf

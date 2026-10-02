@@ -45,3 +45,7 @@ expanding the UI. Connect edits to the existing .31 Overall controller; keep
 geometry/recruitment and physics in pinned Base and native UI in this adapter.
 Do not introduce F12 or another arbitrary activation binding. A separate
 overlay has not yet been built, installed or observed in gameplay.
+
+October 2 update: custom native global registration and WitcherScript calls
+are now observed in the actual game. The full separate overlay remains
+unimplemented. Read FULL-RUNTIME.md for the exact ABI correction and evidence.

@@ -1,5 +1,50 @@
 # Current checkpoint: .31 Overall installed
 
+October 2 full-runtime authorization supersedes the narrow scope below. Read
+FULL-RUNTIME.md. Base is pinned to 58876e2. The verified parallel source core and complete
+C++ Geralt lineage/body-field/collar composition pass offline checks: 162
+cases across both LODs, all existing shape/physics controls. CPU composition
+is not native upload/lighting or observed gameplay.
+
+Native import/call is now observed in game (processes 11604 and 23868).
+Earlier "registered" flags were insufficient: the first probe incorrectly
+passed UTF-16 to the game's ASCII name pool and registered the wrong name.
+Process 16836 showed the user's missing-import compilation error. The encoding
+is corrected and registration now reads back the exact named function from
+RTTI. Official WCC imports compile through a separately hash-checked compiler
+ABI. Temporary probe addons are removed after each test; all five .31 baseline
+hashes are preserved. No new full runtime package is installed.
+
+The DX12 observer records actual device buffer creation/copies. It is read-only;
+owned mesh identification, vertex output, live pose/contacts and overlay remain
+unfinished. Native performance remains unverified; the process-parallel source
+recipe now passes its source shape/physics/trace gates after matching Wolverine's
+arithmetic. Wire 3 exports the source collar metric cache, cutting moving-frame
+target composition from about 33.5ms to about 6.5ms for both LODs. Full source
+transport still takes about 33ms; native performance is unverified. Typed input,
+return and all 18 preference roundtrips passed in process 27832. Exact neutral
+packed positions/UVs/skin palettes/binds/topology have been inspected; active
+resource identification, tangent output and GPU synchronization remain open.
+The controller's statemachine declaration correction passes official compilation.
+Wolverine is unchanged. No complete native renderer or overlay is installed.
+
+Latest live checkpoint: the user loaded a save with Geralt visible in process
+21512. Typed input/output and all 18 controls passed after the launcher timeout;
+the original observer still saw only device/copies (flags 11). A new separate
+`build/native-observer-v2` fixes first-list-only trampolines. The SDK smoke test
+reproduces distinct copy/direct implementations and passes flags 15. The user
+has been asked to close Witcher when convenient before this concrete next
+read-only probe; preserve the existing session while waiting. Run
+`python tools/run_native_probe.py --native-build build/native-observer-v2`
+once closed. No hotkey or native menu automation is required. Keep .31 intact.
+
+The new asynchronous surface service passes 48 ordered frames against serial
+source bytes and both target LODs, including bounded-queue backpressure. It is
+not connected to engine callbacks. `tools/record_full_runtime.py` refreshes/checks
+the exact Base pin and specific local proof artifacts without depot traversal,
+installation or raw geometry capture. Current provenance separates the 162
+Base-46ac00f fixtures from the current Base-58876e2 180-frame pipeline.
+
 Latest observed result: user confirms .31 scaling works but rejects physics
 performance as abysmal, asking how it differs from Wolverine. No new build or
 physics change accompanies the following source audit; FPS versus motion

@@ -11,7 +11,7 @@ import class CAnimDangleConstraint_Dyng extends CAnimSkeletalDangleConstraint {}
 
 struct MaleModPDBendData { var alpha, gamma, factor : float; var oldValue : Vector; }
 
-class MaleModMotionComponent extends CSelfUpdatingComponent
+statemachine class MaleModMotionComponent extends CSelfUpdatingComponent
 {
     editable var dynamicConstraint : CAnimDangleConstraint_Dyng;
     editable var deformationGraph : CBehaviorGraph;

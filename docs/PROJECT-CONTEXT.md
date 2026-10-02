@@ -1,5 +1,13 @@
 # Current authorized Overall phase
 
+Superseding authorization (October 2): full shared physics/surface and ALL
+existing anatomy/physics controls, with a separate overlay. The user explicitly
+rejects reduced behavior and authorizes substantial implementation work.
+Investigate compiled C++ integration; preserve Base ownership and parity gates.
+Wolverine is unchanged. The current .31 is a confirmed scaling baseline with
+rejected physics, not the desired complete port. Sequences/fluid/audio stay
+deferred in this phase; the complete 18-value control contract is authorized.
+
 Latest user observation: .31 scaling works. The user rejects physics performance
 as abysmal and asks why it differs from Wolverine. Motion quality versus frame
 cost is not yet distinguished. Investigate the actual implementation rather

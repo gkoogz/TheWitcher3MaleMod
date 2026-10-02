@@ -1,0 +1,49 @@
+{
+  "gameSHA256": "9406eccc12b68e08920931442ef6a57340e910d3e01f2082e88232487433fe51",
+  "imageSize": 104824832,
+  "source": "actual executable name-reference and unwind disassembly, not REDkit addresses",
+  "nativeFunctionBytes": 248,
+  "scriptBytecodeOffset": 48,
+  "opcodeTableRVA": 94812800,
+  "functions": {
+    "registerGlobals": {
+      "rva": "0x273cf20",
+      "prefix": "48895c241048897c241855488bec4883"
+    },
+    "allocate": {
+      "rva": "0xbcd5d0",
+      "prefix": "48895c24104889742418574883ec4048"
+    },
+    "namePool": {
+      "rva": "0x31d930",
+      "prefix": "4883ec28488b059d0453054885c0755e"
+    },
+    "internName": {
+      "rva": "0x26b0e00",
+      "prefix": "48895c242055415641574883ec204c8b"
+    },
+    "constructFunction": {
+      "rva": "0x26f5810",
+      "prefix": "48895c24084889742410574883ec2033"
+    },
+    "rtti": {
+      "rva": "0x31fcf0",
+      "prefix": "4883ec28488b050de497054885c00f85"
+    },
+    "registerFunction": {
+      "rva": "0x26c5f30",
+      "prefix": "48896c24104889742418574883ec2044"
+    }
+  },
+  "nameEncoding": "ASCII single-byte name pool, verified by actual registration strings and byte-at-a-time hash loop",
+  "globalFunctionRegistry": {
+    "capacityOffset": 64,
+    "countOffset": 68,
+    "bucketsOffset": 96,
+    "nodeNameOffset": 0,
+    "nodeFunctionOffset": 8,
+    "nodeHashOffset": 16,
+    "nodeNextOffset": 24,
+    "method": "actual RegisterGlobalFunction disassembly and live exact pointer readback"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "contractVersion": 1,
+  "dependencies": [
+    {
+      "name": "minhook",
+      "repository": "https://github.com/TsudaKageyu/minhook",
+      "commit": "8af6b4acae5a9388fd742b56fa79ece89d96f823",
+      "license": "BSD-2-Clause",
+      "licenseSHA256": "4f21f857550d7be854da6ea5f2da4e6775ca4e3fbb535e4f3d961c47d0bf3335",
+      "directory": "build/research/minhook"
+    },
+    {
+      "name": "imgui",
+      "repository": "https://github.com/ocornut/imgui",
+      "commit": "6d910d5487d11ca567b61c7824b0c78c569d62f0",
+      "license": "MIT",
+      "licenseSHA256": "55e058cc5899e6077a819ad1005d6d1f4528f65ae100795c9692f9fa6525a8ce",
+      "directory": "build/research/imgui"
+    }
+  ]
+}

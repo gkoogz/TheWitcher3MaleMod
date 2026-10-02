@@ -1,0 +1,27 @@
+{
+  "executableSHA256": "37ac28519adc8bc234653fcf973ba76935096aea50003b0f3a03af4007788f7d",
+  "imageSize": 188235776,
+  "method": "Actual wcc_lite LogChannel registration xrefs and bounded disassembly, independent of game and editor",
+  "functions": {
+    "allocate": {
+      "rva": 4603808,
+      "prefix": "4c8bdc49895b0849896b105657415648"
+    },
+    "intern": {
+      "rva": 43296992,
+      "prefix": "48895c2408574883ec30488bda488bf9"
+    },
+    "construct": {
+      "rva": 43904688,
+      "prefix": "48895c24084889742410574883ec3033"
+    },
+    "registry": {
+      "rva": 4569232,
+      "prefix": "4883ec38488b05351a5b084885c00f85"
+    },
+    "register": {
+      "rva": 43319136,
+      "prefix": "4057415641574883ec404c8bfa488bf9"
+    }
+  }
+}

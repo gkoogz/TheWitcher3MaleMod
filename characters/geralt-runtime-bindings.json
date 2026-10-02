@@ -1,0 +1,189 @@
+{
+  "contractVersion": 1,
+  "sourceGeometryCommit": "dc64bdc44e75fd5521f066cdb2975277e9c34302",
+  "stage": "calibrated development inputs; not a full installed runtime",
+  "characterProfile": "characters/geralt-attachment.json",
+  "characterProfileSHA256": "b85863f56f07cdf47816c699a7d9b1c6b5cea8d41dbc4049dc60e0110abca24c",
+  "fit": "build/attachment/fit-20261001-193459-664950/geralt-anatomy.fit.json",
+  "fitSHA256": "b0bd95711831b64e4f49ac6885d1ae2cbd8e0159e6f7f059fd711fa99a66b2bf",
+  "rig": "build/motion/player-stack-257de2350512/player-rig.json",
+  "rigSHA256": "25250b92fe95bcac628c76e951c5c6ac05bc27a046515447de362f19038ebbe5",
+  "coordinateCalibration": {
+    "basis": [
+      [
+        0,
+        -1,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ],
+    "sourceRoot": [
+      10.368809700012207,
+      0.12673234939575195,
+      83.42259979248047
+    ],
+    "targetRootNative": [
+      0.0,
+      0.11,
+      0.975
+    ],
+    "nativeUnitsPerSourceUnit": 0.010255218584141074,
+    "unitsEvidence": "approved raw FBX mesh coordinates divided by 100 to match observed rig translations"
+  },
+  "skeleton": {
+    "stockPrefixCount": 94,
+    "totalJoints": 104,
+    "pelvis": {
+      "name": "pelvis",
+      "index": 9
+    },
+    "addedJoints": [
+      {
+        "name": "mm_shaft_00",
+        "index": 94,
+        "parent": 9
+      },
+      {
+        "name": "mm_shaft_01",
+        "index": 95,
+        "parent": 9
+      },
+      {
+        "name": "mm_shaft_02",
+        "index": 96,
+        "parent": 9
+      },
+      {
+        "name": "mm_shaft_03",
+        "index": 97,
+        "parent": 9
+      },
+      {
+        "name": "mm_shaft_04",
+        "index": 98,
+        "parent": 9
+      },
+      {
+        "name": "mm_shaft_05",
+        "index": 99,
+        "parent": 9
+      },
+      {
+        "name": "mm_shaft_06",
+        "index": 100,
+        "parent": 9
+      },
+      {
+        "name": "mm_shaft_07",
+        "index": 101,
+        "parent": 9
+      },
+      {
+        "name": "mm_scrotum_l",
+        "index": 102,
+        "parent": 9
+      },
+      {
+        "name": "mm_scrotum_r",
+        "index": 103,
+        "parent": 9
+      }
+    ]
+  },
+  "contacts": {
+    "thighs": [
+      {
+        "names": [
+          "l_thigh",
+          "l_shin"
+        ],
+        "indices": [
+          15,
+          16
+        ],
+        "nativeBindEndpoints": [
+          [
+            -0.10453100413296801,
+            -0.030859339629727027,
+            1.004702216239024
+          ],
+          [
+            -0.12695076673745243,
+            -0.04402032546661825,
+            0.5153924026274816
+          ]
+        ],
+        "radiusNative": 0.11749565135017065,
+        "radiusSource": 11.457157191351227,
+        "envelopeSamples": 159,
+        "method": "95th percentile native thigh radial envelope of stock-influenced retained body vertices"
+      },
+      {
+        "names": [
+          "r_thigh",
+          "r_shin"
+        ],
+        "indices": [
+          18,
+          19
+        ],
+        "nativeBindEndpoints": [
+          [
+            0.10453099586703123,
+            -0.030859327086007776,
+            1.004702203695304
+          ],
+          [
+            0.12695075196426925,
+            -0.0440203081065593,
+            0.5153924196983729
+          ]
+        ],
+        "radiusNative": 0.11666643778075417,
+        "radiusSource": 11.376299473632875,
+        "envelopeSamples": 166,
+        "method": "95th percentile native thigh radial envelope of stock-influenced retained body vertices"
+      }
+    ],
+    "pelvisCapsule": null,
+    "pelvisStatus": "not calibrated for the full source-core adapter; reference capsule is not Geralt evidence",
+    "livePoseSampling": "not wired into the new native bridge"
+  },
+  "lods": [
+    {
+      "lod": 0,
+      "binding": "build/attachment/fit-20261001-193459-664950/geralt-anatomy-lod0.bindings.npz",
+      "bindingSHA256": "64179c8b720f315e67ceda28d97af8ec143615017fbb6b983e364d899e13884f",
+      "preserves": [
+        "original-edge seam donors",
+        "source vertex lineage",
+        "UV aliases",
+        "protected waist and ankle boundaries"
+      ]
+    },
+    {
+      "lod": 1,
+      "binding": "build/attachment/fit-20261001-193459-664950/geralt-anatomy-lod1.bindings.npz",
+      "bindingSHA256": "6dcc5e71e8642c9611a43d69f76a439e3befc4be3b93104bf71a1692fabfc69d",
+      "preserves": [
+        "original-edge seam donors",
+        "source vertex lineage",
+        "UV aliases",
+        "protected waist and ankle boundaries"
+      ]
+    }
+  ],
+  "fullNativeVertexOutput": false,
+  "overlayImplemented": false,
+  "observedGameplay": false,
+  "baseCommit": "58876e24136d3d2c941fa144aa4c7651c98cbb75"
+}
