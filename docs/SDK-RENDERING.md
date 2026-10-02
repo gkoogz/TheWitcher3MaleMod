@@ -61,3 +61,16 @@ runtime arbitrary-vertex GPU update API. No C++ plugin header/library was found
 in the inspected binary directory. Distinguish supported APIs from interception.
 Base owns numerical anatomy/physics/controls; this format conversion belongs in
 the Witcher adapter. Wolverine remains unchanged.
+# Native float-output backend checkpoint
+
+`native/float_vertex_pipeline.hpp` now implements the strict native skin-layout
+conversion to 20-byte float3/bone4/weight4 vertices. Other UV, lighting and
+instance streams remain intact. PSO creation preserves shaders/root state and
+discards the original cached PSO blob because its layout changed. Unknown
+position-stream attributes and layouts fail closed.
+
+The D3D12 WARP draw/readback test proves unclamped positions outside UNORM range,
+byte skin indices, normalized input weights, preserved UVs and immutable upload
+lifetime across all supplied fences. It does not exercise the game's actual
+PSO/palette/actor binding, modified lighting, bounds, prior-frame vertices or
+ray tracing. No game draw is replaced and no GPU output has been installed.

@@ -18,7 +18,8 @@ def record():
     files={item['path'] for item in out['files']}
     files.update(p.relative_to(ROOT).as_posix() for p in (ROOT/'native').iterdir() if p.suffix in {'.hpp','.cpp','.txt'})
     files.update(['tools/inspect_packed_mesh.py','tools/packed_mesh_format.py','tools/read_native_probe.py','tools/record_full_runtime.py',
-        'tools/run_native_probe.py','tools/prepare_graphics_fingerprints.py','tools/prepare_pose_replay.py','tools/inspect_graphics_hooks.py','tools/prepare_skin_contract.py','probes/native/pose.ws'])
+        'tools/run_native_probe.py','tools/prepare_graphics_fingerprints.py','tools/prepare_pose_replay.py','tools/inspect_graphics_hooks.py','tools/prepare_skin_contract.py',
+        'tools/prepare_runtime_profile.py','probes/native/pose.ws','probes/native/runtime.ws'])
     out['files']=[dict(path=p,sha256=digest(ROOT/p)) for p in sorted(files)]
     binding_path=ROOT/('build/full-runtime/geralt-bindings-'+pin[:7])
     binding=read_json(binding_path/'manifest.json')
@@ -103,7 +104,38 @@ def record():
         distinctListMethodImplementations=len({s['vertexMethod'] for s in rows if s['event']=='listImplementation'}),
         visibleMeshDrawOwnershipVerified=False,
         vertexWrites=False,observedGameplayOutput=False)
-    out['fullNativeVertexOutput']=False;out['overlayImplemented']=False;out['fullRuntimeInstalled']=False;out['fullRuntimeObservedGameplay']=False
+    controller=ROOT/'build/full-runtime/runtime-controller-test.txt'
+    if not all(s in controller.read_text() for s in ['PASS: 48 sequence-matched full-runtime frames','PASS: asynchronous character epochs','PASS: paused control edits']):raise ValueError('Full-runtime lifecycle/preview gate failed')
+    runtime_compile=read_json(ROOT/'build/probe/native-runtime-compile.json')
+    if runtime_compile['exitCode'] or runtime_compile['scriptImportsStubbed'] or runtime_compile['ownedSourceHashes']!={'local/malemod/runtime.ws':digest(ROOT/'probes/native/runtime.ws')}:
+        raise ValueError('Continuous runtime input compiler proof changed')
+    if set(runtime_compile['imports'])!={'MaleModNativeFrame','MaleModNativeOverlayOpen'}:raise ValueError('Runtime input imports differ')
+    profile=read_json(ROOT/'build/full-runtime/runtime-profile-development/manifest.json')
+    if profile['baseCommit']!=pin or profile['recipeSHA256']!=digest(ROOT/'tools/prepare_runtime_profile.py'):raise ValueError('Runtime profile pin/recipe changed')
+    out['nativeRuntimeConnection']=dict(baseCommit=pin,moduleSHA256=digest(ROOT/'build/native-runtime-controller/Release/malemod_witcher.dll'),
+        lifecycleReportSHA256=digest(controller),lifecycleExecutableSHA256=digest(ROOT/'build/native-runtime-controller/Release/runtime_controller_test.exe'),
+        all18ControlsReachSolver=True,acceptedFramesSequenceMatched=True,pauseResumeVerified=True,characterWorkerReplacementVerified=True,
+        pausedZeroTimeGeometryVerified=True,nativeCallbacksImplemented=True,officialCompilerProof=runtime_compile,diagnosticProfile=profile,
+        observedInGame=False,characterContactsCalibrated=False,productionProfileBlocked=True)
+    gpu=ROOT/'build/native-runtime-controller/Testing/Temporary/LastTest.log'
+    if 'PASS: D3D12 WARP float-skin PSO draw' not in gpu.read_text() or 'Test Passed.' not in gpu.read_text():raise ValueError('Float vertex pipeline GPU draw gate failed')
+    out['floatVertexBackend']=dict(reportSHA256=digest(gpu),executableSHA256=digest(ROOT/'build/native-runtime-controller/Release/float_vertex_pipeline_test.exe'),
+        immutableUpload=True,originalShadersAndRootLayoutRetained=True,originalInputLayoutUnchanged=True,allConsumptionFencesRequired=True,
+        unboundedPositionDrawVerified=True,skinBytesAndUVStreamVerified=True,actualGamePSOConnected=False,lightingReplacementImplemented=False,rayTracingOutputImplemented=False)
+    preview=ROOT/'build/full-runtime/overlay-panel.bmp'
+    out['nativeOverlayPanel']=dict(previewSHA256=digest(preview),executableSHA256=digest(ROOT/'build/native-runtime-controller/Release/overlay_panel_test.exe'),
+        controls=18,mouseOnly=True,hotkey=None,nonActivatingWindowImplemented=True,officialPauseAndInputContextBridgeCompiled=True,
+        pausedEditsReachSolver=True,gameVisibilityVerified=False,gameInputRestorationVerified=False,installed=False)
+    timing=ROOT/'build/full-runtime/performance-default.txt'
+    phases,geometry,summary=[json.loads(line) for line in timing.read_text().splitlines()]
+    if summary['frames']!=120 or summary['vertices']!=17528 or len(geometry['geometryMs'])!=16:
+        raise ValueError('Default transport performance coverage differs')
+    out['defaultTransportPerformance']=dict(baseCommit=pin,reportSHA256=digest(timing),
+        workerSHA256=digest(ROOT/'build/native-x86-motion/Release/surface_worker.exe'),
+        executableSHA256=digest(ROOT/'build/native-runtime-controller/Release/surface_client_test.exe'),
+        controls=[2]+[50]*17,**phases,**geometry,**summary,
+        scopeTimesInclusive=True,gameFPS=False,observedGameplay=False)
+    out['fullNativeVertexOutput']=False;out['overlayImplemented']=True;out['overlayObservedGameplay']=False;out['fullRuntimeInstalled']=False;out['fullRuntimeObservedGameplay']=False
     return out
 
 

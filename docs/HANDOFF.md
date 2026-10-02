@@ -1,5 +1,46 @@
 # Current checkpoint: .31 Overall installed
 
+October 2 native runtime checkpoint: the complete 18-value controls now feed
+the pinned Base source worker through a nonblocking controller and character
+lifetime manager. Forty-eight changing input frames match serial source bytes
+and both target LODs exactly. Paused edits produce exact zero-time geometry;
+resuming does not simulate the time spent paused. Character replacement starts
+a fresh worker and hides retired geometry. The two new real native imports in
+`probes/native/runtime.ws` compile through official WCC; game invocation of this
+new controller has not been observed. Diagnostic profiles deliberately retain
+source contacts; production remains blocked by the uncalibrated pelvis envelope.
+
+The separate native mouse panel implements 17 sliders and the three-state
+selector, with no activation key. Its rebuilt preview is visually checked and
+hit/range checks pass. Script pause/context restoration compiles, but visibility,
+input restoration and display-mode behavior have not run in game. The D3D12
+float-position backend passes an actual WARP draw/readback, including positions
+outside UNORM range, preserved bone/weight/UV input and all-queue fence retention.
+It is not connected to actual game PSOs/draws. Lighting, bounds, previous poses,
+ray tracing, actor ownership and actual output remain unfinished.
+
+Current build: `build/native-runtime-controller`; controller proof and panel
+preview: `build/full-runtime/runtime-controller-test.txt` and `overlay-panel.bmp`.
+Explicit diagnostic profile: `build/full-runtime/runtime-profile-development`.
+Nothing from this build was installed or launched. All five .31 hashes remain
+unchanged; Wolverine is untouched. Read FULL-RUNTIME.md and OVERLAY.md.
+
+Latest user permission supersedes earlier preserve-session restrictions below:
+open and close Witcher at will while the user is away. They specify Space to
+skip startup movies, then Continue, followed by another loading video. No F12.
+Supported native computer control is currently unavailable: node_repl fails
+before executing code with `failed to write kernel assets: The system cannot
+find the path specified. (os error 3)`, including after one reset/retry.
+No keyboard/mouse/focus actions occurred. Browser-only CUA is not a native game
+control substitute. Do not introduce shell key injection or another OS UI helper.
+
+Fresh 120-frame default transport timing: 32.1494 ms median; last worker update
+24.9849 ms, read 1.4066 ms, encode 3.3207 ms. Rounded shape's inclusive scope
+is 10.2782 ms (includes pouch/raphe); these phase times must not be added as
+independent costs. Report: `build/full-runtime/performance-default.txt`.
+This is CPU development timing, not game FPS. Sustainable production input,
+backpressure handling and live rendering are still required.
+
 Latest user correction: stop repeated graphics inventory/restart probes. Read
 SDK-RENDERING.md. Installed REDkit shaders establish packing, quantization,
 normalized weights, matrix lookup and tangent decoding. New native stream and
@@ -27,7 +68,8 @@ Candidate v6 retains exactly identified owned resources to prevent GPU-address
 reuse, associates vertex/index/root-SRV bindings with indexed draws and clears
 that state on Reset. SDK copy/direct/bundle, Reset, owned upload and synthetic
 draw-metadata tests pass (3087/7695 flags) without GPU submission. This candidate
-has not run in game. Do not end the user's game or overwrite a loaded module.
+has not run in game. The latest permission above allows closing the game;
+never overwrite a loaded module.
 No hotkey is used. Ignore frozen poses while the game is unfocused: Witcher
 auto-pauses on loss of focus. Current artifacts: build/native-observer-v6,
 build/native-observer-v5, build/native-x86-motion,

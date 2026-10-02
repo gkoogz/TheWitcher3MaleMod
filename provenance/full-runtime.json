@@ -24,11 +24,19 @@
     },
     {
       "path": "native/CMakeLists.txt",
-      "sha256": "4f2aceac8593f266df71c5264ea113f4dd7b06fbc534607506a906766e314e04"
+      "sha256": "dfb0da2b777844a666467a3a3e80a47e4470cd81f72442710cb25b3fc9cde5bd"
     },
     {
       "path": "native/engine_bridge.cpp",
-      "sha256": "c0d6cfae883750bac40147a8909619d9ef3b8a64ff6bdcdcfa7fe84cf73b7647"
+      "sha256": "7c757cf2e2dec1d6a48fa9606359bfa0da0c307b08b79777a1288ed879e79e53"
+    },
+    {
+      "path": "native/float_vertex_pipeline.hpp",
+      "sha256": "b251a6eaf1b02095990fe918d3ae15dc8bcae7d9d63f75831150937c80c78e6a"
+    },
+    {
+      "path": "native/float_vertex_pipeline_test.cpp",
+      "sha256": "2c2fea792facb22273232e8fd4d3df5934dec6e779761938143166a88081f1f3"
     },
     {
       "path": "native/game_profile.hpp",
@@ -55,12 +63,40 @@
       "sha256": "199cdb15ddfc4b83ac468a63db434895456bd948d5af21190856dc0fbfb23ccb"
     },
     {
+      "path": "native/overlay_panel.cpp",
+      "sha256": "f09cf982d16dca58729e231eb23bd93b2d661547fd0c8216c3b76e3cbfc46670"
+    },
+    {
+      "path": "native/overlay_panel.hpp",
+      "sha256": "2b69fb110cb3882472ca5e68751c5efe1f8b7fac2ff5a6b2ecce6ecb975acad8"
+    },
+    {
+      "path": "native/overlay_panel_test.cpp",
+      "sha256": "22bf473afde4bba85ce0e211d5ba249b88b5634a456c29ca6b15407d04df6ddc"
+    },
+    {
       "path": "native/pose_input.hpp",
       "sha256": "eaea9f4ea23e907c8a2c2bad48aa5c3bb129f2fb947842d8f76e52eea74abd9b"
     },
     {
       "path": "native/pose_replay_test.cpp",
       "sha256": "b524f2cb6a18a7036348bec1303eef7ab5fac554a9ab439f27ed32a8f5094d2f"
+    },
+    {
+      "path": "native/runtime_controller.hpp",
+      "sha256": "7ccd1eb2a571b570d130d0088f62f9ed49b634e83e5f4189a5575dc83a7ebb08"
+    },
+    {
+      "path": "native/runtime_controller_test.cpp",
+      "sha256": "0d8325a35a435b04d55f1ce62e9c8fa8ed6540019ac5f9404df216eff923e8e2"
+    },
+    {
+      "path": "native/runtime_host.hpp",
+      "sha256": "ffe1cc627c09f5d95edddd4d801ca1d1405ee112ec67183906b960db2c511bed"
+    },
+    {
+      "path": "native/runtime_profile.hpp",
+      "sha256": "f7bd6d99102db4c41e3a6daac0d3d9658a09a9912884b63dec2f80b7c932864f"
     },
     {
       "path": "native/skin_output.hpp",
@@ -119,6 +155,10 @@
       "sha256": "9f6fa322a3ba7b0f89547c9d3e74056fb4b458eef03ec7f07cf4a03e05388fa7"
     },
     {
+      "path": "probes/native/runtime.ws",
+      "sha256": "96e47985f91f5154de8f83c507539af39833cb9952f927065c0f098058f9f3cd"
+    },
+    {
       "path": "tools/compile_native_scripts.py",
       "sha256": "1216ddf5cd7b415169112d159d700f50820efab2a9e424037f1975dd504afea5"
     },
@@ -147,6 +187,10 @@
       "sha256": "a79c45636931f03f3c401a193b5194fff9a37fadf914fc854eeef17c8b40859e"
     },
     {
+      "path": "tools/prepare_runtime_profile.py",
+      "sha256": "0c6fb6bdb19e596df8d3634d7c510f01ea69a93d85d862c5b5a47c37d7565b9a"
+    },
+    {
       "path": "tools/prepare_skin_contract.py",
       "sha256": "337f1a3e376968882fa33efeda30f88c4155de0bfe9d46fac4fd8b38353cfd8d"
     },
@@ -164,7 +208,7 @@
     },
     {
       "path": "tools/record_full_runtime.py",
-      "sha256": "d0ffe4ad2693e9ddd36bb1b0c7168a02d07fbf4df14ad0a4d048c57046a4a13b"
+      "sha256": "730373e4eb30be5fe6e21d9f9d95f4b8e8d7b2da4f7742f8cb8f2541ff728863"
     },
     {
       "path": "tools/run_native_probe.py",
@@ -569,7 +613,7 @@
     }
   },
   "fullNativeVertexOutput": false,
-  "overlayImplemented": false,
+  "overlayImplemented": true,
   "fullRuntimeInstalled": false,
   "fullRuntimeObservedGameplay": false,
   "installedBaseline": {
@@ -2388,5 +2432,140 @@
     "unclampedFloatPositionVerified": true,
     "liveGPUPaletteLayoutVerified": false,
     "engineOutputConnected": false
+  },
+  "nativeRuntimeConnection": {
+    "baseCommit": "4a808e3595e53d28ffb5002aecf2a04833986fb8",
+    "moduleSHA256": "73cb188cbce3ec3a94b503cb2ee73d582b35112a8f2c766d9a1f81cd4b9fade0",
+    "lifecycleReportSHA256": "8f5c5836703c52126991f9c2c5923465444bab73c75bc3ca07ae2568a411e159",
+    "lifecycleExecutableSHA256": "dfd03f8bfa3fb4cca6b590bb199b546796e23cbcef3a746788d12dd221737e01",
+    "all18ControlsReachSolver": true,
+    "acceptedFramesSequenceMatched": true,
+    "pauseResumeVerified": true,
+    "characterWorkerReplacementVerified": true,
+    "pausedZeroTimeGeometryVerified": true,
+    "nativeCallbacksImplemented": true,
+    "officialCompilerProof": {
+      "command": "native-compilescripts",
+      "exitCode": 0,
+      "seconds": 27.35899999999674,
+      "ownedSourceHashes": {
+        "local/malemod/runtime.ws": "96e47985f91f5154de8f83c507539af39833cb9952f927065c0f098058f9f3cd"
+      },
+      "imports": [
+        "MaleModNativeFrame",
+        "MaleModNativeOverlayOpen"
+      ],
+      "compilerSHA256": "37ac28519adc8bc234653fcf973ba76935096aea50003b0f3a03af4007788f7d",
+      "profileSHA256": "185226a3ce7611e803e76e59ce308f319dfe3387994a79275441c18336ee5f85",
+      "wrapperSHA256": "1216ddf5cd7b415169112d159d700f50820efab2a9e424037f1975dd504afea5",
+      "sourceSignature": "0f6a6c652f981f01bfae3e69d1252a33241af1c511f848224bf64afe369861c2",
+      "logPath": "build/logs/20261002-132558-native-scripts-1da1c2.log",
+      "logSHA256": "4cfacf88de0ef6c4613ed12814c26a1e397321f3b5eab1b730f2060ce53bc403",
+      "artifact": "build/jobs/native-scripts-c003d8dfe1df-compiled/cooked-00000000a3bbc50c.redscripts",
+      "artifactSHA256": "742098077c1581a650bfe48126ecdbbd12eb5a499c01ee8b786807f6dd7c61a5",
+      "sdkModified": false,
+      "gameModified": false,
+      "scriptImportsStubbed": false,
+      "observedGameInvocation": false
+    },
+    "diagnosticProfile": {
+      "baseCommit": "4a808e3595e53d28ffb5002aecf2a04833986fb8",
+      "packetSHA256": "0b82facb5ee14a95ab9ca32cc0e9aa34a986ba1a026135cf4a3c0e8860f53183",
+      "workerSHA256": "d81cce14477a34fe98e942fb22bff94d87a1694ed2f39e9dcf033aac1f92e8a1",
+      "bindingsSHA256": "1bdfb7bbe35e7717931fcc690f97521aa9844ac420756373cd1107ab82fc4229",
+      "cookedMeshSHA256": "35654adc1e7a2369274063c66fe8aa3b5c5ca0ab3d126df27d504708b2290301",
+      "recipeSHA256": "0c6fb6bdb19e596df8d3634d7c510f01ea69a93d85d862c5b5a47c37d7565b9a",
+      "diagnosticSourceContacts": true,
+      "characterContactsCalibrated": false,
+      "graphicsReplacement": false,
+      "installed": false
+    },
+    "observedInGame": false,
+    "characterContactsCalibrated": false,
+    "productionProfileBlocked": true
+  },
+  "floatVertexBackend": {
+    "reportSHA256": "45673190322d382b38a83dcfa7285dc050e26e387534905d85a3d59081d779f6",
+    "executableSHA256": "673bd9d006443da9d3ffaa2e032c9b5539f6e859f6e38b102a961df14c1365e5",
+    "immutableUpload": true,
+    "originalShadersAndRootLayoutRetained": true,
+    "originalInputLayoutUnchanged": true,
+    "allConsumptionFencesRequired": true,
+    "unboundedPositionDrawVerified": true,
+    "skinBytesAndUVStreamVerified": true,
+    "actualGamePSOConnected": false,
+    "lightingReplacementImplemented": false,
+    "rayTracingOutputImplemented": false
+  },
+  "nativeOverlayPanel": {
+    "previewSHA256": "35a15c2bcfb64036bb0fdfb071bf717e0b29bc91d211b9101a2590a9c16cbe75",
+    "executableSHA256": "31f7ef95791f899ec740f0b1a2290771bba95db4767ab665631d3704b3a086b0",
+    "controls": 18,
+    "mouseOnly": true,
+    "hotkey": null,
+    "nonActivatingWindowImplemented": true,
+    "officialPauseAndInputContextBridgeCompiled": true,
+    "pausedEditsReachSolver": true,
+    "gameVisibilityVerified": false,
+    "gameInputRestorationVerified": false,
+    "installed": false
+  },
+  "overlayObservedGameplay": false,
+  "defaultTransportPerformance": {
+    "baseCommit": "4a808e3595e53d28ffb5002aecf2a04833986fb8",
+    "reportSHA256": "741e5fd771fb9ba99d700f824c4578ef6ee247f4b31bb40e0918311c40f290da",
+    "workerSHA256": "d81cce14477a34fe98e942fb22bff94d87a1694ed2f39e9dcf033aac1f92e8a1",
+    "executableSHA256": "1761dd40fb4ea23d980985747d7bd617b04053bdedbec9c817f0bae6fdb1b7ab",
+    "controls": [
+      2,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50
+    ],
+    "lastStepMs": 24.9849,
+    "lastReadMs": 1.4066,
+    "lastEncodeMs": 3.3207,
+    "geometryMs": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0021,
+      2.2324,
+      0.0001,
+      10.2782,
+      0.0,
+      0.0,
+      0.0,
+      4.6993,
+      2.895,
+      1.0119,
+      1.7632,
+      1.8529
+    ],
+    "frames": 120,
+    "vertices": 17528,
+    "bytes": 2259488,
+    "startupMs": 223.4129,
+    "medianMs": 32.1494,
+    "p95Ms": 33.7821,
+    "maximumMs": 35.435,
+    "scopeTimesInclusive": true,
+    "gameFPS": false,
+    "observedGameplay": false
   }
 }

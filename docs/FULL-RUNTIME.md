@@ -1,5 +1,48 @@
 # Full Base runtime development
 
+## Current native integration stage
+
+`runtime_controller.hpp` connects all 18 validated Base values and calibrated
+pose conversion to the asynchronous full source/target pipeline. Accepted input
+advances the filter and clock; rejected input does not. Pauses reset the motion
+filter on resume, preserve physical state, and exclude elapsed pause time.
+Paused control changes submit a zero-time source/target preview. Results carry
+the exact accepted pelvis delta, simulation time and contact calibration status.
+`runtime_host.hpp` creates/replaces workers on a manager thread outside engine
+locks. Character epochs prevent displaying another lifetime's geometry.
+
+`engine_bridge.cpp` registers MaleModNativeFrame and MaleModNativeOverlayOpen.
+`probes/native/runtime.ws` supplies actor-local pelvis/thigh input from CR4Game
+OnTick and handles the panel's own pause reason/input context. Official WCC
+compilation uses real native RTTI imports, not script stubs. The controller test
+matches 48 changing frames to serial source wire bytes and both target LODs,
+then verifies zero-time edits, long pause/resume and worker replacement.
+These callbacks have not been observed in the game. The development script
+latches an explicit input fault on overload rather than silently losing steps;
+this is not a completed production performance policy.
+
+`prepare_runtime_profile.py` stages hash-locked DLL-local worker/bindings and
+measured calibration. A complete Geralt pelvis contact envelope is required
+for production. Explicit diagnostic source contacts do not satisfy that gate.
+No new runtime profile or DLL has been installed; .31 is preserved.
+
+`float_vertex_pipeline.hpp` supplies immutable unbounded float-position/skin
+uploads, a strict layout-compatible PSO clone, and resource retention until all
+consumer fences complete. Its D3D12 WARP test draws and reads back positions
+outside packed range with unchanged bone/weight/UV attributes and verifies
+multi-fence lifetime. Actual game draw/actor/PSO ownership, skin palette storage,
+normal/tangent reconstruction, bounds, prior positions and ray-tracing output
+are still required. This backend is not a live mesh replacement.
+
+`overlay_panel.cpp` implements a separate mouse panel with all controls. The
+actual preview and control hit/range checks pass; see OVERLAY.md for unobserved
+game input/display gates. Preferences do not yet persist between launches.
+
+Latest user authorization allows unattended game open/close. Supported native
+computer control failed before initialization, including after reset/retry;
+Space/Continue cannot currently be operated unattended. No new build was
+launched or installed. This limitation is recorded in HANDOFF.md.
+
 October 2: SDK-first rendering correction is in SDK-RENDERING.md. Native stream
 decoding and inverse blended-skin output now have an independent comparison with
 the installed REDkit shader functions. This is offline conversion proof, not
@@ -183,7 +226,8 @@ draw metadata and proof that Reset clears ownership. v6 has not run in game.
    readiness registration and script invocation are observed.
 4. Implement verified vertex output, native skin/normal/tangent transport,
    resource/LOD lifecycle and coupled Geralt deformation without double skinning.
-5. Implement the overlay, every control output path, preferences and input focus
+5. Verify the implemented native panel in game; finish every control output path,
+   preferences and input focus
    without assigning an arbitrary bound key.
 6. Pin a clean committed Base, cook/package through the adapter workflow, verify
    installation/rollback hashes, then observe gameplay and native performance.

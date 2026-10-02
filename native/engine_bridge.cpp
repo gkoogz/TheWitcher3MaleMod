@@ -14,6 +14,9 @@
 #include <malemod/surface/wire.hpp>
 #include "game_profile.hpp"
 #include "graphics_probe.hpp"
+#include "runtime_profile.hpp"
+#include "runtime_host.hpp"
+#include "overlay_panel.hpp"
 
 // All RVAs and allocation/bytecode layouts in this probe were observed in the
 // hash-locked game executable. This is not a REDkit-address compatibility shim.
@@ -34,11 +37,30 @@ std::mutex poseMutex;
 unsigned poseSamples=0;
 float poseLastTime=0;
 FILE* poseLog=nullptr;
-void PoseSample(void*,void* frame,void* result);
+void ProbePoseSample(void*,void* frame,void* result);
+// Explicit shutdown owns deletion outside loader lock. Process exit reclaims
+// these handles; never join workers from a CRT/DllMain teardown callback.
+std::mutex runtimeMutex;
+RuntimeHost* runtimeHost=nullptr;
+OverlayPanel* overlayPanel=nullptr;
+bool overlayRequested=false;
+std::atomic<unsigned> runtimeFlags{0};
+surface::Controls ReadControls(){std::lock_guard<std::mutex> lock(controlsMutex);return controls;}
+bool WriteControl(unsigned index,float value){
+ if(index>=18)return false;std::lock_guard<std::mutex> lock(controlsMutex);auto candidate=controls;candidate.values[index]=value;
+ try{surface::wire::Validate(candidate);controls=candidate;return true;}catch(const std::invalid_argument&){return false;}
+}
+void CreateOverlayForGame(){
+ if(!overlayRequested||overlayPanel)return;
+ struct Windows {HWND result=nullptr;unsigned count=0;} windows;
+ EnumWindows([](HWND window,LPARAM data)->BOOL{DWORD pid=0;GetWindowThreadProcessId(window,&pid);RECT r{};
+  if(pid==GetCurrentProcessId()&&!GetWindow(window,GW_OWNER)&&IsWindowVisible(window)&&GetClientRect(window,&r)&&r.right>=640&&r.bottom>=480){auto* list=reinterpret_cast<Windows*>(data);list->result=window;++list->count;}return TRUE;
+ },reinterpret_cast<LPARAM>(&windows));
+ if(windows.count==1)overlayPanel=new OverlayPanel(windows.result,ReadControls,WriteControl);
+}
 
-bool VerifyExecutable(){
- wchar_t path[32768]{};if(!GetModuleFileNameW(nullptr,path,32768))return false;
- HANDLE file=CreateFileW(path,GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
+bool VerifyFile(const std::filesystem::path& path,const std::string& expected){
+ HANDLE file=CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
  if(file==INVALID_HANDLE_VALUE)return false;
  BCRYPT_ALG_HANDLE algorithm=nullptr;BCRYPT_HASH_HANDLE hash=nullptr;
  bool ok=BCryptOpenAlgorithmProvider(&algorithm,BCRYPT_SHA256_ALGORITHM,nullptr,0)>=0;
@@ -51,7 +73,21 @@ bool VerifyExecutable(){
  if(!ok)return false;
  static const char hex[]="0123456789abcdef";std::string actual;
  for(auto x:digest){actual+=hex[x>>4];actual+=hex[x&15];}
- return actual==profile::executableSHA256;
+ return actual==expected;
+}
+bool VerifyExecutable(){wchar_t path[32768]{};return GetModuleFileNameW(nullptr,path,32768)&&VerifyFile(path,profile::executableSHA256);}
+void InitializeRuntime(){
+ wchar_t path[32768]{};HMODULE module=nullptr;
+ if(!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&InitializeRuntime),&module)||!GetModuleFileNameW(module,path,32768))throw std::runtime_error("Cannot locate runtime module");
+ const auto dir=std::filesystem::path(path).parent_path();const auto packet=dir/L"malemod-runtime.profile";
+ if(!std::filesystem::exists(packet))return; // Existing observer-only mode.
+ const auto p=RuntimeProfile::Load(packet,MALEMOD_BASE_COMMIT);
+ const auto worker=dir/L"surface_worker.exe",bindings=dir/L"geralt.bindings";
+ if(!VerifyFile(worker,p.workerSHA256)||!VerifyFile(bindings,p.bindingsSHA256))throw std::runtime_error("Runtime worker/binding hash differs from profile");
+ std::lock_guard<std::mutex> lock(runtimeMutex);
+ runtimeHost=new RuntimeHost([p,worker,bindings]{return std::make_unique<RuntimeController>(worker.wstring(),bindings,p.revision,p.calibration,p.inverseBind,p.contacts,p.diagnosticSourceContacts);});
+ overlayRequested=std::filesystem::exists(dir/L"malemod-overlay.enable");
+ runtimeFlags.store(1u|(p.diagnosticSourceContacts?64u:0u));
 }
 template<class T>T Function(const profile::Function& f){return reinterpret_cast<T>(engineBase+f.rva);}
 bool CheckPrefixes(){
@@ -73,7 +109,35 @@ template<class T> void Parameter(void* frame,T& value){
  auto* table=reinterpret_cast<NativeCallback*>(engineBase+profile::opcodeTableRVA);
  if(table[opcode])table[opcode](*static_cast<void**>(frame),frame,&value);
 }
-void PoseSample(void*,void* frame,void* result){
+void RuntimeFrame(void*,void* frame,void* result){
+ std::int32_t epoch=0;float seconds=0;bool paused=false;std::array<ScriptVector,8> v{};
+ Parameter(frame,epoch);Parameter(frame,seconds);Parameter(frame,paused);for(auto& p:v)Parameter(frame,p);FinishParameters(frame);
+ HostTick status=HostTick::Dormant;
+ try{
+ std::unique_lock<std::mutex> lock(runtimeMutex,std::try_to_lock);
+ if(!lock.owns_lock())status=HostTick::Busy;
+ else if(runtimeHost&&epoch>=0){
+  if(epoch>0)CreateOverlayForGame();
+  runtimeFlags.fetch_or(2);PoseSample sample;sample.seconds=seconds;sample.pelvisActorLocal[15]=1;
+  for(unsigned column=0;column<4;column++){const std::array<float,3> xyz={v[column].x,v[column].y,v[column].z};for(unsigned r=0;r<3;r++)sample.pelvisActorLocal[r*4+column]=xyz[r];}
+  for(unsigned i=0;i<4;i++)sample.thighsActorLocal[i]={v[i+4].x,v[i+4].y,v[i+4].z};
+  const auto snapshot=ReadControls();
+  std::uint64_t sequence=0;status=runtimeHost->Tick(std::uint32_t(epoch),sample,paused,snapshot,sequence);
+  if(status==HostTick::Paused)runtimeFlags.fetch_or(8);
+  if(status==HostTick::Busy||status==HostTick::Full)runtimeFlags.fetch_or(16);
+  if(status==HostTick::Invalid||status==HostTick::Failed)runtimeFlags.fetch_or(32);
+  if(runtimeHost->Poll(std::uint32_t(epoch)))runtimeFlags.fetch_or(4);
+ }
+ }catch(const std::exception&){
+  // Allocation, window creation and publication failures cannot unwind through
+  // REDengine's native VM callback. Report the fault to the script instead.
+  status=HostTick::Failed;runtimeFlags.fetch_or(32);
+  OutputDebugStringW(L"MaleMod: native frame integration failed; input stopped\n");
+ }
+ if(result)*static_cast<std::int32_t*>(result)=static_cast<std::int32_t>(status);
+}
+void OverlayOpen(void*,void* frame,void* result){bool open=false;{std::lock_guard<std::mutex> lock(runtimeMutex);open=overlayPanel&&overlayPanel->Open();}FinishParameters(frame);if(result)*static_cast<bool*>(result)=open;}
+void ProbePoseSample(void*,void* frame,void* result){
  float seconds=0;bool paused=false;std::array<ScriptVector,8> vectors{};
  Parameter(frame,seconds);Parameter(frame,paused);
  for(auto& value:vectors)Parameter(frame,value);FinishParameters(frame);
@@ -88,7 +152,7 @@ void PoseSample(void*,void* frame,void* result){
   for(unsigned i=0;i<3;i++){const auto& v=vectors[i];const auto length=v.x*v.x+v.y*v.y+v.z*v.z;if(length<.25f||length>4.f)finite=false;}
   if(finite&&(poseSamples==0||seconds-poseLastTime>=.008f)){
    if(!poseLog){wchar_t path[32768]{};HMODULE module=nullptr;
-    if(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&PoseSample),&module)&&GetModuleFileNameW(module,path,32768)){
+    if(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&ProbePoseSample),&module)&&GetModuleFileNameW(module,path,32768)){
      auto* last=wcsrchr(path,L'\\');if(last){swprintf_s(last+1,32768-std::size_t(last+1-path),L"pose-probe-%lu.jsonl",GetCurrentProcessId());poseLog=_wfsopen(path,L"wb",_SH_DENYNO);}
     }
    }
@@ -104,13 +168,7 @@ void PoseSample(void*,void* frame,void* result){
 void SetControl(void*,void* frame,void* result){
  std::int32_t index=-1;float value=0;
  Parameter(frame,index);Parameter(frame,value);FinishParameters(frame);
- bool accepted=false;
- if(index>=0&&index<18){
-  std::lock_guard<std::mutex> lock(controlsMutex);
-  auto candidate=controls;candidate.values[std::size_t(index)]=value;
-  try{malemod::surface::wire::Validate(candidate);controls=candidate;accepted=true;}
-  catch(const std::invalid_argument&){} // Preserve the last valid preference set.
- }
+ const bool accepted=index>=0&&WriteControl(unsigned(index),value);
  if(result)*static_cast<bool*>(result)=accepted;
 }
 void GetControl(void*,void* frame,void* result){
@@ -172,10 +230,10 @@ bool Register(const char* name,NativeCallback callback){
 void RegisterHook(){
  originalRegisterGlobals();
  if(registered.load()||registrationFailed.load())return;
- for(const auto& entry:std::array<std::pair<const char*,NativeCallback>,6>{{
+ for(const auto& entry:std::array<std::pair<const char*,NativeCallback>,8>{{
   {"MaleModNativeReady",Ready},{"MaleModNativeSetControl",SetControl},
   {"MaleModNativeGetControl",GetControl},{"MaleModNativeTypedProbe",TypedProbe},
-  {"MaleModNativeTypedProbeResult",TypedProbeResult},{"MaleModNativePoseSample",PoseSample}}}){
+  {"MaleModNativeTypedProbeResult",TypedProbeResult},{"MaleModNativePoseSample",ProbePoseSample},{"MaleModNativeFrame",RuntimeFrame},{"MaleModNativeOverlayOpen",OverlayOpen}}}){
   if(!Register(entry.first,entry.second)){registrationFailed=true;OutputDebugStringW(L"MaleMod: native function registration/name readback failed\n");return;}
  }
  registered.store(true,std::memory_order_release);
@@ -193,6 +251,7 @@ extern "C" __declspec(dllexport) DWORD WINAPI MaleModInitialize(void*){
  if(MH_CreateHook(reinterpret_cast<void*>(engineBase+profile::registerGlobals.rva),RegisterHook,reinterpret_cast<void**>(&originalRegisterGlobals))!=MH_OK){MH_Uninitialize();return 4;}
  if(MH_EnableHook(reinterpret_cast<void*>(engineBase+profile::registerGlobals.rva))!=MH_OK){MH_RemoveHook(reinterpret_cast<void*>(engineBase+profile::registerGlobals.rva));MH_Uninitialize();return 5;}
  if(!InitializeGraphicsProbe())OutputDebugStringW(L"MaleMod: read-only graphics observer unavailable\n");
+ try{InitializeRuntime();}catch(const std::exception&){runtimeFlags.fetch_or(32);OutputDebugStringW(L"MaleMod: runtime profile validation failed; full solver disabled\n");}
  initialized=true;return 0;
 }
 extern "C" __declspec(dllexport) DWORD WINAPI MaleModProbeStatus(void*){
@@ -201,6 +260,12 @@ extern "C" __declspec(dllexport) DWORD WINAPI MaleModProbeStatus(void*){
 }
 extern "C" __declspec(dllexport) DWORD WINAPI MaleModGraphicsProbeStatus(void*){
  return malemod::witcher::GraphicsProbeFlags();
+}
+extern "C" __declspec(dllexport) DWORD WINAPI MaleModRuntimeStatus(void*){return malemod::witcher::runtimeFlags.load();}
+extern "C" __declspec(dllexport) DWORD WINAPI MaleModShutdownRuntime(void*){
+ using namespace malemod::witcher;RuntimeHost* retired=nullptr;OverlayPanel* ui=nullptr;
+ {std::lock_guard<std::mutex> lock(runtimeMutex);retired=runtimeHost;runtimeHost=nullptr;ui=overlayPanel;overlayPanel=nullptr;runtimeFlags.store(0);}
+ delete ui;delete retired;return 0; // Invoke outside engine/loader locks, never from DllMain.
 }
 BOOL WINAPI DllMain(HINSTANCE,DWORD,LPVOID){
  // Keep CRT thread notifications: this probe uses the static MSVC runtime.

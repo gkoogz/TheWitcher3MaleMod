@@ -1,5 +1,33 @@
 # Separate overlay investigation
 
+## Implemented native panel; gameplay verification pending
+
+`native/overlay_panel.cpp` now implements a separate owned Win32 panel with
+17 sliders, the Rigid/Intermediate/Flexible selector, defaults and close.
+A compact Anatomy tab opens it with the mouse; no key is assigned. Values use
+the Base control contract and native typed setters. Window code uses
+NOACTIVATE/MA_NOACTIVATE and hides on owner focus loss without forcing focus.
+It rescales its layout for owner height. The rebuilt 420 by 680 preview has been
+visually inspected; hit regions and all slider endpoints pass contract checks.
+Preview: `build/full-runtime/overlay-panel.bmp`.
+
+`probes/native/runtime.ws` owns the MaleModOverlay pause reason, requests the
+cursor and stores/restores EMPTY_CONTEXT. It compiles through real native WCC
+imports. The controller also verifies zero-time source/target output while
+editing paused controls. Neither native window visibility nor game pause,
+context restoration, menu overlap, exclusive fullscreen, DPI behavior or
+character-loading lifecycle has been observed. Keyboard/gamepad accessibility
+and persistent preferences remain incomplete. Do not describe the native panel
+as installed or gameplay-ready.
+
+The DLL enables it only with an explicit `malemod-overlay.enable` marker and
+a valid runtime profile. The current installed .31 menu is unchanged.
+Supported native computer control currently fails at helper initialization;
+there has been no new game launch or install in this checkpoint.
+
+The historical investigation below explains earlier failures and alternative
+interfaces; its statements that no panel exists are superseded by this section.
+
 The user requests an overlay instead of the in-game menu and asks for an
 assessment because a previous agent struggled. This is the desired UI; the
 installed .31 Overall pause-menu row remains the current test interface.
