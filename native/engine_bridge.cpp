@@ -20,6 +20,8 @@
 #include "live_renderer.hpp"
 #include "float_draw_renderer.hpp"
 #include "control_store.hpp"
+#include "clinical_service.hpp"
+#include "fluid_renderer.hpp"
 
 // All RVAs and allocation/bytecode layouts in this probe were observed in the
 // hash-locked game executable. This is not a REDkit-address compatibility shim.
@@ -49,6 +51,7 @@ OverlayPanel* overlayPanel=nullptr;
 RenderContract* renderContract=nullptr;
 RenderPoseInput* renderPose=nullptr;
 RenderService* renderService=nullptr;
+ClinicalService* clinicalService=nullptr;
 unsigned renderEpoch=0;
 bool overlayRequested=false;
 std::atomic<unsigned> runtimeFlags{0};
@@ -81,7 +84,7 @@ void CreateOverlayForGame(){
  EnumWindows([](HWND window,LPARAM data)->BOOL{DWORD pid=0;GetWindowThreadProcessId(window,&pid);RECT r{};
   if(pid==GetCurrentProcessId()&&!GetWindow(window,GW_OWNER)&&IsWindowVisible(window)&&GetClientRect(window,&r)&&r.right>=640&&r.bottom>=480){auto* list=reinterpret_cast<Windows*>(data);list->result=window;++list->count;}return TRUE;
  },reinterpret_cast<LPARAM>(&windows));
- if(windows.count==1)overlayPanel=new OverlayPanel(windows.result,ReadControls,WriteControl);
+ if(windows.count==1)overlayPanel=new OverlayPanel(windows.result,ReadControls,WriteControl,[]{if(!clinicalService)return std::array<float,2>{};auto p=clinicalService->Projection();return std::array<float,2>{float(clinicalService->Mode()),p.active?1.f:0.f};},[](unsigned row,float v){if(clinicalService){if(row==18)clinicalService->SetMode(unsigned(v));else if(row==19)clinicalService->Action(v>0);}});
 }
 
 bool VerifyFile(const std::filesystem::path& path,const std::string& expected){
@@ -121,7 +124,11 @@ void InitializeRuntime(){
   std::ifstream hashFile(dir/L"geralt.render.sha256");std::string hash;hashFile>>hash;
   if(hash.size()!=64||!VerifyFile(dir/L"geralt.render",hash))throw std::runtime_error("Render contract hash differs");
   renderContract=new RenderContract(dir/L"geralt.render",p.revision,p.bindingsSHA256);
-  renderPose=new RenderPoseInput(*renderContract);renderService=new RenderService(*renderContract);
+  renderPose=new RenderPoseInput(*renderContract);renderService=new RenderService(*renderContract);std::ifstream fluidHashFile(dir/L"clinical.render.sha256");std::string fluidHash;fluidHashFile>>fluidHash;
+  if(fluidHash.size()!=64||!VerifyFile(dir/L"clinical.render",fluidHash))throw std::runtime_error("Clinical render hash differs");
+  FluidRendererConfigure(dir/L"clinical.render");
+  if(!VerifyFile(dir/L"splat_bakes.bin","b41046ee1083da7f0921706022893a7aed78b74a9ff931776f12e746ab405fb5"))throw std::runtime_error("Clinical source bake hash differs");
+  clinicalService=new ClinicalService(p.calibration.targetUnitsPerSourceUnit,dir/L"splat_bakes.bin");
  }
  runtimeFlags.store(1u|(p.diagnosticSourceContacts?64u:0u));
 }
@@ -163,19 +170,27 @@ void RuntimeFrame(void*,void* frame,void* result){
   for(unsigned i=0;i<4;i++)sample.thighsActorLocal[i]={v[i+4].x,v[i+4].y,v[i+4].z};
   const auto snapshot=ReadControls();
   if(overlayPanel&&overlayPanel->ConsumeFocusLoss()&&epoch>0){std::uint64_t pauseSequence=0;runtimeHost->Tick(std::uint32_t(epoch),sample,true,snapshot,pauseSequence);}
-  std::uint64_t sequence=0;status=runtimeHost->Tick(std::uint32_t(epoch),sample,paused,snapshot,sequence);
+  std::uint64_t sequence=0;status=runtimeHost->Tick(std::uint32_t(epoch),sample,paused,snapshot,sequence,clinicalService?clinicalService->Projection():surface::Frame::ClinicalProjection{});
   if(status==HostTick::Paused)runtimeFlags.fetch_or(8);
   if(status==HostTick::Busy||status==HostTick::Full)runtimeFlags.fetch_or(16);
   if(status==HostTick::Invalid||status==HostTick::Failed)runtimeFlags.fetch_or(32);
   auto source=runtimeHost->Poll(std::uint32_t(epoch));
-  if(source){runtimeFlags.fetch_or(4);if(renderService&&renderPose){auto pose=paused?renderPose->LastComplete(unsigned(epoch)):renderPose->Complete(unsigned(epoch),seconds);if(pose){runtimeFlags.fetch_or(128);renderService->Submit(source,*pose,paused);}auto output=renderService->Latest();if(output&&output->epoch==unsigned(epoch))LiveRenderFeed(std::move(output));if(!renderService->Error().empty()){
+  if(source){runtimeFlags.fetch_or(4);if(renderService&&renderPose){auto pose=paused?renderPose->LastComplete(unsigned(epoch)):renderPose->Complete(unsigned(epoch),seconds);if(pose){runtimeFlags.fetch_or(128);renderService->Submit(source,*pose,paused);}auto output=renderService->Latest();if(output&&output->epoch==unsigned(epoch)){
+ LiveRenderFeed(std::move(output));
+}if(!renderService->Error().empty()){
  runtimeFlags.fetch_or(256);static bool recorded=false;if(!recorded){recorded=true;wchar_t path[32768]{};HMODULE module=nullptr;
  if(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&RuntimeFrame),&module)&&GetModuleFileNameW(module,path,32768)){
   auto* tail=wcsrchr(path,L'\\');if(tail){swprintf_s(tail+1,32768-std::size_t(tail+1-path),L"render-error-%lu.txt",GetCurrentProcessId());auto* file=_wfsopen(path,L"wb",_SH_DENYNO);if(file){std::fprintf(file,"%s\n",renderService->Error().c_str());std::fclose(file);}}
  }
  }
 }}}
+  if(clinicalService){clinicalService->Submit(unsigned(epoch),seconds,paused,renderService?renderService->Latest():nullptr);FluidRendererFeed(clinicalService->Latest(),clinicalService->Scale());if(!clinicalService->Error().empty())runtimeFlags.fetch_or(512);}
   if(!epoch){LiveRenderFeed({});if(renderPose)renderPose->Reset();}
+  // SDK component OnTick precedes scene rendering. Freeze one complete
+  // publication for every body/depth/material command list in this frame.
+  // Background numerical and presentation workers continue independently.
+  FloatDrawFrameBoundary();
+  FluidRendererFrameBoundary();
  }
  }catch(const std::exception&){
   // Allocation, window creation and publication failures cannot unwind through
@@ -278,15 +293,32 @@ void TestCheckpoint(void*,void* frame,void* result){
     for(unsigned i=0;i<18;i++)std::fprintf(log,"%s%.9g",i?",":"",current.values[i]);
     std::fprintf(log,"],\"bounds\":[[%.9g,%.9g,%.9g],[%.9g,%.9g,%.9g]],\"actorOrigin\":[%.9g,%.9g,%.9g],\"poseSeconds\":%.9g,\"lightingMs\":%.9g,\"workerMs\":[%.9g,%.9g,%.9g],\"geometryMs\":[",low[0],low[1],low[2],high[0],high[1],high[2],output->pose.actorWorld[3],output->pose.actorWorld[7],output->pose.actorWorld[11],output->poseSeconds,output->lightingMilliseconds,output->workerMilliseconds[0],output->workerMilliseconds[1],output->workerMilliseconds[2]);
     for(unsigned i=0;i<16;i++)std::fprintf(log,"%s%.9g",i?",":"",output->geometryMilliseconds[i]);
-    std::fprintf(log,"],\"callbackCount\":%u,\"callbackMeanMs\":%.9g,\"callbackMaxMs\":%.9g,\"bodyResourceMask\":%u,\"displayPublications\":%u,\"presentationPhase\":%.9g,\"presentationIntervalMs\":%.9g}\n",verificationCallbackCount,verificationCallbackCount?verificationCallbackTotal/verificationCallbackCount:0,verificationCallbackMaximum,FloatDrawResourceMask(),FloatDrawPublicationCount(),output->presentationPhase,output->presentationIntervalMilliseconds);
+    auto clinical=clinicalService?clinicalService->Latest():nullptr;auto collision=clinicalService?clinicalService->collisions.Counts():std::array<unsigned,3>{};
+    std::fprintf(log,"],\"clinicalMode\":%u,\"clinicalActive\":%s,\"clinicalTime\":%.9g,\"emittedVolume\":%.9g,\"liquidIndices\":%zu,\"depositIndices\":%zu,\"clinicalMs\":%.9g,\"clinicalCueMask\":%u,\"fluidRenderFlags\":%u,\"fluidPublications\":%u,\"pendingQueries\":%u,\"sceneQueries\":%u,\"sceneHits\":%u,\"callbackCount\":",clinicalService?clinicalService->Mode():0,clinical&&clinical->active?"true":"false",clinical?clinical->time:0,clinical?clinical->emittedVolume:0,clinical?clinical->mesh.indices.size():0,clinical?clinical->deposits.indices.size():0,clinical?clinical->milliseconds:0,clinical?clinical->cueMask:0,FluidDrawFlags(),FluidDrawPublications(),collision[0],collision[1],collision[2]);
+    std::fprintf(log,"%u,\"callbackMeanMs\":%.9g,\"callbackMaxMs\":%.9g,\"bodyResourceMask\":%u,\"displayPublications\":%u,\"presentationPhase\":%.9g,\"presentationIntervalMs\":%.9g}\n",verificationCallbackCount,verificationCallbackCount?verificationCallbackTotal/verificationCallbackCount:0,verificationCallbackMaximum,FloatDrawResourceMask(),FloatDrawPublicationCount(),output->presentationPhase,output->presentationIntervalMilliseconds);
     verificationCallbackCount=0;verificationCallbackTotal=verificationCallbackMaximum=0;
     std::fflush(log);last=stage;
+    if(stage==75||stage==82||stage==83){
+     wchar_t capture[32768]{};HMODULE owner=nullptr;
+     if(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&TestCheckpoint),&owner)&&GetModuleFileNameW(owner,capture,32768)){
+      auto* tail=wcsrchr(capture,L'\\');if(tail){swprintf_s(tail+1,32768-std::size_t(tail+1-capture),L"body-frame-%lu-%d.bin",GetCurrentProcessId(),stage);FILE* file=nullptr;
+       if(!_wfopen_s(&file,capture,L"wb")){std::fwrite(output->floatVertices.data(),28,output->floatVertices.size(),file);std::fclose(file);}
+      }
+     }
+    }
    }
    success=log!=nullptr;
   }
  }
  if(result)*static_cast<bool*>(result)=success;
 }
+void ClinicalControl(void*,void* frame,void*){std::int32_t row=0;float value=0;Parameter(frame,row);Parameter(frame,value);FinishParameters(frame);if(clinicalService&&std::isfinite(value)){if(row==0&&value>=0&&value<=3)clinicalService->SetMode(unsigned(value));if(row==1)clinicalService->Action(value>0);}}
+void ClinicalQuery(void*,void* frame,void* result){std::int32_t which=0;Parameter(frame,which);FinishParameters(frame);ScriptVector v{};if(clinicalService){static thread_local ClinicalCollision::Query query;if(which==0){query=clinicalService->collisions.Next();v={float(query.from.x*clinicalService->Scale()),float(query.from.y*clinicalService->Scale()),float(query.from.z*clinicalService->Scale()),float(query.token)};}else if(which==2){v.w=float(query.token);}else if(which==1){v={float(query.to.x*clinicalService->Scale()),float(query.to.y*clinicalService->Scale()),float(query.to.z*clinicalService->Scale()),float(query.radius*clinicalService->Scale())};}}
+ if(result)std::memcpy(result,&v,sizeof(v));}
+void ClinicalHit(void*,void* frame,void*){std::int32_t token=0;bool hit=false;ScriptVector p{},n{};Parameter(frame,token);Parameter(frame,hit);Parameter(frame,p);Parameter(frame,n);FinishParameters(frame);if(clinicalService&&token>0&&std::isfinite(p.x)&&std::isfinite(p.y)&&std::isfinite(p.z)&&std::isfinite(n.x)&&std::isfinite(n.y)&&std::isfinite(n.z)){auto scale=clinicalService->Scale();clinicalService->collisions.Result(unsigned(token),hit,{float(p.x/scale),float(p.y/scale),float(p.z/scale)},{n.x,n.y,n.z});}}
+void ClinicalCarrier(void*,void* frame,void*){ScriptVector origin{};bool valid=false;Parameter(frame,origin);Parameter(frame,valid);FinishParameters(frame);FluidRendererOrigin({origin.x,origin.y,origin.z},valid&&std::isfinite(origin.x)&&std::isfinite(origin.y)&&std::isfinite(origin.z));}
+void ClinicalState(void*,void* frame,void* result){FinishParameters(frame);ScriptVector v{};if(clinicalService){auto p=clinicalService->Projection();auto out=clinicalService->Latest();v={float(clinicalService->Mode()),p.active?1.f:0.f,float(p.time),out?float(out->mesh.indices.size()+out->deposits.indices.size()):0.f};}if(result)std::memcpy(result,&v,sizeof(v));}
+void ClinicalCue(void*,void* frame,void* result){FinishParameters(frame);ScriptVector v{};if(clinicalService){if(auto cue=clinicalService->PollCue())v={float(cue->phase+1),float(cue->seconds),float(cue->sequence),float(cue->epoch)};}if(result)std::memcpy(result,&v,sizeof(v));}
 bool RegistryContains(void* registry,std::uint32_t nameID,void* function){
  // Actual RegisterGlobalFunction disassembly: bucket capacity/count at 40/44,
  // table at 60, nodes {name, function, hash, next} at 0/8/10/18.
@@ -323,8 +355,8 @@ bool Register(const char* name,NativeCallback callback){
 void RegisterHook(){
  originalRegisterGlobals();
  if(registered.load()||registrationFailed.load())return;
- for(const auto& entry:std::array<std::pair<const char*,NativeCallback>,13>{{
-  {"MaleModNativeReady",Ready},{"MaleModNativeSetControl",SetControl},
+ for(const auto& entry:std::array<std::pair<const char*,NativeCallback>,19>{{
+  {"MaleModNativeClinicalCue",ClinicalCue},{"MaleModNativeClinicalCarrier",ClinicalCarrier},{"MaleModNativeClinicalControl",ClinicalControl},{"MaleModNativeClinicalQuery",ClinicalQuery},{"MaleModNativeClinicalHit",ClinicalHit},{"MaleModNativeClinicalState",ClinicalState},{"MaleModNativeReady",Ready},{"MaleModNativeSetControl",SetControl},
   {"MaleModNativeGetControl",GetControl},{"MaleModNativeTypedProbe",TypedProbe},
   {"MaleModNativeTypedProbeResult",TypedProbeResult},{"MaleModNativePoseSample",ProbePoseSample},{"MaleModNativeFrame",RuntimeFrame},{"MaleModNativeOverlayOpen",OverlayOpen},{"MaleModNativeBonePose",BonePose},{"MaleModNativeSurfaceActive",SurfaceActive},{"MaleModNativeFullMode",FullMode},{"MaleModNativeSealedSession",SealedSession},{"MaleModNativeTestCheckpoint",TestCheckpoint}}}){
   if(!Register(entry.first,entry.second)){registrationFailed=true;OutputDebugStringW(L"MaleMod: native function registration/name readback failed\n");return;}
@@ -362,7 +394,7 @@ extern "C" __declspec(dllexport) DWORD WINAPI MaleModRenderSequence(void*){retur
 extern "C" __declspec(dllexport) DWORD WINAPI MaleModShutdownRuntime(void*){
  using namespace malemod::witcher;RuntimeHost* retired=nullptr;OverlayPanel* ui=nullptr;
  {std::lock_guard<std::mutex> lock(runtimeMutex);retired=runtimeHost;runtimeHost=nullptr;ui=overlayPanel;overlayPanel=nullptr;runtimeFlags.store(0);}
- LiveRenderFeed({});delete ui;delete retired;delete renderService;renderService=nullptr;delete renderPose;renderPose=nullptr;delete renderContract;renderContract=nullptr;return 0; // Invoke outside engine/loader locks, never from DllMain.
+ LiveRenderFeed({});delete ui;delete clinicalService;clinicalService=nullptr;delete retired;delete renderService;renderService=nullptr;delete renderPose;renderPose=nullptr;delete renderContract;renderContract=nullptr;return 0; // Invoke outside engine/loader locks, never from DllMain.
 }
 BOOL WINAPI DllMain(HINSTANCE,DWORD,LPVOID){
  // Keep CRT thread notifications: this probe uses the static MSVC runtime.

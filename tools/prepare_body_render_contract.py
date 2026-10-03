@@ -24,7 +24,7 @@ def prepare(job,cooked,binding_dir,output):
         run_wcc(cfg,'dumpfile',['-file='+str(path),'-out=\\\\?\\'],job/'intake','inspect-cooked-'+label)
         spec=inspect(path,Path(str(path)+'.xml'),job/(label+'.fbx'),output/('inspection-'+label));specs.append(spec)
         mesh=CookedMesh(path.read_bytes());meshes.append(mesh);palette.extend(names.index(n) for n in mesh.palette);inverse.extend(np.asarray(mesh.inverse_binds).reshape(-1,4,4).transpose(0,2,1))
-    cal=profile['coordinateCalibration'];blob=b'MMRND004'+pin.encode()+digest(binding).encode()+np.asarray([*np.asarray(cal['basis']).flatten(),*cal['sourceRoot'],*cal['targetRootNative'],cal['nativeUnitsPerSourceUnit']],dtype='<f8').tobytes()
+    cal=profile['coordinateCalibration'];blob=b'MMRND005'+pin.encode()+digest(binding).encode()+np.asarray([*np.asarray(cal['basis']).flatten(),*cal['sourceRoot'],*cal['targetRootNative'],cal['nativeUnitsPerSourceUnit']],dtype='<f8').tobytes()
     blob+=struct.pack('<I',len(palette))+np.asarray(palette,dtype='<u4').tobytes()+np.asarray(inverse,dtype='<f8').tobytes()+struct.pack('<I',2)
     first_vertex=first_palette=0;resources=[]
     for mesh,spec in zip(meshes,specs):
@@ -62,7 +62,7 @@ def prepare(job,cooked,binding_dir,output):
             palette_array=np.asarray(palette);amount=(skin[:,4:]*(palette_array[skin[:,:4]]>=94)).sum(1)/skin[:,4:].sum(1)
             pf,pa=presentation_bindings(field[ids],pos,lobes,amount)
         blob+=struct.pack('<9I',resource,lod,n,authored,first_vertex,first_index,len(faces)*3,spec['streamOffsets'][1],spec['streamOffsets'][3])
-        for i in range(n):blob+=struct.pack('<II',int(mapping[i]),int(groups[i]))+skin[i].tobytes()+np.asarray([*uv[i],*normals[i],*tangents[i],signs[i],*pos[i]],dtype='<f8').tobytes()+struct.pack('<IIdI',int(calibration[i]),int(pf[i]),float(pa[i]),int(boundary[i]))
+        for i in range(n):blob+=struct.pack('<II',int(mapping[i]),int(groups[i]))+skin[i].tobytes()+np.asarray([*uv[i],*normals[i],*tangents[i],signs[i],*pos[i]],dtype='<f8').tobytes()+struct.pack('<IIdI',int(calibration[i]),int(pf[i]),float(pa[i]),int(boundary[i]))+np.asarray(part['points'][ids[i]]/100.,dtype='<f8').tobytes()
         blob+=struct.pack('<I',len(faces))+np.asarray(faces,dtype='<u4').tobytes()
         rows.append(dict(resource=resource,lod=lod,nativeVertices=n,authoredVertices=authored,boundaryAliases=int((boundary>0).sum()),protectedAliases=int(calibration.sum())))
         first_vertex+=n;first_index+=len(faces)*3
@@ -73,7 +73,7 @@ def prepare(job,cooked,binding_dir,output):
     for name in stock:
         source+=f"    bone = thePlayer.GetBoneIndex('{name}');\n    if (bone != {names.index(name)}) {{ return; }}\n    m = thePlayer.GetBoneWorldMatrixByIndex(bone);\n    MaleModNativeBonePose(epoch,bone,seconds,VecTransformDir(inverse,m.X),VecTransformDir(inverse,m.Y),VecTransformDir(inverse,m.Z),VecTransform(inverse,VecTransform(m,Vector(0,0,0,1))));\n"
     source+='}\n';(output/'render_bones.ws').write_text(source)
-    write_json(output/'manifest.json',dict(baseCommit=pin,contractVersion=4,packetSHA256=digest(packet),bindingsSHA256=digest(binding),boneSourceSHA256=digest(output/'render_bones.ws'),resources=resources,lods=rows,recipeSHA256=digest(Path(__file__)),nativeOutput=False,observedGameplay=False))
+    write_json(output/'manifest.json',dict(baseCommit=pin,contractVersion=5,packetSHA256=digest(packet),bindingsSHA256=digest(binding),boneSourceSHA256=digest(output/'render_bones.ws'),resources=resources,lods=rows,recipeSHA256=digest(Path(__file__)),nativeOutput=False,observedGameplay=False))
     print('Prepared coherent lower/upper render contract:',output)
 
 

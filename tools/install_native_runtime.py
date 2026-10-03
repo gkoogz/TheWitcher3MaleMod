@@ -73,6 +73,19 @@ def install_native_runtime(cfg,remove=False):
           'geralt.bindings','geralt.render','geralt.render.sha256','graphics-owned-fingerprints.bin','malemod-overlay.enable']},
       'Mods/modMaleModNative/content/scripts/local/malemod/runtime.ws':ROOT/'probes/native/runtime.ws',
       'Mods/modMaleModNative/content/scripts/local/malemod/render_bones.ws':render_dir/'render_bones.ws'}
+    if selection.get('clinical'):
+        clinical_dir=ROOT/selection['clinical'];clinical=read_json(clinical_dir/'manifest.json')
+        if clinical['baseCommit']!=pin or digest(clinical_dir/'clinical.render')!=clinical['packetSHA256']:
+            raise ValueError('Clinical rendering pin/hash differs')
+        if digest(cfg['base']/'legacy/wolverine/src/runtime/splat_bakes.bin')!=clinical['bakeSHA256']:
+            raise ValueError('Clinical bake differs from Base source')
+        from mod import verify_package
+        package=ROOT/clinical['package'];patch=verify_package(package)
+        if patch['baseCommit']!=pin or patch['project']!='modMaleModClinical':raise ValueError('Clinical native package differs')
+        for row in patch['files']:files[row['path']]=package/row['path']
+        for name in ['clinical.render','clinical.render.sha256']:files['bin/x64_dx12/malemod-native/'+name]=release/name
+        files['bin/x64_dx12/malemod-native/splat_bakes.bin']=cfg['base']/'legacy/wolverine/src/runtime/splat_bakes.bin'
+        files['Mods/modMaleModNative/content/scripts/local/malemod/clinical.ws']=ROOT/'probes/native/clinical.ws'
     if selection.get('bodyPackage'):
         from mod import verify_package
         package=ROOT/selection['bodyPackage'];patch=verify_package(package)
@@ -87,7 +100,7 @@ def install_native_runtime(cfg,remove=False):
     proof=read_json(ROOT/'build/probe/native-bootstrap-compile.json')
     if proof['exitCode'] or proof['scriptImportsStubbed'] or digest(ROOT/proof['artifact'])!=proof['artifactSHA256']:
         raise ValueError('Official native startup compilation proof failed')
-    for name in ['runtime','render_bones']:
+    for name in ['runtime','render_bones']+(['clinical'] if selection.get('clinical') else []):
         rel='local/malemod/'+name+'.ws';source=files['Mods/modMaleModNative/content/scripts/'+rel]
         if proof['ownedSourceHashes'].get(rel)!=digest(source):raise ValueError('Native script differs from compiler proof')
     baseline=read_json(ROOT/'local/installation.json')

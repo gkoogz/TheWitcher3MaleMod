@@ -4,10 +4,10 @@
 
 namespace malemod::witcher {
 // Wolverine anatomy controls: wrap selection/state; one/five unit adjustments.
-// Clinical sequence/audio rows are deferred by the shared project scope.
+// Clinical rows use the same arrow contract after the 18 morphology controls.
 struct OverlayNavigation {
  unsigned selected=0;
- void Move(int direction){selected=unsigned((int(selected)+direction+18)%18);}
+ void Move(int direction,unsigned count=18){selected=unsigned((int(selected)+direction+int(count))%int(count));}
  float Adjust(const surface::Controls& c,int direction,bool shift)const{
   if(selected==0)return float((int(c.values[0])+direction+3)%3);
   const float low=selected==2||selected==4?0.f:1.f;

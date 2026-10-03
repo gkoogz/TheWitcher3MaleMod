@@ -58,6 +58,7 @@ function OnTick()
     // Witcher's input context. Solver inputs remain live while it is expanded.
     wrappedMethod();
     seconds = theGame.GetEngineTimeAsSeconds();
+    MaleModClinicalStep();
     if (!thePlayer)
     {
         maleModNativeLastPlayer = NULL;

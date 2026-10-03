@@ -16,38 +16,108 @@ private var maleModVerificationOrigin : Vector;
 @addField(CR4Game)
 private var maleModVerificationHeading : float;
 @addField(CR4Game)
+private var maleModVerificationCaptured : bool;
+@addField(CR4Game)
 private var maleModVerificationPauseTicks : int;
 
 @addMethod(CR4Game)
 function MaleModPrivateVerificationStep()
 {
     var i, control, part : int;
+    var terrainGroups : array<name>;
     var value, seconds : float;
-    var target : Vector;
-    if (!thePlayer || (IsPaused() && maleModVerificationStage != 60) || maleModVerificationStage >= 64) { return; }
+    var cameraRotation : EulerAngles;
+    var target, cameraPosition, cameraAim, cameraDirection, cameraRight, traceFrom, traceTo, ground, groundNormal : Vector;
+    if (!thePlayer || (IsPaused() && maleModVerificationStage != 60) || maleModVerificationStage >= 84) { return; }
     seconds = GetEngineTimeAsSeconds();
     if (!maleModVerificationStarted)
     {
+        if (maleModVerificationTime == 0.0) { maleModVerificationTime = seconds; return; }
+        if (seconds-maleModVerificationTime < 2.0) { return; }
+        theGame.SetGameTime(GameTimeCreate(GameTimeDays(theGame.GetGameTime()),12,0,0),false);
         maleModVerificationOrigin = thePlayer.GetWorldPosition();
+        // Query actual loaded terrain and water level; never invent a floor.
+        for (i=0;i<32;i+=1)
+        {
+            target = maleModVerificationOrigin;
+            value = 4.0+4.0*(float)(i/4);
+            if (i%4==0) { target.X += value; }
+            else if (i%4==1) { target.Y += value; }
+            else if (i%4==2) { target.X -= value; }
+            else { target.Y -= value; }
+            traceFrom = target; traceFrom.Z += 15.0; traceTo = target; traceTo.Z -= 15.0;
+            terrainGroups.Clear(); terrainGroups.PushBack('Terrain');
+            if (GetWorld().StaticTrace(traceFrom,traceTo,ground,groundNormal,terrainGroups) && ground.Z > GetWorld().GetWaterLevel(target,true)+0.15)
+            {
+                target.Z = ground.Z+0.03; thePlayer.Teleport(target);
+                maleModVerificationOrigin = target; break;
+            }
+        }
         maleModVerificationHeading = thePlayer.GetHeading()+120.0;
         maleModVerificationStarted = true;
+        // This session validates the new clinical/material/ramp delivery.
+        // Slider and movement coverage is retained in the preceding trace.
+        maleModVerificationStage = 64;
+        MaleModNativeSetControl(0,2.0);
+        for (i=1;i<18;i+=1) { MaleModNativeSetControl(i,50.0); }
+        MaleModNativeClinicalControl(0,1.0);
+        MaleModNativeTestCheckpoint(64);
         maleModVerificationTime = seconds;
     }
     GetGameCamera().SetManualRotationHorTimeout(1000.0);
     GetGameCamera().SetManualRotationVerTimeout(1000.0);
     GetGameCamera().GetActivePivotRotationController().SetDesiredHeading(maleModVerificationHeading,1.0);
+    if (maleModVerificationStage >= 75 && maleModVerificationStage <= 78) { GetGameCamera().GetActivePivotRotationController().SetDesiredHeading(thePlayer.GetHeading()+90.0*(float)(maleModVerificationStage-75),1.0); }
     GetGameCamera().GetActivePivotRotationController().SetDesiredPitch(0.0,1.0);
     if (maleModVerificationStage == 56 || maleModVerificationStage == 57) { GetGameCamera().GetActivePivotDistanceController().SetDesiredDistance(8.0,1.0); }
     else { GetGameCamera().GetActivePivotDistanceController().SetDesiredDistance(2.4,1.0); }
+    // Inspect the actual scene camera through its SDK, without OS input.
+    if (maleModVerificationStage >= 64)
+    {
+        cameraAim = thePlayer.GetWorldPosition(); cameraAim.Z += 1.0;
+        cameraDirection = RotForward(thePlayer.GetWorldRotation());
+        cameraRight = RotRight(thePlayer.GetWorldRotation());
+        if ((maleModVerificationStage == 75 || maleModVerificationStage >= 84)) { cameraDirection = cameraDirection * -1.0; }
+        else if (maleModVerificationStage == 76) { cameraDirection = cameraRight; }
+        else if (maleModVerificationStage == 78) { cameraDirection = cameraRight * -1.0; }
+        else { cameraDirection = cameraDirection + cameraRight * 0.35; }
+        cameraPosition = cameraAim + VecNormalize(cameraDirection) * 2.6;
+        cameraPosition.Z += 0.35;
+        // Inspect actual contact deposits from above at sequence completion.
+        // Engine camera only; the user's physical desktop is never activated.
+        if (maleModVerificationStage == 71 || maleModVerificationStage == 72)
+        {
+            cameraAim = thePlayer.GetWorldPosition() + RotForward(thePlayer.GetWorldRotation()) * 0.3;
+            cameraAim.Z += 0.15;
+            cameraPosition = cameraAim + VecNormalize(cameraDirection) * 2.6;
+            cameraPosition.Z += 2.2;
+        }
+        GetGameCamera().EnableManualControl(true);
+        GetGameCamera().SetNoclip(true);
+        GetGameCamera().SetCameraWorldPosition(cameraPosition);
+        cameraRotation = VecToRotation(cameraAim-cameraPosition);
+        // Camera pitch convention is opposite the actor-vector conversion.
+        cameraRotation.Pitch = -cameraRotation.Pitch;
+        GetGameCamera().SetCameraWorldRotation(cameraRotation);
+        GetGameCamera().UpdateWithoutInput(true);
+    }
     if (seconds < maleModVerificationTime) { maleModVerificationTime = seconds; }
-    if (maleModVerificationStage == 60)
+    if (maleModVerificationCaptured) { if (seconds-maleModVerificationTime < 0.75) { return; } }
+    else if (maleModVerificationStage == 60)
     {
         maleModVerificationPauseTicks += 1;
         if (maleModVerificationPauseTicks < 80) { return; }
     }
+    else if (maleModVerificationStage >= 69 && maleModVerificationStage <= 72) { if (seconds-maleModVerificationTime < 4.0) { return; } }
     else if (seconds-maleModVerificationTime < 2.0) { return; }
-    if (!MaleModNativeTestCheckpoint(maleModVerificationStage)) { return; }
-    if (maleModVerificationStage == 0 || maleModVerificationStage == 5 || maleModVerificationStage == 54 || maleModVerificationStage >= 55) { TakeScreenshot(); }
+    if (!maleModVerificationCaptured)
+    {
+        if (!MaleModNativeTestCheckpoint(maleModVerificationStage)) { return; }
+        TakeScreenshot();
+        maleModVerificationCaptured = true; maleModVerificationTime = seconds; return;
+    }
+    maleModVerificationCaptured = false;
+
     maleModVerificationStage += 1;
     maleModVerificationTime = seconds;
     // Each test begins at the exact full-floppy reset contract.
@@ -67,6 +137,11 @@ function MaleModPrivateVerificationStep()
     else if (maleModVerificationStage == 60) { MaleModNativeSetControl(1,100.0); Pause("MaleMod private verification"); }
     else if (maleModVerificationStage == 61) { Unpause("MaleMod private verification"); }
     else if (maleModVerificationStage == 63) { LoadLastGameInit(); }
+    if (maleModVerificationStage >= 64 && maleModVerificationStage <= 66) { MaleModNativeClinicalControl(0,(float)(maleModVerificationStage-63)); }
+    else if (maleModVerificationStage == 67) { MaleModNativeClinicalControl(0,0.0); MaleModNativeClinicalControl(1,1.0); }
+    else if (maleModVerificationStage == 73) { MaleModNativeClinicalControl(1,1.0); }
+    else if (maleModVerificationStage == 74) { MaleModNativeClinicalControl(1,0.0); }
+    else if (maleModVerificationStage >= 79 && maleModVerificationStage <= 82) { MaleModNativeSetControl(1,25.0*(float)(maleModVerificationStage-78)); }
     // Move through the game's actor API inside the private station. No host
     // keys, mouse or focus changes, and the existing SDK no-save lock remains.
     if (maleModVerificationStage < 63 && maleModVerificationStage != 60)

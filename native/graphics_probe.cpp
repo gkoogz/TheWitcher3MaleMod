@@ -23,11 +23,16 @@
 #include "graphics_fingerprints.hpp"
 #include "live_renderer.hpp"
 #include "float_draw_renderer.hpp"
+#include "fluid_renderer.hpp"
 
 namespace malemod::witcher {
 namespace {
 using CreateDevice=HRESULT(WINAPI*)(IUnknown*,D3D_FEATURE_LEVEL,REFIID,void**);
 using CreateResource=decltype(ID3D12DeviceVtbl::CreateCommittedResource);
+using CreatePlaced=decltype(ID3D12DeviceVtbl::CreatePlacedResource);
+using CreateResource1=decltype(ID3D12Device4Vtbl::CreateCommittedResource1);
+using CreateResource2=decltype(ID3D12Device8Vtbl::CreateCommittedResource2);
+using CreatePlaced1=decltype(ID3D12Device8Vtbl::CreatePlacedResource1);
 using CreateList=decltype(ID3D12DeviceVtbl::CreateCommandList);
 using CreateList1=decltype(ID3D12Device4Vtbl::CreateCommandList1);
 using SetVertices=decltype(ID3D12GraphicsCommandListVtbl::IASetVertexBuffers);
@@ -72,6 +77,10 @@ template<class Function> struct MethodHooks {
  std::size_t count=0;
 };
 MethodHooks<CreateResource> resourceCreateHooks;
+MethodHooks<CreatePlaced> placedCreateHooks;
+MethodHooks<CreateResource1> resource1CreateHooks;
+MethodHooks<CreateResource2> resource2CreateHooks;
+MethodHooks<CreatePlaced1> placed1CreateHooks;
 MethodHooks<CreateList> listCreateHooks;
 MethodHooks<CreateList1> list1CreateHooks;
 MethodHooks<CreateSignature> signatureCreateHooks;
@@ -127,16 +136,28 @@ std::vector<OwnedRange> ownedRanges;
 std::set<ID3D12Resource*> pinnedOwnedResources;
 struct ComputeValue {unsigned kind=0;UINT64 address=0;std::map<UINT,UINT> constants;};
 struct ListBindings {std::array<D3D12_VERTEX_BUFFER_VIEW,32> vertices{};D3D12_INDEX_BUFFER_VIEW indices{};std::map<UINT,UINT64> rootSRVs;ID3D12PipelineState* pipeline=nullptr;ID3D12RootSignature* computeSignature=nullptr;std::map<UINT,ComputeValue> computeValues;};
-struct PipelineInfo {std::vector<unsigned char> shader;std::vector<std::string> semantics;std::vector<D3D12_INPUT_ELEMENT_DESC> layout;};
+struct PipelineInfo {unsigned depthEnabled=0,depthFunc=0,depthWrite=0,targets=0;int depthBias=0;std::vector<unsigned char> shader;std::vector<std::string> semantics;std::vector<D3D12_INPUT_ELEMENT_DESC> layout;};
 std::map<ID3D12PipelineState*,PipelineInfo> pipelines;
 std::set<ID3D12PipelineState*> capturedPipelines;
 std::filesystem::path logDirectory;
-void RememberPipeline(ID3D12PipelineState* pipeline,D3D12_SHADER_BYTECODE vs,D3D12_INPUT_LAYOUT_DESC layout){
+// Native input resource/state lookup for the GPU morph composer. Metadata is
+// borrowed; each matched source is retained for its consuming command list.
+struct NativeBufferRange {ID3D12Resource* object;UINT64 address,bytes;D3D12_RESOURCE_STATES state;};
+std::vector<NativeBufferRange> nativeBufferRanges;
+void RememberNativeResource(HRESULT result,void** output,D3D12_RESOURCE_STATES state){
+ // Injected uploads are already retained by the renderer and must not evict
+ // native game buffers from this bounded lookup during long sessions.
+ if(injectingSurface||FAILED(result)||!output||!*output)return;
+ ID3D12Resource* base=nullptr;auto* unknown=static_cast<IUnknown*>(*output);
+ if(SUCCEEDED(unknown->lpVtbl->QueryInterface(unknown,IID_ID3D12Resource,reinterpret_cast<void**>(&base)))&&base){D3D12_HEAP_PROPERTIES heap{};D3D12_HEAP_FLAGS heapFlags{};D3D12_RESOURCE_DESC desc{};base->lpVtbl->GetDesc(base,&desc);if(SUCCEEDED(base->lpVtbl->GetHeapProperties(base,&heap,&heapFlags))){if(desc.Dimension==D3D12_RESOURCE_DIMENSION_BUFFER&&desc.Width){std::lock_guard<std::mutex> lock(metadataMutex);const auto address=base->lpVtbl->GetGPUVirtualAddress(base);if(address){nativeBufferRanges.erase(std::remove_if(nativeBufferRanges.begin(),nativeBufferRanges.end(),[&](const auto& row){return row.object==base||(address<row.address+row.bytes&&row.address<address+desc.Width);}),nativeBufferRanges.end());if(desc.Width>=65536&&(heap.Type==D3D12_HEAP_TYPE_DEFAULT||heap.Type==D3D12_HEAP_TYPE_UPLOAD)){if(nativeBufferRanges.size()>=8192)nativeBufferRanges.erase(nativeBufferRanges.begin());nativeBufferRanges.push_back({base,address,desc.Width,state});}}}}base->lpVtbl->Release(base);}
+}
+void RestoreCompute(ID3D12GraphicsCommandList*,const ListBindings&);
+void RememberPipeline(ID3D12PipelineState* pipeline,D3D12_SHADER_BYTECODE vs,D3D12_INPUT_LAYOUT_DESC layout,unsigned depthEnabled=0,unsigned depthFunc=0,unsigned depthWrite=0,unsigned targets=0,int depthBias=0){
  if(!pipeline||!vs.pShaderBytecode||!vs.BytecodeLength||vs.BytecodeLength>1048576||!layout.pInputElementDescs||!layout.NumElements||layout.NumElements>32)return;
  // Retain the actual layout before classifying it. The pre-skin pass may
  // expose a different semantic/index or input slot from the stock SDK path.
  std::lock_guard<std::mutex> lock(metadataMutex);if(pipelines.size()>=16384&&!pipelines.count(pipeline))return;
- auto& p=pipelines[pipeline];p.shader.assign(static_cast<const unsigned char*>(vs.pShaderBytecode),static_cast<const unsigned char*>(vs.pShaderBytecode)+vs.BytecodeLength);p.layout.assign(layout.pInputElementDescs,layout.pInputElementDescs+layout.NumElements);p.semantics.clear();for(const auto& e:p.layout)p.semantics.push_back(e.SemanticName?e.SemanticName:"");
+ auto& p=pipelines[pipeline];p.depthEnabled=depthEnabled;p.depthFunc=depthFunc;p.depthWrite=depthWrite;p.targets=targets;p.depthBias=depthBias;p.shader.assign(static_cast<const unsigned char*>(vs.pShaderBytecode),static_cast<const unsigned char*>(vs.pShaderBytecode)+vs.BytecodeLength);p.layout.assign(layout.pInputElementDescs,layout.pInputElementDescs+layout.NumElements);p.semantics.clear();for(const auto& e:p.layout)p.semantics.push_back(e.SemanticName?e.SemanticName:"");
 }
 template<class T> struct alignas(void*) StreamObject {D3D12_PIPELINE_STATE_SUBOBJECT_TYPE type;T value;};
 std::size_t StreamObjectSize(D3D12_PIPELINE_STATE_SUBOBJECT_TYPE type){
@@ -186,9 +207,9 @@ void ObserveOwnedDraw(ID3D12GraphicsCommandList* list,UINT count,UINT first,INT 
     const auto stem=std::string("owned-draw-")+std::to_string(GetCurrentProcessId())+"-"+std::to_string(capturedPipelines.size());
     std::ofstream shader(logDirectory/(stem+".vs"),std::ios::binary);shader.write(reinterpret_cast<const char*>(pipeline->second.shader.data()),pipeline->second.shader.size());
     std::lock_guard<std::mutex> logLock(logMutex);
-    if(log){std::fprintf(log,"{\"event\":\"ownedDrawPipeline\",\"shader\":\"%s.vs\",\"elements\":[",stem.c_str());
+    if(log){std::fprintf(log,"{\"event\":\"ownedDrawPipeline\",\"pipeline\":\"%p\",\"shader\":\"%s.vs\",\"elements\":[",state.pipeline,stem.c_str());
      for(unsigned i=0;i<pipeline->second.layout.size();i++){const auto& e=pipeline->second.layout[i];std::fprintf(log,"%s{\"semantic\":\"%s\",\"semanticIndex\":%u,\"slot\":%u,\"format\":%u,\"offset\":%u,\"class\":%u}",i?",":"",pipeline->second.semantics[i].c_str(),e.SemanticIndex,e.InputSlot,unsigned(e.Format),e.AlignedByteOffset,unsigned(e.InputSlotClass));}
-     std::fprintf(log,"]}\n");std::fflush(log);
+     std::fprintf(log,"],\"depthEnable\":%u,\"depthFunc\":%u,\"depthWrite\":%u,\"renderTargets\":%u,\"depthBias\":%d}\n",pipeline->second.depthEnabled,pipeline->second.depthFunc,pipeline->second.depthWrite,pipeline->second.targets,pipeline->second.depthBias);std::fflush(log);
     }
    }
    if(!ownedDraws.emplace(view.BufferLocation,state.indices.BufferLocation,count,first,base).second)continue;
@@ -255,12 +276,17 @@ void FingerprintCopy(ID3D12Resource* destination,UINT64 destOffset,ID3D12Resourc
 }
 template<std::size_t N> HRESULT STDMETHODCALLTYPE ResourceHook(ID3D12Device* device,const D3D12_HEAP_PROPERTIES* heap,D3D12_HEAP_FLAGS heapFlags,const D3D12_RESOURCE_DESC* desc,D3D12_RESOURCE_STATES state,const D3D12_CLEAR_VALUE* clear,REFIID iid,void** output){
  auto result=resourceCreateHooks.originals[N](device,heap,heapFlags,desc,state,clear,iid,output);
+ RememberNativeResource(result,output,state);
  if(SUCCEEDED(result)&&desc&&desc->Dimension==D3D12_RESOURCE_DIMENSION_BUFFER&&heap&&resourceCount.fetch_add(1)<128){
   std::lock_guard<std::mutex> lock(logMutex);
   if(log){std::fprintf(log,"{\"event\":\"bufferCreated\",\"width\":%llu,\"heap\":%u,\"resourceFlags\":%u,\"initialState\":%u}\n",static_cast<unsigned long long>(desc->Width),unsigned(heap->Type),unsigned(desc->Flags),unsigned(state));std::fflush(log);}
  }
  return result;
 }
+template<std::size_t N> HRESULT STDMETHODCALLTYPE PlacedResourceHook(ID3D12Device* device,ID3D12Heap* heap,UINT64 offset,const D3D12_RESOURCE_DESC* desc,D3D12_RESOURCE_STATES state,const D3D12_CLEAR_VALUE* clear,REFIID iid,void** output){auto result=placedCreateHooks.originals[N](device,heap,offset,desc,state,clear,iid,output);RememberNativeResource(result,output,state);return result;}
+template<std::size_t N> HRESULT STDMETHODCALLTYPE Resource1Hook(ID3D12Device4* device,const D3D12_HEAP_PROPERTIES* heap,D3D12_HEAP_FLAGS heapFlags,const D3D12_RESOURCE_DESC* desc,D3D12_RESOURCE_STATES state,const D3D12_CLEAR_VALUE* clear,ID3D12ProtectedResourceSession* protectedSession,REFIID iid,void** output){auto result=resource1CreateHooks.originals[N](device,heap,heapFlags,desc,state,clear,protectedSession,iid,output);RememberNativeResource(result,output,state);return result;}
+template<std::size_t N> HRESULT STDMETHODCALLTYPE Resource2Hook(ID3D12Device8* device,const D3D12_HEAP_PROPERTIES* heap,D3D12_HEAP_FLAGS heapFlags,const D3D12_RESOURCE_DESC1* desc,D3D12_RESOURCE_STATES state,const D3D12_CLEAR_VALUE* clear,ID3D12ProtectedResourceSession* protectedSession,REFIID iid,void** output){auto result=resource2CreateHooks.originals[N](device,heap,heapFlags,desc,state,clear,protectedSession,iid,output);RememberNativeResource(result,output,state);return result;}
+template<std::size_t N> HRESULT STDMETHODCALLTYPE PlacedResource1Hook(ID3D12Device8* device,ID3D12Heap* heap,UINT64 offset,const D3D12_RESOURCE_DESC1* desc,D3D12_RESOURCE_STATES state,const D3D12_CLEAR_VALUE* clear,REFIID iid,void** output){auto result=placed1CreateHooks.originals[N](device,heap,offset,desc,state,clear,iid,output);RememberNativeResource(result,output,state);return result;}
 template<std::size_t N> void STDMETHODCALLTYPE VerticesHook(ID3D12GraphicsCommandList* list,UINT first,UINT count,const D3D12_VERTEX_BUFFER_VIEW* views){
  vertexHooks.originals[N](list,first,count,views);
  if(injectingSurface)return;
@@ -291,11 +317,17 @@ void FirstCall(unsigned bit,const char* event){
 template<std::size_t N> void STDMETHODCALLTYPE IndexedHook(ID3D12GraphicsCommandList* list,UINT indices,UINT instances,UINT first,INT base,UINT firstInstance){
  if(!injectingSurface){
   ObserveOwnedDraw(list,indices,first,base);
-  ListBindings snapshot;bool owned=false;unsigned resource=0,lod=2;auto delivery=LiveRenderLatest();
+  ListBindings snapshot;bool owned=false,fluid=false;unsigned fluidKind=0,resource=0,lod=2;ID3D12Resource* nativeResource=nullptr;D3D12_RESOURCE_STATES nativeState{};auto delivery=LiveRenderLatest();
   {std::lock_guard<std::mutex> lock(metadataMutex);auto found=bindings.find(list);if(found!=bindings.end()){
    snapshot=found->second;
    const auto uv=snapshot.vertices[1].BufferLocation;
-   if(delivery&&snapshot.indices.Format==DXGI_FORMAT_R16_UINT)for(const auto& range:ownedRanges){
+   for(const auto& range:ownedRanges){
+    const auto position=snapshot.vertices[0].BufferLocation;
+    if(range.label.find("fluid_")!=0||position<range.begin||position-range.begin>=range.bytes)continue;
+    if(range.label.find("stream0")==std::string::npos&&range.label.find("vertices")==std::string::npos&&range.label.find("_all")==std::string::npos)continue;
+    fluid=true;fluidKind=range.label.find("fluid_clear_")==0?1:0;break;
+   }
+   if(delivery&&snapshot.indices.Format==DXGI_FORMAT_R16_UINT&&!fluid)for(const auto& range:ownedRanges){
     if(uv<range.begin||uv-range.begin>=range.bytes)continue;
     resource=range.label.find("upper_")==0?1:0;
     if(resource>=delivery->resources.size()||snapshot.indices.SizeInBytes!=delivery->resources[resource].indexBytes)continue;
@@ -311,10 +343,25 @@ template<std::size_t N> void STDMETHODCALLTYPE IndexedHook(ID3D12GraphicsCommand
     }
     if(owned)break;
    }
+   // Position ownership is authoritative for static shadow/depth passes,
+   // which may omit UV input or retain a previous mesh's unused UV binding.
+   if(delivery&&!fluid&&snapshot.vertices[0].StrideInBytes==16&&snapshot.indices.Format==DXGI_FORMAT_R16_UINT){owned=false;lod=2;const auto position=snapshot.vertices[0].BufferLocation;for(const auto& range:ownedRanges){
+    if(position<range.begin||position-range.begin>=range.bytes)continue;const unsigned part=range.label.find("upper_")==0?1:0;if(part>=delivery->resources.size())continue;const auto& r=delivery->resources[part];if(snapshot.indices.SizeInBytes!=r.indexBytes)continue;
+    const bool whole=(range.label.size()>=9&&range.label.compare(range.label.size()-9,9,"_vertices")==0)||(range.label.size()>=4&&range.label.compare(range.label.size()-4,4,"_all")==0);unsigned candidate=whole?StaticFloatDrawLOD(r,position-range.begin):2;
+    for(unsigned k=0;k<2&&candidate==2;k++){const auto suffix=std::string("lod")+std::to_string(k)+"_stream0";if(position==range.begin&&range.label.size()>=suffix.size()&&range.label.compare(range.label.size()-suffix.size(),suffix.size(),suffix)==0)candidate=k;}
+    if(candidate<2){resource=part;lod=candidate;owned=true;break;}
+   }}
+   if(owned&&snapshot.vertices[0].StrideInBytes==24){const auto& view=snapshot.vertices[0];for(auto i=nativeBufferRanges.rbegin();i!=nativeBufferRanges.rend();++i){const auto& row=*i;if(view.BufferLocation>=row.address&&view.BufferLocation-row.address<=row.bytes&&view.SizeInBytes<=row.bytes-(view.BufferLocation-row.address)){nativeResource=row.object;nativeResource->lpVtbl->AddRef(nativeResource);nativeState=row.state;break;}}}
   }}
+  if(fluid){
+   injectingSurface=true;
+   const bool replaced=FluidDraw(list,snapshot.pipeline,snapshot.vertices,snapshot.indices,fluidKind,[&](unsigned count,unsigned firstIndex){indexedHooks.originals[N](list,count,instances,firstIndex,0,firstInstance);});
+   injectingSurface=false;if(replaced)return;
+  }
   if(owned){
    injectingSurface=true;
-   const bool replaced=FloatDraw(list,snapshot.pipeline,snapshot.vertices[0],snapshot.vertices[2],[&]{indexedHooks.originals[N](list,indices,instances,first,base,firstInstance);},resource,lod);
+   const bool replaced=FloatDraw(list,snapshot.pipeline,snapshot.vertices[0],snapshot.vertices[2],[&]{indexedHooks.originals[N](list,indices,instances,first,base,firstInstance);},resource,lod,nativeResource,unsigned(nativeState),[&]{RestoreCompute(list,snapshot);});
+   if(nativeResource)nativeResource->lpVtbl->Release(nativeResource);
    injectingSurface=false;if(replaced){FirstCall(16,"indexedDrawObserved");return;}
   }
  }
@@ -376,6 +423,7 @@ template<std::size_t N> void STDMETHODCALLTYPE BarrierHook(ID3D12GraphicsCommand
   {std::lock_guard<std::mutex> lock(metadataMutex);auto found=bindings.find(list);if(found!=bindings.end())snapshot=found->second;}
   for(unsigned i=0;i<count;i++){const auto& barrier=barriers[i];std::uint64_t offset=0;
    if(barrier.Type!=D3D12_RESOURCE_BARRIER_TYPE_TRANSITION)continue;
+   if(barrier.Flags!=D3D12_RESOURCE_BARRIER_FLAG_BEGIN_ONLY){std::lock_guard<std::mutex> lock(metadataMutex);for(auto& r:nativeBufferRanges)if(r.object==barrier.Transition.pResource)r.state=barrier.Transition.StateAfter;}
    if(LiveRenderMatchResource(barrier.Transition.pResource,offset)){
     {std::lock_guard<std::mutex> logLock(logMutex);
      if(ownedTransitions.size()<32&&ownedTransitions.emplace(unsigned(barrier.Transition.StateBefore),unsigned(barrier.Transition.StateAfter),unsigned(barrier.Flags),ready).second&&log){
@@ -417,11 +465,11 @@ template<std::size_t... N> auto ComputeConstantsCallbacks(std::index_sequence<N.
 template<std::size_t N> void STDMETHODCALLTYPE ExecuteHook(ID3D12CommandQueue* queue,UINT count,ID3D12CommandList* const* lists){
  executeHooks.originals[N](queue,count,lists);FirstCall(256,"queueSubmissionObserved");
  LiveRenderSubmitted(queue,count,reinterpret_cast<void* const*>(lists));
- FloatDrawSubmitted(queue,count,reinterpret_cast<void* const*>(lists));
+ FloatDrawSubmitted(queue,count,reinterpret_cast<void* const*>(lists));FluidDrawSubmitted(queue,count,reinterpret_cast<void* const*>(lists));
 }
 template<std::size_t... N> auto ExecuteCallbacks(std::index_sequence<N...>){return std::array<ExecuteLists,sizeof...(N)>{&ExecuteHook<N>...};}
 template<std::size_t N> void STDMETHODCALLTYPE BundleHook(ID3D12GraphicsCommandList* list,ID3D12GraphicsCommandList* bundle){
- bundleHooks.originals[N](list,bundle);FloatDrawBundle(list,bundle);
+ bundleHooks.originals[N](list,bundle);FloatDrawBundle(list,bundle);FluidDrawBundle(list,bundle);
 }
 template<std::size_t... N> auto BundleCallbacks(std::index_sequence<N...>){return std::array<ExecuteBundle,sizeof...(N)>{&BundleHook<N>...};}
 template<class Function> bool HookMethod(MethodHooks<Function>& methods,Function target,const std::array<Function,16>& callbacks){
@@ -445,7 +493,7 @@ void ObserveList(HRESULT result,D3D12_COMMAND_LIST_TYPE type,REFIID iid,void** o
 template<std::size_t N> HRESULT STDMETHODCALLTYPE ResetHook(ID3D12GraphicsCommandList* list,ID3D12CommandAllocator* allocator,ID3D12PipelineState* initial){
  auto result=resetHooks.originals[N](list,allocator,initial);
  if(SUCCEEDED(result))LiveRenderReset(list);
- if(SUCCEEDED(result))FloatDrawReset(list);
+ if(SUCCEEDED(result)){FloatDrawReset(list);FluidDrawReset(list);}
  if(SUCCEEDED(result)){flags.fetch_or(2048);{std::lock_guard<std::mutex> lock(metadataMutex);bindings.erase(list);if(initial)bindings[list].pipeline=initial;}void* output=list;ObserveList(result,list->lpVtbl->GetType(list),IID_ID3D12GraphicsCommandList,&output);}
  return result;
 }
@@ -555,7 +603,7 @@ template<std::size_t N> HRESULT STDMETHODCALLTYPE QueueHook(ID3D12Device* device
 }
 template<std::size_t N> HRESULT STDMETHODCALLTYPE PSOHook(ID3D12Device* device,const D3D12_GRAPHICS_PIPELINE_STATE_DESC* desc,REFIID iid,void** output){
  auto result=psoCreateHooks.originals[N](device,desc,iid,output);
- if(SUCCEEDED(result)&&desc&&output&&*output&&IsEqualGUID(iid,IID_ID3D12PipelineState))try{RememberPipeline(static_cast<ID3D12PipelineState*>(*output),desc->VS,desc->InputLayout);RegisterFloatDrawPipeline(*output,*desc);}catch(...){flags.fetch_or(0x8000);}
+ if(SUCCEEDED(result)&&desc&&output&&*output&&IsEqualGUID(iid,IID_ID3D12PipelineState))try{RememberPipeline(static_cast<ID3D12PipelineState*>(*output),desc->VS,desc->InputLayout,desc->DepthStencilState.DepthEnable,unsigned(desc->DepthStencilState.DepthFunc),unsigned(desc->DepthStencilState.DepthWriteMask),desc->NumRenderTargets,desc->RasterizerState.DepthBias);RegisterFloatDrawPipeline(*output,*desc);RegisterFluidPipeline(*output,*desc);}catch(...){flags.fetch_or(0x8000);}
  if(SUCCEEDED(result)&&desc&&desc->InputLayout.NumElements<=32&&psoCount.fetch_add(1)<64){
   std::lock_guard<std::mutex> lock(logMutex);
   if(log){std::fprintf(log,"{\"event\":\"graphicsInputLayout\",\"elements\":[");
@@ -567,12 +615,17 @@ template<std::size_t N> HRESULT STDMETHODCALLTYPE PSOHook(ID3D12Device* device,c
 }
 void RememberStream(HRESULT result,const D3D12_PIPELINE_STATE_STREAM_DESC* desc,REFIID iid,void** output){
  if(SUCCEEDED(result)&&desc&&output&&*output&&IsEqualGUID(iid,IID_ID3D12PipelineState)&&desc->pPipelineStateSubobjectStream&&desc->SizeInBytes<=16384){
-  try{D3D12_SHADER_BYTECODE vs{};D3D12_INPUT_LAYOUT_DESC layout{};const auto* bytes=static_cast<const unsigned char*>(desc->pPipelineStateSubobjectStream);std::size_t at=0,layoutValue=SIZE_MAX,cacheValue=SIZE_MAX;
+  try{unsigned depthEnabled=0,depthFunc=0,depthWrite=0,targets=0;int depthBias=0;D3D12_SHADER_BYTECODE vs{};D3D12_INPUT_LAYOUT_DESC layout{};const auto* bytes=static_cast<const unsigned char*>(desc->pPipelineStateSubobjectStream);std::size_t at=0,layoutValue=SIZE_MAX,cacheValue=SIZE_MAX;
    while(at<desc->SizeInBytes){if(desc->SizeInBytes-at<sizeof(D3D12_PIPELINE_STATE_SUBOBJECT_TYPE))return;auto type=*reinterpret_cast<const D3D12_PIPELINE_STATE_SUBOBJECT_TYPE*>(bytes+at);auto size=StreamObjectSize(type);if(!size||size>desc->SizeInBytes-at)return;
     if(type==D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_VS)vs=reinterpret_cast<const StreamObject<D3D12_SHADER_BYTECODE>*>(bytes+at)->value;
     if(type==D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_INPUT_LAYOUT){layout=reinterpret_cast<const StreamObject<D3D12_INPUT_LAYOUT_DESC>*>(bytes+at)->value;layoutValue=at+offsetof(StreamObject<D3D12_INPUT_LAYOUT_DESC>,value);}
+    if(type==D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_DEPTH_STENCIL){const auto& d=reinterpret_cast<const StreamObject<D3D12_DEPTH_STENCIL_DESC>*>(bytes+at)->value;depthEnabled=d.DepthEnable;depthFunc=unsigned(d.DepthFunc);depthWrite=unsigned(d.DepthWriteMask);}
+    if(type==D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_DEPTH_STENCIL1){const auto& d=reinterpret_cast<const StreamObject<D3D12_DEPTH_STENCIL_DESC1>*>(bytes+at)->value;depthEnabled=d.DepthEnable;depthFunc=unsigned(d.DepthFunc);depthWrite=unsigned(d.DepthWriteMask);}
+    if(type==D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_DEPTH_STENCIL2){const auto& d=reinterpret_cast<const StreamObject<D3D12_DEPTH_STENCIL_DESC2>*>(bytes+at)->value;depthEnabled=d.DepthEnable;depthFunc=unsigned(d.DepthFunc);depthWrite=unsigned(d.DepthWriteMask);}
+    if(type==D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_RENDER_TARGET_FORMATS)targets=reinterpret_cast<const StreamObject<D3D12_RT_FORMAT_ARRAY>*>(bytes+at)->value.NumRenderTargets;
+    if(type==D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_RASTERIZER)depthBias=reinterpret_cast<const StreamObject<D3D12_RASTERIZER_DESC>*>(bytes+at)->value.DepthBias;
     if(type==D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_CACHED_PSO)cacheValue=at+offsetof(StreamObject<D3D12_CACHED_PIPELINE_STATE>,value);at+=size;
-   }RememberPipeline(static_cast<ID3D12PipelineState*>(*output),vs,layout);RegisterFloatDrawStream(*output,*desc,layoutValue,cacheValue);
+   }RememberPipeline(static_cast<ID3D12PipelineState*>(*output),vs,layout,depthEnabled,depthFunc,depthWrite,targets,depthBias);RegisterFloatDrawStream(*output,*desc,layoutValue,cacheValue);RegisterFluidStream(*output,*desc,layoutValue,cacheValue);
   }catch(...){flags.fetch_or(0x8000);}
  }
 }
@@ -580,7 +633,7 @@ template<std::size_t N> HRESULT STDMETHODCALLTYPE StreamPSOHook(ID3D12Device2* d
  auto result=streamPSOHooks.originals[N](device,desc,iid,output);RememberStream(result,desc,iid,output);return result;
 }
 template<std::size_t... N> auto StreamPSOCallbacks(std::index_sequence<N...>){return std::array<CreateStreamPSO,sizeof...(N)>{&StreamPSOHook<N>...};}
-template<std::size_t N> HRESULT STDMETHODCALLTYPE LibraryGraphicsHook(ID3D12PipelineLibrary* library,LPCWSTR name,const D3D12_GRAPHICS_PIPELINE_STATE_DESC* desc,REFIID iid,void** output){auto result=libraryGraphicsHooks.originals[N](library,name,desc,iid,output);if(SUCCEEDED(result)&&desc&&output&&*output&&IsEqualGUID(iid,IID_ID3D12PipelineState))try{RememberPipeline(static_cast<ID3D12PipelineState*>(*output),desc->VS,desc->InputLayout);RegisterFloatDrawPipeline(*output,*desc);}catch(...){flags.fetch_or(0x8000);}return result;}
+template<std::size_t N> HRESULT STDMETHODCALLTYPE LibraryGraphicsHook(ID3D12PipelineLibrary* library,LPCWSTR name,const D3D12_GRAPHICS_PIPELINE_STATE_DESC* desc,REFIID iid,void** output){auto result=libraryGraphicsHooks.originals[N](library,name,desc,iid,output);if(SUCCEEDED(result)&&desc&&output&&*output&&IsEqualGUID(iid,IID_ID3D12PipelineState))try{RememberPipeline(static_cast<ID3D12PipelineState*>(*output),desc->VS,desc->InputLayout,desc->DepthStencilState.DepthEnable,unsigned(desc->DepthStencilState.DepthFunc),unsigned(desc->DepthStencilState.DepthWriteMask),desc->NumRenderTargets,desc->RasterizerState.DepthBias);RegisterFloatDrawPipeline(*output,*desc);RegisterFluidPipeline(*output,*desc);}catch(...){flags.fetch_or(0x8000);}return result;}
 template<std::size_t N> HRESULT STDMETHODCALLTYPE LibraryStreamHook(ID3D12PipelineLibrary1* library,LPCWSTR name,const D3D12_PIPELINE_STATE_STREAM_DESC* desc,REFIID iid,void** output){auto result=libraryStreamHooks.originals[N](library,name,desc,iid,output);RememberStream(result,desc,iid,output);return result;}
 template<std::size_t... N> auto LibraryGraphicsCallbacks(std::index_sequence<N...>){return std::array<LoadGraphicsPipeline,sizeof...(N)>{&LibraryGraphicsHook<N>...};}
 template<std::size_t... N> auto LibraryStreamCallbacks(std::index_sequence<N...>){return std::array<LoadStreamPipeline,sizeof...(N)>{&LibraryStreamHook<N>...};}
@@ -593,6 +646,10 @@ template<std::size_t N> HRESULT STDMETHODCALLTYPE LibraryCreateHook(ID3D12Device
 }
 template<std::size_t... N> auto LibraryCreateCallbacks(std::index_sequence<N...>){return std::array<CreatePipelineLibrary,sizeof...(N)>{&LibraryCreateHook<N>...};}
 template<std::size_t... N> auto ResourceCallbacks(std::index_sequence<N...>){return std::array<CreateResource,sizeof...(N)>{&ResourceHook<N>...};}
+template<std::size_t... N> auto PlacedCallbacks(std::index_sequence<N...>){return std::array<CreatePlaced,sizeof...(N)>{&PlacedResourceHook<N>...};}
+template<std::size_t... N> auto Resource1Callbacks(std::index_sequence<N...>){return std::array<CreateResource1,sizeof...(N)>{&Resource1Hook<N>...};}
+template<std::size_t... N> auto Resource2Callbacks(std::index_sequence<N...>){return std::array<CreateResource2,sizeof...(N)>{&Resource2Hook<N>...};}
+template<std::size_t... N> auto Placed1Callbacks(std::index_sequence<N...>){return std::array<CreatePlaced1,sizeof...(N)>{&PlacedResource1Hook<N>...};}
 template<std::size_t... N> auto ListCallbacks(std::index_sequence<N...>){return std::array<CreateList,sizeof...(N)>{&ListHook<N>...};}
 template<std::size_t... N> auto List1Callbacks(std::index_sequence<N...>){return std::array<CreateList1,sizeof...(N)>{&List1Hook<N>...};}
 template<std::size_t... N> auto SignatureCallbacks(std::index_sequence<N...>){return std::array<CreateSignature,sizeof...(N)>{&SignatureHook<N>...};}
@@ -606,6 +663,7 @@ void ObserveDevice(HRESULT result,void** output){
    {std::lock_guard<std::mutex> logLock(logMutex);if(log){std::fprintf(log,"{\"event\":\"deviceObserved\"}\n");std::fflush(log);}}
    std::lock_guard<std::mutex> lock(hookMutex);
    if(!HookMethod(resourceCreateHooks,device->lpVtbl->CreateCommittedResource,ResourceCallbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);
+   if(!HookMethod(placedCreateHooks,device->lpVtbl->CreatePlacedResource,PlacedCallbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);
    if(!HookMethod(listCreateHooks,device->lpVtbl->CreateCommandList,ListCallbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);
    if(!HookMethod(signatureCreateHooks,device->lpVtbl->CreateCommandSignature,SignatureCallbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);
    if(!HookMethod(queueCreateHooks,device->lpVtbl->CreateCommandQueue,QueueCallbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);
@@ -615,8 +673,10 @@ void ObserveDevice(HRESULT result,void** output){
    ID3D12Device4* device4=nullptr;
    if(SUCCEEDED(device->lpVtbl->QueryInterface(device,IID_ID3D12Device4,reinterpret_cast<void**>(&device4)))){
     if(!HookMethod(list1CreateHooks,device4->lpVtbl->CreateCommandList1,List1Callbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);
+    if(!HookMethod(resource1CreateHooks,device4->lpVtbl->CreateCommittedResource1,Resource1Callbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);
     device4->lpVtbl->Release(device4);
    }
+   {ID3D12Device8* device8=nullptr;if(SUCCEEDED(device->lpVtbl->QueryInterface(device,IID_ID3D12Device8,reinterpret_cast<void**>(&device8)))){if(!HookMethod(resource2CreateHooks,device8->lpVtbl->CreateCommittedResource2,Resource2Callbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);if(!HookMethod(placed1CreateHooks,device8->lpVtbl->CreatePlacedResource1,Placed1Callbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);device8->lpVtbl->Release(device8);}}
    device->lpVtbl->Release(device);
   }
  }

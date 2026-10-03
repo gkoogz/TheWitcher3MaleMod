@@ -37,7 +37,7 @@ class RuntimeController {
  static std::wstring RequireContacts(std::wstring worker,const std::optional<surface::CollisionCalibration>& contacts,bool diagnostic){
   if(!contacts&&!diagnostic)throw std::invalid_argument("Live character contacts must be calibrated; source-default contacts require explicit diagnostic mode");return worker;
  }
- RuntimeTick Tick(PoseSample sample,bool paused,const surface::Controls& controls,std::uint64_t& sequence){
+ RuntimeTick Tick(PoseSample sample,bool paused,const surface::Controls& controls,std::uint64_t& sequence,const surface::Frame::ClinicalProjection& clinical={}){
   sequence=0;if(service_.Failed())return RuntimeTick::Stopped;
   try{
    surface::wire::Validate(controls);
@@ -53,7 +53,7 @@ class RuntimeController {
     resume_=true;
     if(lastMapped_&&lastControls_.values!=controls.values){
      surface::wire::Request preview;preview.controls=controls;preview.frame=lastMapped_->frame;
-     preview.frame.seconds=0;preview.frame.pitchForce=preview.frame.yawForce=0;
+     preview.frame.clinical=clinical;preview.frame.seconds=0;preview.frame.pitchForce=preview.frame.yawForce=0;
      const auto status=service_.Submit(preview,sequence);
      if(status==Submission::Loading)return RuntimeTick::Loading;
      if(status==Submission::Busy)return RuntimeTick::Busy;if(status==Submission::Full)return RuntimeTick::Full;if(status!=Submission::Accepted)return RuntimeTick::Stopped;
@@ -80,7 +80,7 @@ class RuntimeController {
    const auto nativeSample=sample;
    auto candidate=resume_?PoseInput(calibration_,inverseBind_,contacts_):pose_;
    const auto wall=sample.seconds;sample.seconds=simulationSeconds_+dt;
-   auto mapped=candidate.Map(sample);surface::wire::Request request;request.controls=controls;request.frame=mapped.frame;
+   auto mapped=candidate.Map(sample);surface::wire::Request request;request.controls=controls;request.frame=mapped.frame;request.frame.clinical=clinical;
    const auto status=service_.Submit(request,sequence);
    if(status!=Submission::Accepted){
     Publish();switch(status){case Submission::Loading:return RuntimeTick::Loading;case Submission::Busy:return RuntimeTick::Busy;case Submission::Full:return RuntimeTick::Full;case Submission::Stopped:return RuntimeTick::Stopped;default:return RuntimeTick::Invalid;}

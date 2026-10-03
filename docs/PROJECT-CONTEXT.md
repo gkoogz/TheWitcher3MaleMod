@@ -1,5 +1,11 @@
 # Current body/material/presentation refinement
 
+Latest authorization: deterministic Geralt skin matching without image
+generation, progressive radial pelvic recruitment, rear black-patch repair,
+Wolverine clinical sequence/throb and fluids with actual floor collision.
+Dialogue slots and cue logic are authorized; dialogue assets will come later.
+This supersedes the sequence/fluid deferrals below. Wolverine is unchanged.
+
 Latest request (October 2): restore anatomy texture detail, fix F6 repaint
 flicker, improve displayed physics cadence, and permit pelvic recruitment
 across the separate torso/legs waist. Both sides must use shared Base boundary

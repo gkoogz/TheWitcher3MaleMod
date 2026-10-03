@@ -19,12 +19,15 @@ class SurfacePipeline {
  public:
  SurfacePipeline(const std::wstring& worker,const std::filesystem::path& bindings,const std::string& revision,bool parallel=true):source_(worker),target_(bindings,revision),parallel_(parallel){}
  void Initialize(const surface::Controls& controls){
-  const auto rest=source_.Initialize(controls);
+  source_.Initialize(surface::Controls{});
+  surface::wire::Request q;q.frame.seconds=0;q.frame.collarQueries=target_.CollarQueries();
+  const auto rest=source_.Evaluate(q,10000);target_.SetNeutralCollar(rest);
   for(unsigned lod=0;lod<2;lod++)target_.Evaluate(lod,rest);
  }
  SurfaceFrame Evaluate(const surface::wire::Request& request){
   auto begin=std::chrono::steady_clock::now();SurfaceFrame result;
-  result.source=source_.Evaluate(request,10000);auto solved=std::chrono::steady_clock::now();
+  auto query=request;query.frame.collarQueries=target_.CollarQueries();
+  result.source=source_.Evaluate(query,10000);auto solved=std::chrono::steady_clock::now();
   result.workerMilliseconds=source_.LastWorkerTimings();result.geometryMilliseconds=source_.LastGeometryTimings();
   // Each LOD owns its plan/cache; the source and shared reductions are done.
   if(parallel_){auto other=std::async(std::launch::async,[&]{return target_.Evaluate(1,result.source);});result.targetPositions[0]=target_.Evaluate(0,result.source);result.targetPositions[1]=other.get();}

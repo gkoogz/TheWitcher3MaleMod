@@ -18,6 +18,7 @@ def prepare(output):
     from malemod_base.graft import topology_ids,boundary_loops,smooth_normals,limit_influences
     from malemod_base.part_boundary import weld_parts
     from malemod_base.material_atlas import atlas_uv
+    from malemod_base.refinement import refine
     output=Path(output).absolute()
     if not output.is_relative_to(ROOT/'build') or output.exists():raise ValueError('Use a fresh owned build directory')
     bank=read_json(ROOT/'build/overall/overall-stable-layout/overall.json')
@@ -31,7 +32,11 @@ def prepare(output):
         loop=min(candidates,key=lambda l:abs(p[keep[l],2].mean()-107))
         if not 104 < p[keep[loop],2].mean() < 110:raise ValueError('Actual waist not found')
         loops.append(loop)
-    weld=weld_parts(meshes,loops,np.array([[1,0,0],[0,1,0]]),np.array([0,-1,107]),12,1.25,knot_tolerance=.0001)
+    # The prior union retained 0.0012-FBX-unit edges, below the measured cooked
+    # quantization cell. Avoid unsupported sub-cell topology on native import;
+    # this refinement is not evidence about the reported rear lighting patch.
+    # Cluster only cross-part near-identical knots; retain original edge donors.
+    weld=weld_parts(meshes,loops,np.array([[1,0,0],[0,1,0]]),np.array([0,-1,107]),12,1.25,knot_tolerance=.001)
     # Fields are aligned by observed joint names, not palette ordinals, which
     # differ between the upper and lower exports.
     names=list(dict.fromkeys(n for d,m in records for n,c in d.skin(m)))
@@ -42,6 +47,28 @@ def prepare(output):
         weights.append(w)
     canonical=weld.parts[0].field(weights[0])[weld.parts[0].seam]
     canonical,discard=limit_influences(canonical,4,.3)
+    # Resolve the expanding circular support with actual surface triangles.
+    # Keep every original part/attachment edge: refinement changes interiors,
+    # retaining their sparse UV/color/skin lineage and positional aliases.
+    for part_id,part in enumerate(weld.parts):
+        old_module=0
+        if part_id<2:
+            original_binding=np.load(ROOT/bank['fit'].rsplit('/',1)[0]/('geralt-anatomy-lod%d.bindings.npz'%(part_id%2)))
+            old_module=int(original_binding['module_lineage_shape'][0])
+        old_body=len(meshes[part_id][0])-old_module
+        for iteration in range(3):
+            keep,ids=topology_ids(part.points,1e-5)
+            boundary=boundary_loops(ids[part.faces]);locked_keys={tuple(sorted((int(a),int(b)))) for loop in boundary for a,b in zip(loop,np.roll(loop,-1))}
+            edges={tuple(sorted((int(a),int(b)))) for tri in part.faces for a,b in [(tri[0],tri[1]),(tri[1],tri[2]),(tri[2],tri[0])]}
+            locked=[e for e in edges if tuple(sorted((int(ids[e[0]]),int(ids[e[1]])))) in locked_keys or (old_module and any(old_body<=v<len(meshes[part_id][0]) for v in e))]
+            tri=part.points[part.faces];center=tri.mean(1)
+            longest=np.max(np.linalg.norm(tri-np.roll(tri,1,axis=1),axis=2),axis=1)
+            selected=(center[:,1]>1)&(center[:,2]>75)&(center[:,2]<128)&(np.hypot(center[:,0],center[:,2]-97.5)<32)&(longest>2.0)
+            if old_module:selected &= ~np.any((part.faces>=old_body)&(part.faces<len(meshes[part_id][0])),axis=1)
+            if not selected.any():break
+            p,f,transfer,parents=refine(part.points,part.faces,selected,locked,ids)
+            part.points=p;part.faces=f;part.lineage=transfer@part.lineage;part.face_lineage=part.face_lineage[parents]
+            _,part.aliases=topology_ids(p,1e-5)
     output.mkdir(parents=True);rows=[]
     source=np.load(cfg['base']/'assets/wolverine-reference/geometry.npz')
     for part_id,((d,m),part,(original,faces)) in enumerate(zip(records,weld.parts,meshes)):

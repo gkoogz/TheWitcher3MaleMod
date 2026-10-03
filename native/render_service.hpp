@@ -39,6 +39,7 @@ struct RenderDelivery {
  unsigned epoch=0;std::uint64_t sequence=0;double poseSeconds=0;
  std::shared_ptr<const std::vector<SourceRenderVertex>> vertices;
  RenderPose pose;
+ std::array<double,3> nozzleWorld{},nozzleDirectionWorld{1,0,0};
  surface::Controls controls;
  double sourceMilliseconds=0,targetMilliseconds=0,preparationMilliseconds=0,lightingMilliseconds=0;
  std::array<float,3> workerMilliseconds{};
@@ -49,10 +50,18 @@ struct RenderDelivery {
  struct FloatVertex {
   std::array<float,3> position;std::uint32_t bones,weights,normal,tangent;
  };
+ struct MorphReference {std::array<float,3> position;std::uint32_t normal,tangent,boundary;};
+ std::shared_ptr<const std::vector<MorphReference>> morphReference;
  std::vector<FloatVertex> floatVertices;
  std::vector<RenderResource> resources;
 };
 static_assert(sizeof(RenderDelivery::FloatVertex)==28);
+static_assert(sizeof(RenderDelivery::MorphReference)==24);
+inline std::shared_ptr<const std::vector<RenderDelivery::MorphReference>> PrepareMorphReference(const RenderContract& contract){
+ auto out=std::make_shared<std::vector<RenderDelivery::MorphReference>>();out->reserve(contract.VertexCount());
+ for(const auto& lod:contract.lods)for(const auto& row:lod.vertices)out->push_back({contract.encodedReference.at(out->size()),PackDirection(skin::Point{float(row.fallback.normal[0]),float(row.fallback.normal[1]),float(row.fallback.normal[2])},1,false),PackDirection(skin::Point{float(row.fallback.tangent[0]),float(row.fallback.tangent[1]),float(row.fallback.tangent[2])},row.fallback.sign<0?0:3,false),row.boundary});
+ return out;
+}
 inline std::vector<RenderDelivery::FloatVertex> PrepareFloatVertices(const std::vector<SourceRenderVertex>& vertices,const RenderContract& contract){
  if(vertices.size()!=contract.VertexCount())throw std::invalid_argument("Incomplete observed native surface");
  std::vector<RenderDelivery::FloatVertex> out;out.reserve(vertices.size());
@@ -72,7 +81,11 @@ inline std::vector<RenderDelivery::FloatVertex> PrepareFloatVertices(const std::
    const auto& v=vertices[vi];auto p=v.position;std::array<std::uint8_t,4> bones{};std::memcpy(bones.data(),&v.bones,4);
    for(auto& bone:bones){if(bone<r.firstPalette||bone>=r.firstPalette+r.paletteCount)throw std::invalid_argument("Vertex palette outside owned resource");bone=remap[bone];}
    std::uint32_t boneWord;std::memcpy(&boneWord,bones.data(),4);
-   for(unsigned axis=0;axis<3;axis++){p[axis]=(p[axis]-r.bias[axis])/r.scale[axis];if(!std::isfinite(p[axis]))throw std::invalid_argument("Nonfinite native float position");}
+   // Preserve the exact native UNORM decode at zero displacement. Inverting
+   // float(rest)*QS+QB loses input ULPs and lets precise/fast depth variants
+   // disagree even on static body skin. Add unbounded deformation to the
+   // observed integer baseline; never clamp or quantize the deformation.
+   for(unsigned axis=0;axis<3;axis++){p[axis]=contract.encodedReference.at(vi)[axis]+(p[axis]-v.reference[axis])/r.scale[axis];if(!std::isfinite(p[axis]))throw std::invalid_argument("Nonfinite native float position");}
    out.push_back({p,boneWord,v.weights,PackDirection(v.normal,1,!v.calibration),PackDirection(v.tangent,v.sign<0?0:3,!v.calibration)});
   }
  }
@@ -82,15 +95,18 @@ inline std::vector<RenderDelivery::FloatVertex> PrepareFloatVertices(const std::
 // RuntimeController. Slow lighting/upload preparation never blocks the game VM.
 class RenderService {
  const RenderContract& contract_;std::mutex mutex_;std::condition_variable changed_;
+ std::shared_ptr<const std::vector<RenderDelivery::MorphReference>> morphReference_;
  bool stopping_=false,paused_=false;std::shared_ptr<const RuntimeDelivery> pending_;
- std::optional<RenderPose> pose_;std::string error_;std::thread worker_;
+ std::optional<RenderPose> pose_;std::string error_;
  std::shared_ptr<const RenderDelivery> delivery_;
+ std::thread worker_;
  public:
- explicit RenderService(const RenderContract& c):contract_(c),worker_([this]{
+ explicit RenderService(const RenderContract& c):contract_(c),morphReference_(PrepareMorphReference(c)),worker_([this]{
   using Clock=std::chrono::steady_clock;
   std::shared_ptr<const RuntimeDelivery> cached;unsigned cachedEpoch=0;
   std::shared_ptr<const std::vector<SourceRenderVertex>> a,b,vertices;
   surface::PresentationFrames fa{},fb{},displayFrames{};
+  surface::PrecisePoint nozzleA{},nozzleB{},directionA{},directionB{},shownNozzle{},shownDirection{1,0,0};
   auto began=Clock::now(),arrived=began,nextTick=began;double duration=1./60.;bool active=false;
   std::uint64_t presentationSerial=0;
   std::vector<surface::PresentationBinding> bindings;for(const auto& lod:contract_.lods)for(const auto& v:lod.vertices)bindings.push_back(v.presentation);
@@ -107,14 +123,17 @@ class RenderService {
      auto targetFrames=frames(source->surface->frame.source);
      const bool snap=paused||!cached||cachedEpoch!=pose.epoch||cached->surface->input.controls.values!=source->surface->input.controls.values;
      a=snap?complete:vertices;fa=snap?targetFrames:displayFrames;b=complete;fb=targetFrames;
+     auto np=contract_.calibration.PointToTarget(surface::Precise(source->surface->frame.source.nozzlePosition));
+     auto nd=contract_.calibration.VectorToTarget(surface::Precise(source->surface->frame.source.nozzleDirection));
+     nozzleA=snap?np:shownNozzle;directionA=snap?nd:shownDirection;nozzleB=np;directionB=nd;
      duration=std::clamp(std::chrono::duration<double>(started-arrived).count(),1./60.,.15);arrived=began=started;
      active=!snap;cached=source;cachedEpoch=pose.epoch;
     }
     if(paused)active=false;
     const double phase=active?std::clamp(std::chrono::duration<double>(Clock::now()-began).count()/duration,0.,1.):1.;
-    if(phase==1){vertices=b;displayFrames=fb;active=false;}
+    if(phase==1){vertices=b;displayFrames=fb;shownNozzle=nozzleB;shownDirection=directionB;active=false;}
     else{
-     surface::PresentationPlan plan(fa,fb,phase);auto display=std::make_shared<std::vector<SourceRenderVertex>>(*b);
+     surface::PresentationPlan plan(fa,fb,phase);shownNozzle=plan.Point(nozzleA,nozzleB,{12,1});shownDirection=plan.Direction(directionA,directionB,{12,1});auto display=std::make_shared<std::vector<SourceRenderVertex>>(*b);
      for(unsigned i=0;i<display->size();i++){
       if((*b)[i].calibration)continue;
       auto point=[](const std::array<float,3>& p){return surface::PresentationPoint{p[0],p[1],p[2]};};
@@ -127,11 +146,15 @@ class RenderService {
      for(unsigned i=0;i<displayFrames.size();i++){displayFrames[i].origin=surface::Add(surface::Scale(fa[i].origin,1-phase),surface::Scale(fb[i].origin,phase));displayFrames[i].basis=surface::InterpolateBasis(fa[i].basis,fb[i].basis,phase);}
     }
     auto next=std::make_shared<RenderDelivery>();next->epoch=pose.epoch;next->sequence=source->surface->sequence;next->poseSeconds=pose.seconds;next->vertices=vertices;next->pose=pose;
+    unsigned pelvis=0;while(pelvis<contract_.nativeBones.size()&&contract_.nativeBones[pelvis]!=9)++pelvis;
+    auto nozzleTransform=MultiplyPose(pose.actorWorld,pose.skinDeltas.at(pelvis));
+    next->nozzleWorld=TransformPosePoint(nozzleTransform,shownNozzle);
+    auto end=TransformPosePoint(nozzleTransform,surface::Add(shownNozzle,shownDirection));next->nozzleDirectionWorld=surface::Unit(surface::Sub(end,next->nozzleWorld));
     next->controls=source->surface->input.controls;next->sourceMilliseconds=source->surface->frame.sourceMilliseconds;next->targetMilliseconds=source->surface->frame.targetMilliseconds;
     next->workerMilliseconds=source->surface->frame.workerMilliseconds;next->geometryMilliseconds=source->surface->frame.geometryMilliseconds;
     next->presentationPhase=phase;next->presentationIntervalMilliseconds=duration*1000;
     next->presentationSerial=++presentationSerial;
-    next->floatVertices=PrepareFloatVertices(*vertices,contract_);next->resources=contract_.resources;
+    next->floatVertices=PrepareFloatVertices(*vertices,contract_);next->resources=contract_.resources;next->morphReference=morphReference_;
     next->lightingMilliseconds=lightMilliseconds;
     next->preparationMilliseconds=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-started).count();
     // Lighting runs once per numerical surface. Rigid material presentation

@@ -2,7 +2,8 @@
 
 F6 expands/collapses the separate native panel. Up/Down selects a control;
 Left/Right adjusts; Shift uses five steps. The panel contains the complete Base
-18-value contract and defaults reset. The user has confirmed visibility and live
+18-value contract and defaults reset, plus Ambient (Off/Gentle/Moderate/Strong)
+and Ejaculation (Start/Cancel). See [RADIAL-CLINICAL.md](RADIAL-CLINICAL.md). The user has confirmed visibility and live
 keyboard operation after ordinary startup. It does not require the pause menu.
 
 Every setter feeds the same asynchronous Base runtime used by the automated

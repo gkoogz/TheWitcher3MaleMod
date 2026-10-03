@@ -15,7 +15,7 @@ struct RenderVertexBinding {
  std::uint32_t authored=0,normalGroup=0;
  std::array<std::uint8_t,4> bones{},weights{};
  std::array<double,2> uv{};surface::LightingFrame fallback;
- surface::PrecisePoint reference{};unsigned calibration=0;
+ surface::PrecisePoint reference{},authoredReference{};unsigned calibration=0;
  surface::PresentationBinding presentation;
  unsigned boundary=0;
 };
@@ -27,6 +27,7 @@ struct RenderLOD {
  std::vector<std::array<double,2>> lightingUV;
  std::vector<std::uint32_t> lightingGroups;
  std::vector<surface::LightingFrame> lightingFallback;
+ std::vector<surface::LightingFrame> lightingReference;
 };
 struct RenderResource {
  unsigned firstVertex=0,vertexCount=0,firstPalette=0,paletteCount=0,indexBytes=0;
@@ -38,11 +39,12 @@ struct RenderContract {
  surface::CoordinateCalibration calibration;
  std::vector<RenderLOD> lods;
  std::vector<RenderResource> resources;
+ std::vector<std::array<float,3>> encodedReference;
  explicit RenderContract(const std::filesystem::path& path,const std::string& pin,const std::string& bindingHash){
   std::ifstream f(path,std::ios::binary);if(!f||std::filesystem::file_size(path)>32*1024*1024)throw std::runtime_error("Invalid render contract size");
   auto bytes=[&](void* p,std::size_t n){if(!f.read(static_cast<char*>(p),n))throw std::runtime_error("Truncated render contract");};
   auto text=[&](std::size_t n){std::string s(n,'\0');bytes(s.data(),n);return s;};auto integer=[&]{unsigned x;bytes(&x,4);return x;};
-  const auto magic=text(8);const bool multipart=magic=="MMRND004";
+  const auto magic=text(8);const bool residual=magic=="MMRND005";const bool multipart=residual||magic=="MMRND004";
   if((!multipart&&magic!="MMRND003")||text(40)!=pin||text(64)!=bindingHash)throw std::invalid_argument("Render contract differs from pinned geometry/binding");
   bytes(calibration.basis.data(),72);bytes(calibration.sourceRoot.data(),24);bytes(calibration.targetRoot.data(),24);bytes(&calibration.targetUnitsPerSourceUnit,8);calibration.Validate();
   auto count=integer();if(!count||count>256)throw std::invalid_argument("Unexpected native skin palette");nativeBones.resize(count);inverseBind.resize(count);bytes(nativeBones.data(),count*4);bytes(inverseBind.data(),count*sizeof(PoseMatrix));
@@ -55,12 +57,23 @@ struct RenderContract {
    l.vertices.resize(n);for(auto& v:l.vertices){v.authored=integer();v.normalGroup=integer();bytes(v.bones.data(),4);bytes(v.weights.data(),4);bytes(v.uv.data(),16);bytes(v.fallback.normal.data(),24);bytes(v.fallback.tangent.data(),24);bytes(&v.fallback.sign,8);bytes(v.reference.data(),24);v.calibration=integer();
     v.presentation.frame=integer();bytes(&v.presentation.amount,8);
     if(multipart)v.boundary=integer();
+    if(residual)bytes(v.authoredReference.data(),24);else v.authoredReference=v.reference;
     if(v.authored>=l.authoredCount||v.normalGroup>=n||v.calibration>1||v.presentation.frame>=15||!std::isfinite(v.presentation.amount)||v.presentation.amount<0||v.presentation.amount>1)throw std::invalid_argument("Invalid native lineage/normal alias");unsigned sum=0;for(unsigned i=0;i<4;i++){if(v.bones[i]>=count)throw std::invalid_argument("Invalid native skin index");sum+=v.weights[i];}if(!sum)throw std::invalid_argument("Empty native skin weights");
-    for(double x:v.reference)if(!std::isfinite(x))throw std::invalid_argument("Nonfinite reference vertex");
+   for(double x:v.reference)if(!std::isfinite(x))throw std::invalid_argument("Nonfinite reference vertex");
+    std::array<float,3> encoded{};const auto& resource=resources[l.resource];
+    for(unsigned axis=0;axis<3;axis++){
+     const double cell=(v.reference[axis]-resource.bias[axis])/resource.scale[axis]*65535.;
+     const double word=std::round(cell);
+     if(word<0||word>65535||std::abs(cell-word)>1e-5)throw std::invalid_argument("Cooked reference is not an observed UNORM position");
+     encoded[axis]=float(word)/65535.f;
+    }
+    encodedReference.push_back(encoded);
    }
    auto faces=integer();if(faces*3!=l.indexCount)throw std::invalid_argument("Native topology count differs");l.faces.resize(faces);bytes(l.faces.data(),faces*12);for(auto face:l.faces)for(auto i:face)if(i>=n)throw std::invalid_argument("Native triangle outside topology");firstVertex+=n;firstIndex+=l.indexCount;
    l.lightingUV.reserve(n);l.lightingGroups.reserve(n);l.lightingFallback.reserve(n);
-   for(const auto& v:l.vertices){l.lightingUV.push_back(v.uv);l.lightingGroups.push_back(v.normalGroup);l.lightingFallback.push_back(v.fallback);}
+   std::vector<surface::LightingPoint> rest;
+   for(const auto& v:l.vertices){l.lightingUV.push_back(v.uv);l.lightingGroups.push_back(v.normalGroup);l.lightingFallback.push_back(v.fallback);rest.push_back(residual&&v.boundary?v.authoredReference:v.reference);}
+   l.lightingReference=surface::RebuildLighting(rest,l.lightingUV,l.faces,l.lightingGroups,l.lightingFallback);
   }
   for(const auto& l:lods){auto& r=resources[l.resource];r.lodFirstVertex[l.lod]=l.firstVertex-r.firstVertex;r.lodVertexCount[l.lod]=unsigned(l.vertices.size());r.lodUVOffset[l.lod]=l.uvOffset;r.lodExtraOffset[l.lod]=l.extraOffset;}
   for(const auto& r:resources)if(r.lodVertexCount[0]+r.lodVertexCount[1]!=r.vertexCount)throw std::invalid_argument("Incomplete resource LOD range");
@@ -74,14 +87,26 @@ struct SourceRenderVertex {
  std::array<float,3> reference;unsigned calibration;
 };
 static_assert(sizeof(SourceRenderVertex)==64&&offsetof(SourceRenderVertex,normal)==20&&offsetof(SourceRenderVertex,tangent)==32&&offsetof(SourceRenderVertex,reference)==48);
+inline surface::LightingFrame TransportCookedLighting(surface::LightingFrame before,surface::LightingFrame after,surface::LightingFrame native){
+ auto basis=[](surface::LightingFrame f){auto n=surface::LightingUnit(f.normal,{0,0,1});auto t=f.tangent;double d=surface::LightingDot(t,n);for(unsigned a=0;a<3;a++)t[a]-=d*n[a];t=surface::LightingUnit(t,{1,0,0});return std::array<surface::LightingPoint,3>{t,surface::LightingCross(n,t),n};};
+ const auto a=basis(before),b=basis(after);
+ auto transport=[&](surface::LightingPoint v){surface::LightingPoint out{};for(unsigned axis=0;axis<3;axis++){double w=surface::LightingDot(v,a[axis]);for(unsigned j=0;j<3;j++)out[j]+=w*b[axis][j];}return out;};
+ return {transport(native.normal),transport(native.tangent),native.sign*after.sign*before.sign};
+}
 inline std::vector<SourceRenderVertex> ComposeRenderVertices(const RenderContract& c,const std::array<std::vector<surface::PrecisePoint>,2>& positions,bool parallel=true){
  auto compose=[&](unsigned part){std::vector<SourceRenderVertex> out;const auto& l=c.lods[part];auto lod=l.lod;if(positions[lod].size()!=l.authoredCount)throw std::invalid_argument("Source geometry differs from native lineage");out.reserve(l.vertices.size());
   std::vector<surface::LightingPoint> p;p.reserve(l.vertices.size());
   // Neck, wrists and ankles remain protected native boundaries. The common
   // movable waist is published across both body resources below. Preserve
   // cooked attributes only at the protected boundaries and their UV aliases.
-  for(const auto& v:l.vertices)p.push_back(v.calibration?v.reference:positions[lod][v.authored]);
+  for(const auto& v:l.vertices){auto q=v.reference;if(!v.calibration){q=positions[lod][v.authored];if(!v.boundary)for(unsigned a=0;a<3;a++)q[a]+=v.reference[a]-v.authoredReference[a];}p.push_back(q);}
   auto light=surface::RebuildLighting(p,l.lightingUV,l.faces,l.lightingGroups,l.lightingFallback);
+  // REDkit's cooked tangent frame carries the native normal-map convention.
+  // Apply the shared geometric frame's change to that frame; rebuilding the
+  // entire frame from scratch changes UV seam handedness even on static skin.
+  for(unsigned i=0;i<light.size();i++){
+   light[i]=TransportCookedLighting(l.lightingReference[i],light[i],l.lightingFallback[i]);
+  }
   for(unsigned i=0;i<l.vertices.size();i++){if(l.vertices[i].calibration)light[i]=l.vertices[i].fallback;SourceRenderVertex row{};std::memcpy(&row.bones,l.vertices[i].bones.data(),4);std::memcpy(&row.weights,l.vertices[i].weights.data(),4);for(unsigned a=0;a<3;a++){row.position[a]=float(p[i][a]);row.reference[a]=float(l.vertices[i].reference[a]);row.normal[a]=float(light[i].normal[a]);row.tangent[a]=float(light[i].tangent[a]);}row.sign=float(light[i].sign);row.calibration=l.vertices[i].calibration;out.push_back(row);}
   return out;
  };

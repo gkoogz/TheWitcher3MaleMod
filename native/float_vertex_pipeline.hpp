@@ -25,7 +25,7 @@ class FloatSkinLayout {
   if(!original.pInputElementDescs||!original.NumElements||original.NumElements>32)throw std::invalid_argument("Invalid original skin layout");
   names_.reserve(original.NumElements);elements_.reserve(original.NumElements);
   for(UINT i=0;i<original.NumElements;i++){auto e=original.pInputElementDescs[i];if(!e.SemanticName||std::strlen(e.SemanticName)>64)throw std::invalid_argument("Invalid input semantic");names_.push_back(e.SemanticName);elements_.push_back(e);}
-  unsigned position=0,indices=0,weights=0;
+  unsigned position=0,indices=0,weights=0,normal=0,tangent=0;
   for(auto& e:elements_)if(!_stricmp(e.SemanticName,"POSITION")&&e.SemanticIndex==0){
    if(e.Format!=DXGI_FORMAT_R16G16B16A16_UNORM||e.AlignedByteOffset!=0||e.InputSlotClass!=D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA)throw std::invalid_argument("Unsupported native position layout");slot_=e.InputSlot;e.Format=DXGI_FORMAT_R32G32B32_FLOAT;++position;
   }
@@ -38,6 +38,8 @@ class FloatSkinLayout {
    else if(_stricmp(e.SemanticName,"POSITION")||e.SemanticIndex!=0)throw std::invalid_argument("Unknown attribute in native position/skin stream");
   }
   if(indices!=1||weights!=1)throw std::invalid_argument("Native four-influence skin attributes missing");
+  for(const auto& e:elements_)if((!_stricmp(e.SemanticName,"NORMAL")||!_stricmp(e.SemanticName,"TANGENT"))&&e.SemanticIndex==0){const bool n=!_stricmp(e.SemanticName,"NORMAL");if(e.InputSlot!=2||e.Format!=DXGI_FORMAT_R10G10B10A2_UNORM||e.AlignedByteOffset!=(n?0u:4u)||e.InputSlotClass!=D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA||e.InstanceDataStepRate)throw std::invalid_argument("Unsupported native lighting layout");if(n)++normal;else ++tangent;}
+  if(normal!=tangent||normal>1)throw std::invalid_argument("Native packed normal/tangent attributes differ");
   for(unsigned i=0;i<elements_.size();i++)elements_[i].SemanticName=names_[i].c_str();
  }
  FloatSkinLayout(const FloatSkinLayout&)=delete;FloatSkinLayout& operator=(const FloatSkinLayout&)=delete;

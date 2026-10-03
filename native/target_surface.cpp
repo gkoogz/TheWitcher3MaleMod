@@ -33,6 +33,7 @@ struct TargetSurface::Impl {
  CoordinateCalibration calibration;
  std::vector<PrecisePoint> neutralAnatomy,neutralBody;
  std::vector<Lod> lods;
+ std::vector<PrecisePoint> neutralCollar;
  Impl(const std::filesystem::path& path,const std::string& expected){
   Reader r(path);char magic[8],commit[40];r.Bytes(magic,8);r.Bytes(commit,40);
   const bool boundary=!std::memcmp(magic,"MMBIND03",8);
@@ -65,6 +66,11 @@ struct TargetSurface::Impl {
   if(!l.plan){l.plan=std::make_unique<GraftPlan>(l.domain,frame);l.cachedFrame=frame;}
   else if(!Same(frame,l.cachedFrame)){l.plan->UpdateFrame(frame);l.cachedFrame=frame;}
   auto bodyDelta=l.body.Apply(body,neutralBody),moduleDelta=l.module.Apply(anatomy,neutralAnatomy);
+  if(!source.collarDisplacements.empty()){
+   unsigned offset=0,total=0;for(unsigned k=0;k<lods.size();k++){if(k<id)offset+=lods[k].bodyCount;total+=lods[k].bodyCount;}
+   if(source.collarDisplacements.size()!=total||neutralCollar.size()!=total)throw std::invalid_argument("Incomplete coupled radial target field");
+   for(unsigned i=0;i<l.bodyCount;i++){auto p=source.collarDisplacements[offset+i];bodyDelta[i]={p.x-neutralCollar[offset+i][0],p.y-neutralCollar[offset+i][1],p.z-neutralCollar[offset+i][2]};}
+  }
   std::vector<PrecisePoint> delta(l.restSource.size());
   for(unsigned i=0;i<l.bodyCount;i++)if(GraftRecruitmentWeight(l.restSource[i],frame)>1e-4)delta[i]=bodyDelta[i];
   // The same canonical rest samples and donor field drive both part halves
@@ -85,4 +91,7 @@ TargetSurface::TargetSurface(const std::filesystem::path& path,const std::string
 TargetSurface::~TargetSurface()=default;
 std::vector<surface::PrecisePoint> TargetSurface::Evaluate(unsigned lod,const surface::Output& source){return impl_->Evaluate(lod,source);}
 unsigned TargetSurface::LODCount()const{return static_cast<unsigned>(impl_->lods.size());}
+std::vector<unsigned> TargetSurface::BodyCounts()const{std::vector<unsigned> counts;for(const auto& l:impl_->lods)counts.push_back(l.bodyCount);return counts;}
+std::vector<surface::Point> TargetSurface::CollarQueries()const{std::vector<surface::Point> p;for(const auto& l:impl_->lods)for(unsigned i=0;i<l.bodyCount;i++){auto q=l.restSource[i];p.push_back({float(q[0]),float(q[1]),float(q[2])});}return p;}
+void TargetSurface::SetNeutralCollar(const surface::Output& o){if(o.collarDisplacements.size()!=CollarQueries().size())throw std::invalid_argument("Missing neutral radial targets");impl_->neutralCollar.clear();for(auto p:o.collarDisplacements)impl_->neutralCollar.push_back({p.x,p.y,p.z});}
 }

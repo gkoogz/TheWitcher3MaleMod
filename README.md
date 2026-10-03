@@ -8,19 +8,20 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-Installed full native DX12 adapter: Base `166cb02`, all 18 source controls,
+Installed native DX12 adapter: Base `2a7b38a`, all 18 source controls,
 full source numerical physics, live coupled pelvic recruitment and both Geralt
 LODs. Wolverine is unchanged. F6 opens/closes the separate live panel; arrow keys
 select/adjust and Shift increases the step. Defaults match Base's full-floppy
 reset. The original .31 cooked resources remain as the rig/fallback.
 
-The October 2 waist patch preserves cooked outer-boundary positions and lighting
-so the lower body continues to meet the separate stock torso. Read
+The current radial implementation drives both torso and lower body from shared
+waist bindings. It adds deterministic skin matching, source clinical timing,
+ambient modes and fluids with actual scene collision. The rear lighting buffer defect is fixed and the final build passed 20 private
+gameplay cases; see [RADIAL-CLINICAL](docs/RADIAL-CLINICAL.md). Read
 [FULL-RUNTIME](docs/FULL-RUNTIME.md), [OVERLAY](docs/OVERLAY.md) and the current
 handoff for evidence, installed hashes, measured timing and verification limits.
 Source/target parity and completed GPU output are recorded separately from user
-acceptance, FPS and untested rendering modes. Sequences, fluid and audio remain
-deferred.
+acceptance, FPS and untested rendering modes. Clinical and ambient controls are implemented; future dialogue slots are silent.
 
 ## Structure
 

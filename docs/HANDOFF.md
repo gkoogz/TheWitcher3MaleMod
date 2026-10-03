@@ -1,4 +1,69 @@
-# Current checkpoint: two-part waist/material/presentation repair installed
+# Installed radial, skin, rear-patch and clinical delivery
+
+October 3. All four requested features are implemented and installed against
+Base `2a7b38a7019d6102046085a8586e86273d5579fe`. Wolverine's source and game
+installation are unchanged. Read RADIAL-CLINICAL.md, PELVIC-SKIN-AUDIT.md and
+RENDER-INPUT-BOUNDS.md. Exact source, package, compiler, installed-file and
+verification hashes are in `provenance/radial-clinical-delivery.json`.
+
+## Delivered
+
+- Skin: deterministic linear RGB matching from 68 native seam samples; original
+  source detail/alpha retained; measured CharacterNormal encoding and native
+  packed detail/roughness/specular channels RGB 241/148/22. No image generation.
+- Ramp: 14,790 direct source UnifiedCollar queries, conforming concentric
+  refinement and 37 shared waist masters across both native resources/LODs.
+  The source upward recruitment drives both torso and lower body together.
+- Rear patch: complete 8-byte lighting views fix the last torso vertex being
+  read as zero on AMD. Static and native morph output retain dynamic TBN,
+  shaders and shadow passes. Temporary rendering suppression/captures removed.
+- Clinical: source 20-second sequence, ambient modes, native fluid worker,
+  calibrated actual scene sphere sweeps, scene-anchored liquid deposits,
+  restart/cancel and silent future dialogue slots. F6 adds Ambient/Ejaculation.
+  Complete shifted fluid vertex views have 24-byte allocation padding.
+
+## Verification
+
+Final installed DLL SHA256:
+`879972cf06e2a6abca7b74ae3498085eac6e936c1c69cc0f3020f027eac8d216`.
+Private receipt: `build/probe/sealed-session-20261003-091555/receipt.json`, PID4112.
+All 20 ordered clinical/ramp cases pass runtime135, render853, both body mask3,
+no fluid faults; the source sequence completes at 20 seconds, both cue phases,
+actual scene hits and completed opaque/clear deposit draws. Restart and explicit
+cancel pass. Reviewed final default, maximum ramp, rear, liquid and floor images;
+the rear black patch is absent. Exact private child is closed; its scoped audio
+was restored and temporary Continue removed by hash. No host focus/input,
+injector, desktop switch or save write by the driver was used.
+
+Tests: 73 adapter Python tests; 11 native CTest cases; renderer LAST-vertex
+normal/tangent and fluid normal/tangent/UV/color tests on both WARP and actual
+AMD hardware; 39 complete source/body cases, five intermediate phases and exact
+native waist/shading/weight bytes; 28 independent radial states and ten local
+front-ramp crossing checks; Base's 68 Python tests and 516-file provenance gate.
+Official current native script compilation proofs are hashed in the delivery.
+
+Final run median displayed publications: 40.39 Hz; complete numerical surfaces:
+13.74 Hz. These are separate from game FPS. Earlier all-slider movement proof
+is separate from these twenty final cases. Ray tracing, far LOD transitions and
+perceptual F6 flicker remain unobserved. Character capsule contact remains the
+measured adapter approximation; different native lighting is not pixel parity
+with Wolverine. Local ramp intersection checks are not a global proof.
+
+## Reproduction / rollback
+
+`python tools/record_radial_clinical_delivery.py --verify` checks current source,
+proof and installed hashes. Current-install selection is in ignored
+`build/full-runtime/current-install.json`: bodyJob radial-skin-packed-4,
+render render-2a7b38a-native-residual, clinical clinical-2a7b38a-material3.
+The managed installer preserved normal user preferences and the .31 fallback.
+`local/native-backup-20261002-230911` retains the prior accepted body build;
+restore through `tools/install_native_runtime.py:restore_native_runtime` with
+Witcher closed. No push or release performed. Unrelated Base HANDOFF/voice-pool
+files and adapter `$dest/`/tools/voice-review remain untouched.
+
+---
+
+# Historical checkpoint: two-part waist/material/presentation repair installed
 
 October 2, 23:15. Base pin `acda34e7b12a923c2162d32e3c015485e3108efa`.
 The anatomy uses its full source atlas and corrected FBX UV convention. F6 panel

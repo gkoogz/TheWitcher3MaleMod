@@ -9,7 +9,8 @@ from player_rig_redirect import header_crc
 
 
 class CookedMesh:
-    def __init__(self,raw):
+    def __init__(self,raw,allow_rigid=False):
+        self.allow_rigid=allow_rigid
         self.raw=raw
         if len(raw)<160 or raw[:4]!=b'CR2W' or struct.unpack_from('<I',raw,4)[0]!=164:
             raise ValueError('Expected observed cooked mesh 164')
@@ -103,7 +104,7 @@ class CookedMesh:
         matrices=[read('<16f') for _ in range(count())]
         radii=[read('<f')[0] for _ in range(count())]
         mapping=[read('<I')[0] for _ in range(count())]
-        if at!=len(data) or not palette or len(matrices)!=len(palette) or len(radii)!=len(palette) or len(mapping)!=len(palette):
+        if at!=len(data) or (not palette and not self.allow_rigid) or len(matrices)!=len(palette) or len(radii)!=len(palette) or len(mapping)!=len(palette):
             raise ValueError('Unexpected native skin tail dimensions')
         if not all(math.isfinite(x) for m in matrices for x in m) or not all(math.isfinite(x) for x in radii):
             raise ValueError('Non-finite native skin tail')

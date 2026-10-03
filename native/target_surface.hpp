@@ -13,7 +13,10 @@ class TargetSurface {
   explicit TargetSurface(const std::filesystem::path&,const std::string& expectedBaseCommit);
   ~TargetSurface();
   std::vector<surface::PrecisePoint> Evaluate(unsigned lod,const surface::Output&);
-  unsigned LODCount()const;
+ unsigned LODCount()const;
+ std::vector<unsigned> BodyCounts()const;
+ std::vector<surface::Point> CollarQueries()const;
+ void SetNeutralCollar(const surface::Output&);
  private:
   struct Impl;std::unique_ptr<Impl> impl_;
 };

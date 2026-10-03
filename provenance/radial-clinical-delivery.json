@@ -1,0 +1,1198 @@
+{
+  "contractVersion": 1,
+  "baseCommit": "2a7b38a7019d6102046085a8586e86273d5579fe",
+  "sourceFiles": [
+    {
+      "path": "dependencies/base.lock.json",
+      "sha256": "c56996145ef9ec2c0898ea3475a7b3ffb99bb7da307c0c4ebffe62fe9abf3916"
+    },
+    {
+      "path": "native/body_render_test.cpp",
+      "sha256": "5f6de7b9399517ea998e123081267b662cb69af9aa7bf42ad5608914c702a855"
+    },
+    {
+      "path": "native/clinical_collision_test.cpp",
+      "sha256": "a81c0d3d36aa639cc1d9c3d8db6b81bb4fdb8a4b504ab076df8aa65e18df9d0f"
+    },
+    {
+      "path": "native/clinical_service.hpp",
+      "sha256": "b44087e3a1387afdf00902ff551fd5f7ccd23d5d759671750e785d19904caa95"
+    },
+    {
+      "path": "native/CMakeLists.txt",
+      "sha256": "3b0d913da1e8b75aca749f3e1ada346feca521cbe9178f574cbe35c0f9377c67"
+    },
+    {
+      "path": "native/control_store.hpp",
+      "sha256": "147e47d193be5bbc085b8ef079330a7127905dd2059e88dd9f52412cc76d4314"
+    },
+    {
+      "path": "native/control_store_test.cpp",
+      "sha256": "7ad5f0d45fc85278aeb64699671f25d6d30c4b47e18affff02ce9425d1f93f76"
+    },
+    {
+      "path": "native/engine_bridge.cpp",
+      "sha256": "70347645b4d212e0a22e18b1969ccf61ec02f4e86505bac412a04a502e82d8b0"
+    },
+    {
+      "path": "native/float_draw_renderer.cpp",
+      "sha256": "f83cdaa34acd74e2daf40af90dd2204a2b4a822ebb29d1c2d944eb6a58e5f05b"
+    },
+    {
+      "path": "native/float_draw_renderer.hpp",
+      "sha256": "7a3ee446d26712779b263555fe9978b6278f795577ad4286a65bb4d7032e9d29"
+    },
+    {
+      "path": "native/float_draw_renderer_test.cpp",
+      "sha256": "5a9542ceadad1899633493cc92af7415f94326c8cc5db05dfdbbb91922788c4e"
+    },
+    {
+      "path": "native/float_vertex_pipeline.hpp",
+      "sha256": "cc5d89876517d2f7fc04140c936364c3154b58d3a9f67522436c0fe6307c09ab"
+    },
+    {
+      "path": "native/float_vertex_pipeline_test.cpp",
+      "sha256": "2c2fea792facb22273232e8fd4d3df5934dec6e779761938143166a88081f1f3"
+    },
+    {
+      "path": "native/fluid_renderer.cpp",
+      "sha256": "7281b916c90d25d5baced9c0fd51d545f14467435656e4a39de6f9373a49e4c9"
+    },
+    {
+      "path": "native/fluid_renderer.hpp",
+      "sha256": "4a8b09effa7e4dfd56de85e018a334ef9030052b5396129dd6891e3c9e65f677"
+    },
+    {
+      "path": "native/fluid_renderer_test.cpp",
+      "sha256": "ce46bd4ebc7a63a961cfc096b3ce9f943b1b6931bae4baeeccfc4edfb2ec6b60"
+    },
+    {
+      "path": "native/game_profile.hpp",
+      "sha256": "74416ffcd1a4e0310a2a8b1162ae2f8d3f942d9c4606e612f893857143d2b255"
+    },
+    {
+      "path": "native/graphics_fingerprints.hpp",
+      "sha256": "600954585030fb661be71ac7fc2577b0873ef024441b67a3e81130bda47132ee"
+    },
+    {
+      "path": "native/graphics_methods.cpp",
+      "sha256": "09abb60660da0b3613799132f0db64f39499cae47615917ec8520e40d39ca9b3"
+    },
+    {
+      "path": "native/graphics_probe.cpp",
+      "sha256": "8f76a26ab0b76ff63467dfe042063f0ef796b078ca2cb37e2935ce19f83cb6fe"
+    },
+    {
+      "path": "native/graphics_probe.hpp",
+      "sha256": "fafae227cce99be816457b03e5a5d3693f6ce86e2b8c776865218061a4648024"
+    },
+    {
+      "path": "native/graphics_probe_test.cpp",
+      "sha256": "734c48fc708aa48ac26fb7310d961574513631bc0b12e732fd4f2a5e39f0837c"
+    },
+    {
+      "path": "native/launch_native.cpp",
+      "sha256": "6e010ec9199f710f6a5b6917854e315b9d2628c3f3ed2fc4b6020bb39493f34e"
+    },
+    {
+      "path": "native/launch_sealed.cpp",
+      "sha256": "3930b95f5c0d78ec0a6a174fc00a3094cbaecdfd6916d092abd9aba0abc2ed23"
+    },
+    {
+      "path": "native/live_renderer.cpp",
+      "sha256": "cfa0966e909ed9d7e43048334f9ab1a9ce54a9df944277cccc8280a2832fa7a7"
+    },
+    {
+      "path": "native/live_renderer.hpp",
+      "sha256": "fd237314eb39e8d978304dd97b94c299c2916f727b1c62a8094e21d57901dcf9"
+    },
+    {
+      "path": "native/live_renderer_test.cpp",
+      "sha256": "1480bc80a8ba687e87faa937dc95a9ba5b1eb2cff8e4372b7cdfa8737a4a1362"
+    },
+    {
+      "path": "native/mute_sealed.cpp",
+      "sha256": "1d30d03e35f2f18ae82eaf61fdb4bed9f68e16cf744c735adbb262aceb5e9399"
+    },
+    {
+      "path": "native/overlay_navigation.hpp",
+      "sha256": "f6101c37354ed3ed27b312598083ef05267848cb3422ae7820fbf1cb7ca76cdf"
+    },
+    {
+      "path": "native/overlay_panel.cpp",
+      "sha256": "3402e7f64cc2cfa953967f852321a49d425aac205abcb1d1d19b6fd547fdca45"
+    },
+    {
+      "path": "native/overlay_panel.hpp",
+      "sha256": "c47013185e68b186e66b0b04005cead74ed51efb927d0ae953cfe2cb41492b28"
+    },
+    {
+      "path": "native/overlay_panel_test.cpp",
+      "sha256": "e86ccecf876db3885b03d6495bf1d89f18caa167d9b0c8d840217b19fbe8ac21"
+    },
+    {
+      "path": "native/pose_input.hpp",
+      "sha256": "eaea9f4ea23e907c8a2c2bad48aa5c3bb129f2fb947842d8f76e52eea74abd9b"
+    },
+    {
+      "path": "native/pose_replay_test.cpp",
+      "sha256": "b524f2cb6a18a7036348bec1303eef7ab5fac554a9ab439f27ed32a8f5094d2f"
+    },
+    {
+      "path": "native/radial_progressivity_probe.cpp",
+      "sha256": "0b5c0836bbcef90388660a7b56be7f7bd81686fab3d849c5e29b91b5e69a09b1"
+    },
+    {
+      "path": "native/render_contract.hpp",
+      "sha256": "fc771f972fe00d406a69ff4052ed04f64e91f3bec269b42305b87ca41ed84b54"
+    },
+    {
+      "path": "native/render_contract_test.cpp",
+      "sha256": "59079db15793dca6e73b3002cfd4fadb127d8dbe21d4bce92d0aea5346acf545"
+    },
+    {
+      "path": "native/render_pose.hpp",
+      "sha256": "dc26d83aa30b2cf85699e9537f1dcd99f5c8cec7ee3de59755f064b7ee77d822"
+    },
+    {
+      "path": "native/render_service.hpp",
+      "sha256": "887dbdff09bee2cb14bfaaaa79f2a20606077b21bb9bf40747f0d62529c70ba3"
+    },
+    {
+      "path": "native/runtime_controller.hpp",
+      "sha256": "95038cd2a4908fd22b249f4abf2ac261360915cb99682646d88a2822f8ce8e54"
+    },
+    {
+      "path": "native/runtime_controller_test.cpp",
+      "sha256": "6dcf69310997a63d0298c2b2726662520ecb263c55be429450ff430d1db361e3"
+    },
+    {
+      "path": "native/runtime_host.hpp",
+      "sha256": "b4186e9f40bd7360c63142a9f0c6b761ae32b1c73228a811a751c3c7e88373af"
+    },
+    {
+      "path": "native/runtime_profile.hpp",
+      "sha256": "f7bd6d99102db4c41e3a6daac0d3d9658a09a9912884b63dec2f80b7c932864f"
+    },
+    {
+      "path": "native/session_audio.hpp",
+      "sha256": "629e4f381efa2c3420b88b8da64f032269b32dde180775b75f8af17a87b1a3d0"
+    },
+    {
+      "path": "native/skin_output.hpp",
+      "sha256": "1bcfc2963013554eaa229c146f3ba1dc16ca4f2b14ee7451989bae91f986cdbc"
+    },
+    {
+      "path": "native/skin_sdk_test.cpp",
+      "sha256": "2dce6e495ba42c1fd126aa2db4ccc85a64db4e7a350f15938b209d4831f4234f"
+    },
+    {
+      "path": "native/startup_gate.hpp",
+      "sha256": "eb8357102caaf29cb854b105e1241052c0fe2e2c7c92e577b6b3287b4b433220"
+    },
+    {
+      "path": "native/startup_gate_test.cpp",
+      "sha256": "2ef59a3abd9b9dc600312a2043f0d43d9929986a298b7fbdbda5afcfd8dea968"
+    },
+    {
+      "path": "native/startup_proxy.cpp",
+      "sha256": "005cf4603c99304efe916a3657ea6cc84dea951c0085f289ea963c9a4af195f0"
+    },
+    {
+      "path": "native/startup_proxy.def",
+      "sha256": "bb3c6230fffc6b1890f20356fc07682655659fe286092ca06790cf3e6b0c0ab0"
+    },
+    {
+      "path": "native/surface_client_test.cpp",
+      "sha256": "3090e3ad6dea44031c94b7cb614ba6c944beadd036e287a31327b55317431d62"
+    },
+    {
+      "path": "native/surface_pipeline.hpp",
+      "sha256": "cb4dbf2b8d29e78b90b6a6c40c8a46fb45406dd53fe6e8e7ce0d7bc9f343e515"
+    },
+    {
+      "path": "native/surface_pipeline_test.cpp",
+      "sha256": "78e53c35c080dc530bc245bf78d1ea7445eedc1aa4dee71364c6cf512bd5a1a3"
+    },
+    {
+      "path": "native/surface_service.hpp",
+      "sha256": "1b482e830b13144380717a3856f602f3f4cd362233e1541d3459ae55e42021dc"
+    },
+    {
+      "path": "native/surface_service_test.cpp",
+      "sha256": "122db306df98c5e9b9a16e166a47273a3d844e3f505012d3fb53ad3ce036e50b"
+    },
+    {
+      "path": "native/surface_transport.hpp",
+      "sha256": "e062d353a874cc66a7df62d1c313835af7a36c5729450341cbaaafc356e67f00"
+    },
+    {
+      "path": "native/surface_worker.cpp",
+      "sha256": "5c49bce0a55d83760df626c1c050bc15dce2099cd322b4a19eb65827190865f9"
+    },
+    {
+      "path": "native/target_surface.cpp",
+      "sha256": "262e9e77d6290b6352150862fb2ba1148461d4db34390aeaf0a9b57a673ec093"
+    },
+    {
+      "path": "native/target_surface.hpp",
+      "sha256": "c8104ee46f6687d4ce49784cf1b4bf4c705d7e40dbbeca7b29dd425f04a35754"
+    },
+    {
+      "path": "native/target_surface_test.cpp",
+      "sha256": "904e85c23e4c06e01b181738866e1c2cf22c61621a5c65ec17cc7e89529cdc18"
+    },
+    {
+      "path": "native/worker_initialization_test.cpp",
+      "sha256": "73b976a19af66e743d380ee5bc5c9efe00debdbf21c9abcd352047ff146a6fc0"
+    },
+    {
+      "path": "probes/native/autocontinue.ws",
+      "sha256": "e076b9911f998cca92b2a9cff6d2a42f35e9aeb2983c5e1cdab2aba10887f804"
+    },
+    {
+      "path": "probes/native/clinical.ws",
+      "sha256": "62d88acc49b99164550c0e3b5503571665036c789df5e1107fbe7fdfce3b168d"
+    },
+    {
+      "path": "probes/native/pose.ws",
+      "sha256": "c76caf2622bada115954068d694d0d75616800b7704ad208476e4c93863c521c"
+    },
+    {
+      "path": "probes/native/ready.ws",
+      "sha256": "9f6fa322a3ba7b0f89547c9d3e74056fb4b458eef03ec7f07cf4a03e05388fa7"
+    },
+    {
+      "path": "probes/native/runtime.ws",
+      "sha256": "0f94c658c51edefb776eaf7f8cbe89afc08a7c3b41ac2ec6c910d18d043fc578"
+    },
+    {
+      "path": "tools/audit_animation_skinning.py",
+      "sha256": "4059286b2300369dfa0a1f6fe219adeb1d022db1afc117ccc7534ee188af8060"
+    },
+    {
+      "path": "tools/audit_motion_axes.py",
+      "sha256": "40c7ded56864ee457a90e6dcc42a44b9a44bbe7b854f28f05bec4de03ddbc52e"
+    },
+    {
+      "path": "tools/build_attachment.py",
+      "sha256": "fedd36d6a5a89c1a9ad85bff148706134cd30b0c9319cec3cd8df4a1de495ed7"
+    },
+    {
+      "path": "tools/build_body_boundary.py",
+      "sha256": "d5a9967e64ef2d8e4a10277b8890ebd5c856b2e50b282afb5ec073c1b5175f1b"
+    },
+    {
+      "path": "tools/build_default_cage.py",
+      "sha256": "ebbf0fe2e8277caebfa7177c1309badc991f9ce43c5f570c66ae6e3d99cad5bc"
+    },
+    {
+      "path": "tools/build_deformation_probe.py",
+      "sha256": "02f9d6404a2cebbc6f0c15088aa8b7b66cc9077ac4cc7a28de2f4d229724913f"
+    },
+    {
+      "path": "tools/build_motion_release.py",
+      "sha256": "0a0bf338d20af317b55bb140ccbd2b645dab8102ceaff8bfc91cc0b0fc768751"
+    },
+    {
+      "path": "tools/build_motion_script_patch.py",
+      "sha256": "9526e97ed18d68fe622ea3fe8b9bdaf6ed5a29328f7039cd2be368be39556480"
+    },
+    {
+      "path": "tools/build_native_converter.py",
+      "sha256": "3198d1ef4a8e8626e8047e1e82805898fcc749db91c63327b81631db755dee0e"
+    },
+    {
+      "path": "tools/build_renderdoc_probe.py",
+      "sha256": "144f6973fb11c699174746300af1fdb049877789aa92185a69a5f44b7328eb21"
+    },
+    {
+      "path": "tools/calibrate_runtime_contacts.py",
+      "sha256": "9de8258a2cf578a587cf15004c1bb3489625a1f632b551760467212b61300d35"
+    },
+    {
+      "path": "tools/capture_runtime_mesh.py",
+      "sha256": "6e91d7964662d76b3b77829125ffe15e136f45bae6f3838245f84daa23f1b3c6"
+    },
+    {
+      "path": "tools/compile_native_scripts.py",
+      "sha256": "1216ddf5cd7b415169112d159d700f50820efab2a9e424037f1975dd504afea5"
+    },
+    {
+      "path": "tools/deformation_graph.py",
+      "sha256": "a506e0159f3a6041e433c31e3d19aa917c366eaebc582140969b62458f4e18da"
+    },
+    {
+      "path": "tools/deploy_motion.py",
+      "sha256": "2a3702e4963ad229c6dfda5419537955b9def4f4cb7ecb3455b703966474938e"
+    },
+    {
+      "path": "tools/export_live_bindings.py",
+      "sha256": "62abb20af48442fba5b79be0c0005c212ff691690871d1e8f883c1a7165eee34"
+    },
+    {
+      "path": "tools/export_wolverine_reference.py",
+      "sha256": "d2a0003c08cd936b305759393915a315b4103b03a593d47d3a7118facac725e2"
+    },
+    {
+      "path": "tools/fit_attachment.py",
+      "sha256": "911f031928105d7cc245ce637afa71dadced975043123f20eda599823209aad6"
+    },
+    {
+      "path": "tools/fixed_physics.py",
+      "sha256": "99201cf72d4c140b99ab796e82bf0f78d6a315c1409d37bda5d28517490385f8"
+    },
+    {
+      "path": "tools/import_overall.py",
+      "sha256": "caf8de0d4dd978f97849507ef422b5829e930b3053d69084a117f7d8a4cc4845"
+    },
+    {
+      "path": "tools/input_bindings.py",
+      "sha256": "33f5cbb3b7237b7241df23558f4f15f8a94cfc96437179c6b181fde49a4e7031"
+    },
+    {
+      "path": "tools/inspect_editor_function.py",
+      "sha256": "8603ca19bb5b9eb1716a5ae36e4d872b986494995dea6293a1021b238d99deaa"
+    },
+    {
+      "path": "tools/inspect_graphics_hooks.py",
+      "sha256": "647f5162b7110fbb9fe76d3ba242f52ee0ad99763979b5e08be4df86e75c65eb"
+    },
+    {
+      "path": "tools/inspect_native.py",
+      "sha256": "5229528231d208011dacffbf4f2a32ba925676e908dfc854c060832c9466c46a"
+    },
+    {
+      "path": "tools/inspect_packed_mesh.py",
+      "sha256": "b5c7a79464642e8821347de44334cb01aea6d54c2cc2fa55af737bf6cca4476d"
+    },
+    {
+      "path": "tools/inspect_wcc_fbx.py",
+      "sha256": "25e679b2387175fd15077893752cb042cd697e4806dd57d62a0ff468f9d6ae59"
+    },
+    {
+      "path": "tools/install_native_runtime.py",
+      "sha256": "c6cac947424e62cf9576b759aa9a8f8214342a71b5327c84734de69bc5decb99"
+    },
+    {
+      "path": "tools/mod.py",
+      "sha256": "d2219960a6b4542109121cbeb55f51a4200666074d0e4410b7c9184f9c5b6b15"
+    },
+    {
+      "path": "tools/motion_entity.py",
+      "sha256": "7fe52a81ef03371cc1da347733400185164e584107da54a68217e45c719ac134"
+    },
+    {
+      "path": "tools/native_joint_frames.py",
+      "sha256": "2fd42d99068561fe6f339c40ca7a57c03b532e403865bceee8caa3acfcd74bc5"
+    },
+    {
+      "path": "tools/native_motion_profile.py",
+      "sha256": "b68b7085c61c0322036ba4c5b6d579f882f6ae12aeb9d1efca91b0b2a1c92be6"
+    },
+    {
+      "path": "tools/native_pose_delivery.py",
+      "sha256": "9b89fdebcc83bb7351a7e5f92dc70e607d1663ad82f80809588488f4bb93be42"
+    },
+    {
+      "path": "tools/overall_controls.py",
+      "sha256": "38b1aa3b60b033db8f94e988bcad07bf4fed6b9fc5abdce03cd79bbe31f905d3"
+    },
+    {
+      "path": "tools/packed_mesh_format.py",
+      "sha256": "275afa97a4763de30551274459cd9569fbaaeb6bf1cd1ecdba5529e1508c64a9"
+    },
+    {
+      "path": "tools/physics_codegen.py",
+      "sha256": "9e257d7fa3ffde8ec53902d4818a2835da64dd6835aa50783740cb6fd5f7d954"
+    },
+    {
+      "path": "tools/player_rig_redirect.py",
+      "sha256": "edf7b7d63785fdb86b101e51de2b53bbb6176faf77aa72668d32aa7895149c04"
+    },
+    {
+      "path": "tools/player_stack.py",
+      "sha256": "7a88a7df31d63484cb02964b49559a28ed78f78a6f01c2a3c866c6b52db3bdcd"
+    },
+    {
+      "path": "tools/pose_diagnostics.py",
+      "sha256": "fd800ebe10c590da40f3ba2ee102949b7aa361e8a273740aad5c23be9278aeaf"
+    },
+    {
+      "path": "tools/prepare_body_boundary.py",
+      "sha256": "b8ce1e45893a4611f3022f7967e9ab5bb6363cb88630b3aac5960496ae89f95a"
+    },
+    {
+      "path": "tools/prepare_body_render_contract.py",
+      "sha256": "c5f1fe23af835cd52d8489ef1780309e20b5f7153133ebe0bf67968625e3db2e"
+    },
+    {
+      "path": "tools/prepare_clinical_carrier.py",
+      "sha256": "547fc59211a06e771c77ab946a4068c058c7fff74939d6853744d373f8150b88"
+    },
+    {
+      "path": "tools/prepare_clinical_render.py",
+      "sha256": "edf60d8f6411352adbdd73614e37ed612a29cab6c8db544fc3c3db2022e45687"
+    },
+    {
+      "path": "tools/prepare_graphics_fingerprints.py",
+      "sha256": "be70e4b923b6d78a33690aaa54d61f20e46a4ba50bb1bbd21992d3883ea12960"
+    },
+    {
+      "path": "tools/prepare_motion.py",
+      "sha256": "ca3f2f40e37db5ab7e4ea483475e848769e13374e4b9bf78871c679c75b6d23d"
+    },
+    {
+      "path": "tools/prepare_overall.py",
+      "sha256": "1d8aa8d9e4e5e05fa3aa02d7653e05078605f7ce965f830fe0c63058df25a084"
+    },
+    {
+      "path": "tools/prepare_pose_replay.py",
+      "sha256": "a79c45636931f03f3c401a193b5194fff9a37fadf914fc854eeef17c8b40859e"
+    },
+    {
+      "path": "tools/prepare_render_contract.py",
+      "sha256": "5e80730491c949ecf6a806fdc9d393f65533705776e0b29d43870ed6fdd08ce2"
+    },
+    {
+      "path": "tools/prepare_runtime_profile.py",
+      "sha256": "8bcf03aed877cb015174e5318a156bd2aff18492ade9c7f20424f967a11646bd"
+    },
+    {
+      "path": "tools/prepare_skin_contract.py",
+      "sha256": "337f1a3e376968882fa33efeda30f88c4155de0bfe9d46fac4fd8b38353cfd8d"
+    },
+    {
+      "path": "tools/preview_attachment.py",
+      "sha256": "65cf17654c943a83fed212bee95e533031ff8ae667aaaad9fe15f07c4f7f0651"
+    },
+    {
+      "path": "tools/probe_control_graph.py",
+      "sha256": "f83ac5637fa425a9da473d073ad9a0af03ff2a8485b35ba3778bbc6687f02ff1"
+    },
+    {
+      "path": "tools/probe_deformation_bridge.py",
+      "sha256": "8290cde7acf5616aee8d08344eefb03d06d5091ff691fe5d6872cb1af9a82e0a"
+    },
+    {
+      "path": "tools/probe_game_functions.py",
+      "sha256": "d24d47af1aa9b4bb69c47be9ddfcfc46eca7b92813b6c702081762c1535504da"
+    },
+    {
+      "path": "tools/probe_game_name_refs.py",
+      "sha256": "9c3f693a530e42c9a2d11559bbac8330f1a1883f52a6441c10126cb7cd7a0b88"
+    },
+    {
+      "path": "tools/probe_pelvic_domain.py",
+      "sha256": "b030619b01954987066a4069305371d0c8f51d7ec700b300be810f7184433a97"
+    },
+    {
+      "path": "tools/probe_physics.py",
+      "sha256": "d0226d87bb0a6a99354fde3deee62b15d373ca0c0c03d529cf9e1565f054019c"
+    },
+    {
+      "path": "tools/probe_runtime.py",
+      "sha256": "3094af05c1b6a1841081ff0b4d927333e8bcc10d086844b3f9592f10b08a1ce0"
+    },
+    {
+      "path": "tools/read_native_probe.py",
+      "sha256": "2d25ca8cceda8f49bb87ed2ccfcec80cfd9b0df350ff0a84e33ddb67798082ba"
+    },
+    {
+      "path": "tools/record_body_delivery.py",
+      "sha256": "830e1bb3ca39f7485c548650491dfb9d2af2de86bd84eb259038d71637a46665"
+    },
+    {
+      "path": "tools/record_full_runtime.py",
+      "sha256": "dde62b53651a1f2b9e5cbf3e5932b6d7c99b22955a9f693fc8dacb0ee06c1a90"
+    },
+    {
+      "path": "tools/record_native_delivery.py",
+      "sha256": "8eb790591c993b0f7ffa3ed72e96fb38935712781dd08288172360f85b067d7d"
+    },
+    {
+      "path": "tools/record_radial_clinical_delivery.py",
+      "sha256": "6a1214acbd5cc4638d5cf026dcb092837d19ab8c48fad42807e6abfc1ebeaaa1"
+    },
+    {
+      "path": "tools/run_installed_session.py",
+      "sha256": "4f74c7ede280b710d16f596e25d833d5a545edf81115b15b7c87c91d417c2f9a"
+    },
+    {
+      "path": "tools/run_native_probe.py",
+      "sha256": "8b7ef3495af70a3223365912d66510f16614638b342dbac6abdb7837412e70d1"
+    },
+    {
+      "path": "tools/run_native_session.py",
+      "sha256": "b7eb7708ad4680cb3de590a00f01796c84141a38c615e3970dbc4e2fd497979f"
+    },
+    {
+      "path": "tools/run_sealed_session.py",
+      "sha256": "5a980e12e5698e4668412c81d267845d539451b07f0688d6168600d12beb08f1"
+    },
+    {
+      "path": "tools/shipped_player.py",
+      "sha256": "4afbd951e1d3ba9c675e91cdc8e6829cc1ede4e1381a4300668b12872fbba242"
+    },
+    {
+      "path": "tools/stage_body_material_patch.py",
+      "sha256": "79071d994b26e80d8532e9306f769648ed65a2cb2779f426587b87ae52d03a15"
+    },
+    {
+      "path": "tools/stage_body_runtime.py",
+      "sha256": "67180658b21c0dc5f579f79bc1113577b228eb1339c2181350da36468fc46122"
+    },
+    {
+      "path": "tools/startup_movies.py",
+      "sha256": "35282d5ac6a8ffc09917f633cb28e9963947d11c8aea874109cd96b1416c4c63"
+    },
+    {
+      "path": "tools/verify_attachment.py",
+      "sha256": "a80e0c598147633ad633f043712a13d708ddce1677799dcce82b4ba74a082b3d"
+    },
+    {
+      "path": "tools/verify_cooked_motion.py",
+      "sha256": "b18de7322018d47313e24255c52e1dd11bf2a4ebb3aaba2c2911de88098a0ca1"
+    },
+    {
+      "path": "tools/verify_default_guide.py",
+      "sha256": "4ce7b9b3d1d0c799353f495301cee18868c05619f80ccacfc030709dc9983a7f"
+    },
+    {
+      "path": "tools/verify_deformation_graph.py",
+      "sha256": "6416fc6a170869ea1f7a0fd448cd45c02a4a583693ef826850a059db6e1a14ef"
+    },
+    {
+      "path": "tools/verify_frame_motion.py",
+      "sha256": "113eec7d33935376baca5b854a3c47539db06b01d03b03d583667546350e0439"
+    },
+    {
+      "path": "tools/verify_live_graft.py",
+      "sha256": "909d1793cc7bd383bc1ff0ea4837943fcb46cd2beaeab49d235bd8cd28da175c"
+    },
+    {
+      "path": "tools/verify_motion.py",
+      "sha256": "b62bfbe1a9fbfc5969bd357799ee4fb14bb0706bc59868a277629f31537500dd"
+    },
+    {
+      "path": "tools/verify_motion_package.py",
+      "sha256": "7eb23a2f8089f61de3edd20ea2c3786a1de7c566a0b99c23c2bc23ad9510bb38"
+    },
+    {
+      "path": "tools/verify_native_worker.py",
+      "sha256": "c07681b8e263007287228697b3c61d2dff2b19aece963a5d5582385066a197f5"
+    },
+    {
+      "path": "tools/verify_overall.py",
+      "sha256": "9f530a01d884ba64023a68e2634078b0d2cf916f0aa9f06412af7d491229fd18"
+    },
+    {
+      "path": "tools/verify_pose_surface.py",
+      "sha256": "07bdbaa5222317112bebebe630091a714cf33e6fd1fba2309f03e4dcb26b39a0"
+    },
+    {
+      "path": "tools/verify_protected_surface.py",
+      "sha256": "807875a59c522309c2f6d09f27fe6ae96cf884a971255d22c2e4bf922fa94341"
+    },
+    {
+      "path": "tools/verify_radial_materials.py",
+      "sha256": "d4f847a12150dd1915b2b6e4542b60b1d9b7649d5b0d5a393682569bf3469d72"
+    },
+    {
+      "path": "tools/verify_radial_progressivity.py",
+      "sha256": "04b3346b19e0befdbd74d520c23909a149dd4fd0baabedb1ae4af6b027f87d7a"
+    },
+    {
+      "path": "tools/verify_solid_physics.py",
+      "sha256": "0900f5d6ee468d2700d2c01752b0826d3b12c315013014b5e46f36313062e7ce"
+    },
+    {
+      "path": "tools/verify_solid_surface.py",
+      "sha256": "a74c69aa2a2643472b7108ea26f0cab24f9a1f7527319c571d01fd3c5f287f92"
+    },
+    {
+      "path": "tools/verify_startup_integration.py",
+      "sha256": "46b256a3e26b176054c1e861b71b6feb53886290ce7d3a90955c32b76a6c0663"
+    },
+    {
+      "path": "tools/verify_target_surface.py",
+      "sha256": "6f42e10247f8d72de2885d4da3a33ff9c1fc801791e794f1efe14c979bb73ebb"
+    },
+    {
+      "path": "tools/wcc_fbx.py",
+      "sha256": "38ea570877938d240e5c75f4fa0895beb169f7719635792d369223ffeadb2529"
+    },
+    {
+      "path": "tools/wcc_scripted.py",
+      "sha256": "cc0c22ba7cb15ae2df82ea5bb8bf7e7cdef18faefba438d7a5c2ec5a421ff844"
+    }
+  ],
+  "verificationArtifacts": [
+    {
+      "path": "build/probe/sealed-session-20261003-091555/receipt.json",
+      "sha256": "68ee806b9216883974c8a80c87a5f6ac880000d57db3f2324242c400f6b7ed94"
+    },
+    {
+      "path": "build/probe/sealed-session-20261003-091555/verification.jsonl",
+      "sha256": "65842291a0199033e02302079e4289efa15397dd71c58dfa4161d2251b825ff0"
+    },
+    {
+      "path": "build/probe/sealed-session-20261003-091555/launcher.txt",
+      "sha256": "35840027e33a9c661b689de805ac77975fedbd8770c58bd55b618f542af0ea43"
+    },
+    {
+      "path": "build/probe/sealed-session-20261003-091555/visual-review.json",
+      "sha256": "e6306668ea3f12ecf3425b4f44886030dbd206238d3f9d66f8c81c19e4a1b308"
+    },
+    {
+      "path": "build/radial-quality-agent-4/quality-verification.json",
+      "sha256": "eef2a907608d916a16c8dc1b4e7bbfb7c19651e5384996db2acb87fa1e226e34"
+    },
+    {
+      "path": "build/probe/native-bootstrap-compile.json",
+      "sha256": "9d7329b611854cb9c4dbb73479ce857dd713cdfa436b16975612d0b37dc8788b"
+    },
+    {
+      "path": "build/jobs/native-scripts-78fb4499ad61-compiled/cooked-00000000ec9e0490.redscripts",
+      "sha256": "9f14567bd1465026a79e26e141ee6b9fd370ba71bcd7b8bce3123087f68452f1"
+    },
+    {
+      "path": "build/full-runtime/body-render-radial-test.txt",
+      "sha256": "ed1b7b77460a1b9e79d2c5680609e18dd2b64a7e00f8b1cbfb5fe3878c5694e9"
+    },
+    {
+      "path": "build/full-runtime/render-2a7b38a-native-residual/manifest.json",
+      "sha256": "879d58fac1cfcc105adccecbcdce20d03c2fb6034a0a4876354156307cb10f40"
+    },
+    {
+      "path": "build/body-boundary/radial-skin-packed-4/manifest.json",
+      "sha256": "280b90e6a54a12f4b31abcc125793aedc7034dbe26b4fbfcbb9a62fa62b6e932"
+    },
+    {
+      "path": "build/body-boundary/radial-skin-packed-4/skin-match.json",
+      "sha256": "e36b8d14aef8d11763a47fd47e63b2b8b3efd55aa1603747b72fc43be992817b"
+    },
+    {
+      "path": "build/body-boundary/radial-skin-packed-4/ambient-match.json",
+      "sha256": "69c1ded90e6f36f423199fa61c2e073392162e6ad77b0a05e0c929c6d84b90d1"
+    },
+    {
+      "path": "build/body-boundary/radial-skin-packed-4/material-imports.json",
+      "sha256": "78443f47fa8a3e07506c1b92dc9fe3c20fc4ba15a27f429b440d9b31e01645ae"
+    },
+    {
+      "path": "build/full-runtime/runtime-profile-2a7b38a-radial/manifest.json",
+      "sha256": "dcb0f4cdf72f89d28d1aadada8ad8bd90220d98b084e373af5aded0cf9686bda"
+    },
+    {
+      "path": "build/full-runtime/geralt-bindings-2a7b38a-radial/manifest.json",
+      "sha256": "8fbe6ba1031982e5e89cf1506758aeea4e4e6a5e3fd28c65ccd67f1c0fbb67f0"
+    },
+    {
+      "path": "build/full-runtime/clinical-2a7b38a-material3/manifest.json",
+      "sha256": "810d01587e34484e95d2718993e2afb83df228d10974d0fb78f1d6a0cc3e3605"
+    },
+    {
+      "path": "build/full-runtime/fingerprints-2a7b38a/graphics-owned-fingerprints.json",
+      "sha256": "ddb1b5211fd3564d661259ddc45020d9f2eb8e3ddf4e5dae5248ae1913857018"
+    },
+    {
+      "path": "build/radial-clinical-production-ctest.txt",
+      "sha256": "c7239eeadc2a2752b17b65673929d8e48f350efd5ab87c0a87571dc7dbc1fe34"
+    },
+    {
+      "path": "build/radial-clinical-production-amd.txt",
+      "sha256": "01c19d2ec10cc38986f6dff22b9908bdc5f275e23939358917476e525b552c01"
+    },
+    {
+      "path": "build/radial-clinical-production-fluid-amd.txt",
+      "sha256": "2422c1c17fb3d0cbdcb653c83b8c1128cb993ca4e465fff09a481b6b03786c00"
+    },
+    {
+      "path": "build/radial-clinical-final-python.txt",
+      "sha256": "47d20acfb55fd8590e72785a19a419101298cd1c0c9386bbd1d859da29acb888"
+    }
+  ],
+  "installedFiles": [
+    {
+      "path": "bin/x64_dx12/dinput8.dll",
+      "sha256": "f9c52ce08e5c9c405b2fcee74e9f8eacc3057a7a930c887f58182b5dfde15b3e"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod_witcher.dll",
+      "sha256": "879972cf06e2a6abca7b74ae3498085eac6e936c1c69cc0f3020f027eac8d216"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/surface_worker.exe",
+      "sha256": "2204ee8d0f92e3727de8589a5a20b0fae1c644b44a240eb321c2ed67d54b517a"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod-runtime.profile",
+      "sha256": "77d42cc650434e0ce678a3cc33111e217f1a6345d811002a321b229c19826194"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.bindings",
+      "sha256": "ce7554598a33f9790c84449e76b6ad3e3e62461e138e05d6bc3502cdc03f3ee1"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.render",
+      "sha256": "869789697b781bc980617d84904425132c2aaaf7424c5cf15f87e442071fe5c8"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.render.sha256",
+      "sha256": "3f2212f76f8a396157b267d3a3428f3550b51ca89afedde4f28187e042ba0dce"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/graphics-owned-fingerprints.bin",
+      "sha256": "2a6ea7f4f2829d2289f92130a64dd3f3983dfbe9ce949295a080096c30b2f44c"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod-overlay.enable",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/runtime.ws",
+      "sha256": "0f94c658c51edefb776eaf7f8cbe89afc08a7c3b41ac2ec6c910d18d043fc578"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/render_bones.ws",
+      "sha256": "c9ce965f6c41b1a847fcad5e3579118163d960df2ec66df4ddab49923f758ee2"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/bundles/blob0.bundle",
+      "sha256": "4c71fe06ddc5bce863f22aff094db6e908bb84b2d82620193c86069d5cca44f1"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/bundles/buffers0.bundle",
+      "sha256": "8ecc81dc6702b7b29a84d7066b8d502ae09119e4a488dc2bf478a784a9156ad7"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/dep.cache",
+      "sha256": "1fab2d8a82b4d3584f937312a613f4c6cb8c6944f8fe2687fd91598bf84b0122"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/metadata.store",
+      "sha256": "5df70652c422576b38dfcceb27972977275ce132f1002d9f65c50871ba1603d3"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/texture.cache",
+      "sha256": "3165c187ae4ee7b8537f055b0db6ebbee7805c3a143cab19889f4bc2b18df609"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/clinical.render",
+      "sha256": "12b574b17a85455def94544b9d36a2aad6279910141f9c76c9e1c6f08b5221ad"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/clinical.render.sha256",
+      "sha256": "96bb258fee76f6810a8a154cc68504561a4e580295bf9b4d292f533c69ff1eb3"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/splat_bakes.bin",
+      "sha256": "b41046ee1083da7f0921706022893a7aed78b74a9ff931776f12e746ab405fb5"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/clinical.ws",
+      "sha256": "62d88acc49b99164550c0e3b5503571665036c789df5e1107fbe7fdfce3b168d"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/blob0.bundle",
+      "sha256": "7f37a33a743dd6e55a999be50e2ea062169f3cba3f2e47c35ee56159215c9d35"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/buffers0.bundle",
+      "sha256": "012e7422544eb65b21f90c8e18fee5a49989760604e719ccd0a65feb3d103c29"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/dep.cache",
+      "sha256": "1dcdfbb93ebed39f4fb8a0b134089409dea3d88f8df401bc131119609310bed9"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/metadata.store",
+      "sha256": "ba66df5f3ba2d20faf31d30ca490f77b8723fd299643f82384fcca0fdbe1b2cc"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/texture.cache",
+      "sha256": "d7dbf9bcf79bb2eb6cdb2494006063f3fb753c7d854dfa534bfd568b283203c1"
+    }
+  ],
+  "materials": {
+    "method": "Deterministic linear RGB seam matching; source detail and alpha retained; measured native character texture encoding",
+    "imageGeneratorUsed": false,
+    "correction": [
+      0.7545202249430303,
+      0.946023644579152,
+      2.031865351564382
+    ],
+    "packedAmbient": {
+      "method": "median measured character seam packed-material channels",
+      "channels": {
+        "R": "detail mask",
+        "G": "roughness",
+        "B": "specularity"
+      },
+      "packedRGB": [
+        241,
+        148,
+        22
+      ],
+      "sampleCount": 68,
+      "targetSHA256": "74e74b0d7b8b320ec88d86f134995db61afd3e13aa0de8aca9d2da11056a1520",
+      "targetSampleUV": [
+        [
+          0.6271675206535267,
+          0.793788264596851
+        ],
+        [
+          0.628853533971528,
+          0.7901096900848481
+        ],
+        [
+          0.630530769265762,
+          0.7864502676247012
+        ],
+        [
+          0.63134765625,
+          0.78466796875
+        ],
+        [
+          0.6322297742865086,
+          0.7825770222930907
+        ],
+        [
+          0.6381313726633542,
+          0.76858804836279
+        ],
+        [
+          0.6433485907899257,
+          0.7562213090998058
+        ],
+        [
+          0.64453125,
+          0.75341796875
+        ],
+        [
+          0.6495919472992755,
+          0.7531649338850362
+        ],
+        [
+          0.654296875,
+          0.7529296875
+        ],
+        [
+          0.6556441828893338,
+          0.7530005984415439
+        ],
+        [
+          0.6604797984039017,
+          0.753255104521258
+        ],
+        [
+          0.66357421875,
+          0.75341796875
+        ],
+        [
+          0.6678709657484613,
+          0.75341796875
+        ],
+        [
+          0.6767578125,
+          0.75341796875
+        ],
+        [
+          0.6767578125,
+          0.7605188668937151
+        ],
+        [
+          0.6767578125,
+          0.7822594519604772
+        ],
+        [
+          0.6767578125,
+          0.78466796875
+        ],
+        [
+          0.6768422418390443,
+          0.7884672890069901
+        ],
+        [
+          0.6769543275305863,
+          0.7935111451263823
+        ],
+        [
+          0.6769986878716587,
+          0.7955073604746417
+        ],
+        [
+          0.6770421598550591,
+          0.7974635997276618
+        ],
+        [
+          0.6770842567993255,
+          0.799357962219645
+        ],
+        [
+          0.6771245803516104,
+          0.8011725220724673
+        ],
+        [
+          0.6771645600167477,
+          0.8029716070036474
+        ],
+        [
+          0.677204269097914,
+          0.8047585156561295
+        ],
+        [
+          0.6772433101077524,
+          0.806515361098856
+        ],
+        [
+          0.67724609375,
+          0.806640625
+        ],
+        [
+          0.6761010591810553,
+          0.8076425302478265
+        ],
+        [
+          0.6743961118979627,
+          0.8091343591205327
+        ],
+        [
+          0.6726224311589335,
+          0.8106863297671831
+        ],
+        [
+          0.6706534296954059,
+          0.8124092060477699
+        ],
+        [
+          0.6688928045235767,
+          0.8139497530731203
+        ],
+        [
+          0.6675530874213599,
+          0.8151220055375601
+        ],
+        [
+          0.66626830638288,
+          0.8162461889462299
+        ],
+        [
+          0.66552734375,
+          0.81689453125
+        ],
+        [
+          0.6646708945988544,
+          0.8175647958030704
+        ],
+        [
+          0.6626339451030305,
+          0.8191589301911065
+        ],
+        [
+          0.6605809618302985,
+          0.8207656127523751
+        ],
+        [
+          0.6585415396195969,
+          0.8223616823085763
+        ],
+        [
+          0.6565327234342244,
+          0.8239337993232156
+        ],
+        [
+          0.6545703635678354,
+          0.8254695592186506
+        ],
+        [
+          0.654296875,
+          0.82568359375
+        ],
+        [
+          0.654296875,
+          0.8154296875
+        ],
+        [
+          0.6525881002977444,
+          0.8156432843377819
+        ],
+        [
+          0.6504637067279404,
+          0.8159088335340074
+        ],
+        [
+          0.6483253115619094,
+          0.8161761329297613
+        ],
+        [
+          0.6461914919700628,
+          0.8164428603787421
+        ],
+        [
+          0.6438528608125643,
+          0.8167351892734295
+        ],
+        [
+          0.642578125,
+          0.81689453125
+        ],
+        [
+          0.6408476649220239,
+          0.8171649156371837
+        ],
+        [
+          0.6370987017862997,
+          0.8177506911271406
+        ],
+        [
+          0.6333257689541042,
+          0.8183402118821712
+        ],
+        [
+          0.6303338331342193,
+          0.8188077018540283
+        ],
+        [
+          0.6269624693106166,
+          0.8193344774514661
+        ],
+        [
+          0.626953125,
+          0.8193359375
+        ],
+        [
+          0.6278483088191895,
+          0.816426590087634
+        ],
+        [
+          0.6287905608599023,
+          0.8133642709553177
+        ],
+        [
+          0.6296775142447048,
+          0.8104816724547097
+        ],
+        [
+          0.63053464528254,
+          0.8076959965817452
+        ],
+        [
+          0.630859375,
+          0.806640625
+        ],
+        [
+          0.6266371269723252,
+          0.8072438032896678
+        ],
+        [
+          0.62060546875,
+          0.80810546875
+        ],
+        [
+          0.6207436847933336,
+          0.8078039064736358
+        ],
+        [
+          0.621863492595078,
+          0.8053606894516481
+        ],
+        [
+          0.6230423330410217,
+          0.8027886739332253
+        ],
+        [
+          0.6242670926441266,
+          0.8001164711628146
+        ],
+        [
+          0.6255208066075627,
+          0.7973810952425905
+        ]
+      ],
+      "shader": "engine/materials/graphs/pbr_skin.w2mg"
+    },
+    "nativeEncodings": [
+      {
+        "channel": "diffuse",
+        "textureGroup": "CharacterDiffuse",
+        "compression": "TCM_DXTNoAlpha"
+      },
+      {
+        "channel": "normal",
+        "textureGroup": "CharacterNormal",
+        "compression": "TCM_Normals"
+      },
+      {
+        "channel": "ambient",
+        "textureGroup": "CharacterDiffuse",
+        "compression": "TCM_DXTNoAlpha"
+      }
+    ]
+  },
+  "boundary": {
+    "canonicalSamples": 37,
+    "separateResources": 2,
+    "lodsPerResource": 2,
+    "nativeVertices": 49884,
+    "method": "Direct source UnifiedCollar radial query and concentric target triangle refinement",
+    "originalEdgeDonorsAndUVAliasesPreserved": true,
+    "sharedPositionWeightAndShadingProof": true
+  },
+  "clinical": {
+    "sourceTimelineSeconds": 20,
+    "ambientModes": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "fluidNumericalSource": "Pinned Base",
+    "engineContact": "REDkit SweepTest with calibrated sphere radius",
+    "inventedFloor": false,
+    "actualSceneHits": 338,
+    "peakLiquidIndices": 51120,
+    "peakDepositIndices": 1308,
+    "opaqueAndClearNativeMaterialsDrawn": true,
+    "dialoguePhases": [
+      0,
+      1
+    ],
+    "dialogueAssetsInstalled": false
+  },
+  "renderInput": {
+    "nativeLightingStrideBytes": 8,
+    "finalVertexHardwareRegressionPassed": true,
+    "fluidShiftedViewPaddingBytes": 24,
+    "temporaryBypassesInstalled": false
+  },
+  "gameVerification": {
+    "orderedCases": 20,
+    "finalModuleObserved": true,
+    "renderFaults": 0,
+    "scriptPauseAndCharacterEpochGated": true,
+    "hostInputUsed": false,
+    "privateAudioRestored": true,
+    "saveWritesByDriver": false,
+    "visualChecks": {
+      "skinDetailAndColor": true,
+      "rearPatchAbsent": true,
+      "radialRampAndWaist": true,
+      "liquidAndFloorDeposits": true
+    }
+  },
+  "performance": {
+    "displayPublicationsPerSecondMedian": 40.39490731147827,
+    "numericalSurfacesPerSecondMedian": 13.743553744696348,
+    "displayIsNotSolverRate": true,
+    "gameFPSBenchmark": false
+  },
+  "wolverineModified": false,
+  "limits": [
+    "Earlier all-slider movement proof is separate from these twenty final clinical/ramp cases",
+    "Ray tracing, far LOD transitions and perceptual F6 flicker require separate observation",
+    "Character capsule contacts remain the measured adapter approximation",
+    "Native skin lighting is not pixel-identical to Wolverine"
+  ]
+}

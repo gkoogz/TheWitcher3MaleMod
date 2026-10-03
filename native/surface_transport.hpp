@@ -59,7 +59,7 @@ inline std::wstring NewChannelName(){
  for(auto x:random){name+=hex[x>>4];name+=hex[x&15];}return name;
 }
 class SurfaceClient {
- std::wstring name_;Channel channel_;Handle job_,process_;std::mutex mutex_;std::uint32_t sequence_=0;bool healthy_=true;
+ std::wstring name_;Channel channel_;Handle job_,process_;std::mutex mutex_;std::uint32_t sequence_=0,protocol_=wire::version;bool healthy_=true;
  wire::Bytes Exchange(const wire::Bytes& payload,std::uint32_t operation,DWORD timeout){
   if(!healthy_)throw std::runtime_error("Surface worker requires explicit restart");
   Require(payload.size()<=wire::maximumBytes,"Request too large");
@@ -69,14 +69,29 @@ class SurfaceClient {
   HANDLE waits[2]={channel_.reply.value,process_.value};auto result=WaitForMultipleObjects(2,waits,FALSE,timeout);
   if(result!=WAIT_OBJECT_0){healthy_=false;throw std::runtime_error(result==WAIT_OBJECT_0+1?"Surface worker exited":"Surface request timed out");}
   std::atomic_thread_fence(std::memory_order_acquire);
-  if(p.magic!=packetMagic||p.version!=wire::version||p.sequence!=sequence_||p.length>wire::maximumBytes){healthy_=false;throw std::runtime_error("Invalid surface response identity");}
+  if(p.magic!=packetMagic||p.version!=protocol_||p.sequence!=sequence_||p.length>wire::maximumBytes){healthy_=false;throw std::runtime_error("Invalid surface response identity");}
   if(p.status!=1)throw std::runtime_error(std::string(reinterpret_cast<char*>(p.payload),p.length));
   return wire::Bytes(p.payload,p.payload+p.length);
  }
+ wire::Bytes Encode(const wire::Request& q){auto b=wire::Encode(q);
+#ifdef MALEMOD_LEGACY_WIRE_TEST
+  if(protocol_==3){if(!q.frame.collarQueries.empty()||q.frame.clinical.active||q.frame.clinical.throbMode)throw std::invalid_argument("Legacy comparison cannot accept new inputs");b.resize(b.size()-64);std::memcpy(b.data(),&protocol_,4);}
+#endif
+  return b;}
+ malemod::surface::Output Decode(wire::Bytes b){
+#ifdef MALEMOD_LEGACY_WIRE_TEST
+  if(protocol_==3){auto version=wire::version;std::memcpy(b.data(),&version,4);wire::Writer tail;tail.U32(0);tail.Point3({0,0,0});tail.Point3({1,0,0});b.insert(b.end(),tail.bytes.begin(),tail.bytes.end());}
+#endif
+  return wire::DecodeOutput(b);}
  public:
  std::array<float,3> LastWorkerTimings()const{return {channel_.packet->stepMs,channel_.packet->readMs,channel_.packet->encodeMs};}
  std::array<float,16> LastGeometryTimings()const{std::array<float,16> result{};std::copy(std::begin(channel_.packet->geometryMs),std::end(channel_.packet->geometryMs),result.begin());return result;}
- explicit SurfaceClient(const std::wstring& worker):name_(NewChannelName()),channel_(name_,true){
+ explicit SurfaceClient(const std::wstring& worker,unsigned protocol=wire::version):name_(NewChannelName()),channel_(name_,true){
+  protocol_=protocol;
+#ifndef MALEMOD_LEGACY_WIRE_TEST
+  if(protocol_!=wire::version)throw std::invalid_argument("Only current wire protocol is deployed");
+#endif
+  channel_.packet->version=protocol_;
   Require(worker.find(L'"')==std::wstring::npos,"Unsafe worker path");
   job_.value=CreateJobObjectW(nullptr,nullptr);Require(job_.value!=nullptr,"Create worker job");
   JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits{};limits.BasicLimitInformation.LimitFlags=JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
@@ -93,11 +108,11 @@ class SurfaceClient {
   // Closing our job terminates only its owned worker if graceful shutdown failed.
  }
  malemod::surface::Output Evaluate(const wire::Request& request,DWORD timeout=1000){
-  std::lock_guard<std::mutex> lock(mutex_);return wire::DecodeOutput(Exchange(wire::Encode(request),1,timeout));
+  std::lock_guard<std::mutex> lock(mutex_);return Decode(Exchange(Encode(request),1,timeout));
  }
  malemod::surface::Output Initialize(const malemod::surface::Controls& controls,DWORD timeout=10000){
   std::lock_guard<std::mutex> lock(mutex_);wire::Request request;request.controls=controls;
-  return wire::DecodeOutput(Exchange(wire::Encode(request),3,timeout));
+  return Decode(Exchange(Encode(request),3,timeout));
  }
 };
 }

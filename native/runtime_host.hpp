@@ -22,13 +22,13 @@ class RuntimeHost {
  }){}
  ~RuntimeHost(){ {std::lock_guard<std::mutex> lock(mutex_);stopping_=true;}changed_.notify_one();if(manager_.joinable())manager_.join();controller_.reset();}
  RuntimeHost(const RuntimeHost&)=delete;RuntimeHost& operator=(const RuntimeHost&)=delete;
- HostTick Tick(std::uint32_t epoch,PoseSample sample,bool paused,const surface::Controls& controls,std::uint64_t& sequence){
+ HostTick Tick(std::uint32_t epoch,PoseSample sample,bool paused,const surface::Controls& controls,std::uint64_t& sequence,const surface::Frame::ClinicalProjection& clinical={}){
   sequence=0;std::unique_lock<std::mutex> lock(mutex_,std::try_to_lock);if(!lock.owns_lock())return HostTick::Busy;
   if(stopping_)return HostTick::Failed;
   if(requested_!=epoch){requested_=epoch;changed_.notify_one();}
   if(!epoch)return HostTick::Dormant;
   if(active_!=epoch)return HostTick::Loading;if(!controller_)return HostTick::Failed;
-  try{switch(controller_->Tick(sample,paused,controls,sequence)){
+  try{switch(controller_->Tick(sample,paused,controls,sequence,clinical)){
    case RuntimeTick::Accepted:return HostTick::Accepted;case RuntimeTick::Paused:return HostTick::Paused;
    case RuntimeTick::Loading:return HostTick::Loading;case RuntimeTick::Computing:return HostTick::Computing;
    case RuntimeTick::Busy:return HostTick::Busy;case RuntimeTick::Full:return HostTick::Full;
