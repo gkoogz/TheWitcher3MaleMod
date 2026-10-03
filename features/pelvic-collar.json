@@ -6,7 +6,7 @@
   "contract": "modules/pelvic-collar.json",
   "dependency": "dependencies/base.lock.json",
   "character": "geralt",
-  "status": "Overall 1..100 installed with evaluated source coupled recruitment, native mesh pairs and size-matched physics; gameplay pending",
+  "status": "Full pinned Base native source/target runtime installed; all 18 controls and GPU output verified including fixed outer-boundary lighting correction",
   "calibration": {
     "profile": "characters/geralt-attachment.json",
     "sourceToFBXScale": 1.0255218584141075,
@@ -19,18 +19,17 @@
     "restBindings": "generated/attachment.json",
     "dynamicCollarDomain": "Base malemod_base/graft_collar.py via tools/probe_pelvic_domain.py"
   },
-  "nativeDeformationBridge": "native CMorphedMeshComponent pairs; imported morphRatio with edit-time proxy refresh",
+  "nativeDeformationBridge": "Native float-position DX12 draw, current native skin palette, immutable fence-retained source/target surface",
   "verification": {
     "sourceMath": "complete strict Win32 source evaluation including final UnifiedCollar and both body sections",
     "targetOfflineFit": "eleven source/target keys, byte-identical default, zero weld drift, protected native boundaries; no interpolation triangle collapse",
-    "nativeRuntime": "compiled/cooked imported field, ten morph pairs, private 104-joint rig, 60 graph channels and 32 exact packed resources verified; live readback pending",
-    "observedGameplay": "pending for .31; user accepted .30 physics as serviceable",
-    "nativeGraphResource": "isolated scale graph accepted by WCC; not installed or runtime verified"
+    "nativeRuntime": "Both LODs, 36547 rows, source/target serial parity, GPU-completed immutable output and save-reload epoch verified",
+    "observedGameplay": "64 private control/movement/pause/reload cases passed with waist lighting patch",
+    "nativeGraphResource": "isolated scale graph accepted by WCC; not installed or runtime verified",
+    "fixedPartBoundaries": "106 cooked waist/ankle aliases preserve position/lighting/skin at every slider extreme"
   },
   "next": [
-    "observe minimum/default/maximum and intermediate Overall during idle/running",
-    "measure native cost and memory",
-    "calibrate native-safe changed-size normal transport"
+    "additional rendering modes require their own observed verification"
   ],
   "restGraftFeature": "features/rest-graft.json",
   "probeProvenance": "provenance/overall.json"

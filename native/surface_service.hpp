@@ -9,7 +9,7 @@ struct CompletedSurface {
  surface::wire::Request input;
  SurfaceFrame frame;
 };
-enum class Submission {Accepted,Busy,Full,Stopped,Invalid};
+enum class Submission {Accepted,Busy,Full,Stopped,Invalid,Loading};
 // Engine integration owns one service per character lifetime. Each accepted
 // request is evaluated in order with its original controls, dt and contacts.
 // No coalescing, skipped physics steps, interpolation or stale-control mixing.
@@ -21,13 +21,16 @@ class SurfaceService {
  std::size_t first_=0,size_=0;
  bool stopping_=false;std::uint64_t sequence_=0;
  std::atomic<bool> failed_{false};std::string error_;
+ std::atomic<bool> preparing_{false};
  std::shared_ptr<const CompletedSurface> completed_;
  std::thread thread_;
  public:
- SurfaceService(std::wstring worker,std::filesystem::path bindings,std::string revision):
-  thread_([this,worker=std::move(worker),bindings=std::move(bindings),revision=std::move(revision)]{
+ SurfaceService(std::wstring worker,std::filesystem::path bindings,std::string revision,std::optional<surface::Controls> startup=std::nullopt):
+  preparing_(startup.has_value()),thread_([this,worker=std::move(worker),bindings=std::move(bindings),revision=std::move(revision),startup]{
    try{
     SurfacePipeline pipeline(worker,bindings,revision);
+    if(startup)pipeline.Initialize(*startup);
+    preparing_.store(false,std::memory_order_release);
     for(;;){Pending next;
      {std::unique_lock<std::mutex> lock(mutex_);changed_.wait(lock,[&]{return stopping_||size_!=0;});
       if(stopping_)return;next=queue_[first_];first_=(first_+1)%capacity;--size_;}
@@ -44,6 +47,7 @@ class SurfaceService {
   try{surface::wire::Validate(request.controls);surface::wire::Validate(request.frame);}catch(const std::exception&){return Submission::Invalid;}
   // Resetting the process-global source requires a replacement service/worker.
   if(request.reset)return Submission::Invalid;
+  if(preparing_.load(std::memory_order_acquire))return failed_?Submission::Stopped:Submission::Loading;
   std::unique_lock<std::mutex> lock(mutex_,std::try_to_lock);
   if(!lock.owns_lock())return Submission::Busy;
   if(stopping_||failed_.load(std::memory_order_acquire))return Submission::Stopped;

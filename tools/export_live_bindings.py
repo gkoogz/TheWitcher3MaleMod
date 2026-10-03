@@ -10,7 +10,7 @@ from scipy.sparse import csr_matrix
 from mod import ROOT,settings,base_checkout,read_json,write_json,digest
 
 
-def export(job,output):
+def export(job,output,source_bank=None):
     cfg=settings();pin=base_checkout(cfg);sys.path.insert(0,str(cfg['base']))
     from malemod_base.graft import topology_ids,boundary_loops
     from malemod_base.graft_collar import GraftCollar
@@ -20,7 +20,8 @@ def export(job,output):
         raise ValueError('Character binding artifacts must stay in owned build jobs')
     if output.exists():raise ValueError('Do not overwrite a binding artifact')
     output.mkdir(parents=True)
-    bank=read_json(job/'overall.json');source=Path(bank['bank']);manifest=read_json(source/'manifest.json')
+    bank=read_json(job/'overall.json');source=Path(source_bank).resolve() if source_bank else Path(bank['bank']);manifest=read_json(source/'manifest.json')
+    if source_bank and not source.is_relative_to(cfg['base']/'build'):raise ValueError('Override must be an owned Base reference bank')
     row=next(r for r in manifest['rows'] if r['ui']==50)
     truth=np.load(source/row['surface']);source_body=np.vstack([truth['body0'],truth['body1']])
     profile=read_json(ROOT/'characters/geralt-attachment.json');fit_path=ROOT/bank['fit'];fit=read_json(fit_path)
@@ -67,4 +68,4 @@ def export(job,output):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--job',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
-    a=p.parse_args();export(a.job,a.output)
+    p.add_argument('--source-bank',type=Path);a=p.parse_args();export(a.job,a.output,a.source_bank)

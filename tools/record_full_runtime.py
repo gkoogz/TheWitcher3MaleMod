@@ -140,6 +140,13 @@ def record():
 
 
 if __name__=='__main__':
+    # Preserve this historical checkpoint. Current installed delivery has its
+    # own complete proof and must never be overwritten by old probe paths.
+    if (ROOT/'provenance/native-delivery.json').exists():
+        from record_native_delivery import verify
+        verify(read_json(ROOT/'provenance/native-delivery.json'))
+        print('Current native delivery verified; historical full-runtime checkpoint preserved.')
+        raise SystemExit(0)
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--write',action='store_true');args=parser.parse_args()
     data=record()
     if args.write:write_json(ROOT/'provenance/full-runtime.json',data)

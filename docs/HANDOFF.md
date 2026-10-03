@@ -1,4 +1,166 @@
-# Current checkpoint: .31 Overall installed
+# Current checkpoint: full native adapter and waist boundary patch installed
+
+October 2, 20:19. Current Base pin is clean at
+`166cb02fd55c15f459ef58ffcc49f7cac27cee3c`; Wolverine remains unchanged.
+The complete 18-control source Session, full numerical physics and source/target
+coupled collar now feed both Geralt LODs through completed native DX12 draws.
+The exact installed DLL is
+`36cb0ae4880624dab5faa88acc2a77397db01e8d37ea1c09cac463444be4b15d`.
+Original .31 cooked package bytes remain unchanged; full mode pins its carrier
+to neutral and suppresses the superseded script solver only for an active epoch.
+
+## Latest waist correction
+
+The user reports a small waist seam. The live renderer had rebuilt lighting on
+the fixed open boundary although the separate stock torso retained its original
+lighting. Render composition now preserves original cooked positions, normals
+and tangents on all 106 protected waist/ankle render aliases across both LODs.
+Packed lighting is preserved without normalization/requantization. Original
+stock bone indices and all weight bytes are unchanged there. Regression tests
+exercise every shape/physics slider minimum and maximum plus combined maxima;
+boundaries remain invariant. Interior lighting continues to be rebuilt on the
+live surface. This is adapter attribute preservation, not a new Base solver.
+
+Installed-game verification receipt:
+`build/probe/sealed-session-20261002-201532/receipt.json`, private PID 30428,
+creation time `134354601323622088`. All 64 ordered range/movement/pause/reload
+cases completed with flags 853, no renderer/runtime faults, complete 36,547-row
+output and a fresh epoch/worker after actual save reload. Default/max/reload
+frames were inspected. Camera distance requests executed, but actual far
+camera distance/LOD selection was not established; do not claim that gate.
+The private process was closed by verified PID/creation time, its temporary
+Continue source was removed by receipt hash, and its launcher exited. The
+installed runtime is ready for an ordinary next launch. The delivery recorder
+passes against the final immutable session evidence.
+
+The latest correction restores the stock boundary attributes; observed stock
+waist resource alignment already has up to ~1.28mm nearest-vertex difference
+in LOD0, so invariant lower-body geometry alone does not prove mathematically
+identical torso/lower-body tessellation in every pose.
+
+## Runtime and controls
+
+F6 toggle, Up/Down selection, Left/Right adjustment and Shift larger steps use
+the same setter path as all 18 installed-game controls. The user previously
+confirmed the ordinary-startup overlay visible and live. Current private tests
+do not synthesize physical keyboard input. Atomic `malemod-controls.bin` keeps
+preferences outside managed ownership and isolated tests; persistence/navigation
+unit tests pass. Exclusive fullscreen and ray tracing remain separate unverified
+modes. Current installed settings have RT disabled and were not changed.
+
+Source physics runs in the exact pinned Win32 worker. The adapter's x64 bridge
+keeps game VM/render hooks nonblocking; independent target LODs and lighting run
+in parallel and match serial bytes. Current native bone remapping applies the
+current game pelvis once to already simulated anatomy, eliminating stale CPU
+inverse skinning. Numerical throughput measurements are not game FPS or proof
+of perceptually identical motion under every workload.
+
+Geralt contacts use a measured stock pelvis capsule (191 donors, reported fit
+residuals) and measured animated thigh capsules. This is an approximation to the
+body envelope, not an exact triangle hull. Production profile rejects diagnostic
+contact fallback. No source constraints or controls were reduced.
+
+## Delivery and next resumption
+
+Read `provenance/native-delivery.json`, `docs/FULL-RUNTIME.md` and `docs/OVERLAY.md`
+for current source/artifact/installation hashes and separate verification gates.
+`tools/record_native_delivery.py` verifies them. Managed installation verifies
+owned targets and snapshots them; exact/partial-failure rollback tests preserve
+preferences and externally modified files. Existing historical reports below
+remain historical; do not run an old recorder to overwrite the current gates.
+
+Never use F12, host input/focus or visible host game launches. The private game
+runs in an invisible noninteractive station, not a hardware VM; only its exact
+PID audio sessions are muted. Remove its temporary Continue script by receipt
+hash only after verifying and closing that exact process lifetime. No test saves
+are written. Sequences, fluid and audio remain deferred. Maintain Base ownership
+and distinguish numerical, native, observed gameplay and user acceptance.
+
+## Earlier checkpoints (historical, superseded)
+
+# Current checkpoint: full native float draw and isolated verification
+
+October 2, 19:16. User requires complete independent delivery with no host focus/input while playing WoW. Private game audio is muted by PID only; endpoint and WoW audio remain untouched. Never use F12. No final success is established yet.
+
+Base remains clean at 166cb02fd55c15f459ef58ffcc49f7cac27cee3c. Wolverine is unchanged. Shared source numerical physics, morphology, lighting and welded collar remain Base-owned; native binding, pose sampling and 28-byte graphics layout are Witcher adapter code.
+
+The 877,128-byte stride-24 resource is **packed morph input**, not float skinned output. Actual captured PSOs use R16G16B16A16_UNORM POSITION and byte indices/weights. The previous post-skin transition injection is disabled. New float_draw_renderer clones the exact original PSO/stream layout, changes POSITION to unbounded float3 and relocates skin words to offsets 12/16, supplies final lighting at 20/24, and preserves shaders/material/root/UV/color state. Queues retain immutable uploads through fences; bundles propagate ownership to their parent. SDK WARP draw/readback and the official skin shader tests pass. Both LODs contain 36,547 native rows and normal metadata 1.
+
+A native game session first completed these draws (flags 853 and advancing sequence). Its automated controls/movement test reached stage 37 but then failed on a singular inverse map. **It also produced a visibly stretched surface**. These are failed verification results, not a successful release. The pose generator had used VecTransform for basis directions, which introduces translation. Version 4 uses VecTransformDir(inverse,m.X/Y/Z), while positions retain the point transform. Stock basis magnitude checks now reject poisoned packets. Stock rows with identical intended/native palettes need no inverse, including singular roll poses. The full prepared output otherwise removes the actual blended native map once, before the original shader applies it. Preparation caches each exact bone/weight-word combination per pose instead of repeating blend/inversion for every row.
+
+Current private receipt: build/probe/sealed-session-20261002-191605/receipt.json, PID 27560, creation time 134354565655280134. Verify exact lifetime before closing. Installed DLL SHA be937975e1fb26062c86a4d8d3822566194149f918380838a04ccbfa8f55f8c9. Current render sampler: build/full-runtime/render-contract-166cb02-v4/render_bones.ws, 23 measured joints. Temporary autocontinue contains an SDK no-save lock and an authored automatic 56-case control/movement test. Native TestCheckpoint logs only GPU-completed controls and timing in verification-PID.jsonl. Screenshots use the SDK TakeScreenshot API; no host keys or capture helper. Remove the temporary addon only by receipt hash after the process exits.
+
+Geralt contact primitives now have measured provenance: tools/calibrate_runtime_contacts.py fits a central stock pelvic capsule; this is an approximation using the source solver's existing primitive, not an exact body hull. 191 actual stock donor samples and residuals are recorded in characters/geralt-runtime-bindings.json and ignored build/full-runtime/geralt-contact-calibration.json. Both thigh radii use prior measured stock envelopes. build/full-runtime/runtime-profile-166cb02-contacts loads without diagnostic/source-default collision fallback. Its 48-frame serial source/target/controller, pause/edit/resume, long active gap and epoch-replacement tests pass with these contacts. Gameplay collision quality still requires verification.
+
+Normal native runtime now suppresses old MaleModMotionComponent.AdvancePhysics only after this character's complete native geometry has finished on the GPU. It retains the original rig/fallback. Original .31 package bytes remain unchanged. Official WCC compiles this wrapper and native signatures. All source controls remain exactly Base's 18-value contract.
+
+Required remaining work: confirm corrected version-4 geometry visually and all 56 automatic cases without error, verify actual movement and frame cost, correct any residual native/GPU mismatch, handle bounds/previous pose/RT as required by the observed draw path, settings/UI support, then finish provenance, managed package/upgrade/rollback and local commit. Do not call the current build fully working until these gates pass.
+
+## Earlier checkpoints (historical, superseded rendering assumptions)
+
+# Current checkpoint: native output integration, not yet a finished release
+
+October 2, 18:27: user requires silent, independent completion, all 18 source
+controls and full numerical/surface physics, with animation/audio/fluid deferred.
+Wolverine must remain unchanged. The user is playing WoW: never launch on the
+physical desktop, steal focus, inject keys/mouse, ask for interaction, or claim
+the final port works before output and performance are verified.
+
+Base is clean at `166cb02fd55c15f459ef58ffcc49f7cac27cee3c`; adapter changes are
+uncommitted. The managed native install uses `local/native-installation.json`
+and `tools/mod.py install-native`, with owned backups/rollback. Normal Steam/exe
+startup loads the native DLL before script imports via the verified `dinput8`
+entry gate. The user confirmed F6 visible after an ordinary restart. All five
+original .31 package files remain unchanged. Full source worker and both target
+LOD composition, lighting, pose publication and all controls pass offline gates.
+Native source/lighting feed is observed (`runtimeFlags=199`, `renderFlags=516`)
+but completed native geometry writes have not been observed yet. Old .31 script
+physics is still active. Geralt pelvis contacts remain uncalibrated: the current
+runtime profile is explicitly diagnostic, not production.
+
+The private launcher `tools/run_sealed_session.py` creates a noninteractive
+Windows window station and unique desktop, verifies it is not WinSta0 and not
+visible, and launches the exact installed game through its normal native gate.
+This is an isolated desktop, not a hardware VM. No desktop switching or physical
+input occurs. The host firmware reports virtualization disabled; no VM feature
+installation/reboot was attempted. The user requested silence from this game:
+`native/session_audio.hpp` mutes only audio sessions whose PID is the verified
+private child. Current launcher verifies one muted session, and repeats this
+for newly created sessions. Endpoint/master audio and WoW are untouched.
+
+Latest private session: `build/probe/sealed-session-20261002-182715/receipt.json`,
+PID 27824, creation time 134354536353019280. Recheck its exact lifetime before
+closing it. Launcher retains private desktop handles until exit. The temporary
+Continue source is recorded in the receipt; remove only if its hash matches.
+The newest addon checks the actual private station through a native import,
+creates an SDK no-save lock, advances the signed-in title via stock `startFade`,
+then invokes stock `LoadLastSave(true)` after two script ticks. Earlier Continue
+scripts depended on menu engine time and failed to advance the title. The new
+addon compiles with real native imports in official WCC. Never stage it as a
+permanent user mod.
+
+Output blocker found: the owned float vertex resource transitions UAV (8) to
+GENERIC_READ (2755) on dedicated command lists with **no prior PSO**. The previous
+`pipeline != null` guard prevented every injection. `RestoreCompute` now restores
+only real prior objects, and the transition hook supports valid direct/compute
+lists even without an initial PSO. The actual D3D12 WARP test now includes a
+transition-only list and checks the next complete 36,547-vertex surface. It
+passes. Original engine position W and normal metadata are retained through a
+private UAV copy, so targets need no UAV flag and STREAM_OUT works too. All-queue
+fences retain uploads. A diagnostic draw-log cap also incorrectly disabled later
+ownership updates; that cap now applies only to logging. Live geometry completion,
+space calibration, movement, all controls, contact fitting, performance, bounds/
+previous pose/RT, preferences and final package remain required.
+
+Installed DLL SHA at this checkpoint:
+`9edbf4a30b79de2fa5c46f67588b203c1d309440fdfc8abebd5a61842f7ff30e`.
+Status reader now includes `frameCallbacks` and verifies receipt PID creation
+time, exact executable/module and installation hashes. The counter distinguishes
+a running main-menu tick from a frozen callback. Read status without foreground
+changes. Current SDK test: `live_skin_output_sdk`, passed with transition-only
+list, protected-point validation, metadata/root/PSO restoration and retirement.
+
+## Earlier checkpoints (historical scope and evidence)
 
 October 2 native runtime checkpoint: the complete 18-value controls now feed
 the pinned Base source worker through a nonblocking controller and character

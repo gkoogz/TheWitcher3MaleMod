@@ -1,3 +1,20 @@
+# Installed live overlay
+
+F6 expands/collapses the separate native panel. Up/Down selects a control;
+Left/Right adjusts; Shift uses five steps. The panel contains the complete Base
+18-value contract and defaults reset. The user has confirmed visibility and live
+keyboard operation after ordinary startup. It does not require the pause menu.
+
+Every setter feeds the same asynchronous Base runtime used by the automated
+range tests; verification requires completed GPU uploads, not setter readback.
+Control preferences persist in an atomic native adapter file and are excluded
+from managed installation, rollback and isolated testing. Storage/navigation
+unit tests pass. The private desktop does not synthesize host keyboard events;
+current exclusive fullscreen operation is separately unverified. F12 is unused.
+
+
+## Historical checkpoints (superseded)
+
 # Separate overlay investigation
 
 ## Implemented native panel; gameplay verification pending

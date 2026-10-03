@@ -670,6 +670,10 @@ def main():
     installer = commands.add_parser('install')
     installer.add_argument('--directory', type=Path)
     commands.add_parser('uninstall')
+    commands.add_parser('install-native')
+    commands.add_parser('uninstall-native')
+    restore_native = commands.add_parser('restore-native')
+    restore_native.add_argument('--backup',type=Path,required=True)
     verifier = commands.add_parser('verify')
     verifier.add_argument('--directory', type=Path)
     args = parser.parse_args()
@@ -698,6 +702,12 @@ def main():
             install_package(cfg, directory)
         elif args.command == 'uninstall':
             uninstall_package(cfg)
+        elif args.command in ('install-native','uninstall-native'):
+            from install_native_runtime import install_native_runtime
+            install_native_runtime(cfg,remove=args.command=='uninstall-native')
+        elif args.command == 'restore-native':
+            from install_native_runtime import restore_native_runtime
+            restore_native_runtime(cfg,args.backup)
         elif args.command == 'verify':
             directory = args.directory or ROOT / read_json(ROOT / 'publish/latest.json')['directory']
             verify_package(directory)

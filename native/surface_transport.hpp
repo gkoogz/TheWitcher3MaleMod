@@ -95,5 +95,9 @@ class SurfaceClient {
  malemod::surface::Output Evaluate(const wire::Request& request,DWORD timeout=1000){
   std::lock_guard<std::mutex> lock(mutex_);return wire::DecodeOutput(Exchange(wire::Encode(request),1,timeout));
  }
+ malemod::surface::Output Initialize(const malemod::surface::Controls& controls,DWORD timeout=10000){
+  std::lock_guard<std::mutex> lock(mutex_);wire::Request request;request.controls=controls;
+  return wire::DecodeOutput(Exchange(wire::Encode(request),3,timeout));
+ }
 };
 }

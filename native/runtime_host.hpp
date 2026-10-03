@@ -3,7 +3,7 @@
 #include <functional>
 
 namespace malemod::witcher {
-enum class HostTick {Accepted=0,Paused=1,Loading=2,Busy=3,Full=4,Invalid=5,Failed=6,Dormant=7};
+enum class HostTick {Accepted=0,Paused=1,Loading=2,Busy=3,Full=4,Invalid=5,Failed=6,Dormant=7,Computing=8};
 class RuntimeHost {
  using Factory=std::function<std::unique_ptr<RuntimeController>()>;
  std::mutex mutex_;std::condition_variable changed_;bool stopping_=false;
@@ -30,6 +30,7 @@ class RuntimeHost {
   if(active_!=epoch)return HostTick::Loading;if(!controller_)return HostTick::Failed;
   try{switch(controller_->Tick(sample,paused,controls,sequence)){
    case RuntimeTick::Accepted:return HostTick::Accepted;case RuntimeTick::Paused:return HostTick::Paused;
+   case RuntimeTick::Loading:return HostTick::Loading;case RuntimeTick::Computing:return HostTick::Computing;
    case RuntimeTick::Busy:return HostTick::Busy;case RuntimeTick::Full:return HostTick::Full;
    case RuntimeTick::Invalid:return HostTick::Invalid;default:error_=controller_->Error();return HostTick::Failed;
   }}catch(const std::exception& e){error_=e.what();return HostTick::Failed;}

@@ -43,7 +43,9 @@ DWORD Invoke(HANDLE process,std::uintptr_t function,void* argument){
 }
 }
 int wmain(int argc,wchar_t** argv){
- if(argc!=3){std::wcerr<<L"Usage: launch_native <exact witcher3.exe> <owned malemod_witcher.dll>\n";return 2;}
+ if(argc!=3&&(argc!=4||(std::wstring(argv[3])!=L"--runtime"&&std::wstring(argv[3])!=L"--render"))){std::wcerr<<L"Usage: launch_native <exact witcher3.exe> <owned malemod_witcher.dll> [--runtime|--render]\n";return 2;}
+ const bool runtime=argc==4;
+ const bool render=runtime&&std::wstring(argv[3])==L"--render";
  PROCESS_INFORMATION process{};bool resumed=false;
  try{
   const auto game=std::filesystem::canonical(argv[1]),library=std::filesystem::canonical(argv[2]);
@@ -83,19 +85,27 @@ int wmain(int argc,wchar_t** argv){
   const auto remoteLibrary=RemoteModule(process.dwProcessId,process.hProcess,library.filename().c_str());Check(remoteLibrary!=0,"Native module did not load");
   HMODULE localLibrary=LoadLibraryExW(library.c_str(),nullptr,DONT_RESOLVE_DLL_REFERENCES);Check(localLibrary!=nullptr,"Read owned export address");
   const auto entry=GetProcAddress(localLibrary,"MaleModInitialize"),probe=GetProcAddress(localLibrary,"MaleModProbeStatus");
+  const auto runtimeProbe=GetProcAddress(localLibrary,"MaleModRuntimeStatus");
+  const auto renderProbe=GetProcAddress(localLibrary,"MaleModRenderStatus");
+  const auto renderRVA=reinterpret_cast<std::uintptr_t>(renderProbe)-reinterpret_cast<std::uintptr_t>(localLibrary);
+  const auto runtimeRVA=reinterpret_cast<std::uintptr_t>(runtimeProbe)-reinterpret_cast<std::uintptr_t>(localLibrary);
   const auto rva=reinterpret_cast<std::uintptr_t>(entry)-reinterpret_cast<std::uintptr_t>(localLibrary),probeRVA=reinterpret_cast<std::uintptr_t>(probe)-reinterpret_cast<std::uintptr_t>(localLibrary);
-  FreeLibrary(localLibrary);Check(entry&&probe,"Missing native initialization/status export");
+  FreeLibrary(localLibrary);Check(entry&&probe&&(!runtime||runtimeProbe)&&(!render||renderProbe),"Missing native initialization/status export");
   const auto status=Invoke(process.hProcess,remoteLibrary+rva,nullptr);Check(status==0,"Native executable/profile/hook verification failed");
   Check(ResumeThread(process.hThread)!=DWORD(-1),"Resume owned game process");resumed=true;
   std::cout<<"Native probe initialized in owned process "<<process.dwProcessId<<"; registration and script invocation still require live verification.\n";
-  DWORD flags=0;
+  DWORD flags=0,runtimeFlags=0,renderFlags=0;
   std::cout<<"{\"processID\":"<<process.dwProcessId<<",\"processCreationTime\":\""<<creationTime<<"\"}\n"<<std::flush;
   for(unsigned i=0;i<180;i++){
    if(WaitForSingleObject(process.hProcess,1000)==WAIT_OBJECT_0)break;
-   flags=Invoke(process.hProcess,remoteLibrary+probeRVA,nullptr);if(flags&98)break;
+   flags=Invoke(process.hProcess,remoteLibrary+probeRVA,nullptr);
+   if(runtime){runtimeFlags=Invoke(process.hProcess,remoteLibrary+runtimeRVA,nullptr);if(render)renderFlags=Invoke(process.hProcess,remoteLibrary+renderRVA,nullptr);if((!render&&(runtimeFlags&4))||(runtimeFlags&32)||(flags&2)||(render&&((renderFlags&256)||(renderFlags&128))))break;}
+   else if(flags&98)break;
    if(i&&i%30==0)std::cout<<"Waiting for the owned startup test; status flags "<<flags<<".\n"<<std::flush;
   }
   std::cout<<"{\"processID\":"<<process.dwProcessId<<",\"initialized\":"<<((flags&4)?"true":"false")<<",\"registrationObserved\":"<<((flags&1)?"true":"false")<<",\"registrationFailed\":"<<((flags&2)?"true":"false")<<",\"scriptInvocationObserved\":"<<((flags&8)?"true":"false")<<",\"typedArgumentsObserved\":"<<((flags&16)?"true":"false")<<",\"typedRoundtripObserved\":"<<((flags&64)?"true":"false")<<",\"typedProbeFailed\":"<<((flags&32)?"true":"false")<<"}\n";
+  if(runtime)std::cout<<"{\"runtimeFlags\":"<<runtimeFlags<<",\"fullSurfaceProduced\":"<<((runtimeFlags&4)?"true":"false")<<",\"runtimeFault\":"<<((runtimeFlags&32)?"true":"false")<<"}\n";
+  if(render)std::cout<<"{\"renderFlags\":"<<renderFlags<<",\"geometryExecutionObserved\":"<<((renderFlags&256)?"true":"false")<<",\"renderFault\":"<<((renderFlags&128)?"true":"false")<<"}\n";
   CloseHandle(process.hThread);CloseHandle(process.hProcess);return 0;
  }catch(const std::exception& e){
   // Terminate only the suspended process created by this failed launcher. Never

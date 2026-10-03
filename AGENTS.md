@@ -47,4 +47,6 @@ acceptance and node-class existence do not establish execution. Require native
 cooked graph traversal to the output, named variable links, observed rig order,
 entity/skin ownership and exact unpacked bytes before installation. Keep native
 XML diagnostic dumps out of bundles. Record gameplay and numeric diagnostics
-independently; the complete 18-control port is still pending.
+independently. The complete 18-control native DX12 port is installed and has
+64 private gameplay range/movement/pause/reload cases; see current HANDOFF and
+provenance/native-delivery.json for hashes and remaining rendering-mode limits.

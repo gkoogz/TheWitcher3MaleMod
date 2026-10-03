@@ -1,3 +1,73 @@
+# Installed full native runtime
+
+Base is pinned at `166cb02fd55c15f459ef58ffcc49f7cac27cee3c`. The adapter uses
+its complete Win32 source Session, all 18 controls, morphology, coupled pelvic
+collar, constraints and collision. Wolverine is unchanged. Geralt-specific
+bindings, pose sampling, skin palettes, draw layout, input and installation stay
+in this repository. Numerical laws are not independently forked here.
+
+## Native rendering and waist correction
+
+The owned packed resource is pre-skin morph input. The live renderer clones the
+original DX12 pipeline with an unbounded float3 position and a 28-byte row,
+preserving original shaders, UVs, materials and weight bytes. Added anatomy
+bone influences map to the observed pelvis entry of their own LOD. The native
+shader applies the current game pose exactly once. Uploads survive all consuming
+queue fences, and command bindings are restored after each owned draw.
+
+The separate stock torso requires the lower body's open waist edge to retain
+its original cooked attributes. The October 2 seam correction preserves cooked
+positions, normals and tangents for all 106 protected render aliases across
+both LODs, including ankles. Interior lighting still follows the live surface.
+The regression exercises all 17 slider minima/maxima and combined maxima,
+checking boundary position, packed lighting and skin bytes independently.
+
+## Controls, lifecycle and contacts
+
+F6 expands/collapses the live overlay; Up/Down selects, Left/Right adjusts,
+Shift increases the step. Default is state 2 and all 17 sliders at 50.
+Native control storage uses atomic replacement; installation, private testing
+and rollback preserve user preferences. Old .31 mesh-bank scaling is suppressed
+in full mode; its cooked resources and the working rig are retained.
+
+Source simulation and target composition run outside game/render callbacks.
+Pause retains physical state and permits zero-time edits. Resume excludes pause
+time. Save reload creates a fresh character epoch and source worker. Both target
+LODs and independent lighting are parallel with byte-identical serial checks.
+
+Pelvis contacts are fitted to 191 measured stock donor samples. Both thighs use
+measured stock envelopes and observed animated endpoints. These capsules are
+approximations, not an exact triangle body hull.
+
+## Evidence and limits
+
+`provenance/native-delivery.json` records current installed hashes and separate
+SDK, numerical and gameplay gates. Captured images/poses and game assets stay
+ignored. Earlier 64-case private gameplay verification covered every control,
+combined maxima, running, paused edits/resume and actual save reload. The waist
+patch passed the same 64-case installed verification; use HANDOFF for its receipt.
+
+Timing reports separate source throughput, preparation and VM callback costs;
+none is a game FPS benchmark or proof of perceptual motion parity. Camera
+controller distance requests were executed, but actual far distance/LOD selection
+was not established. Existing ray tracing is disabled and remains unverified.
+The supported native adapter is the pinned installed DX12 executable; DX11 and
+other executable revisions require their own validated bridge. Animation
+sequences, fluid and audio are deferred.
+
+## Managed installation
+
+`python tools/mod.py install-native` verifies the Base pin, compiler artifacts,
+production contacts, render packet and all previous owned targets. It refuses
+replacement while Witcher runs or if an owned file changed externally. Backups
+and atomic receipts support `python tools/mod.py restore-native --backup <path>`.
+Rollback tests cover exact restoration, partial-copy failure and preserving
+preferences/unmanaged changes. Current compilation and generated assets are
+local prerequisites; this is not yet a generic redistributable installer.
+
+
+## Historical checkpoints (superseded)
+
 # Full Base runtime development
 
 ## Current native integration stage

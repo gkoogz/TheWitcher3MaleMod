@@ -1,0 +1,785 @@
+{
+  "contractVersion": 1,
+  "baseCommit": "166cb02fd55c15f459ef58ffcc49f7cac27cee3c",
+  "gameExecutableSHA256": "9406eccc12b68e08920931442ef6a57340e910d3e01f2082e88232487433fe51",
+  "runtime": "DX12 native float-position draw, pinned full Win32 Base solver and both Geralt LODs",
+  "sourceFiles": [
+    {
+      "path": "characters\\geralt-runtime-bindings.json",
+      "sha256": "4589dbdbb3b74ac6207152de9638572f56d296e607f70fcad971bd54e5c7fb27"
+    },
+    {
+      "path": "dependencies\\base.lock.json",
+      "sha256": "62bc128fce086d9589b5cff9c5221ba3ee2549645da29bc278d4d16be01dc066"
+    },
+    {
+      "path": "dependencies\\native.lock.json",
+      "sha256": "edbc0bdf7fba3bbf0e0c776f66e3dd39b63c50cad0d31266e3c41edd3b41c976"
+    },
+    {
+      "path": "native\\CMakeLists.txt",
+      "sha256": "17753d7df113262865dc4b1277b3ff31756fffcf7434280a568a9c1d5a47b60a"
+    },
+    {
+      "path": "native\\control_store.hpp",
+      "sha256": "147e47d193be5bbc085b8ef079330a7127905dd2059e88dd9f52412cc76d4314"
+    },
+    {
+      "path": "native\\control_store_test.cpp",
+      "sha256": "7ad5f0d45fc85278aeb64699671f25d6d30c4b47e18affff02ce9425d1f93f76"
+    },
+    {
+      "path": "native\\engine_bridge.cpp",
+      "sha256": "7bfab3047288acbf7c2f6be513ac67eba07eb5f60623b17699d2394e311ecfa8"
+    },
+    {
+      "path": "native\\float_draw_renderer.cpp",
+      "sha256": "313e12071fde0e6f930d3a140e74314dc9251503349c34c89cb2b586e0fbc0bf"
+    },
+    {
+      "path": "native\\float_draw_renderer.hpp",
+      "sha256": "e73b013d8a3586bc098459e4353564ddde64158d33c7cc5ac3abe18c6a559fff"
+    },
+    {
+      "path": "native\\float_draw_renderer_test.cpp",
+      "sha256": "6fed8ff0336d8b1dd7fd5c758bfd530079e4d1615168aa16c412cdc90a7d1b84"
+    },
+    {
+      "path": "native\\float_vertex_pipeline.hpp",
+      "sha256": "b251a6eaf1b02095990fe918d3ae15dc8bcae7d9d63f75831150937c80c78e6a"
+    },
+    {
+      "path": "native\\float_vertex_pipeline_test.cpp",
+      "sha256": "2c2fea792facb22273232e8fd4d3df5934dec6e779761938143166a88081f1f3"
+    },
+    {
+      "path": "native\\game_profile.hpp",
+      "sha256": "74416ffcd1a4e0310a2a8b1162ae2f8d3f942d9c4606e612f893857143d2b255"
+    },
+    {
+      "path": "native\\graphics_fingerprints.hpp",
+      "sha256": "600954585030fb661be71ac7fc2577b0873ef024441b67a3e81130bda47132ee"
+    },
+    {
+      "path": "native\\graphics_methods.cpp",
+      "sha256": "09abb60660da0b3613799132f0db64f39499cae47615917ec8520e40d39ca9b3"
+    },
+    {
+      "path": "native\\graphics_probe.cpp",
+      "sha256": "11f23c3e2d94da14c18f3a25784a2d4b26952cf9c63f9cc2b3dfe2ffddd8f1bc"
+    },
+    {
+      "path": "native\\graphics_probe.hpp",
+      "sha256": "fafae227cce99be816457b03e5a5d3693f6ce86e2b8c776865218061a4648024"
+    },
+    {
+      "path": "native\\graphics_probe_test.cpp",
+      "sha256": "734c48fc708aa48ac26fb7310d961574513631bc0b12e732fd4f2a5e39f0837c"
+    },
+    {
+      "path": "native\\launch_native.cpp",
+      "sha256": "6e010ec9199f710f6a5b6917854e315b9d2628c3f3ed2fc4b6020bb39493f34e"
+    },
+    {
+      "path": "native\\launch_sealed.cpp",
+      "sha256": "da256876cb3216a1f0504be3215171fe6f9dff30d460983fb532dc50b504cefa"
+    },
+    {
+      "path": "native\\live_renderer.cpp",
+      "sha256": "cfa0966e909ed9d7e43048334f9ab1a9ce54a9df944277cccc8280a2832fa7a7"
+    },
+    {
+      "path": "native\\live_renderer.hpp",
+      "sha256": "fd237314eb39e8d978304dd97b94c299c2916f727b1c62a8094e21d57901dcf9"
+    },
+    {
+      "path": "native\\live_renderer_test.cpp",
+      "sha256": "1480bc80a8ba687e87faa937dc95a9ba5b1eb2cff8e4372b7cdfa8737a4a1362"
+    },
+    {
+      "path": "native\\mute_sealed.cpp",
+      "sha256": "87292627dc17f950ab2735cf67defbdb754acb7b963c0bcb809b8b5ebcc56b40"
+    },
+    {
+      "path": "native\\overlay_navigation.hpp",
+      "sha256": "f9fa781792ca803799c846aa811ae292f2c6a98da81be8833274380f96ba2231"
+    },
+    {
+      "path": "native\\overlay_panel.cpp",
+      "sha256": "2a4d68a861ead7c102cc6343ef7c6ae0c71e53666b5a5808bffdebe111cafb6f"
+    },
+    {
+      "path": "native\\overlay_panel.hpp",
+      "sha256": "98aae93d1cbf83cb366351338b9152b75eba2ded4073d2b2fa43af5dca7ad8a9"
+    },
+    {
+      "path": "native\\overlay_panel_test.cpp",
+      "sha256": "e86ccecf876db3885b03d6495bf1d89f18caa167d9b0c8d840217b19fbe8ac21"
+    },
+    {
+      "path": "native\\pose_input.hpp",
+      "sha256": "eaea9f4ea23e907c8a2c2bad48aa5c3bb129f2fb947842d8f76e52eea74abd9b"
+    },
+    {
+      "path": "native\\pose_replay_test.cpp",
+      "sha256": "b524f2cb6a18a7036348bec1303eef7ab5fac554a9ab439f27ed32a8f5094d2f"
+    },
+    {
+      "path": "native\\render_contract.hpp",
+      "sha256": "20c8ed82186cb9b4f85f9bdc01fdb16835080f1117afadef3badccd128754df7"
+    },
+    {
+      "path": "native\\render_contract_test.cpp",
+      "sha256": "59079db15793dca6e73b3002cfd4fadb127d8dbe21d4bce92d0aea5346acf545"
+    },
+    {
+      "path": "native\\render_pose.hpp",
+      "sha256": "da0951708d6be3388360708da52f86f6dc2fa5209ac667bacd607e48efe15318"
+    },
+    {
+      "path": "native\\render_service.hpp",
+      "sha256": "575e853c8dc076ffceff6efdf89df6e613ab877e01d89f2706fe3267888171a6"
+    },
+    {
+      "path": "native\\runtime_controller.hpp",
+      "sha256": "b9e3af2204e8a51befdff954930e9d2eb1acb91b53ae818a4fb6510e8f97f605"
+    },
+    {
+      "path": "native\\runtime_controller_test.cpp",
+      "sha256": "6dcf69310997a63d0298c2b2726662520ecb263c55be429450ff430d1db361e3"
+    },
+    {
+      "path": "native\\runtime_host.hpp",
+      "sha256": "e5d950ae4cd7d9e3df1e34b2f98b98a170044f289b6cfbdae1ab8ac85fd32008"
+    },
+    {
+      "path": "native\\runtime_profile.hpp",
+      "sha256": "f7bd6d99102db4c41e3a6daac0d3d9658a09a9912884b63dec2f80b7c932864f"
+    },
+    {
+      "path": "native\\session_audio.hpp",
+      "sha256": "ad8c926d29e9145dd5b7dd2bb135753c49fe6bee0328c247bfad8ea9829f773e"
+    },
+    {
+      "path": "native\\skin_output.hpp",
+      "sha256": "1bcfc2963013554eaa229c146f3ba1dc16ca4f2b14ee7451989bae91f986cdbc"
+    },
+    {
+      "path": "native\\skin_sdk_test.cpp",
+      "sha256": "2dce6e495ba42c1fd126aa2db4ccc85a64db4e7a350f15938b209d4831f4234f"
+    },
+    {
+      "path": "native\\startup_gate.hpp",
+      "sha256": "eb8357102caaf29cb854b105e1241052c0fe2e2c7c92e577b6b3287b4b433220"
+    },
+    {
+      "path": "native\\startup_gate_test.cpp",
+      "sha256": "2ef59a3abd9b9dc600312a2043f0d43d9929986a298b7fbdbda5afcfd8dea968"
+    },
+    {
+      "path": "native\\startup_proxy.cpp",
+      "sha256": "005cf4603c99304efe916a3657ea6cc84dea951c0085f289ea963c9a4af195f0"
+    },
+    {
+      "path": "native\\startup_proxy.def",
+      "sha256": "bb3c6230fffc6b1890f20356fc07682655659fe286092ca06790cf3e6b0c0ab0"
+    },
+    {
+      "path": "native\\surface_client_test.cpp",
+      "sha256": "3090e3ad6dea44031c94b7cb614ba6c944beadd036e287a31327b55317431d62"
+    },
+    {
+      "path": "native\\surface_pipeline.hpp",
+      "sha256": "dd5d53c689b654df4be2413789234476ff50c533cb8a9bbd1e6c901974bf1d22"
+    },
+    {
+      "path": "native\\surface_pipeline_test.cpp",
+      "sha256": "78e53c35c080dc530bc245bf78d1ea7445eedc1aa4dee71364c6cf512bd5a1a3"
+    },
+    {
+      "path": "native\\surface_service.hpp",
+      "sha256": "1b482e830b13144380717a3856f602f3f4cd362233e1541d3459ae55e42021dc"
+    },
+    {
+      "path": "native\\surface_service_test.cpp",
+      "sha256": "122db306df98c5e9b9a16e166a47273a3d844e3f505012d3fb53ad3ce036e50b"
+    },
+    {
+      "path": "native\\surface_transport.hpp",
+      "sha256": "bd38dcda58f0d32e5d829c552389a149d4dd8a19711d0b827ea6c09eac8dcd20"
+    },
+    {
+      "path": "native\\surface_worker.cpp",
+      "sha256": "5c49bce0a55d83760df626c1c050bc15dce2099cd322b4a19eb65827190865f9"
+    },
+    {
+      "path": "native\\target_surface.cpp",
+      "sha256": "329c10268288a836b11cdcf72cc307e9abfda5b54c473c264ad885a0e6d46900"
+    },
+    {
+      "path": "native\\target_surface.hpp",
+      "sha256": "c3e90cdae32e8dd5097c1eefcbaf1eb74913d21928414573f9e3ab1d64fa1bfe"
+    },
+    {
+      "path": "native\\target_surface_test.cpp",
+      "sha256": "904e85c23e4c06e01b181738866e1c2cf22c61621a5c65ec17cc7e89529cdc18"
+    },
+    {
+      "path": "native\\worker_initialization_test.cpp",
+      "sha256": "98a687063dddaaff039dfe981ae834d32cc42cef3da3beeb111ab7009d29a7ce"
+    },
+    {
+      "path": "probes\\native\\autocontinue.ws",
+      "sha256": "4f4db407d5c068d245cdb072d59cac2a8b7bfc91ffdacf71302ab18b526a71b8"
+    },
+    {
+      "path": "probes\\native\\pose.ws",
+      "sha256": "c76caf2622bada115954068d694d0d75616800b7704ad208476e4c93863c521c"
+    },
+    {
+      "path": "probes\\native\\ready.ws",
+      "sha256": "9f6fa322a3ba7b0f89547c9d3e74056fb4b458eef03ec7f07cf4a03e05388fa7"
+    },
+    {
+      "path": "probes\\native\\runtime.ws",
+      "sha256": "91e5d974566c879ccb0aff3033a501199007c900bc7e9a55a6309893d06e0592"
+    },
+    {
+      "path": "tests\\test_native_restore.py",
+      "sha256": "7329483ab59b9a6eff5b650d7c64459476b5329f18cfe8924db09c0b586aab6b"
+    },
+    {
+      "path": "tools\\audit_animation_skinning.py",
+      "sha256": "4059286b2300369dfa0a1f6fe219adeb1d022db1afc117ccc7534ee188af8060"
+    },
+    {
+      "path": "tools\\audit_motion_axes.py",
+      "sha256": "40c7ded56864ee457a90e6dcc42a44b9a44bbe7b854f28f05bec4de03ddbc52e"
+    },
+    {
+      "path": "tools\\build_attachment.py",
+      "sha256": "fedd36d6a5a89c1a9ad85bff148706134cd30b0c9319cec3cd8df4a1de495ed7"
+    },
+    {
+      "path": "tools\\build_default_cage.py",
+      "sha256": "ebbf0fe2e8277caebfa7177c1309badc991f9ce43c5f570c66ae6e3d99cad5bc"
+    },
+    {
+      "path": "tools\\build_deformation_probe.py",
+      "sha256": "02f9d6404a2cebbc6f0c15088aa8b7b66cc9077ac4cc7a28de2f4d229724913f"
+    },
+    {
+      "path": "tools\\build_motion_release.py",
+      "sha256": "0a0bf338d20af317b55bb140ccbd2b645dab8102ceaff8bfc91cc0b0fc768751"
+    },
+    {
+      "path": "tools\\build_motion_script_patch.py",
+      "sha256": "9526e97ed18d68fe622ea3fe8b9bdaf6ed5a29328f7039cd2be368be39556480"
+    },
+    {
+      "path": "tools\\build_native_converter.py",
+      "sha256": "3198d1ef4a8e8626e8047e1e82805898fcc749db91c63327b81631db755dee0e"
+    },
+    {
+      "path": "tools\\build_renderdoc_probe.py",
+      "sha256": "144f6973fb11c699174746300af1fdb049877789aa92185a69a5f44b7328eb21"
+    },
+    {
+      "path": "tools\\calibrate_runtime_contacts.py",
+      "sha256": "9de8258a2cf578a587cf15004c1bb3489625a1f632b551760467212b61300d35"
+    },
+    {
+      "path": "tools\\capture_runtime_mesh.py",
+      "sha256": "6e91d7964662d76b3b77829125ffe15e136f45bae6f3838245f84daa23f1b3c6"
+    },
+    {
+      "path": "tools\\compile_native_scripts.py",
+      "sha256": "1216ddf5cd7b415169112d159d700f50820efab2a9e424037f1975dd504afea5"
+    },
+    {
+      "path": "tools\\deformation_graph.py",
+      "sha256": "a506e0159f3a6041e433c31e3d19aa917c366eaebc582140969b62458f4e18da"
+    },
+    {
+      "path": "tools\\deploy_motion.py",
+      "sha256": "2a3702e4963ad229c6dfda5419537955b9def4f4cb7ecb3455b703966474938e"
+    },
+    {
+      "path": "tools\\export_live_bindings.py",
+      "sha256": "afe2db458b73488d24981ed3d2023e05c90ac45cb821c914bee7486821453244"
+    },
+    {
+      "path": "tools\\export_wolverine_reference.py",
+      "sha256": "d2a0003c08cd936b305759393915a315b4103b03a593d47d3a7118facac725e2"
+    },
+    {
+      "path": "tools\\fit_attachment.py",
+      "sha256": "911f031928105d7cc245ce637afa71dadced975043123f20eda599823209aad6"
+    },
+    {
+      "path": "tools\\fixed_physics.py",
+      "sha256": "99201cf72d4c140b99ab796e82bf0f78d6a315c1409d37bda5d28517490385f8"
+    },
+    {
+      "path": "tools\\import_overall.py",
+      "sha256": "caf8de0d4dd978f97849507ef422b5829e930b3053d69084a117f7d8a4cc4845"
+    },
+    {
+      "path": "tools\\input_bindings.py",
+      "sha256": "33f5cbb3b7237b7241df23558f4f15f8a94cfc96437179c6b181fde49a4e7031"
+    },
+    {
+      "path": "tools\\inspect_editor_function.py",
+      "sha256": "8603ca19bb5b9eb1716a5ae36e4d872b986494995dea6293a1021b238d99deaa"
+    },
+    {
+      "path": "tools\\inspect_graphics_hooks.py",
+      "sha256": "647f5162b7110fbb9fe76d3ba242f52ee0ad99763979b5e08be4df86e75c65eb"
+    },
+    {
+      "path": "tools\\inspect_native.py",
+      "sha256": "5229528231d208011dacffbf4f2a32ba925676e908dfc854c060832c9466c46a"
+    },
+    {
+      "path": "tools\\inspect_packed_mesh.py",
+      "sha256": "0c9f1725465f90cab469142ca62405facb500dad05c2f128b3f468b65827b2b7"
+    },
+    {
+      "path": "tools\\inspect_wcc_fbx.py",
+      "sha256": "25e679b2387175fd15077893752cb042cd697e4806dd57d62a0ff468f9d6ae59"
+    },
+    {
+      "path": "tools\\install_native_runtime.py",
+      "sha256": "a3dee338933734af19759799cfc1a3e6c3c8e0cebac7140c2ef0579396bf2ead"
+    },
+    {
+      "path": "tools\\mod.py",
+      "sha256": "6356118b4b40d73535ee4b90fe8daa9bf4eeb392621a7a6491627d815a162407"
+    },
+    {
+      "path": "tools\\motion_entity.py",
+      "sha256": "7fe52a81ef03371cc1da347733400185164e584107da54a68217e45c719ac134"
+    },
+    {
+      "path": "tools\\native_joint_frames.py",
+      "sha256": "2fd42d99068561fe6f339c40ca7a57c03b532e403865bceee8caa3acfcd74bc5"
+    },
+    {
+      "path": "tools\\native_motion_profile.py",
+      "sha256": "b68b7085c61c0322036ba4c5b6d579f882f6ae12aeb9d1efca91b0b2a1c92be6"
+    },
+    {
+      "path": "tools\\native_pose_delivery.py",
+      "sha256": "9b89fdebcc83bb7351a7e5f92dc70e607d1663ad82f80809588488f4bb93be42"
+    },
+    {
+      "path": "tools\\overall_controls.py",
+      "sha256": "38b1aa3b60b033db8f94e988bcad07bf4fed6b9fc5abdce03cd79bbe31f905d3"
+    },
+    {
+      "path": "tools\\packed_mesh_format.py",
+      "sha256": "03b26f0bdadd8099b3b1ef5bedd456e58367feaf144320cebb46c8622c0b8d28"
+    },
+    {
+      "path": "tools\\physics_codegen.py",
+      "sha256": "9e257d7fa3ffde8ec53902d4818a2835da64dd6835aa50783740cb6fd5f7d954"
+    },
+    {
+      "path": "tools\\player_rig_redirect.py",
+      "sha256": "edf7b7d63785fdb86b101e51de2b53bbb6176faf77aa72668d32aa7895149c04"
+    },
+    {
+      "path": "tools\\player_stack.py",
+      "sha256": "7a88a7df31d63484cb02964b49559a28ed78f78a6f01c2a3c866c6b52db3bdcd"
+    },
+    {
+      "path": "tools\\pose_diagnostics.py",
+      "sha256": "fd800ebe10c590da40f3ba2ee102949b7aa361e8a273740aad5c23be9278aeaf"
+    },
+    {
+      "path": "tools\\prepare_graphics_fingerprints.py",
+      "sha256": "6a2e7dc55c7cca1d14d4331596468ebc3302575854bb74f7ab76a5cc6bc28cc3"
+    },
+    {
+      "path": "tools\\prepare_motion.py",
+      "sha256": "ca3f2f40e37db5ab7e4ea483475e848769e13374e4b9bf78871c679c75b6d23d"
+    },
+    {
+      "path": "tools\\prepare_overall.py",
+      "sha256": "1d8aa8d9e4e5e05fa3aa02d7653e05078605f7ce965f830fe0c63058df25a084"
+    },
+    {
+      "path": "tools\\prepare_pose_replay.py",
+      "sha256": "a79c45636931f03f3c401a193b5194fff9a37fadf914fc854eeef17c8b40859e"
+    },
+    {
+      "path": "tools\\prepare_render_contract.py",
+      "sha256": "323fe1b24c61177bb071f9aa5afc67620852a83019dde6527f1e5e53a13ecf6d"
+    },
+    {
+      "path": "tools\\prepare_runtime_profile.py",
+      "sha256": "e58e51d96b363f5d998e091c0a2c110db04ad0140ca8972ab7aaced337c1e487"
+    },
+    {
+      "path": "tools\\prepare_skin_contract.py",
+      "sha256": "337f1a3e376968882fa33efeda30f88c4155de0bfe9d46fac4fd8b38353cfd8d"
+    },
+    {
+      "path": "tools\\preview_attachment.py",
+      "sha256": "65cf17654c943a83fed212bee95e533031ff8ae667aaaad9fe15f07c4f7f0651"
+    },
+    {
+      "path": "tools\\probe_control_graph.py",
+      "sha256": "f83ac5637fa425a9da473d073ad9a0af03ff2a8485b35ba3778bbc6687f02ff1"
+    },
+    {
+      "path": "tools\\probe_deformation_bridge.py",
+      "sha256": "8290cde7acf5616aee8d08344eefb03d06d5091ff691fe5d6872cb1af9a82e0a"
+    },
+    {
+      "path": "tools\\probe_game_functions.py",
+      "sha256": "d24d47af1aa9b4bb69c47be9ddfcfc46eca7b92813b6c702081762c1535504da"
+    },
+    {
+      "path": "tools\\probe_game_name_refs.py",
+      "sha256": "9c3f693a530e42c9a2d11559bbac8330f1a1883f52a6441c10126cb7cd7a0b88"
+    },
+    {
+      "path": "tools\\probe_pelvic_domain.py",
+      "sha256": "b030619b01954987066a4069305371d0c8f51d7ec700b300be810f7184433a97"
+    },
+    {
+      "path": "tools\\probe_physics.py",
+      "sha256": "d0226d87bb0a6a99354fde3deee62b15d373ca0c0c03d529cf9e1565f054019c"
+    },
+    {
+      "path": "tools\\probe_runtime.py",
+      "sha256": "3094af05c1b6a1841081ff0b4d927333e8bcc10d086844b3f9592f10b08a1ce0"
+    },
+    {
+      "path": "tools\\read_native_probe.py",
+      "sha256": "2d25ca8cceda8f49bb87ed2ccfcec80cfd9b0df350ff0a84e33ddb67798082ba"
+    },
+    {
+      "path": "tools\\record_full_runtime.py",
+      "sha256": "dde62b53651a1f2b9e5cbf3e5932b6d7c99b22955a9f693fc8dacb0ee06c1a90"
+    },
+    {
+      "path": "tools\\record_native_delivery.py",
+      "sha256": "9bf54e6e41d506d3cbc19880e638fd0ce79bfd64d76d9945206ca935ae6c979c"
+    },
+    {
+      "path": "tools\\run_installed_session.py",
+      "sha256": "4f74c7ede280b710d16f596e25d833d5a545edf81115b15b7c87c91d417c2f9a"
+    },
+    {
+      "path": "tools\\run_native_probe.py",
+      "sha256": "8b7ef3495af70a3223365912d66510f16614638b342dbac6abdb7837412e70d1"
+    },
+    {
+      "path": "tools\\run_native_session.py",
+      "sha256": "b7eb7708ad4680cb3de590a00f01796c84141a38c615e3970dbc4e2fd497979f"
+    },
+    {
+      "path": "tools\\run_sealed_session.py",
+      "sha256": "5a980e12e5698e4668412c81d267845d539451b07f0688d6168600d12beb08f1"
+    },
+    {
+      "path": "tools\\shipped_player.py",
+      "sha256": "4afbd951e1d3ba9c675e91cdc8e6829cc1ede4e1381a4300668b12872fbba242"
+    },
+    {
+      "path": "tools\\startup_movies.py",
+      "sha256": "35282d5ac6a8ffc09917f633cb28e9963947d11c8aea874109cd96b1416c4c63"
+    },
+    {
+      "path": "tools\\verify_attachment.py",
+      "sha256": "a80e0c598147633ad633f043712a13d708ddce1677799dcce82b4ba74a082b3d"
+    },
+    {
+      "path": "tools\\verify_cooked_motion.py",
+      "sha256": "b18de7322018d47313e24255c52e1dd11bf2a4ebb3aaba2c2911de88098a0ca1"
+    },
+    {
+      "path": "tools\\verify_default_guide.py",
+      "sha256": "4ce7b9b3d1d0c799353f495301cee18868c05619f80ccacfc030709dc9983a7f"
+    },
+    {
+      "path": "tools\\verify_deformation_graph.py",
+      "sha256": "6416fc6a170869ea1f7a0fd448cd45c02a4a583693ef826850a059db6e1a14ef"
+    },
+    {
+      "path": "tools\\verify_frame_motion.py",
+      "sha256": "113eec7d33935376baca5b854a3c47539db06b01d03b03d583667546350e0439"
+    },
+    {
+      "path": "tools\\verify_live_graft.py",
+      "sha256": "909d1793cc7bd383bc1ff0ea4837943fcb46cd2beaeab49d235bd8cd28da175c"
+    },
+    {
+      "path": "tools\\verify_motion.py",
+      "sha256": "b62bfbe1a9fbfc5969bd357799ee4fb14bb0706bc59868a277629f31537500dd"
+    },
+    {
+      "path": "tools\\verify_motion_package.py",
+      "sha256": "7eb23a2f8089f61de3edd20ea2c3786a1de7c566a0b99c23c2bc23ad9510bb38"
+    },
+    {
+      "path": "tools\\verify_native_worker.py",
+      "sha256": "c07681b8e263007287228697b3c61d2dff2b19aece963a5d5582385066a197f5"
+    },
+    {
+      "path": "tools\\verify_overall.py",
+      "sha256": "9f530a01d884ba64023a68e2634078b0d2cf916f0aa9f06412af7d491229fd18"
+    },
+    {
+      "path": "tools\\verify_pose_surface.py",
+      "sha256": "07bdbaa5222317112bebebe630091a714cf33e6fd1fba2309f03e4dcb26b39a0"
+    },
+    {
+      "path": "tools\\verify_protected_surface.py",
+      "sha256": "807875a59c522309c2f6d09f27fe6ae96cf884a971255d22c2e4bf922fa94341"
+    },
+    {
+      "path": "tools\\verify_solid_physics.py",
+      "sha256": "0900f5d6ee468d2700d2c01752b0826d3b12c315013014b5e46f36313062e7ce"
+    },
+    {
+      "path": "tools\\verify_solid_surface.py",
+      "sha256": "a74c69aa2a2643472b7108ea26f0cab24f9a1f7527319c571d01fd3c5f287f92"
+    },
+    {
+      "path": "tools\\verify_startup_integration.py",
+      "sha256": "46b256a3e26b176054c1e861b71b6feb53886290ce7d3a90955c32b76a6c0663"
+    },
+    {
+      "path": "tools\\verify_target_surface.py",
+      "sha256": "6f42e10247f8d72de2885d4da3a33ff9c1fc801791e794f1efe14c979bb73ebb"
+    },
+    {
+      "path": "tools\\wcc_fbx.py",
+      "sha256": "38ea570877938d240e5c75f4fa0895beb169f7719635792d369223ffeadb2529"
+    },
+    {
+      "path": "tools\\wcc_scripted.py",
+      "sha256": "cc0c22ba7cb15ae2df82ea5bb8bf7e7cdef18faefba438d7a5c2ec5a421ff844"
+    }
+  ],
+  "verificationArtifacts": [
+    {
+      "path": "build\\probe\\sealed-session-20261002-201532\\receipt.json",
+      "sha256": "ffedab125e5e2c3af9150591887c7ae26ac83cd1a0870666dbc5ac6e1184b9a2"
+    },
+    {
+      "path": "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3\\bin\\x64_dx12\\malemod-native\\verification-30428.jsonl",
+      "sha256": "adba229f5fdbc4ffca2f64ccdc7dc476cf3c45a16b6a21564bc4676bd3c47542"
+    },
+    {
+      "path": "build\\probe\\sealed-session-20261002-201532\\launcher.txt",
+      "sha256": "6f5ab4309dc01721bde8b656483b744d607ec0fccfea4f0cd80a35c042e23a90"
+    },
+    {
+      "path": "build\\probe\\native-bootstrap-compile.json",
+      "sha256": "75038e968eaadfd2fc3975d9c5d5b29334226df392ee066e5f5a9c8d28ade371"
+    },
+    {
+      "path": "build\\jobs\\native-scripts-ca38c4fb7291-compiled\\cooked-0000000055e06e47.redscripts",
+      "sha256": "f656fe79c06a4b5db0dbff749cdfb642c1532ed93d10fe424b0e57ead98df9d0"
+    },
+    {
+      "path": "build\\native-runtime-controller\\Testing\\Temporary\\LastTest.log",
+      "sha256": "06b8d0f09b632f0c3b447c98ec116994ee91181f454a603f505edf5edafd0f26"
+    },
+    {
+      "path": "build\\full-runtime\\runtime-controller-contacts-test.txt",
+      "sha256": "702d6a1847feec0fcaf19cd5f41190a6b6c71c3c32da267c4433cc350466d334"
+    },
+    {
+      "path": "build\\full-runtime\\render-contract-test.txt",
+      "sha256": "fb9ef42682b248c188917af0c4d4065deed7c9985c06af2d85b56339e6c4b253"
+    },
+    {
+      "path": "build\\full-runtime\\native-restore-test.txt",
+      "sha256": "26f59329efa655ee958038504f4ee7d4deb27f81651b3fee5aa2dfc0c8af50a7"
+    },
+    {
+      "path": "build\\full-runtime\\runtime-profile-166cb02-contacts\\manifest.json",
+      "sha256": "769d1374f51f3e2281735baa62b8dba445fec2abfb5e9f7d9b08dc622493d3e0"
+    },
+    {
+      "path": "build\\full-runtime\\geralt-contact-calibration.json",
+      "sha256": "d775a0df317ff486cce34304e8b6664569779019b001eac78450acd7da37279b"
+    }
+  ],
+  "installedFiles": [
+    {
+      "path": "bin/x64_dx12/dinput8.dll",
+      "sha256": "f9c52ce08e5c9c405b2fcee74e9f8eacc3057a7a930c887f58182b5dfde15b3e"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod_witcher.dll",
+      "sha256": "36cb0ae4880624dab5faa88acc2a77397db01e8d37ea1c09cac463444be4b15d"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/surface_worker.exe",
+      "sha256": "33dc993613af3cf1378b64c455769f497907f35cf61e372e4379756e9d37a3f4"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod-runtime.profile",
+      "sha256": "d7eafd06d5c64023ddc09ce110b3d466d453d9986836d3e3c0d9450bf2e372dd"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.bindings",
+      "sha256": "12a5257496074c99535e2ff840c24e06aa370d7225df5a8cb5fab1cd5a1b45f4"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.render",
+      "sha256": "c4522886f9f7f56470d46ee3b706c07d09eaf4c1ee30fafc7247e4f707041912"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.render.sha256",
+      "sha256": "a784da25febdc90885463945800d9693f070c4b6daf91d6433d288c0f413e5f4"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/graphics-owned-fingerprints.bin",
+      "sha256": "17a0020ebd301abbc8a565e88352f6b237d86de1062902147f3efcb5fc7c49c4"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod-overlay.enable",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/runtime.ws",
+      "sha256": "91e5d974566c879ccb0aff3033a501199007c900bc7e9a55a6309893d06e0592"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/render_bones.ws",
+      "sha256": "65bb7c2331b5336a6cf3d77f8b02e54c07ffb767934d5b21ae2324f21fda8e10"
+    }
+  ],
+  "installed": true,
+  "installedGameOutputObserved": true,
+  "originalFiveResourceHashesPreserved": true,
+  "controls": {
+    "count": 18,
+    "rangeCases": 56,
+    "fullFloppyDefault": [
+      2,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50
+    ],
+    "allValuesReachGPU": true,
+    "overlayToggle": "F6",
+    "selection": "Up/Down",
+    "adjustment": "Left/Right",
+    "largeStep": "Shift",
+    "arrowAndRangeSDKVerified": true,
+    "userPreviouslyConfirmedVisibleLiveOverlay": true,
+    "currentPhysicalKeyboardTested": false,
+    "persistence": "atomic native adapter file containing Base Controls values; excluded from installation and private tests"
+  },
+  "numerical": {
+    "sharedSolver": "exact pinned Base source Session",
+    "constraintsReduced": false,
+    "sourceControlsReduced": false,
+    "sourceAndBothTargetLODsMatchSerial": true,
+    "activeTimePreserved": true,
+    "measuredGeraltContacts": true,
+    "pelvisPrimitive": "fitted stock donor capsule approximation; residuals in calibration certificate",
+    "wolverineChanged": false
+  },
+  "renderer": {
+    "vertices": 36547,
+    "lods": 2,
+    "layoutBytes": 28,
+    "originalShadersMaterialsUVsPreserved": true,
+    "floatPositionUnclamped": true,
+    "addedSkinInfluences": "each observed mm_* palette entry redirected to its LOD pelvis; all stock influences and weights preserved",
+    "currentNativePoseAppliesOnce": true,
+    "finalInteriorLightingRebuilt": true,
+    "cookedOuterBoundaryPositionAndLightingPreserved": true,
+    "allConsumptionFencesRetained": true,
+    "shaderOracleMaximumNativeError": 8.9407e-08,
+    "rayTracingObserved": false,
+    "rayTracingSettingChanged": false,
+    "rayTracingCurrentTestSetting": false
+  },
+  "installedGameVerification": {
+    "cases": 64,
+    "movementObserved": true,
+    "allMaximaPassed": true,
+    "pauseEditAndResumePassed": true,
+    "actualSaveReloadNewEpochPassed": true,
+    "cameraDistanceRequestsExecuted": true,
+    "actualFarCameraDistanceVerified": false,
+    "runtimeFaults": 0,
+    "rendererFaults": 0,
+    "privateAudioMuted": true,
+    "noPhysicalFocusOrInput": true,
+    "noSaveWritesByTestDriver": true
+  },
+  "performance": {
+    "timingMilliseconds": {
+      "sourceMs": {
+        "median": 40.8683,
+        "p95": 52.3466,
+        "maximum": 210.1227
+      },
+      "targetMs": {
+        "median": 3.4837,
+        "p95": 5.344,
+        "maximum": 17.3966
+      },
+      "prepareMs": {
+        "median": 6.9103,
+        "p95": 8.6032,
+        "maximum": 9.0262
+      },
+      "lightingMs": {
+        "median": 4.8546,
+        "p95": 6.2371,
+        "maximum": 6.8132
+      },
+      "callbackMeanMs": {
+        "median": 0.037624359,
+        "p95": 0.0407015873,
+        "maximum": 0.043284058
+      },
+      "callbackMaxMs": {
+        "median": 0.0782,
+        "p95": 0.1882,
+        "maximum": 0.4183
+      }
+    },
+    "numericalWorkOutsideVMCallback": true,
+    "independentLODsParallelAndByteExact": true,
+    "sourcePhysicsThroughputIsNotGameFPS": true,
+    "gameFPSBenchmark": false
+  },
+  "deferred": [
+    "clinical sequences",
+    "sounds and idle chatter",
+    "fluids"
+  ],
+  "limitations": [
+    "Geralt body contacts use measured capsules, not an exact triangle body hull",
+    "DX12 executable hash is specific to the installed 5.0 build",
+    "Ray tracing was disabled in existing settings and remains separately unverified",
+    "Current physical keyboard and exclusive fullscreen operation were not driven by the isolated test"
+  ]
+}

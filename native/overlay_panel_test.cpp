@@ -7,6 +7,9 @@ static void Check(bool b,const char* text){if(!b)throw std::runtime_error(text);
 int wmain(int argc,wchar_t** argv){try{
  Check(argc==2,"Usage: overlay_panel_test owned-preview.bmp");
  malemod::surface::Controls c;
+ OverlayNavigation navigation;navigation.Move(-1);Check(navigation.selected==17,"Selection does not wrap upward");navigation.Move(1);Check(navigation.selected==0,"Selection does not wrap downward");
+ Check(navigation.Adjust(c,1,true)==0&&navigation.Adjust(c,-1,false)==1,"State does not match Wolverine cycling");
+ for(unsigned i=1;i<18;i++){navigation.selected=i;Check(navigation.Adjust(c,1,false)==51&&navigation.Adjust(c,-1,true)==45,"Arrow/Shift step differs from Wolverine");}
  for(unsigned i=1;i<18;i++){
   Check(OverlayPanel::Hit(OverlayPanel::trackLeft,OverlayPanel::Row(i)+12)==int(i),"Slider hit region selects wrong control");
   auto low=OverlayPanel::Value(i,OverlayPanel::trackLeft-100),high=OverlayPanel::Value(i,OverlayPanel::trackRight+100);auto candidate=c;candidate.values[i]=low;malemod::surface::wire::Validate(candidate);candidate.values[i]=high;malemod::surface::wire::Validate(candidate);

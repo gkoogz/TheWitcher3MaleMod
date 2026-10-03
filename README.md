@@ -8,44 +8,19 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-Installed candidate: **0.4.31-overall-recruitment**, Base `643846f`.
-The native pause menu now has **MaleMod - anatomy / Overall** (1..100, neutral
-50). Wolverine's evaluated overall shape and final pelvic recruitment expand the
-fitted attachment and surrounding body together. Guides, pivots and collision
-sizes track the selected native morph. The approved neutral mesh is unchanged.
-Only Overall is restored; Wolverine remains unchanged.
+Installed full native DX12 adapter: Base `166cb02`, all 18 source controls,
+full source numerical physics, live coupled pelvic recruitment and both Geralt
+LODs. Wolverine is unchanged. F6 opens/closes the separate live panel; arrow keys
+select/adjust and Shift increases the step. Defaults match Base's full-floppy
+reset. The original .31 cooked resources remain as the rig/fallback.
 
-Native shape layout, weld/pivot checks, cooking, exact packed recovery and
-combined startup-script compilation pass. The user accepts .30 motion as
-serviceable; .31 gameplay and frame cost remain pending. Large-size normal
-transport and nonlinear intermediate shape evaluation remain limitations.
-See [Overall](docs/OVERALL.md) and the handoff for evidence and rollback.
-
-See [fixed-rest physics](docs/FIXED-PHYSICS.md) for Base-derived rod/suspension
-kernels, animated-thigh contacts, native verification and current gameplay gates.
-The adapter does not claim full Wolverine physics or surface parity. Animation
-sequences, fluid and audio remain deferred. Use the handoff for installed status.
-
-Read [test and rollback instructions](docs/LIVE-MOTION-TEST.md). The previous
-0.3 static appearance test is preserved for rollback. The user confirmed its
-appearance, but that is not evidence for the new dynamic build. Shared anatomy,
-weights and control contracts stay in Base; this repository owns REDengine
-translation. [Script-aware cooking](docs/WCC-SCRIPTED-COOK.md) needs the exact
-verified local REDkit build and adds no runtime hook to the game.
-
-Version 0.2.0 redirects Geralt's default underwear entity to his stock bare
-lower body. It has been cooked, verified and installed locally for user testing.
-Restart the game and equip/remove trousers to refresh cached equipment. See
-[bare-body test](docs/BARE-BODY-TEST.md). The user confirmed the bare appearance;
-movement, seams and armor transitions still need confirmation.
-
-Verified locally with the installed official tools: stock mesh export, FBX
-import, full script compilation, cooking, dependency cache, bundle packing,
-metadata generation and native unbundle recovery of the mesh plus buffer.
-Package/ZIP integrity and fourteen adapter tests passed. Texture/physics builders
-were exercised; this probe needs neither custom texture nor collision caches.
-See [native evidence](provenance/native-toolchain.json). Broader gameplay remains
-unverified. See the current checkpoint above for subsequent gameplay feedback.
+The October 2 waist patch preserves cooked outer-boundary positions and lighting
+so the lower body continues to meet the separate stock torso. Read
+[FULL-RUNTIME](docs/FULL-RUNTIME.md), [OVERLAY](docs/OVERLAY.md) and the current
+handoff for evidence, installed hashes, measured timing and verification limits.
+Source/target parity and completed GPU output are recorded separately from user
+acceptance, FPS and untested rendering modes. Sequences, fluid and audio remain
+deferred.
 
 ## Structure
 

@@ -13,7 +13,10 @@ def read(receipt_path):
     if not receipt_path.is_relative_to(ROOT/'build/probe'):raise ValueError('Expected an owned launch receipt')
     receipt=read_json(receipt_path);pid=receipt['observations']['processID']
     module=(ROOT/receipt.get('modulePath','build/native-x64/Release/malemod_witcher.dll')).resolve()
-    if not module.is_relative_to(ROOT/'build'):raise ValueError('Expected an owned native build')
+    if not module.is_relative_to(ROOT/'build'):
+        installed=read_json(ROOT/'local/native-installation.json');game=Path(installed['game']).resolve()
+        owned={game/f['path']:f['sha256'] for f in installed['files']}
+        if module not in owned or owned[module]!=receipt['moduleSHA256']:raise ValueError('Expected a verified managed native module')
     if digest(module)!=receipt['moduleSHA256']:raise ValueError('Loaded module provenance differs; preserve its build before reading')
     k=C.WinDLL('kernel32',use_last_error=True);p=C.WinDLL('psapi',use_last_error=True)
     def api(lib,name,result,args):
@@ -48,9 +51,11 @@ def read(receipt_path):
         local=load(str(module),None,1) # DONT_RESOLVE_DLL_REFERENCES; no local hooks run.
         if not local:raise C.WinError(C.get_last_error())
         values={}
-        for name in ['MaleModProbeStatus','MaleModGraphicsProbeStatus']:
+        for name in ['MaleModProbeStatus','MaleModGraphicsProbeStatus','MaleModRuntimeStatus','MaleModRenderStatus','MaleModRuntimeFrameCount','MaleModSealedSessionStatus','MaleModRenderSequence']:
             entry=get(local,name.encode())
-            if not entry:raise ValueError('Missing owned status export')
+            if not entry:
+                if name in ['MaleModRenderStatus','MaleModRuntimeFrameCount','MaleModSealedSessionStatus','MaleModRenderSequence']:continue
+                raise ValueError('Missing owned status export')
             handle=thread(process,None,0,found[module.resolve()]+entry-local,None,0,None)
             if not handle:raise C.WinError(C.get_last_error())
             try:
@@ -61,7 +66,11 @@ def read(receipt_path):
         flags=values['MaleModProbeStatus']
         record=dict(processID=pid,scriptInvocationObserved=bool(flags&8),typedArgumentsObserved=bool(flags&16),
             typedRoundtripObserved=bool(flags&64),typedProbeFailed=bool(flags&32),registrationFailed=bool(flags&2),
-            poseSamplingObserved=bool(flags&128),graphicsFlags=values['MaleModGraphicsProbeStatus'],rawFlags=flags,readOnlyStatus=True)
+            poseSamplingObserved=bool(flags&128),graphicsFlags=values['MaleModGraphicsProbeStatus'],runtimeFlags=values['MaleModRuntimeStatus'],rawFlags=flags,readOnlyStatus=True)
+        if 'MaleModRenderStatus' in values:record['renderFlags']=values['MaleModRenderStatus']
+        if 'MaleModRuntimeFrameCount' in values:record['frameCallbacks']=values['MaleModRuntimeFrameCount']
+        if 'MaleModSealedSessionStatus' in values:record['sealedFlags']=values['MaleModSealedSessionStatus']
+        if 'MaleModRenderSequence' in values:record['completedRenderSequence']=values['MaleModRenderSequence']
         write_json(receipt_path.parent/'status.json',record);print(json.dumps(record,indent=2));return record
     finally:
         if local:free(local)

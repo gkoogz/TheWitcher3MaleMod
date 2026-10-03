@@ -1,3 +1,18 @@
+# Current installed native phase and waist correction
+
+The full 18-control native Base runtime is now installed and has passed the
+recorded 64 private gameplay cases. The latest user reports a small waist seam.
+The adapter now preserves the cooked fixed waist/ankle boundary positions and
+packed lighting rather than rebuilding those attributes beside the separate
+stock torso. Regression and corrected-build gameplay gates are recorded in
+HANDOFF and provenance/native-delivery.json. Do not turn numeric evidence into
+claims of perfect visual or FPS parity; preserve the user's quality objective.
+
+Unattended tests run in an invisible noninteractive station and mute only that
+verified child's audio sessions. The user is playing WoW: no host focus/input.
+The test process has been closed and its temporary Continue source removed.
+Wolverine remains unchanged. Clinical sequences, audio and fluid are deferred.
+
 # Current authorized Overall phase
 
 Superseding authorization (October 2): full shared physics/surface and ALL
