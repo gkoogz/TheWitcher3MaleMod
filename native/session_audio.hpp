@@ -3,10 +3,29 @@
 #include <mmdeviceapi.h>
 #include <audiopolicy.h>
 #include <wrl/client.h>
+#include <string>
+#include <map>
 
 // Mute only sessions belonging to the isolated child, never the endpoint or
 // another application. Repeat because the game may create sessions after boot.
-inline unsigned MuteProcessAudio(DWORD process) {
+class ScopedProcessAudioMute {
+ struct Original {Microsoft::WRL::ComPtr<ISimpleAudioVolume> volume;BOOL mute;};
+ std::map<std::wstring,Original> originals_;
+ public:
+ ~ScopedProcessAudioMute(){Restore();}
+ unsigned Restore(){unsigned restored=0;for(auto& entry:originals_){BOOL state=FALSE;
+  if(SUCCEEDED(entry.second.volume->SetMute(entry.second.mute,nullptr))&&
+     SUCCEEDED(entry.second.volume->GetMute(&state))&&state==entry.second.mute)++restored;
+ }originals_.clear();return restored;}
+ unsigned Mute(DWORD process);
+ bool Remember(IAudioSessionControl2* session,ISimpleAudioVolume* volume){
+  LPWSTR raw=nullptr;if(FAILED(session->GetSessionInstanceIdentifier(&raw))||!raw)return false;
+  std::wstring id(raw);CoTaskMemFree(raw);if(originals_.count(id))return true;
+  BOOL prior=FALSE;if(FAILED(volume->GetMute(&prior)))return false;
+  originals_.emplace(std::move(id),Original{volume,prior});return true;
+ }
+};
+inline unsigned SetProcessAudioMute(DWORD process,BOOL requested,ScopedProcessAudioMute* scope=nullptr) {
  using Microsoft::WRL::ComPtr;
  ComPtr<IMMDeviceEnumerator> enumerator;
  if (FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
@@ -27,10 +46,14 @@ inline unsigned MuteProcessAudio(DWORD process) {
    ComPtr<IAudioSessionControl2> identified; if(FAILED(control.As(&identified))) continue;
    DWORD pid=0;if(FAILED(identified->GetProcessId(&pid))||pid!=process) continue;
    ComPtr<ISimpleAudioVolume> volume;if(FAILED(control.As(&volume))) continue;
-   if(SUCCEEDED(volume->SetMute(TRUE,nullptr))) {
-    BOOL state=FALSE;if(SUCCEEDED(volume->GetMute(&state))&&state)++muted;
+   if(scope&&!scope->Remember(identified.Get(),volume.Get()))continue;
+   if(SUCCEEDED(volume->SetMute(requested,nullptr))) {
+    BOOL state=FALSE;if(SUCCEEDED(volume->GetMute(&state))&&state==requested)++muted;
    }
   }
  }
  return muted;
 }
+
+inline unsigned MuteProcessAudio(DWORD process){return SetProcessAudioMute(process,TRUE);}
+inline unsigned ScopedProcessAudioMute::Mute(DWORD process){return SetProcessAudioMute(process,TRUE,this);}

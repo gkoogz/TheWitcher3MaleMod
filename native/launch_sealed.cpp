@@ -29,10 +29,13 @@ int wmain(int argc,wchar_t** argv){
   // Retain the private station while its child initializes. No SwitchDesktop,
   // SetForegroundWindow, SendInput, mouse or keyboard APIs are used.
   Check(SUCCEEDED(CoInitializeEx(nullptr,COINIT_MULTITHREADED)),"Initialize isolated audio control");
+  { ScopedProcessAudioMute audio;
   unsigned muted=0;
   while(WaitForSingleObject(child.hProcess,250)==WAIT_TIMEOUT){
-   const auto now=MuteProcessAudio(child.dwProcessId);
+   const auto now=audio.Mute(child.dwProcessId);
    if(now&&now!=muted){muted=now;std::cout<<"{\"verifiedMutedSessions\":"<<muted<<"}\n"<<std::flush;}
+  }
+  std::cout<<"{\"restoredAudioSessions\":"<<audio.Restore()<<"}\n"<<std::flush;
   }
   CoUninitialize();
   DWORD code=0;GetExitCodeProcess(child.hProcess,&code);std::cout<<"{\"exitCode\":"<<code<<"}\n";

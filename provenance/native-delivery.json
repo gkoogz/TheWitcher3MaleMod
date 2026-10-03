@@ -82,7 +82,7 @@
     },
     {
       "path": "native\\launch_sealed.cpp",
-      "sha256": "da256876cb3216a1f0504be3215171fe6f9dff30d460983fb532dc50b504cefa"
+      "sha256": "3930b95f5c0d78ec0a6a174fc00a3094cbaecdfd6916d092abd9aba0abc2ed23"
     },
     {
       "path": "native\\live_renderer.cpp",
@@ -98,7 +98,7 @@
     },
     {
       "path": "native\\mute_sealed.cpp",
-      "sha256": "87292627dc17f950ab2735cf67defbdb754acb7b963c0bcb809b8b5ebcc56b40"
+      "sha256": "1d30d03e35f2f18ae82eaf61fdb4bed9f68e16cf744c735adbb262aceb5e9399"
     },
     {
       "path": "native\\overlay_navigation.hpp",
@@ -158,7 +158,7 @@
     },
     {
       "path": "native\\session_audio.hpp",
-      "sha256": "ad8c926d29e9145dd5b7dd2bb135753c49fe6bee0328c247bfad8ea9829f773e"
+      "sha256": "629e4f381efa2c3420b88b8da64f032269b32dde180775b75f8af17a87b1a3d0"
     },
     {
       "path": "native\\skin_output.hpp",
@@ -466,7 +466,7 @@
     },
     {
       "path": "tools\\record_native_delivery.py",
-      "sha256": "9bf54e6e41d506d3cbc19880e638fd0ce79bfd64d76d9945206ca935ae6c979c"
+      "sha256": "8eb790591c993b0f7ffa3ed72e96fb38935712781dd08288172360f85b067d7d"
     },
     {
       "path": "tools\\run_installed_session.py",
@@ -732,6 +732,13 @@
     "privateAudioMuted": true,
     "noPhysicalFocusOrInput": true,
     "noSaveWritesByTestDriver": true
+  },
+  "audioMaintenance": {
+    "previousMutePersistedForUserGame": true,
+    "currentUserSessionUnmuteVerified": true,
+    "scopedRestoreImplemented": true,
+    "scopedRestoreCompiled": true,
+    "scopedRestorePrivateExitTested": false
   },
   "performance": {
     "timingMilliseconds": {

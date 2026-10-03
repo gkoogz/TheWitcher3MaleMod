@@ -1,3 +1,19 @@
+# Audio correction after user playback report
+
+October 2: the user reported that the private test's CoreAudio mute also left
+ordinary Witcher playback muted. PID filtering did not prevent Windows from
+persisting the app's mute state. The current user game PID 9736 was verified as
+the exact installed Witcher executable and unmuted; GetMute confirmed FALSE on
+one matching audio session. No endpoint or other app volume changed.
+
+The private launcher now retains each matching session's original mute state,
+and restores it before releasing the session objects/COM when its child exits.
+It refuses to mute a session whose prior state cannot be captured. The helper
+accepts `--unmute` for the exact verified Witcher executable. Both helpers
+compile; the new restore-at-private-exit path has not been exercised in another
+game launch. Do not mute the user's active game again. Installed runtime DLL,
+shape and physics resources are unchanged by this audio-only correction.
+
 # Current checkpoint: full native adapter and waist boundary patch installed
 
 October 2, 20:19. Current Base pin is clean at
