@@ -10,7 +10,7 @@ from scipy.sparse import csr_matrix
 from mod import ROOT,settings,base_checkout,read_json,write_json,digest
 
 
-def export(job,output,source_bank=None):
+def export(job,output,source_bank=None,boundary=None):
     cfg=settings();pin=base_checkout(cfg);sys.path.insert(0,str(cfg['base']))
     from malemod_base.graft import topology_ids,boundary_loops
     from malemod_base.graft_collar import GraftCollar
@@ -18,8 +18,8 @@ def export(job,output,source_bank=None):
     job=Path(job).resolve();output=Path(output).resolve()
     if not job.is_relative_to(ROOT/'build') or not output.is_relative_to(ROOT/'build'):
         raise ValueError('Character binding artifacts must stay in owned build jobs')
-    if output.exists():raise ValueError('Do not overwrite a binding artifact')
-    output.mkdir(parents=True)
+    if output.exists() and any(output.iterdir()):raise ValueError('Do not overwrite a binding artifact')
+    output.mkdir(parents=True,exist_ok=True)
     bank=read_json(job/'overall.json');source=Path(source_bank).resolve() if source_bank else Path(bank['bank']);manifest=read_json(source/'manifest.json')
     if source_bank and not source.is_relative_to(cfg['base']/'build'):raise ValueError('Override must be an owned Base reference bank')
     row=next(r for r in manifest['rows'] if r['ui']==50)
@@ -35,7 +35,7 @@ def export(job,output,source_bank=None):
             a=np.asarray(a,dtype=dtype);f.write(struct.pack('<I',len(a)));f.write(a.tobytes())
         def sparse(m):
             m=csr_matrix(m);f.write(struct.pack('<I',m.shape[1]));array(m.indptr,'<u4');array(m.indices,'<u4');array(m.data,'<f8')
-        f.write(b'MMBIND02');f.write(pin['commit'].encode('ascii'))
+        f.write(b'MMBIND03' if boundary else b'MMBIND02');f.write(pin['commit'].encode('ascii'))
         f.write(np.asarray(basis,dtype='<f8').tobytes());f.write(np.asarray(root,dtype='<f8').tobytes())
         f.write(np.asarray(calibration['targetRootNative'],dtype='<f8').tobytes())
         f.write(struct.pack('<d',calibration['nativeUnitsPerSourceUnit']))
@@ -48,17 +48,33 @@ def export(job,output,source_bank=None):
             _,stock_alias=topology_ids(bindings['body_original_points'],1e-5)
             boundaries=np.concatenate(boundary_loops(stock_alias[bindings['body_original_faces']]))
             protected=np.flatnonzero(np.isin(stock_alias,boundaries))
-            domain=GraftCollar(points,bindings['faces'],bindings['body_seam'],bindings['module_seam'],bindings['body_edge_donors'],protected,1e-5/scale)
+            prescribed=np.array([],dtype=np.uint32)
+            if boundary:
+                lower=np.load(Path(boundary)/('part%d.npz'%lod));upper=np.load(Path(boundary)/('part%d.npz'%(2+lod)))
+                low_count=int(lower['bodyCount']);up_count=len(upper['points']);body=low_count+up_count
+                native=np.vstack([lower['points'][:low_count],upper['points'],lower['points'][low_count:]])
+                points=to_source(native)
+                low_map=np.arange(len(lower['points']));low_map[low_count:]+=up_count
+                faces=np.vstack([low_map[lower['faces']],upper['faces']+low_count])
+                protected=np.r_[lower['protected'],upper['protected']+low_count]
+                domain=GraftCollar(points,faces,low_map[lower['body_seam']],low_map[lower['module_seam']],lower['body_edge_donors'],protected,1e-5/scale)
+                prescribed=np.unique(domain.aliases[lower['waist']]).astype(np.uint32)
+                motion=dict(points=native)
+            else:
+                domain=GraftCollar(points,bindings['faces'],bindings['body_seam'],bindings['module_seam'],bindings['body_edge_donors'],protected,1e-5/scale)
             field=SourceBodyField(source_body,points[:body])
             field_matrix=csr_matrix((field.weights.flatten(),field.donors.flatten(),np.arange(body+1)*field.donors.shape[1]),shape=(body,len(source_body)))
             array(domain.rest,'<f8');array(domain.faces,'<u4');f.write(struct.pack('<I',len(domain.seams)))
             for slave,a,b,w in domain.seams:f.write(struct.pack('<3Id',slave,a,b,w))
-            array(domain.locked,'<u4');array(points,'<f8');array(motion['points']/100,'<f8')
+            array(domain.locked,'<u4')
+            if boundary:array(prescribed,'<u4')
+            array(points,'<f8');array(motion['points']/100,'<f8')
             array(domain.aliases,'<u4');array(domain.unique,'<u4');array(protected,'<u4');f.write(struct.pack('<I',body))
             sparse(field_matrix);sparse(lineage)
             rows.append(dict(lod=lod,renderVertices=len(points),uniqueVertices=len(domain.rest),bodyVertices=body,
+                lowerBodyVertices=low_count if boundary else body,upperBodyVertices=up_count if boundary else 0,prescribedWaistVertices=len(prescribed),
                 bindingPath=binding_path.relative_to(ROOT).as_posix(),bindingSHA256=digest(binding_path),motionSHA256=digest(motion_path)))
-    receipt=dict(contractVersion=2,baseCommit=pin['commit'],sourceGeometryCommit=read_json(cfg['base']/'provenance/wolverine.json')['commit'],
+    receipt=dict(contractVersion=3 if boundary else 2,bodyBoundary=str(Path(boundary).resolve()) if boundary else None,baseCommit=pin['commit'],sourceGeometryCommit=read_json(cfg['base']/'provenance/wolverine.json')['commit'],
         artifact=artifact.name,artifactSHA256=digest(artifact),recipeSHA256=digest(Path(__file__)),
         neutralSourceSHA256=digest(source/row['surface']),sourceBankSHA256=digest(source/'manifest.json'),
         fitSHA256=digest(fit_path),coordinateCalibration=calibration,lods=rows,nativeVertexOutput=False,observedGameplay=False)
@@ -68,4 +84,4 @@ def export(job,output,source_bank=None):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--job',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
-    p.add_argument('--source-bank',type=Path);a=p.parse_args();export(a.job,a.output,a.source_bank)
+    p.add_argument('--source-bank',type=Path);p.add_argument('--boundary',type=Path);a=p.parse_args();export(a.job,a.output,a.source_bank,a.boundary)

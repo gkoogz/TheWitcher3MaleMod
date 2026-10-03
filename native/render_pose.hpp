@@ -22,7 +22,7 @@ class RenderPoseInput {
  public:
  explicit RenderPoseInput(const RenderContract& c):contract_(c){
   for(auto id:c.nativeBones)required_.insert(id);
-  if(required_.size()!=23||!required_.count(9))throw std::invalid_argument("Observed render palette differs");
+  if(required_.empty()||required_.size()>104||!required_.count(9))throw std::invalid_argument("Observed render palette differs");
  }
  void Reset(){epoch_=0;seconds_=-1;bones_.clear();world_.reset();}
  bool Add(unsigned epoch,int bone,double seconds,const PoseMatrix& pose){

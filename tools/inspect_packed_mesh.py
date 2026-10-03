@@ -13,7 +13,7 @@ from mod import ROOT,digest,write_json
 
 
 def inspect(mesh,dump,fbx,output):
-    mesh,dump,fbx,output=[Path(p).resolve() for p in (mesh,dump,fbx,output)]
+    mesh,dump,fbx,output=[Path(p).absolute() for p in (mesh,dump,fbx,output)]
     if not all(p.is_relative_to(ROOT/'build') for p in (mesh,dump,fbx,output)):
         raise ValueError('Use owned ignored inspection artifacts')
     if output.exists():raise ValueError('Do not overwrite inspection evidence')
@@ -31,7 +31,9 @@ def inspect(mesh,dump,fbx,output):
     def vector(name):return np.array([float(prop(name).find('.//prop[@name="'+a+'"]').text) for a in 'XYZ'])
     native_mesh=CookedMesh(raw)
     scale,offset=np.asarray(native_mesh.scale[:3]),np.asarray(native_mesh.offset[:3])
-    if not np.allclose(scale,vector('quantizationScale'),rtol=2e-6,atol=1e-7) or not np.allclose(offset,vector('quantizationOffset'),rtol=2e-6,atol=1e-7):
+    # Official dump text rounds these values to six significant decimal digits;
+    # use exact CRC-validated binary float constants for all actual decoding.
+    if not np.allclose(scale,vector('quantizationScale'),rtol=5e-6,atol=5e-7) or not np.allclose(offset,vector('quantizationOffset'),rtol=5e-6,atol=5e-7):
         raise ValueError('Binary quantization differs from official dump')
     chunks=bytes(int(e.text) for e in prop('renderChunks').find('array'))
     if len(chunks)!=75 or chunks[0]!=2:raise ValueError('Unobserved render chunk layout')
@@ -59,7 +61,9 @@ def inspect(mesh,dump,fbx,output):
         if distances.max()>np.linalg.norm(scale/65535)*1.1:raise ValueError('Native position decode exceeds a quantization cell')
         source_uv=source.child('LayerElementUV').array('UV').reshape(-1,2) if sum(c.name=='LayerElementUV' for c in source.children)==1 else next(c for c in source.children if c.name=='LayerElementUV' and c.values[0]==0).array('UV').reshape(-1,2)
         normals=source.child('LayerElementNormal').array('Normals').reshape(-1,3)
-        normals=normals/np.linalg.norm(normals,axis=1)[:,None]
+        lengths=np.linalg.norm(normals,axis=1)
+        if np.any(lengths[np.unique(triangles(source))]<1e-10):raise ValueError('Referenced authored normal is zero')
+        normals=normals/np.maximum(lengths[:,None],1e-30)
         source_uv=source_uv.astype('<f4');source_uv[:,1]=np.float32(1)-source_uv[:,1]
         skin_names=[name for name,cluster in doc.skin(source)]
         if len(native_mesh.palette)!=sum(len(doc.skin(mesh)) for mesh in doc.meshes):raise ValueError('Native skin palettes differ from LOD dimensions')
@@ -131,7 +135,7 @@ def inspect(mesh,dump,fbx,output):
         skinPalette=native_mesh.palette,inverseBindMatrices=native_mesh.inverse_binds,boneIndexMapping=native_mesh.bone_mapping,
         vertexBufferSize=vb,indexBufferOffset=iboffset,indexBufferSize=ibsize,lods=reports,
         nativeVertexOutput=False,observedGameplay=False)
-    write_json(output/'inspection.json',report);print(report);return report
+    write_json(output/'inspection.json',report);print('Verified packed mesh:',output,[r['nativeVertices'] for r in reports]);return report
 
 
 if __name__=='__main__':

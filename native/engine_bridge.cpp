@@ -168,7 +168,7 @@ void RuntimeFrame(void*,void* frame,void* result){
   if(status==HostTick::Busy||status==HostTick::Full)runtimeFlags.fetch_or(16);
   if(status==HostTick::Invalid||status==HostTick::Failed)runtimeFlags.fetch_or(32);
   auto source=runtimeHost->Poll(std::uint32_t(epoch));
-  if(source){runtimeFlags.fetch_or(4);if(renderService&&renderPose){auto pose=paused?renderPose->LastComplete(unsigned(epoch)):renderPose->Complete(unsigned(epoch),seconds);if(pose){runtimeFlags.fetch_or(128);renderService->Submit(source,*pose);}auto output=renderService->Latest();if(output&&output->epoch==unsigned(epoch))LiveRenderFeed(std::move(output));if(!renderService->Error().empty()){
+  if(source){runtimeFlags.fetch_or(4);if(renderService&&renderPose){auto pose=paused?renderPose->LastComplete(unsigned(epoch)):renderPose->Complete(unsigned(epoch),seconds);if(pose){runtimeFlags.fetch_or(128);renderService->Submit(source,*pose,paused);}auto output=renderService->Latest();if(output&&output->epoch==unsigned(epoch))LiveRenderFeed(std::move(output));if(!renderService->Error().empty()){
  runtimeFlags.fetch_or(256);static bool recorded=false;if(!recorded){recorded=true;wchar_t path[32768]{};HMODULE module=nullptr;
  if(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&RuntimeFrame),&module)&&GetModuleFileNameW(module,path,32768)){
   auto* tail=wcsrchr(path,L'\\');if(tail){swprintf_s(tail+1,32768-std::size_t(tail+1-path),L"render-error-%lu.txt",GetCurrentProcessId());auto* file=_wfsopen(path,L"wb",_SH_DENYNO);if(file){std::fprintf(file,"%s\n",renderService->Error().c_str());std::fclose(file);}}
@@ -278,7 +278,7 @@ void TestCheckpoint(void*,void* frame,void* result){
     for(unsigned i=0;i<18;i++)std::fprintf(log,"%s%.9g",i?",":"",current.values[i]);
     std::fprintf(log,"],\"bounds\":[[%.9g,%.9g,%.9g],[%.9g,%.9g,%.9g]],\"actorOrigin\":[%.9g,%.9g,%.9g],\"poseSeconds\":%.9g,\"lightingMs\":%.9g,\"workerMs\":[%.9g,%.9g,%.9g],\"geometryMs\":[",low[0],low[1],low[2],high[0],high[1],high[2],output->pose.actorWorld[3],output->pose.actorWorld[7],output->pose.actorWorld[11],output->poseSeconds,output->lightingMilliseconds,output->workerMilliseconds[0],output->workerMilliseconds[1],output->workerMilliseconds[2]);
     for(unsigned i=0;i<16;i++)std::fprintf(log,"%s%.9g",i?",":"",output->geometryMilliseconds[i]);
-    std::fprintf(log,"],\"callbackCount\":%u,\"callbackMeanMs\":%.9g,\"callbackMaxMs\":%.9g}\n",verificationCallbackCount,verificationCallbackCount?verificationCallbackTotal/verificationCallbackCount:0,verificationCallbackMaximum);
+    std::fprintf(log,"],\"callbackCount\":%u,\"callbackMeanMs\":%.9g,\"callbackMaxMs\":%.9g,\"bodyResourceMask\":%u,\"displayPublications\":%u,\"presentationPhase\":%.9g,\"presentationIntervalMs\":%.9g}\n",verificationCallbackCount,verificationCallbackCount?verificationCallbackTotal/verificationCallbackCount:0,verificationCallbackMaximum,FloatDrawResourceMask(),FloatDrawPublicationCount(),output->presentationPhase,output->presentationIntervalMilliseconds);
     verificationCallbackCount=0;verificationCallbackTotal=verificationCallbackMaximum=0;
     std::fflush(log);last=stage;
    }

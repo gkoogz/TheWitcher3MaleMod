@@ -1,3 +1,31 @@
+# Current checkpoint: two-part waist/material/presentation repair installed
+
+October 2, 23:15. Base pin `acda34e7b12a923c2162d32e3c015485e3108efa`.
+The anatomy uses its full source atlas and corrected FBX UV convention. F6 panel
+painting is buffered and change-driven. Motion presentation uses rigid material
+frames between complete solver outputs. Both Geralt torso and lower resources
+now receive one shared 51-sample waist and upward pelvic recruitment, including
+static torso/depth passes. Wolverine remains unchanged.
+
+Final installed DLL: `5ab208b6b6630ca0af9d8e50ef6193d3e1b682d9bfc0860460e1b28d58a5e1e0`.
+Private receipt: `build/probe/sealed-session-20261002-230911/receipt.json`.
+All 64 ordered control/movement/pause/reload cases passed: 43,276 native rows,
+both resource mask 3, completed flags 853, no runtime/render faults. The process
+is closed and temporary Continue source removed. Scoped private audio mute and
+restore both verified on exit. No physical desktop focus/input was used.
+Median displayed publications: 49.71 Hz; complete numerical surfaces: 17.15 Hz.
+Display interpolation does not raise solver throughput or prove game FPS.
+
+Read [BODY-BOUNDARY.md](BODY-BOUNDARY.md) for ownership, recipes, artifact paths,
+known limits and exact rollback. `provenance/body-delivery.json` is current;
+`provenance/native-delivery.json` and the records below are historical.
+The private test does not independently prove absence of interactive overlay
+flicker, far-LOD transitions or ray tracing. Numerical work remains unchanged;
+65 Base Python tests/provenance, 39 full-source body cases, D3D12 slice/readback
+and official native script compilation passed.
+
+---
+
 # Audio correction after user playback report
 
 October 2: the user reported that the private test's CoreAudio mute also left

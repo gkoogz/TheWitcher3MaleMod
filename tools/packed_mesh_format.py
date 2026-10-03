@@ -27,8 +27,18 @@ class CookedMesh:
             if offset>=len(strings) or end<offset:raise ValueError('Mesh name leaves pool')
             self.names.append(strings[offset:end].decode('utf-8'))
         exports=table(4,24)
-        if len(exports)!=24:raise ValueError('Only observed single-CMesh export supported')
-        kind,flags,parent,size,position,template,crc=struct.unpack('<HHIIIII',exports)
+        entries=list(struct.iter_unpack('<HHIIIII',exports))
+        # A locally authored material adds a CMaterialInstance child export.
+        # Select the sole mesh by its actual class and validate every bounded
+        # child export independently; no assumption about its table ordinal.
+        found=[]
+        for entry in entries:
+            kind,flags,parent,size,position,template,crc=entry
+            if kind>=len(self.names) or self.names[kind] not in ['CMesh','CMaterialInstance'] or size>len(raw)-position:raise ValueError('Unobserved native mesh child export')
+            if zlib.crc32(raw[position:position+size])!=crc:raise ValueError('Child mesh export CRC differs')
+            if self.names[kind]=='CMesh':found.append(entry)
+        if len(found)!=1:raise ValueError('Expected one CMesh export')
+        kind,flags,parent,size,position,template,crc=found[0]
         if kind>=len(self.names) or self.names[kind]!='CMesh' or size>len(raw)-position:
             raise ValueError('Unexpected mesh export')
         self.data=raw[position:position+size]

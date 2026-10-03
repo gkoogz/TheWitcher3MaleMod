@@ -10,12 +10,14 @@ from mod import ROOT,read_json,write_json,digest
 COOKED=ROOT/'build/motion/player-stack-138649950289/package-cfb0915d89d2/cooked/characters/malemod/body'
 
 
-def prepare(output):
+def prepare(output,cooked=None,upper=None):
     output=(ROOT/output).resolve()
     if not output.is_relative_to(ROOT/'build'):raise ValueError('Expected an owned ignored output')
     records=[];sources=[]
-    paths=[COOKED/'geralt_motion.w2mesh',*sorted((COOKED/'overall_overall-stable-layout').glob('*.w2mesh'))]
+    body=Path(cooked).absolute() if cooked else COOKED
+    paths=[body/'geralt_motion.w2mesh',*sorted((body/'overall_overall-stable-layout').glob('*.w2mesh'))]
     if len(paths)!=12:raise ValueError('Expected the neutral plus all eleven Overall resources')
+    if upper:paths.append(Path(upper).absolute())
     for path in paths:
         mesh=CookedMesh(path.read_bytes());buffer=Path(str(path)+'.1.buffer');raw=buffer.read_bytes()
         chunks=mesh.get(mesh.cooked,'renderChunks','array:47,0,Uint8')
@@ -33,8 +35,8 @@ def prepare(output):
         for label,offset,size in blocks:
             data=raw[offset:offset+size]
             if len(data)!=size or size<32:raise ValueError('Fingerprint stream leaves owned buffer')
-            name=path.stem+'_'+label;records.append(struct.pack('<IH',size,len(name))+data[:32]+hashlib.sha256(data).digest()+name.encode('ascii'))
-        sources.append(dict(resource=path.relative_to(COOKED).as_posix(),meshSHA256=digest(path),bufferSHA256=digest(buffer)))
+            name=('upper' if upper and path==Path(upper).absolute() else path.stem)+'_'+label;records.append(struct.pack('<IH',size,len(name))+data[:32]+hashlib.sha256(data).digest()+name.encode('ascii'))
+        sources.append(dict(resource=path.relative_to(ROOT).as_posix(),meshSHA256=digest(path),bufferSHA256=digest(buffer)))
     baseline=read_json(ROOT/'local/installation.json')
     packet=b'MMGPH01\0'+struct.pack('<I',len(records))+b''.join(records)
     output.mkdir(parents=True,exist_ok=True);(output/'graphics-owned-fingerprints.bin').write_bytes(packet)
@@ -46,4 +48,4 @@ def prepare(output):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('output',type=Path);prepare(p.parse_args().output)
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('output',type=Path);p.add_argument('--cooked',type=Path);p.add_argument('--upper',type=Path);a=p.parse_args();prepare(a.output,a.cooked,a.upper)

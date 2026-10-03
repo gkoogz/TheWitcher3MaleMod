@@ -60,8 +60,11 @@ def install_native_runtime(cfg,remove=False):
         receipt_path.replace(ROOT/'local'/('native-removed-'+time.strftime('%Y%m%d-%H%M%S')+'.json'))
         print('Removed only verified native-owned files; .31 baseline preserved.');return
     pin=base_checkout(cfg)['commit'];release=ROOT/'build/native-runtime-controller/Release'
-    profile=read_json(ROOT/'build/full-runtime/runtime-profile-166cb02-contacts/manifest.json')
-    render=read_json(ROOT/'build/full-runtime/render-contract-166cb02-v4/manifest.json')
+    selection_path=ROOT/'build/full-runtime/current-install.json'
+    selection=read_json(selection_path) if selection_path.exists() else dict(profile='build/full-runtime/runtime-profile-166cb02-contacts',render='build/full-runtime/render-contract-166cb02-v4')
+    profile_dir=ROOT/selection['profile'];render_dir=ROOT/selection['render']
+    profile=read_json(profile_dir/'manifest.json')
+    render=read_json(render_dir/'manifest.json')
     if profile['baseCommit']!=pin or render['baseCommit']!=pin or render['bindingsSHA256']!=profile['bindingsSHA256']:
         raise ValueError('Native profile/render contract differs from committed Base pin')
     files={
@@ -69,7 +72,15 @@ def install_native_runtime(cfg,remove=False):
       **{'bin/x64_dx12/malemod-native/'+n:release/n for n in ['malemod_witcher.dll','surface_worker.exe','malemod-runtime.profile',
           'geralt.bindings','geralt.render','geralt.render.sha256','graphics-owned-fingerprints.bin','malemod-overlay.enable']},
       'Mods/modMaleModNative/content/scripts/local/malemod/runtime.ws':ROOT/'probes/native/runtime.ws',
-      'Mods/modMaleModNative/content/scripts/local/malemod/render_bones.ws':ROOT/'build/full-runtime/render-contract-166cb02-v4/render_bones.ws'}
+      'Mods/modMaleModNative/content/scripts/local/malemod/render_bones.ws':render_dir/'render_bones.ws'}
+    if selection.get('bodyPackage'):
+        from mod import verify_package
+        package=ROOT/selection['bodyPackage'];patch=verify_package(package)
+        if patch['baseCommit']!=pin or patch['project']!='mod0000MaleModBodyBoundary':raise ValueError('Body patch pin/priority package differs')
+        for row in patch['files']:
+            source=package/row['path']
+            if digest(source)!=row['sha256']:raise ValueError('Body patch file differs')
+            files[row['path']]=source
     for name,expected in [('surface_worker.exe',profile['workerSHA256']),('malemod-runtime.profile',profile['packetSHA256']),
                           ('geralt.bindings',profile['bindingsSHA256']),('geralt.render',render['packetSHA256'])]:
         if digest(required_file(release/name))!=expected:raise ValueError('Native input hash differs: '+name)

@@ -13,6 +13,9 @@ def prepare(output):
     cfg=settings();pin=base_checkout(cfg)['commit'];output=output.resolve()
     sys.path.insert(0,str(cfg['base']))
     from malemod_base.graft import topology_ids,boundary_loops
+    from malemod_base.motion_binding import reference_fields
+    from malemod_base.presentation_binding import presentation_bindings
+    from scipy.sparse import csr_matrix
     if not output.is_relative_to(ROOT/'build') or output.exists():raise ValueError('Use a fresh owned render contract')
     inspected=ROOT/'build/full-runtime/packed-neutral-verified-4';spec=read_json(inspected/'inspection.json')
     mesh_path=COOKED/'geralt_motion.w2mesh';mesh=CookedMesh(mesh_path.read_bytes())
@@ -32,7 +35,8 @@ def prepare(output):
     parents=[p['_value'] for p in rig['parentIndices']['_elements']]
     if any(parents[int(bone_ids[i])]!=9 for i in custom):raise ValueError('Added bone is not pelvis-relative')
     output.mkdir(parents=True)
-    blob=b'MMRND002'+pin.encode()+digest(binding).encode()+struct.pack('<I',46)+bone_ids.tobytes()+inverse.tobytes()+struct.pack('<I',2)
+    cal=profile['coordinateCalibration']
+    blob=b'MMRND003'+pin.encode()+digest(binding).encode()+np.asarray([*np.asarray(cal['basis']).flatten(),*cal['sourceRoot'],*cal['targetRootNative'],cal['nativeUnitsPerSourceUnit']],dtype='<f8').tobytes()+struct.pack('<I',46)+bone_ids.tobytes()+inverse.tobytes()+struct.pack('<I',2)
     rows=[];first_vertex=0;first_index=0
     for lod in range(2):
         data=np.load(inspected/f'lod{lod}.npz');pos=data['position'];skin=data['skin'];lighting=data['lighting'];uv=data['uv'];lineage=data['nearestAuthored'];faces=data['nativeFaces'].copy()
@@ -48,6 +52,12 @@ def prepare(output):
         binding_row=read_json(binding.parent/'manifest.json')['lods'][lod]
         authored=binding_row['renderVertices']
         b=np.load(ROOT/binding_row['bindingPath'])
+        ml=csr_matrix((b['module_lineage_data'],b['module_lineage_indices'],b['module_lineage_indptr']),shape=tuple(b['module_lineage_shape']))
+        fields=np.zeros((authored,3));body=authored-ml.shape[0];fields[body:]=ml@reference_fields(np.load(cfg['base']/'assets/wolverine-reference/geometry.npz'))
+        fit=read_json(ROOT/'build/attachment/fit-20261001-193459-664950/geralt-anatomy.fit.json')
+        lobes=np.asarray(fit['sourceMechanics']['lobeCenters']);basis=np.asarray(cal['basis']);lobes=(lobes-np.asarray(cal['sourceRoot']))@basis.T*cal['nativeUnitsPerSourceUnit']+cal['targetRootNative']
+        amount=(skin[:,4:]*(bone_ids[skin[:,:4]]>=94)).sum(1)/skin[:,4:].sum(1)
+        pf,pa=presentation_bindings(np.clip(fields[lineage],0,1),pos,lobes,amount)
         _,aliases=topology_ids(b['body_original_points'],1e-5)
         boundary=np.concatenate(boundary_loops(aliases[b['body_original_faces']]))
         protected=np.flatnonzero(np.isin(aliases,boundary))
@@ -57,7 +67,7 @@ def prepare(output):
         offsets=spec['lods'][lod]['streamOffsets']
         blob+=struct.pack('<6I',n,authored,first_vertex,first_index,len(faces)*3,offsets[1])
         blob+=struct.pack('<I',offsets[3])
-        for i in range(n):blob+=struct.pack('<II',int(lineage[i]),int(groups[i]))+skin[i].tobytes()+np.asarray([*uv[i],*normals[i],*tangents[i],signs[i],*pos[i]],dtype='<f8').tobytes()+struct.pack('<I',int(calibration[i]))
+        for i in range(n):blob+=struct.pack('<II',int(lineage[i]),int(groups[i]))+skin[i].tobytes()+np.asarray([*uv[i],*normals[i],*tangents[i],signs[i],*pos[i]],dtype='<f8').tobytes()+struct.pack('<IId',int(calibration[i]),int(pf[i]),float(pa[i]))
         blob+=struct.pack('<I',len(faces))+np.asarray(faces,dtype='<u4').tobytes()
         rows.append(dict(lod=lod,nativeVertices=n,authoredVertices=authored,indices=len(faces)*3,firstVertex=first_vertex,firstIndex=first_index,windingNormalAgreement=agreement))
         first_vertex+=n;first_index+=len(faces)*3

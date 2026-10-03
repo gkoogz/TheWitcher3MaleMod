@@ -65,8 +65,22 @@ LRESULT CALLBACK OverlayPanel::Procedure(HWND window,UINT message,WPARAM wp,LPAR
   case WM_LBUTTONDOWN:self->Click(x,y);if(self->dragging_>=0)SetCapture(window);InvalidateRect(window,nullptr,FALSE);return 0;
   case WM_MOUSEMOVE:if(self->dragging_>=1&&(wp&MK_LBUTTON)){self->write_(unsigned(self->dragging_),Value(unsigned(self->dragging_),x));InvalidateRect(window,nullptr,FALSE);}return 0;
   case WM_LBUTTONUP:case WM_CANCELMODE:self->dragging_=-1;if(GetCapture()==window)ReleaseCapture();return 0;
-  case WM_TIMER:{const bool visible=IsWindow(self->parent_)&&IsWindowVisible(self->parent_)&&GetForegroundWindow()==self->parent_;self->PollKeys(visible);ShowWindow(window,visible?SW_SHOWNOACTIVATE:SW_HIDE);InvalidateRect(window,nullptr,FALSE);if(!IsWindow(self->parent_))PostMessageW(window,WM_CLOSE,0,0);return 0;}
-  case WM_PAINT:{PAINTSTRUCT paint{};auto dc=BeginPaint(window,&paint);RECT rect{};GetClientRect(window,&rect);Paint(dc,self->read_(),self->Open(),rect.right,rect.bottom,self->navigation_.selected);EndPaint(window,&paint);return 0;}
+  case WM_TIMER:{const bool visible=IsWindow(self->parent_)&&IsWindowVisible(self->parent_)&&GetForegroundWindow()==self->parent_;self->PollKeys(visible);
+   if(bool(IsWindowVisible(window))!=visible)ShowWindow(window,visible?SW_SHOWNOACTIVATE:SW_HIDE);
+   const auto controls=self->read_();if(visible&&(!self->painted_||controls.values!=self->paintedControls_.values||self->Open()!=self->paintedExpanded_||self->navigation_.selected!=self->paintedSelection_))InvalidateRect(window,nullptr,FALSE);
+   if(!IsWindow(self->parent_))PostMessageW(window,WM_CLOSE,0,0);return 0;}
+  case WM_ERASEBKGND:return 1;
+  case WM_SIZE:self->painted_=false;InvalidateRect(window,nullptr,FALSE);return 0;
+  case WM_PAINT:{PAINTSTRUCT paint{};auto dc=BeginPaint(window,&paint);RECT rect{};GetClientRect(window,&rect);
+   const auto controls=self->read_();const bool expanded=self->Open();
+   // A layered HWND must receive one complete frame. Painting each text/bar
+   // directly into its visible DC exposes intermediate beige/blank frames.
+   if(rect.right>0&&rect.bottom>0){auto back=CreateCompatibleDC(dc);auto bitmap=CreateCompatibleBitmap(dc,rect.right,rect.bottom);
+    if(back&&bitmap){auto old=SelectObject(back,bitmap);Paint(back,controls,expanded,rect.right,rect.bottom,self->navigation_.selected);BitBlt(dc,0,0,rect.right,rect.bottom,back,0,0,SRCCOPY);SelectObject(back,old);self->painted_=true;}
+    if(bitmap)DeleteObject(bitmap);if(back)DeleteDC(back);
+   }
+   self->paintedControls_=controls;self->paintedExpanded_=expanded;self->paintedSelection_=self->navigation_.selected;
+   EndPaint(window,&paint);return 0;}
   case WM_CLOSE:DestroyWindow(window);return 0;
   case WM_DESTROY:self->expanded_=false;PostQuitMessage(0);return 0;
  }

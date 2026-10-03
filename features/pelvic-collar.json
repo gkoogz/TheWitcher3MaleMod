@@ -6,31 +6,36 @@
   "contract": "modules/pelvic-collar.json",
   "dependency": "dependencies/base.lock.json",
   "character": "geralt",
-  "status": "Full pinned Base native source/target runtime installed; all 18 controls and GPU output verified including fixed outer-boundary lighting correction",
+  "status": "Shared Base multi-part waist and full native source/target runtime installed; both torso and legs receive expansion",
   "calibration": {
     "profile": "characters/geralt-attachment.json",
     "sourceToFBXScale": 1.0255218584141075,
     "protectedPartBoundaries": [
-      "waist",
-      "ankles"
-    ]
+      "ankles",
+      "neck",
+      "wrists"
+    ],
+    "coordinatedMovablePartBoundary": "waist"
   },
   "seamBindings": {
     "restBindings": "generated/attachment.json",
-    "dynamicCollarDomain": "Base malemod_base/graft_collar.py via tools/probe_pelvic_domain.py"
+    "dynamicCollarDomain": "Base malemod_base/graft_collar.py via tools/probe_pelvic_domain.py",
+    "canonicalWaistSamples": 51,
+    "multiPartDomain": "Pinned Base prescribedVertices in MMBIND03; lower/upper and both LODs publish common masters"
   },
   "nativeDeformationBridge": "Native float-position DX12 draw, current native skin palette, immutable fence-retained source/target surface",
   "verification": {
     "sourceMath": "complete strict Win32 source evaluation including final UnifiedCollar and both body sections",
-    "targetOfflineFit": "eleven source/target keys, byte-identical default, zero weld drift, protected native boundaries; no interpolation triangle collapse",
-    "nativeRuntime": "Both LODs, 36547 rows, source/target serial parity, GPU-completed immutable output and save-reload epoch verified",
-    "observedGameplay": "64 private control/movement/pause/reload cases passed with waist lighting patch",
+    "targetOfflineFit": "39 full source cases include nonzero upper/waist recruitment at Overall maximum; exact common boundary across both parts and LODs",
+    "nativeRuntime": "MMRND004: two separate resources/four sections, 43276 rows; actual GPU bodyResourceMask 3",
+    "observedGameplay": "64 private control/movement/pause/reload cases passed; final body-delivery certificate",
     "nativeGraphResource": "isolated scale graph accepted by WCC; not installed or runtime verified",
-    "fixedPartBoundaries": "106 cooked waist/ankle aliases preserve position/lighting/skin at every slider extreme"
+    "fixedPartBoundaries": "Neck/wrists/ankles protected; waist has shared positions, named weight bytes and per-LOD shading"
   },
   "next": [
-    "additional rendering modes require their own observed verification"
+    "Verify additional rendering modes and actual far-LOD transitions separately"
   ],
   "restGraftFeature": "features/rest-graft.json",
-  "probeProvenance": "provenance/overall.json"
+  "probeProvenance": "provenance/overall.json",
+  "deliveryProvenance": "provenance/body-delivery.json"
 }

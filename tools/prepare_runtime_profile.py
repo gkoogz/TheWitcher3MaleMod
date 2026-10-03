@@ -5,10 +5,10 @@ import numpy as np
 from mod import ROOT,read_json,digest,write_json,settings,base_checkout
 from packed_mesh_format import CookedMesh
 
-def prepare(output,worker,diagnostic,worker_parity_proof=None):
+def prepare(output,worker,diagnostic,worker_parity_proof=None,bindings=None):
     output=output.resolve();worker=worker.resolve()
     if not output.is_relative_to(ROOT/'build') or output.exists():raise ValueError('Use a fresh owned build directory')
-    pin=base_checkout(settings())['commit'];binding_dir=ROOT/('build/full-runtime/geralt-bindings-'+pin[:7]);binding=binding_dir/'geralt.bindings';receipt=read_json(binding_dir/'manifest.json')
+    pin=base_checkout(settings())['commit'];binding_dir=Path(bindings).absolute() if bindings else ROOT/('build/full-runtime/geralt-bindings-'+pin[:7]);binding=binding_dir/'geralt.bindings';receipt=read_json(binding_dir/'manifest.json')
     if receipt['baseCommit']!=pin or digest(binding)!=receipt['artifactSHA256']:raise ValueError('Binding does not match pinned proof')
     profile=read_json(ROOT/'characters/geralt-runtime-bindings.json');c=profile['coordinateCalibration']
     contacts=profile['contacts'];capsule=contacts['pelvisCapsule']
@@ -47,4 +47,4 @@ def prepare(output,worker,diagnostic,worker_parity_proof=None):
     write_json(output/'manifest.json',proof);print('Staged solver profile:',output)
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--worker',type=Path,required=True);p.add_argument('--worker-parity-proof',type=Path);p.add_argument('--diagnostic-source-contacts',action='store_true');a=p.parse_args();prepare(a.output,a.worker,a.diagnostic_source_contacts,a.worker_parity_proof)
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--worker',type=Path,required=True);p.add_argument('--worker-parity-proof',type=Path);p.add_argument('--bindings',type=Path);p.add_argument('--diagnostic-source-contacts',action='store_true');a=p.parse_args();prepare(a.output,a.worker,a.diagnostic_source_contacts,a.worker_parity_proof,a.bindings)

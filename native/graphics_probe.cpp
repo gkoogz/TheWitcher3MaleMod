@@ -291,16 +291,30 @@ void FirstCall(unsigned bit,const char* event){
 template<std::size_t N> void STDMETHODCALLTYPE IndexedHook(ID3D12GraphicsCommandList* list,UINT indices,UINT instances,UINT first,INT base,UINT firstInstance){
  if(!injectingSurface){
   ObserveOwnedDraw(list,indices,first,base);
-  ListBindings snapshot;bool owned=false;
+  ListBindings snapshot;bool owned=false;unsigned resource=0,lod=2;auto delivery=LiveRenderLatest();
   {std::lock_guard<std::mutex> lock(metadataMutex);auto found=bindings.find(list);if(found!=bindings.end()){
    snapshot=found->second;
    const auto uv=snapshot.vertices[1].BufferLocation;
-   owned=snapshot.indices.Format==DXGI_FORMAT_R16_UINT&&snapshot.indices.SizeInBytes==435936&&
-    std::any_of(ownedRanges.begin(),ownedRanges.end(),[&](const auto& r){return uv>=r.begin&&uv-r.begin<r.bytes;});
+   if(delivery&&snapshot.indices.Format==DXGI_FORMAT_R16_UINT)for(const auto& range:ownedRanges){
+    if(uv<range.begin||uv-range.begin>=range.bytes)continue;
+    resource=range.label.find("upper_")==0?1:0;
+    if(resource>=delivery->resources.size()||snapshot.indices.SizeInBytes!=delivery->resources[resource].indexBytes)continue;
+    const auto& r=delivery->resources[resource];
+    if(snapshot.vertices[0].StrideInBytes==24){owned=true;break;}
+    // Exact owned upload plus measured UV stream offset selects the static
+    // resource LOD. A torso LOD has its own position origin and baseVertex=0.
+    for(unsigned candidate=0;candidate<2;candidate++){
+     const auto suffix=std::string("lod")+std::to_string(candidate)+"_stream1";
+     const bool stream=range.label.size()>=suffix.size()&&range.label.compare(range.label.size()-suffix.size(),suffix.size(),suffix)==0&&uv==range.begin;
+     const bool whole=(range.label.size()>=9&&range.label.compare(range.label.size()-9,9,"_vertices")==0)||(range.label.size()>=4&&range.label.compare(range.label.size()-4,4,"_all")==0);
+     if(stream||(whole&&uv-range.begin==r.lodUVOffset[candidate])){lod=candidate;owned=true;break;}
+    }
+    if(owned)break;
+   }
   }}
   if(owned){
    injectingSurface=true;
-   const bool replaced=FloatDraw(list,snapshot.pipeline,snapshot.vertices[0],snapshot.vertices[2],[&]{indexedHooks.originals[N](list,indices,instances,first,base,firstInstance);});
+   const bool replaced=FloatDraw(list,snapshot.pipeline,snapshot.vertices[0],snapshot.vertices[2],[&]{indexedHooks.originals[N](list,indices,instances,first,base,firstInstance);},resource,lod);
    injectingSurface=false;if(replaced){FirstCall(16,"indexedDrawObserved");return;}
   }
  }

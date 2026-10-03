@@ -1,0 +1,763 @@
+{
+  "contractVersion": 1,
+  "baseCommit": "acda34e7b12a923c2162d32e3c015485e3108efa",
+  "sourceFiles": [
+    {
+      "path": "dependencies/base.lock.json",
+      "sha256": "2ca7479da18de099d4474e5dd2957227c8308b47d6f6ebeac7c4604fc1fc75bf"
+    },
+    {
+      "path": "native/body_render_test.cpp",
+      "sha256": "14640fa9f4a9d8072c11d23e34191a5f67f72d5f4b6a1726d2420f94e944f85b"
+    },
+    {
+      "path": "native/CMakeLists.txt",
+      "sha256": "1a0b2fe43b4c8aa4a67b07e352be05da87c62ca2b6b349587bcc51af1f56d14b"
+    },
+    {
+      "path": "native/control_store.hpp",
+      "sha256": "147e47d193be5bbc085b8ef079330a7127905dd2059e88dd9f52412cc76d4314"
+    },
+    {
+      "path": "native/control_store_test.cpp",
+      "sha256": "7ad5f0d45fc85278aeb64699671f25d6d30c4b47e18affff02ce9425d1f93f76"
+    },
+    {
+      "path": "native/engine_bridge.cpp",
+      "sha256": "59b0a14befb865fcf817b1d193ec5ffa6a1925854673ea1089de5350d10193f7"
+    },
+    {
+      "path": "native/float_draw_renderer.cpp",
+      "sha256": "d24a2dc9af4dd7ff47917465bac6e7895e09bd1f308f6138a36eee22127c2277"
+    },
+    {
+      "path": "native/float_draw_renderer.hpp",
+      "sha256": "38a7f90ee8fc1907ed1d518b5bba2b40f645e961a9e2b2e099202936e85bcbd9"
+    },
+    {
+      "path": "native/float_draw_renderer_test.cpp",
+      "sha256": "1c763dc58ca11862e2d5f4f188979f5127287052caa58102d1f0d4eb2e5f8430"
+    },
+    {
+      "path": "native/float_vertex_pipeline.hpp",
+      "sha256": "b251a6eaf1b02095990fe918d3ae15dc8bcae7d9d63f75831150937c80c78e6a"
+    },
+    {
+      "path": "native/float_vertex_pipeline_test.cpp",
+      "sha256": "2c2fea792facb22273232e8fd4d3df5934dec6e779761938143166a88081f1f3"
+    },
+    {
+      "path": "native/game_profile.hpp",
+      "sha256": "74416ffcd1a4e0310a2a8b1162ae2f8d3f942d9c4606e612f893857143d2b255"
+    },
+    {
+      "path": "native/graphics_fingerprints.hpp",
+      "sha256": "600954585030fb661be71ac7fc2577b0873ef024441b67a3e81130bda47132ee"
+    },
+    {
+      "path": "native/graphics_methods.cpp",
+      "sha256": "09abb60660da0b3613799132f0db64f39499cae47615917ec8520e40d39ca9b3"
+    },
+    {
+      "path": "native/graphics_probe.cpp",
+      "sha256": "45b644b893350774164eea2b32ca53750fd1168b90120f0c3bbf1cb8fa29b7f7"
+    },
+    {
+      "path": "native/graphics_probe.hpp",
+      "sha256": "fafae227cce99be816457b03e5a5d3693f6ce86e2b8c776865218061a4648024"
+    },
+    {
+      "path": "native/graphics_probe_test.cpp",
+      "sha256": "734c48fc708aa48ac26fb7310d961574513631bc0b12e732fd4f2a5e39f0837c"
+    },
+    {
+      "path": "native/launch_native.cpp",
+      "sha256": "6e010ec9199f710f6a5b6917854e315b9d2628c3f3ed2fc4b6020bb39493f34e"
+    },
+    {
+      "path": "native/launch_sealed.cpp",
+      "sha256": "3930b95f5c0d78ec0a6a174fc00a3094cbaecdfd6916d092abd9aba0abc2ed23"
+    },
+    {
+      "path": "native/live_renderer.cpp",
+      "sha256": "cfa0966e909ed9d7e43048334f9ab1a9ce54a9df944277cccc8280a2832fa7a7"
+    },
+    {
+      "path": "native/live_renderer.hpp",
+      "sha256": "fd237314eb39e8d978304dd97b94c299c2916f727b1c62a8094e21d57901dcf9"
+    },
+    {
+      "path": "native/live_renderer_test.cpp",
+      "sha256": "1480bc80a8ba687e87faa937dc95a9ba5b1eb2cff8e4372b7cdfa8737a4a1362"
+    },
+    {
+      "path": "native/mute_sealed.cpp",
+      "sha256": "1d30d03e35f2f18ae82eaf61fdb4bed9f68e16cf744c735adbb262aceb5e9399"
+    },
+    {
+      "path": "native/overlay_navigation.hpp",
+      "sha256": "f9fa781792ca803799c846aa811ae292f2c6a98da81be8833274380f96ba2231"
+    },
+    {
+      "path": "native/overlay_panel.cpp",
+      "sha256": "36a383acf6b44b612ff17d79222ea40f8d222724aedbb51181903d66efa17909"
+    },
+    {
+      "path": "native/overlay_panel.hpp",
+      "sha256": "5a08fdbcb7082f105c734a7b08fda08e9eeae1e4274235f41f4d994f1c07103d"
+    },
+    {
+      "path": "native/overlay_panel_test.cpp",
+      "sha256": "e86ccecf876db3885b03d6495bf1d89f18caa167d9b0c8d840217b19fbe8ac21"
+    },
+    {
+      "path": "native/pose_input.hpp",
+      "sha256": "eaea9f4ea23e907c8a2c2bad48aa5c3bb129f2fb947842d8f76e52eea74abd9b"
+    },
+    {
+      "path": "native/pose_replay_test.cpp",
+      "sha256": "b524f2cb6a18a7036348bec1303eef7ab5fac554a9ab439f27ed32a8f5094d2f"
+    },
+    {
+      "path": "native/render_contract.hpp",
+      "sha256": "e105a62638f7f49091797515509f2b77d220a8db96f84ca7d8a6485204f65061"
+    },
+    {
+      "path": "native/render_contract_test.cpp",
+      "sha256": "59079db15793dca6e73b3002cfd4fadb127d8dbe21d4bce92d0aea5346acf545"
+    },
+    {
+      "path": "native/render_pose.hpp",
+      "sha256": "dc26d83aa30b2cf85699e9537f1dcd99f5c8cec7ee3de59755f064b7ee77d822"
+    },
+    {
+      "path": "native/render_service.hpp",
+      "sha256": "ab8a5e7fb45c10259159f6093aab58f6f4430ae8474a9bafb584da071628d072"
+    },
+    {
+      "path": "native/runtime_controller.hpp",
+      "sha256": "b9e3af2204e8a51befdff954930e9d2eb1acb91b53ae818a4fb6510e8f97f605"
+    },
+    {
+      "path": "native/runtime_controller_test.cpp",
+      "sha256": "6dcf69310997a63d0298c2b2726662520ecb263c55be429450ff430d1db361e3"
+    },
+    {
+      "path": "native/runtime_host.hpp",
+      "sha256": "e5d950ae4cd7d9e3df1e34b2f98b98a170044f289b6cfbdae1ab8ac85fd32008"
+    },
+    {
+      "path": "native/runtime_profile.hpp",
+      "sha256": "f7bd6d99102db4c41e3a6daac0d3d9658a09a9912884b63dec2f80b7c932864f"
+    },
+    {
+      "path": "native/session_audio.hpp",
+      "sha256": "629e4f381efa2c3420b88b8da64f032269b32dde180775b75f8af17a87b1a3d0"
+    },
+    {
+      "path": "native/skin_output.hpp",
+      "sha256": "1bcfc2963013554eaa229c146f3ba1dc16ca4f2b14ee7451989bae91f986cdbc"
+    },
+    {
+      "path": "native/skin_sdk_test.cpp",
+      "sha256": "2dce6e495ba42c1fd126aa2db4ccc85a64db4e7a350f15938b209d4831f4234f"
+    },
+    {
+      "path": "native/startup_gate.hpp",
+      "sha256": "eb8357102caaf29cb854b105e1241052c0fe2e2c7c92e577b6b3287b4b433220"
+    },
+    {
+      "path": "native/startup_gate_test.cpp",
+      "sha256": "2ef59a3abd9b9dc600312a2043f0d43d9929986a298b7fbdbda5afcfd8dea968"
+    },
+    {
+      "path": "native/startup_proxy.cpp",
+      "sha256": "005cf4603c99304efe916a3657ea6cc84dea951c0085f289ea963c9a4af195f0"
+    },
+    {
+      "path": "native/startup_proxy.def",
+      "sha256": "bb3c6230fffc6b1890f20356fc07682655659fe286092ca06790cf3e6b0c0ab0"
+    },
+    {
+      "path": "native/surface_client_test.cpp",
+      "sha256": "3090e3ad6dea44031c94b7cb614ba6c944beadd036e287a31327b55317431d62"
+    },
+    {
+      "path": "native/surface_pipeline.hpp",
+      "sha256": "dd5d53c689b654df4be2413789234476ff50c533cb8a9bbd1e6c901974bf1d22"
+    },
+    {
+      "path": "native/surface_pipeline_test.cpp",
+      "sha256": "78e53c35c080dc530bc245bf78d1ea7445eedc1aa4dee71364c6cf512bd5a1a3"
+    },
+    {
+      "path": "native/surface_service.hpp",
+      "sha256": "1b482e830b13144380717a3856f602f3f4cd362233e1541d3459ae55e42021dc"
+    },
+    {
+      "path": "native/surface_service_test.cpp",
+      "sha256": "122db306df98c5e9b9a16e166a47273a3d844e3f505012d3fb53ad3ce036e50b"
+    },
+    {
+      "path": "native/surface_transport.hpp",
+      "sha256": "bd38dcda58f0d32e5d829c552389a149d4dd8a19711d0b827ea6c09eac8dcd20"
+    },
+    {
+      "path": "native/surface_worker.cpp",
+      "sha256": "5c49bce0a55d83760df626c1c050bc15dce2099cd322b4a19eb65827190865f9"
+    },
+    {
+      "path": "native/target_surface.cpp",
+      "sha256": "a7d515bf724a84dae973a5754221e0f545f625f7e4b1f7b7d9cbc7622cefb1c5"
+    },
+    {
+      "path": "native/target_surface.hpp",
+      "sha256": "c3e90cdae32e8dd5097c1eefcbaf1eb74913d21928414573f9e3ab1d64fa1bfe"
+    },
+    {
+      "path": "native/target_surface_test.cpp",
+      "sha256": "904e85c23e4c06e01b181738866e1c2cf22c61621a5c65ec17cc7e89529cdc18"
+    },
+    {
+      "path": "native/worker_initialization_test.cpp",
+      "sha256": "98a687063dddaaff039dfe981ae834d32cc42cef3da3beeb111ab7009d29a7ce"
+    },
+    {
+      "path": "probes/native/autocontinue.ws",
+      "sha256": "4f4db407d5c068d245cdb072d59cac2a8b7bfc91ffdacf71302ab18b526a71b8"
+    },
+    {
+      "path": "probes/native/pose.ws",
+      "sha256": "c76caf2622bada115954068d694d0d75616800b7704ad208476e4c93863c521c"
+    },
+    {
+      "path": "probes/native/ready.ws",
+      "sha256": "9f6fa322a3ba7b0f89547c9d3e74056fb4b458eef03ec7f07cf4a03e05388fa7"
+    },
+    {
+      "path": "probes/native/runtime.ws",
+      "sha256": "91e5d974566c879ccb0aff3033a501199007c900bc7e9a55a6309893d06e0592"
+    },
+    {
+      "path": "tools/audit_animation_skinning.py",
+      "sha256": "4059286b2300369dfa0a1f6fe219adeb1d022db1afc117ccc7534ee188af8060"
+    },
+    {
+      "path": "tools/audit_motion_axes.py",
+      "sha256": "40c7ded56864ee457a90e6dcc42a44b9a44bbe7b854f28f05bec4de03ddbc52e"
+    },
+    {
+      "path": "tools/build_attachment.py",
+      "sha256": "fedd36d6a5a89c1a9ad85bff148706134cd30b0c9319cec3cd8df4a1de495ed7"
+    },
+    {
+      "path": "tools/build_body_boundary.py",
+      "sha256": "58303ab0fb7ba75dffddb6858e50daa21102905e52d95c1f9270b817d3043eb5"
+    },
+    {
+      "path": "tools/build_default_cage.py",
+      "sha256": "ebbf0fe2e8277caebfa7177c1309badc991f9ce43c5f570c66ae6e3d99cad5bc"
+    },
+    {
+      "path": "tools/build_deformation_probe.py",
+      "sha256": "02f9d6404a2cebbc6f0c15088aa8b7b66cc9077ac4cc7a28de2f4d229724913f"
+    },
+    {
+      "path": "tools/build_motion_release.py",
+      "sha256": "0a0bf338d20af317b55bb140ccbd2b645dab8102ceaff8bfc91cc0b0fc768751"
+    },
+    {
+      "path": "tools/build_motion_script_patch.py",
+      "sha256": "9526e97ed18d68fe622ea3fe8b9bdaf6ed5a29328f7039cd2be368be39556480"
+    },
+    {
+      "path": "tools/build_native_converter.py",
+      "sha256": "3198d1ef4a8e8626e8047e1e82805898fcc749db91c63327b81631db755dee0e"
+    },
+    {
+      "path": "tools/build_renderdoc_probe.py",
+      "sha256": "144f6973fb11c699174746300af1fdb049877789aa92185a69a5f44b7328eb21"
+    },
+    {
+      "path": "tools/calibrate_runtime_contacts.py",
+      "sha256": "9de8258a2cf578a587cf15004c1bb3489625a1f632b551760467212b61300d35"
+    },
+    {
+      "path": "tools/capture_runtime_mesh.py",
+      "sha256": "6e91d7964662d76b3b77829125ffe15e136f45bae6f3838245f84daa23f1b3c6"
+    },
+    {
+      "path": "tools/compile_native_scripts.py",
+      "sha256": "1216ddf5cd7b415169112d159d700f50820efab2a9e424037f1975dd504afea5"
+    },
+    {
+      "path": "tools/deformation_graph.py",
+      "sha256": "a506e0159f3a6041e433c31e3d19aa917c366eaebc582140969b62458f4e18da"
+    },
+    {
+      "path": "tools/deploy_motion.py",
+      "sha256": "2a3702e4963ad229c6dfda5419537955b9def4f4cb7ecb3455b703966474938e"
+    },
+    {
+      "path": "tools/export_live_bindings.py",
+      "sha256": "62abb20af48442fba5b79be0c0005c212ff691690871d1e8f883c1a7165eee34"
+    },
+    {
+      "path": "tools/export_wolverine_reference.py",
+      "sha256": "d2a0003c08cd936b305759393915a315b4103b03a593d47d3a7118facac725e2"
+    },
+    {
+      "path": "tools/fit_attachment.py",
+      "sha256": "911f031928105d7cc245ce637afa71dadced975043123f20eda599823209aad6"
+    },
+    {
+      "path": "tools/fixed_physics.py",
+      "sha256": "99201cf72d4c140b99ab796e82bf0f78d6a315c1409d37bda5d28517490385f8"
+    },
+    {
+      "path": "tools/import_overall.py",
+      "sha256": "caf8de0d4dd978f97849507ef422b5829e930b3053d69084a117f7d8a4cc4845"
+    },
+    {
+      "path": "tools/input_bindings.py",
+      "sha256": "33f5cbb3b7237b7241df23558f4f15f8a94cfc96437179c6b181fde49a4e7031"
+    },
+    {
+      "path": "tools/inspect_editor_function.py",
+      "sha256": "8603ca19bb5b9eb1716a5ae36e4d872b986494995dea6293a1021b238d99deaa"
+    },
+    {
+      "path": "tools/inspect_graphics_hooks.py",
+      "sha256": "647f5162b7110fbb9fe76d3ba242f52ee0ad99763979b5e08be4df86e75c65eb"
+    },
+    {
+      "path": "tools/inspect_native.py",
+      "sha256": "5229528231d208011dacffbf4f2a32ba925676e908dfc854c060832c9466c46a"
+    },
+    {
+      "path": "tools/inspect_packed_mesh.py",
+      "sha256": "b5c7a79464642e8821347de44334cb01aea6d54c2cc2fa55af737bf6cca4476d"
+    },
+    {
+      "path": "tools/inspect_wcc_fbx.py",
+      "sha256": "25e679b2387175fd15077893752cb042cd697e4806dd57d62a0ff468f9d6ae59"
+    },
+    {
+      "path": "tools/install_native_runtime.py",
+      "sha256": "f7c5a39b5c320cc18be9a50edcb66ae05277f2d61e32e30fa6a7941ae1a8d04e"
+    },
+    {
+      "path": "tools/mod.py",
+      "sha256": "d2219960a6b4542109121cbeb55f51a4200666074d0e4410b7c9184f9c5b6b15"
+    },
+    {
+      "path": "tools/motion_entity.py",
+      "sha256": "7fe52a81ef03371cc1da347733400185164e584107da54a68217e45c719ac134"
+    },
+    {
+      "path": "tools/native_joint_frames.py",
+      "sha256": "2fd42d99068561fe6f339c40ca7a57c03b532e403865bceee8caa3acfcd74bc5"
+    },
+    {
+      "path": "tools/native_motion_profile.py",
+      "sha256": "b68b7085c61c0322036ba4c5b6d579f882f6ae12aeb9d1efca91b0b2a1c92be6"
+    },
+    {
+      "path": "tools/native_pose_delivery.py",
+      "sha256": "9b89fdebcc83bb7351a7e5f92dc70e607d1663ad82f80809588488f4bb93be42"
+    },
+    {
+      "path": "tools/overall_controls.py",
+      "sha256": "38b1aa3b60b033db8f94e988bcad07bf4fed6b9fc5abdce03cd79bbe31f905d3"
+    },
+    {
+      "path": "tools/packed_mesh_format.py",
+      "sha256": "80d6deaff999dedff843f5c4c9337251cb813765929e4e19c71110832c6867df"
+    },
+    {
+      "path": "tools/physics_codegen.py",
+      "sha256": "9e257d7fa3ffde8ec53902d4818a2835da64dd6835aa50783740cb6fd5f7d954"
+    },
+    {
+      "path": "tools/player_rig_redirect.py",
+      "sha256": "edf7b7d63785fdb86b101e51de2b53bbb6176faf77aa72668d32aa7895149c04"
+    },
+    {
+      "path": "tools/player_stack.py",
+      "sha256": "7a88a7df31d63484cb02964b49559a28ed78f78a6f01c2a3c866c6b52db3bdcd"
+    },
+    {
+      "path": "tools/pose_diagnostics.py",
+      "sha256": "fd800ebe10c590da40f3ba2ee102949b7aa361e8a273740aad5c23be9278aeaf"
+    },
+    {
+      "path": "tools/prepare_body_boundary.py",
+      "sha256": "7239af51bba86cb02daaf8ea917cc2edb239abc960cdec513a231452139554a3"
+    },
+    {
+      "path": "tools/prepare_body_render_contract.py",
+      "sha256": "0c463fb7f21598ec2f10f4b6686f74f9aacc1dd9fb7e46def0dd4c863dd4fee2"
+    },
+    {
+      "path": "tools/prepare_graphics_fingerprints.py",
+      "sha256": "37d7b56b426a65a83ab0c3fe721157dc5c9502d39913386536f7d6ee377dc98f"
+    },
+    {
+      "path": "tools/prepare_motion.py",
+      "sha256": "ca3f2f40e37db5ab7e4ea483475e848769e13374e4b9bf78871c679c75b6d23d"
+    },
+    {
+      "path": "tools/prepare_overall.py",
+      "sha256": "1d8aa8d9e4e5e05fa3aa02d7653e05078605f7ce965f830fe0c63058df25a084"
+    },
+    {
+      "path": "tools/prepare_pose_replay.py",
+      "sha256": "a79c45636931f03f3c401a193b5194fff9a37fadf914fc854eeef17c8b40859e"
+    },
+    {
+      "path": "tools/prepare_render_contract.py",
+      "sha256": "5e80730491c949ecf6a806fdc9d393f65533705776e0b29d43870ed6fdd08ce2"
+    },
+    {
+      "path": "tools/prepare_runtime_profile.py",
+      "sha256": "8bcf03aed877cb015174e5318a156bd2aff18492ade9c7f20424f967a11646bd"
+    },
+    {
+      "path": "tools/prepare_skin_contract.py",
+      "sha256": "337f1a3e376968882fa33efeda30f88c4155de0bfe9d46fac4fd8b38353cfd8d"
+    },
+    {
+      "path": "tools/preview_attachment.py",
+      "sha256": "65cf17654c943a83fed212bee95e533031ff8ae667aaaad9fe15f07c4f7f0651"
+    },
+    {
+      "path": "tools/probe_control_graph.py",
+      "sha256": "f83ac5637fa425a9da473d073ad9a0af03ff2a8485b35ba3778bbc6687f02ff1"
+    },
+    {
+      "path": "tools/probe_deformation_bridge.py",
+      "sha256": "8290cde7acf5616aee8d08344eefb03d06d5091ff691fe5d6872cb1af9a82e0a"
+    },
+    {
+      "path": "tools/probe_game_functions.py",
+      "sha256": "d24d47af1aa9b4bb69c47be9ddfcfc46eca7b92813b6c702081762c1535504da"
+    },
+    {
+      "path": "tools/probe_game_name_refs.py",
+      "sha256": "9c3f693a530e42c9a2d11559bbac8330f1a1883f52a6441c10126cb7cd7a0b88"
+    },
+    {
+      "path": "tools/probe_pelvic_domain.py",
+      "sha256": "b030619b01954987066a4069305371d0c8f51d7ec700b300be810f7184433a97"
+    },
+    {
+      "path": "tools/probe_physics.py",
+      "sha256": "d0226d87bb0a6a99354fde3deee62b15d373ca0c0c03d529cf9e1565f054019c"
+    },
+    {
+      "path": "tools/probe_runtime.py",
+      "sha256": "3094af05c1b6a1841081ff0b4d927333e8bcc10d086844b3f9592f10b08a1ce0"
+    },
+    {
+      "path": "tools/read_native_probe.py",
+      "sha256": "2d25ca8cceda8f49bb87ed2ccfcec80cfd9b0df350ff0a84e33ddb67798082ba"
+    },
+    {
+      "path": "tools/record_body_delivery.py",
+      "sha256": "830e1bb3ca39f7485c548650491dfb9d2af2de86bd84eb259038d71637a46665"
+    },
+    {
+      "path": "tools/record_full_runtime.py",
+      "sha256": "dde62b53651a1f2b9e5cbf3e5932b6d7c99b22955a9f693fc8dacb0ee06c1a90"
+    },
+    {
+      "path": "tools/record_native_delivery.py",
+      "sha256": "8eb790591c993b0f7ffa3ed72e96fb38935712781dd08288172360f85b067d7d"
+    },
+    {
+      "path": "tools/run_installed_session.py",
+      "sha256": "4f74c7ede280b710d16f596e25d833d5a545edf81115b15b7c87c91d417c2f9a"
+    },
+    {
+      "path": "tools/run_native_probe.py",
+      "sha256": "8b7ef3495af70a3223365912d66510f16614638b342dbac6abdb7837412e70d1"
+    },
+    {
+      "path": "tools/run_native_session.py",
+      "sha256": "b7eb7708ad4680cb3de590a00f01796c84141a38c615e3970dbc4e2fd497979f"
+    },
+    {
+      "path": "tools/run_sealed_session.py",
+      "sha256": "5a980e12e5698e4668412c81d267845d539451b07f0688d6168600d12beb08f1"
+    },
+    {
+      "path": "tools/shipped_player.py",
+      "sha256": "4afbd951e1d3ba9c675e91cdc8e6829cc1ede4e1381a4300668b12872fbba242"
+    },
+    {
+      "path": "tools/stage_body_runtime.py",
+      "sha256": "67180658b21c0dc5f579f79bc1113577b228eb1339c2181350da36468fc46122"
+    },
+    {
+      "path": "tools/startup_movies.py",
+      "sha256": "35282d5ac6a8ffc09917f633cb28e9963947d11c8aea874109cd96b1416c4c63"
+    },
+    {
+      "path": "tools/verify_attachment.py",
+      "sha256": "a80e0c598147633ad633f043712a13d708ddce1677799dcce82b4ba74a082b3d"
+    },
+    {
+      "path": "tools/verify_cooked_motion.py",
+      "sha256": "b18de7322018d47313e24255c52e1dd11bf2a4ebb3aaba2c2911de88098a0ca1"
+    },
+    {
+      "path": "tools/verify_default_guide.py",
+      "sha256": "4ce7b9b3d1d0c799353f495301cee18868c05619f80ccacfc030709dc9983a7f"
+    },
+    {
+      "path": "tools/verify_deformation_graph.py",
+      "sha256": "6416fc6a170869ea1f7a0fd448cd45c02a4a583693ef826850a059db6e1a14ef"
+    },
+    {
+      "path": "tools/verify_frame_motion.py",
+      "sha256": "113eec7d33935376baca5b854a3c47539db06b01d03b03d583667546350e0439"
+    },
+    {
+      "path": "tools/verify_live_graft.py",
+      "sha256": "909d1793cc7bd383bc1ff0ea4837943fcb46cd2beaeab49d235bd8cd28da175c"
+    },
+    {
+      "path": "tools/verify_motion.py",
+      "sha256": "b62bfbe1a9fbfc5969bd357799ee4fb14bb0706bc59868a277629f31537500dd"
+    },
+    {
+      "path": "tools/verify_motion_package.py",
+      "sha256": "7eb23a2f8089f61de3edd20ea2c3786a1de7c566a0b99c23c2bc23ad9510bb38"
+    },
+    {
+      "path": "tools/verify_native_worker.py",
+      "sha256": "c07681b8e263007287228697b3c61d2dff2b19aece963a5d5582385066a197f5"
+    },
+    {
+      "path": "tools/verify_overall.py",
+      "sha256": "9f530a01d884ba64023a68e2634078b0d2cf916f0aa9f06412af7d491229fd18"
+    },
+    {
+      "path": "tools/verify_pose_surface.py",
+      "sha256": "07bdbaa5222317112bebebe630091a714cf33e6fd1fba2309f03e4dcb26b39a0"
+    },
+    {
+      "path": "tools/verify_protected_surface.py",
+      "sha256": "807875a59c522309c2f6d09f27fe6ae96cf884a971255d22c2e4bf922fa94341"
+    },
+    {
+      "path": "tools/verify_solid_physics.py",
+      "sha256": "0900f5d6ee468d2700d2c01752b0826d3b12c315013014b5e46f36313062e7ce"
+    },
+    {
+      "path": "tools/verify_solid_surface.py",
+      "sha256": "a74c69aa2a2643472b7108ea26f0cab24f9a1f7527319c571d01fd3c5f287f92"
+    },
+    {
+      "path": "tools/verify_startup_integration.py",
+      "sha256": "46b256a3e26b176054c1e861b71b6feb53886290ce7d3a90955c32b76a6c0663"
+    },
+    {
+      "path": "tools/verify_target_surface.py",
+      "sha256": "6f42e10247f8d72de2885d4da3a33ff9c1fc801791e794f1efe14c979bb73ebb"
+    },
+    {
+      "path": "tools/wcc_fbx.py",
+      "sha256": "38ea570877938d240e5c75f4fa0895beb169f7719635792d369223ffeadb2529"
+    },
+    {
+      "path": "tools/wcc_scripted.py",
+      "sha256": "cc0c22ba7cb15ae2df82ea5bb8bf7e7cdef18faefba438d7a5c2ec5a421ff844"
+    }
+  ],
+  "verificationArtifacts": [
+    {
+      "path": "build/probe/sealed-session-20261002-230911/receipt.json",
+      "sha256": "b70d4c609752a17536e97d812f3c96d99acc09e762299ae531f474f23a239191"
+    },
+    {
+      "path": "E:\\SteamLibrary\\steamapps\\common\\The Witcher 3\\bin\\x64_dx12\\malemod-native\\verification-14808.jsonl",
+      "sha256": "1d952d9c14b3028b475cccdf18dab40da1cb8677dc8db8235c7f2243176c1f00"
+    },
+    {
+      "path": "build/probe/sealed-session-20261002-230911/launcher.txt",
+      "sha256": "77178513ac656e385ff6878881dc8ec0f0607acabb837de56c81bc8bf80c27c3"
+    },
+    {
+      "path": "build/probe/native-bootstrap-compile.json",
+      "sha256": "8882791078d347b5f18c36a679b524e12f8defcbe592b43e46d2b6a3f82b62f8"
+    },
+    {
+      "path": "build/jobs/native-scripts-54f7a6b7b112-compiled/cooked-00000000c7bdbc03.redscripts",
+      "sha256": "d89bf77d12cf263d45d12e572d571157f9cf698d42c6fa69d24f46462c313da5"
+    },
+    {
+      "path": "build/full-runtime/render-body-acda34e-final/manifest.json",
+      "sha256": "2a9b6230bf7d96828a1734584366b19ad2c2c5627e985f2254ba15cce8a1550f"
+    },
+    {
+      "path": "build/full-runtime/geralt-bindings-acda34e-complete/manifest.json",
+      "sha256": "fec79655e568a9067187aef0808a77099bdd120c618bd08a972c956bb2b832e7"
+    },
+    {
+      "path": "build/full-runtime/runtime-profile-acda34e-body/manifest.json",
+      "sha256": "6169c8db3c4798d054bce98aa8040dfef0d5099c2ecd93dc908e98b6f7877e6e"
+    },
+    {
+      "path": "publish/body-20261002-224513-9f7be3/build-manifest.json",
+      "sha256": "7aeb88cda8cb3387868027dec27f05c56776d039c139fc3068840bd12a41a39e"
+    },
+    {
+      "path": "build/body-boundary/common-waist-6/manifest.json",
+      "sha256": "82a2f0f4ad83ae2b322f4709fc5561c608e4b059bfeb14f3368da93a9500b9d3"
+    },
+    {
+      "path": "build/body-boundary/common-waist-6/material-imports.json",
+      "sha256": "ad84471c2dce881ab40899e6b17d91efca58765d96992af6999937bb86971925"
+    },
+    {
+      "path": "build/full-runtime/body-render-test-final.txt",
+      "sha256": "a751c488146528dfd32bcbf0dcdd7a8d2fc380e21c4e9c8e18e4de1aa32d7411"
+    },
+    {
+      "path": "build/full-runtime/float-body-renderer-test.txt",
+      "sha256": "7bef47fd811cd62b0864878f379a3ad35e91d794f3d1b02901070d10981a7ed4"
+    }
+  ],
+  "installedFiles": [
+    {
+      "path": "bin/x64_dx12/dinput8.dll",
+      "sha256": "f9c52ce08e5c9c405b2fcee74e9f8eacc3057a7a930c887f58182b5dfde15b3e"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod_witcher.dll",
+      "sha256": "5ab208b6b6630ca0af9d8e50ef6193d3e1b682d9bfc0860460e1b28d58a5e1e0"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/surface_worker.exe",
+      "sha256": "33dc993613af3cf1378b64c455769f497907f35cf61e372e4379756e9d37a3f4"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod-runtime.profile",
+      "sha256": "ba308051da3f74801c239be18ecd161c52be30065d4d243dbac5829f42823414"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.bindings",
+      "sha256": "5f75ea0caafb4898cbc8bad357ae9c444d320c8d4c222e112c7e6b3b55cc7e7b"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.render",
+      "sha256": "e8bb0cee5e7b92ca6cf6e9e068a45ba92006922b2775cadcf581c5ef82cc16bd"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.render.sha256",
+      "sha256": "a1a1507ca9c1ac9ef5f71d71e4ec109c4fa46436604659864ce3659569a11065"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/graphics-owned-fingerprints.bin",
+      "sha256": "712cac1440e628b0c3768bc8aaef026f0a62fb5e08fe522cc40e174b5fcfcc80"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod-overlay.enable",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/runtime.ws",
+      "sha256": "91e5d974566c879ccb0aff3033a501199007c900bc7e9a55a6309893d06e0592"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/render_bones.ws",
+      "sha256": "c9ce965f6c41b1a847fcad5e3579118163d960df2ec66df4ddab49923f758ee2"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/blob0.bundle",
+      "sha256": "05cbac152053fae5b22985935f9c5ee8c21d613b430ccf190bb95f9e0decb835"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/buffers0.bundle",
+      "sha256": "3ef3ca6299ed2fc273a133228348638b152a733caab59fedd46c2dc1784300a4"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/dep.cache",
+      "sha256": "1dcdfbb93ebed39f4fb8a0b134089409dea3d88f8df401bc131119609310bed9"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/metadata.store",
+      "sha256": "ef95a4ef051565f2ca10b8e06ba9bad76c81b9ad17053ad46cb3e98f1bf1a558"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/texture.cache",
+      "sha256": "8251b6b17a47b3bddc388188af9a43136e262866c9553cd6098987d9b6795f99"
+    }
+  ],
+  "materials": {
+    "diffuse": "Lossless full Geralt/source atlas, source module UVs and explicit FBX V conversion",
+    "normal": "Full normal atlas with observed source repeat 16 baked",
+    "ambient": "Stock Geralt AO plus explicit neutral anatomy AO; specular is not relabeled",
+    "officialImportsAndBothResourceHandlesVerified": true,
+    "frameInspection": "Default and maximum SDK frames inspected; no pixel-perfect Wolverine lighting claim",
+    "stateDependentDiffuseSwitch": false
+  },
+  "boundary": {
+    "canonicalSamples": 51,
+    "separateResources": 2,
+    "lodsPerResource": 2,
+    "vertices": 43276,
+    "originalEdgeAttachmentDonorsPreserved": true,
+    "positionsAcrossAllPartsAndLODsExact": true,
+    "namedWeightBytesAcrossAllPartsAndLODsExact": true,
+    "sharedShadingPerLOD": true,
+    "protectedOtherBoundaries": true,
+    "upperInteriorRecruitedAtOverallMaximum": true,
+    "completeGPUResourceMask": 3,
+    "actualFarLODTransitionObserved": false
+  },
+  "overlay": {
+    "doubleBufferedPaint": true,
+    "eraseSuppressed": true,
+    "paintOnlyOnControlOrVisibilityChange": true,
+    "SDKPanelRenderAndNavigationVerified": true,
+    "currentPhysicalF6AndPerceptualFlickerTest": false
+  },
+  "physics": {
+    "sourceWorkerUnchanged": true,
+    "constraintsOrContactsReduced": false,
+    "materialFramePresentation": true,
+    "rigidCapAndLobeRotationPreserved": true,
+    "displayPublicationsPerSecondMedian": 49.70870697711489,
+    "completeNumericalSurfacesPerSecondMedian": 17.152918266342525,
+    "displayCadenceIsNotNumericalSolveRate": true,
+    "gameFPSBenchmark": false
+  },
+  "gameVerification": {
+    "orderedCases": 64,
+    "allControlsReachGPU": true,
+    "combinedMaximum": true,
+    "movementDistance": 3.0077681102208693,
+    "pauseEditResume": true,
+    "actualSaveReloadFreshEpoch": true,
+    "runtimeFaults": 0,
+    "rendererFaults": 0,
+    "privateAudioMuteAndRestore": true,
+    "hostFocusAndInputUsed": false,
+    "saveWritesByDriver": false
+  },
+  "wolverineModified": false,
+  "deferred": [
+    "clinical sequences",
+    "fluid physics",
+    "sounds and idle chatter"
+  ],
+  "limits": [
+    "Existing measured Geralt capsule contacts remain an approximation",
+    "Ray tracing and exclusive fullscreen require separate runtime validation",
+    "Current isolated test does not synthesize physical F6 input or prove absence of perceptual flicker",
+    "Intermediate presentation raises displayed motion cadence without raising full numerical surface throughput",
+    "Source specular/SSS and state-dependent diffuse are not pixel-identical native Geralt material equivalents"
+  ]
+}

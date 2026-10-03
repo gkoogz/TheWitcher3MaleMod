@@ -1,3 +1,25 @@
+# Current body/material/presentation refinement
+
+Latest request (October 2): restore anatomy texture detail, fix F6 repaint
+flicker, improve displayed physics cadence, and permit pelvic recruitment
+across the separate torso/legs waist. Both sides must use shared Base boundary
+bindings; other part boundaries remain protected. Wolverine stays unchanged.
+Clinical sequences, fluids and audio/chatter remain deferred.
+
+The new two-part build is installed. Read BODY-BOUNDARY.md and current HANDOFF.
+All 64 private gameplay cases passed, both resources reach completed draws,
+and upward torso recruitment passes the source/target gate. Displayed surfaces
+measured 49.71 Hz; full numerical surfaces measured 17.15 Hz. Numerical solver
+throughput is not increased by presentation interpolation. Interactive F6
+flicker and rendering modes retain the explicitly recorded verification limits.
+
+Unattended tests use the invisible noninteractive station and no host input or
+focus. Private-child audio mute is restored on exit; never mute ordinary user
+playback or another application. The final private process is closed and its
+temporary driver removed. Preserve these constraints after compaction.
+
+The following sections are prior checkpoints and scope history.
+
 # Current installed native phase and waist correction
 
 The full 18-control native Base runtime is now installed and has passed the

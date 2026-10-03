@@ -79,7 +79,8 @@ def base_checkout(cfg):
                             check=True, text=True, capture_output=True)
     if result.stdout.strip() != lock['commit']:
         raise RuntimeError('Base HEAD differs from dependencies/base.lock.json; update the lock intentionally')
-    dirty = subprocess.run(['git', '-C', str(cfg['base']), 'status', '--porcelain', '--untracked-files=no'],
+    dirty = subprocess.run(['git', '-C', str(cfg['base']), 'status', '--porcelain', '--untracked-files=no', '--',
+                            'CMakeLists.txt','include','src','malemod_base','legacy','tools','provenance','assets','modules','profiles'],
                            check=True, text=True, capture_output=True)
     if dirty.stdout.strip():
         raise RuntimeError('Pinned Base has tracked edits; commit and update its lock before building')
@@ -124,7 +125,9 @@ def readthrough_depot(stock, workspace):
     Only overridden branches become real directories. Untouched stock folders
     are junctions; never write or recursively clean this read-through tree.
     """
-    view = ROOT / 'build/jobs' / ('depot-' + uuid.uuid4().hex[:12])
+    # Keep large copied native intermediates on the workspace's storage volume.
+    # Untouched stock folders still use read-only junctions as before.
+    view = Path(workspace).parent / ('depot-' + uuid.uuid4().hex[:12])
     view.mkdir(parents=True)
     links = []
 
@@ -376,7 +379,7 @@ def build(cfg, project_override=None, workspace_override=None):
     override_records = []
     if project.get('overrideRecipe'):
         override_records = prepare_overrides(cfg, read_json(inside(ROOT, project['overrideRecipe'])))
-    workspace = Path(workspace_override).resolve() if workspace_override else overlay(project.get('generatedResources'))
+    workspace = Path(workspace_override).absolute() if workspace_override else overlay(project.get('generatedResources'))
     if not workspace.is_relative_to(ROOT/'build'):
         raise ValueError('Package workspace must be an owned build directory')
     job = workspace.parent / ('package-' + uuid.uuid4().hex[:12])

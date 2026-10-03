@@ -17,7 +17,7 @@ struct Pipeline {ComPtr<ID3D12PipelineState> original,replacement;};
 auto* pipelines=new std::map<void*,Pipeline>;
 struct Upload {ComPtr<ID3D12Resource> resource;std::shared_ptr<const RenderDelivery> input;};
 struct Mark {ComPtr<ID3D12Fence> fence;UINT64 value;bool Done()const{auto v=fence->GetCompletedValue();if(v==UINT64_MAX)throw std::runtime_error("Float draw device removed");return v>=value;}};
-struct Recording {std::vector<std::shared_ptr<Upload>> uploads;std::map<void*,Mark> marks;unsigned epoch=0;std::uint64_t sequence=0;};
+struct Recording {std::vector<std::shared_ptr<Upload>> uploads;std::map<void*,Mark> marks;unsigned epoch=0,resourceMask=0;std::uint64_t sequence=0;};
 struct Queue {ComPtr<ID3D12Fence> fence;UINT64 next=0;};
 auto* recordings=new std::map<void*,Recording>;
 auto* retired=new std::vector<Recording>;
@@ -25,17 +25,21 @@ auto* queues=new std::map<void*,Queue>;
 auto* latest=new std::shared_ptr<Upload>;
 auto* completedDelivery=new std::shared_ptr<const RenderDelivery>;
 std::atomic<unsigned> flags{0},epoch{0},sequence{0};
+std::atomic<unsigned> resourceMask{0},publicationCount{0};
+std::uint64_t countedSerial=0;
 void HR(HRESULT h){if(FAILED(h))throw std::runtime_error("Float draw HRESULT "+std::to_string(h));}
 bool Eligible(const D3D12_INPUT_LAYOUT_DESC& desc){
  try{FloatSkinLayout layout(desc);return layout.Slot()==0;}catch(const std::invalid_argument&){return false;}
 }
 void Complete(const Recording& r){
  const auto current=LiveRenderLatest();if(!current||current->epoch!=r.epoch)return;
- if(epoch.exchange(r.epoch)!=r.epoch)sequence=0;
+ if(epoch.exchange(r.epoch)!=r.epoch){sequence=0;resourceMask=0;}
+ resourceMask.fetch_or(r.resourceMask);
  auto old=sequence.load();const auto completed=unsigned(r.sequence);
  while(old<completed&&!sequence.compare_exchange_weak(old,completed)){}
  if(!r.uploads.empty()){
   const auto delivered=r.uploads.back()->input;auto previous=std::atomic_load(completedDelivery);
+  if(delivered->presentationSerial>countedSerial){countedSerial=delivered->presentationSerial;publicationCount.fetch_add(1);}
   if(!previous||previous->epoch!=r.epoch||previous->sequence<=delivered->sequence)std::atomic_store(completedDelivery,delivered);
  }
  flags.fetch_or(256);
@@ -70,15 +74,25 @@ void RegisterFloatDrawStream(void* original,const D3D12_PIPELINE_STATE_STREAM_DE
   flags.fetch_or(1);
  }catch(...){creating=false;flags.fetch_or(2);}
 }
-bool FloatDraw(void* pointer,void* original,const D3D12_VERTEX_BUFFER_VIEW& position,const D3D12_VERTEX_BUFFER_VIEW& lighting,const std::function<void()>& draw){
- auto input=LiveRenderLatest();if(!input||input->floatVertices.size()!=36547)return false;
- if(position.StrideInBytes!=24||position.SizeInBytes!=36547*24||(lighting.BufferLocation&&(lighting.BufferLocation!=position.BufferLocation+16||lighting.StrideInBytes!=24)))return false;
+bool FloatDraw(void* pointer,void* original,const D3D12_VERTEX_BUFFER_VIEW& position,const D3D12_VERTEX_BUFFER_VIEW& lighting,const std::function<void()>& draw,unsigned resource,unsigned lod){
+ auto input=LiveRenderLatest();if(!input||resource>=input->resources.size())return false;const auto& r=input->resources[resource];
+ if(r.firstVertex+r.vertexCount>input->floatVertices.size())return false;
+ const bool morph=position.StrideInBytes==24&&position.SizeInBytes==r.vertexCount*24&&(!lighting.BufferLocation||(lighting.BufferLocation==position.BufferLocation+16&&lighting.StrideInBytes==24));
+ const unsigned firstVertex=lod<2?r.lodFirstVertex[lod]:0;
+ const unsigned vertexCount=lod<2?r.lodVertexCount[lod]:r.vertexCount;
+ // Static skin streams point into the original combined native allocation;
+ // their views include the remaining streams, not just the position rows.
+ const bool stock=vertexCount&&position.StrideInBytes==16&&position.SizeInBytes>=vertexCount*16&&(!lighting.BufferLocation||(lighting.StrideInBytes==8&&lighting.SizeInBytes>=vertexCount*8));
+ if(!morph&&!stock)return false;
  auto* list=static_cast<ID3D12GraphicsCommandList*>(pointer);
  bool bound=false;
  try{
   std::unique_lock<std::mutex> lock(mutex);auto p=pipelines->find(original);if(p==pipelines->end()||flags.load()&128)return false;
   if(list->GetType()!=D3D12_COMMAND_LIST_TYPE_DIRECT&&list->GetType()!=D3D12_COMMAND_LIST_TYPE_BUNDLE)return false;
   Collect();if(retired->size()>64)throw std::runtime_error("Float upload retirement backlog");
+  // A command list uses one immutable whole-body snapshot for all its draws.
+  auto previousRecording=recordings->find(pointer);
+  if(previousRecording!=recordings->end()&&!previousRecording->second.uploads.empty()&&previousRecording->second.epoch==input->epoch)input=previousRecording->second.uploads.back()->input;
   if(!*latest||(*latest)->input!=input){
    auto next=std::make_shared<Upload>();next->input=input;ComPtr<ID3D12Device> device;HR(list->GetDevice(IID_PPV_ARGS(&device)));
    D3D12_HEAP_PROPERTIES heap{};heap.Type=D3D12_HEAP_TYPE_UPLOAD;D3D12_RESOURCE_DESC desc{};desc.Dimension=D3D12_RESOURCE_DIMENSION_BUFFER;desc.Width=input->floatVertices.size()*28;desc.Height=1;desc.DepthOrArraySize=1;desc.MipLevels=1;desc.SampleDesc.Count=1;desc.Layout=D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
@@ -87,9 +101,9 @@ bool FloatDraw(void* pointer,void* original,const D3D12_VERTEX_BUFFER_VIEW& posi
   }
   auto& recording=(*recordings)[pointer];if(recording.uploads.size()>128)throw std::runtime_error("Float draw recording backlog");
   if(recording.uploads.empty()||recording.uploads.back()!=*latest)recording.uploads.push_back(*latest);
-  recording.epoch=input->epoch;recording.sequence=input->sequence;
+  recording.epoch=input->epoch;recording.sequence=input->sequence;recording.resourceMask|=1u<<resource;
   auto replacement=p->second.replacement;auto retained=*latest;lock.unlock();
-  const auto address=retained->resource->GetGPUVirtualAddress();D3D12_VERTEX_BUFFER_VIEW vertex{address,36547*28,28},normal{address+20,36547*28-20,28};
+  const auto address=retained->resource->GetGPUVirtualAddress()+std::uint64_t(r.firstVertex+(morph?0:firstVertex))*28;const unsigned count=morph?r.vertexCount:vertexCount;D3D12_VERTEX_BUFFER_VIEW vertex{address,count*28,28},normal{address+20,count*28-20,28};
   list->SetPipelineState(replacement.Get());list->IASetVertexBuffers(0,1,&vertex);list->IASetVertexBuffers(2,1,&normal);bound=true;
   draw();
   list->IASetVertexBuffers(0,1,&position);list->IASetVertexBuffers(2,1,&lighting);list->SetPipelineState(static_cast<ID3D12PipelineState*>(original));bound=false;
@@ -115,9 +129,12 @@ void FloatDrawBundle(void* parent,void* bundle){try{
  std::lock_guard<std::mutex> lock(mutex);auto found=recordings->find(bundle);if(found==recordings->end())return;
  auto& destination=(*recordings)[parent];destination.uploads.insert(destination.uploads.end(),found->second.uploads.begin(),found->second.uploads.end());
  destination.epoch=found->second.epoch;destination.sequence=found->second.sequence;
+ destination.resourceMask|=found->second.resourceMask;
 }catch(...){flags.fetch_or(128);}}
 unsigned FloatDrawFlags(){try{std::unique_lock<std::mutex> lock(mutex,std::try_to_lock);if(lock.owns_lock())Collect();}catch(...){flags.fetch_or(128);}return flags.load();}
 unsigned FloatDrawSequence(){FloatDrawFlags();return sequence.load();}
+unsigned FloatDrawResourceMask(){FloatDrawFlags();return resourceMask.load();}
+unsigned FloatDrawPublicationCount(){FloatDrawFlags();return publicationCount.load();}
 bool FloatDrawActive(unsigned character){const auto current=LiveRenderLatest();FloatDrawFlags();return character&&current&&current->epoch==character&&epoch.load()==character&&!(flags.load()&128);}
 std::shared_ptr<const RenderDelivery> FloatDrawCompleted(){FloatDrawFlags();return std::atomic_load(completedDelivery);}
 }

@@ -27,6 +27,7 @@ class OverlayPanel {
  int dragging_=-1;
  OverlayNavigation navigation_;
  std::array<bool,5> keys_{};bool foreground_=false;
+ surface::Controls paintedControls_;unsigned paintedSelection_=0;bool paintedExpanded_=false,painted_=false;
  void PollKeys(bool foreground);
  void Click(int x,int y);void Resize();
  static LRESULT CALLBACK Procedure(HWND,UINT,WPARAM,LPARAM);

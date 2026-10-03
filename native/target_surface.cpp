@@ -35,7 +35,8 @@ struct TargetSurface::Impl {
  std::vector<Lod> lods;
  Impl(const std::filesystem::path& path,const std::string& expected){
   Reader r(path);char magic[8],commit[40];r.Bytes(magic,8);r.Bytes(commit,40);
-  if(std::memcmp(magic,"MMBIND02",8)||expected.size()!=40||std::string(commit,40)!=expected)throw std::invalid_argument("Character binding revision differs from pinned Base");
+  const bool boundary=!std::memcmp(magic,"MMBIND03",8);
+  if((!boundary&&std::memcmp(magic,"MMBIND02",8))||expected.size()!=40||std::string(commit,40)!=expected)throw std::invalid_argument("Character binding revision differs from pinned Base");
   calibration.basis=r.Value<std::array<PrecisePoint,3>>();calibration.sourceRoot=r.Value<PrecisePoint>();calibration.targetRoot=r.Value<PrecisePoint>();calibration.targetUnitsPerSourceUnit=r.Value<double>();calibration.Validate();
   neutralAnatomy=r.List<PrecisePoint>();neutralBody=r.List<PrecisePoint>();
   unsigned count=r.Value<std::uint32_t>();if(count!=2)throw std::invalid_argument("Expected both observed Geralt LODs");lods.resize(count);
@@ -43,7 +44,7 @@ struct TargetSurface::Impl {
    l.domain.points=r.List<PrecisePoint>();l.domain.triangles=r.List<std::array<std::uint32_t,3>>();
    unsigned seams=r.Value<std::uint32_t>();if(seams>l.domain.points.size())throw std::invalid_argument("Invalid character seam count");
    for(unsigned i=0;i<seams;i++){EdgeConstraint e;e.slave=r.Value<std::uint32_t>();e.a=r.Value<std::uint32_t>();e.b=r.Value<std::uint32_t>();e.weight=r.Value<double>();l.domain.seams.push_back(e);}
-   l.domain.protectedVertices=r.List<std::uint32_t>();l.restSource=r.List<PrecisePoint>();l.restNative=r.List<PrecisePoint>();
+   l.domain.protectedVertices=r.List<std::uint32_t>();if(boundary)l.domain.prescribedVertices=r.List<std::uint32_t>();l.restSource=r.List<PrecisePoint>();l.restNative=r.List<PrecisePoint>();
    l.aliases=r.List<std::uint32_t>();l.unique=r.List<std::uint32_t>();l.protectedRender=r.List<std::uint32_t>();l.bodyCount=r.Value<std::uint32_t>();l.body=r.Binding();l.module=r.Binding();
    const auto n=l.restSource.size();
    if(!n||l.restNative.size()!=n||l.aliases.size()!=n||l.unique.size()!=l.domain.points.size()||l.bodyCount>=n||l.body.offsets.size()!=l.bodyCount+1||l.module.offsets.size()!=n-l.bodyCount+1||l.body.sourceVertexCount!=neutralBody.size()||l.module.sourceVertexCount!=neutralAnatomy.size())throw std::invalid_argument("Character binding dimensions differ");
@@ -66,6 +67,9 @@ struct TargetSurface::Impl {
   auto bodyDelta=l.body.Apply(body,neutralBody),moduleDelta=l.module.Apply(anatomy,neutralAnatomy);
   std::vector<PrecisePoint> delta(l.restSource.size());
   for(unsigned i=0;i<l.bodyCount;i++)if(GraftRecruitmentWeight(l.restSource[i],frame)>1e-4)delta[i]=bodyDelta[i];
+  // The same canonical rest samples and donor field drive both part halves
+  // and both LODs. They remain movable masters in the coupled interior solve.
+  for(auto id:l.domain.prescribedVertices){auto render=l.unique[id];delta[render]=bodyDelta[render];}
   std::copy(moduleDelta.begin(),moduleDelta.end(),delta.begin()+l.bodyCount);
   for(auto i:l.protectedRender)delta[i]={0,0,0};
   std::vector<PrecisePoint> unique(l.unique.size());for(unsigned i=0;i<unique.size();i++)unique[i]=delta[l.unique[i]];
