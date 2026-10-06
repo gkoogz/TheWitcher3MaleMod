@@ -1,5 +1,44 @@
 # October 3 beta publication and shared follow-up
 
+## October 6 collar repair checkpoint — not installed
+
+Attachment continuity is now the mandatory highest-priority gate in this
+repository, Base and canonical Wolverine. See `AGENTS.md` and
+`docs/PROJECT-CONTEXT.md`; require visual acceptance in addition to welding.
+
+The three October 5 23:23 screenshots reproduce a large-size seam regression.
+All 40 installed managed files still matched the frozen beta.2 manifest at
+investigation start. The target adapter replaces the complete mapped body
+field with only the source's final radial correction, and its support is
+centered on the source opening rather than Geralt's measured opening. Donors
+around much of the ring stay fixed while adjacent anatomy expands. The original
+edge position residual is approximately 14 micrometres, but median native
+normal disagreement is about 112 degrees for Width70 and 100 degrees for
+Width97. A numerical seam-only check had missed folded adjacent geometry.
+
+Uncommitted candidate source uses Base's measured transition, optional seam
+support and explicit cooked position/lighting donor constraints (`MMRND006`).
+`build/collar-review-20261006` contains ignored exact installed-worker exports,
+rejected field-only/measured/fairing experiments, and current source diagnostics.
+The `base99` include snapshot is for offline wire-5 transport only: NEVER install
+that diagnostic build or call it a clean current-Base adoption. The current Base
+worker contract is wire6; deployment needs an explicit verified adoption.
+
+`artifacts-lit` is the installed target algorithm, `artifacts-shared` is the
+rejected multiplicative ramp (unfolds much of the seam but creates excess
+abdominal displacement), `artifacts-bounded` is the bounded-barrel candidate,
+and `artifacts-bounded-weld` adds the explicit native donor contract. The last
+two are not visual acceptance. `transition-comparison.png` and
+`bounded-comparison.png` are offline side projections, not native game captures.
+Posterior-facing triangle counts are diagnostic, not an inversion proof.
+
+Basic Base transition, lighting, waist and prescribed-boundary tests pass.
+The exact screenshot settings and five angles export with the installed source
+worker. Minimum/intermediate/control combinations, posed contact, both LODs,
+native front/side/oblique captures and campaign lighting still require a complete
+attachment regression pass. No candidate has been installed or accepted, no
+game was launched during this checkpoint, and Wolverine runtime is unchanged.
+
 ## October 5 repository package and frozen next beta
 
 Read [current source/release boundary](DEVELOPMENT-STATUS.md). Development Base
