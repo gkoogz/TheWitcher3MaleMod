@@ -1,7 +1,7 @@
 {
   "schema": "malemod.measured-collar-delivery/1",
   "date": "2026-10-06",
-  "baseCommit": "2ad61e38fe59126a0175f8ccd2cd12ce6d0bedc7",
+  "baseCommit": "40dfa861eda0dce9d1b014ba3ed00732bf3c1e3f",
   "scope": "Geralt measured pelvic recruitment and attachment, DX12 Naked",
   "installed": true,
   "released": false,
@@ -9,6 +9,9 @@
     "measuredOpening": true,
     "progressiveConcentricSupport": true,
     "anteriorShoulder": true,
+    "orderedConcentricRings": true,
+    "preserveMeasuredBodyDifferential": true,
+    "cachedNativeBodyProjection": true,
     "bodyIndependentOfShaftRestAngle": true,
     "sharedWaistKnots": 37,
     "originalEdgeDonors": true,
@@ -18,11 +21,11 @@
   "sourceFiles": [
     {
       "path": "dependencies/base.lock.json",
-      "sha256": "74711d7df4b9d30c8ea4c9252044eb1e8ee3d8723b5ac9e21ebbb2d8460fb49b"
+      "sha256": "9cc8f7b3de60b76cb96c3bf23302b32b620d72a553f8cbeb3e6d132a7a04eaef"
     },
     {
       "path": "native/CMakeLists.txt",
-      "sha256": "78b1f10de4b68e0ccb88b41fe0dca8bb4c2c7af766576c01aaa65657657f7278"
+      "sha256": "a0be054f3fbb0c054a9eefe6a0ed9534c5fbb72d62e8f29c3a07fb1d85f3b995"
     },
     {
       "path": "native/engine_bridge.cpp",
@@ -46,11 +49,11 @@
     },
     {
       "path": "native/render_contract.hpp",
-      "sha256": "5fa601ce6abdcd48cd578fab7c4c92464da1f144f4919ab84c8df46e9e29cdc2"
+      "sha256": "5865a6353bb28d24515a1cbd26f438da0724d29d6b924a691c9c72d7d41e9a9c"
     },
     {
       "path": "native/target_surface.cpp",
-      "sha256": "119b4328f5084960ba31eefda31ea3eb88959659130e9875be31be91aba45627"
+      "sha256": "bf8ab5614b9b13745e79d64a36eb0804c298cadf0084b8c1bda99cfa90b03358"
     },
     {
       "path": "native/target_surface_test.cpp",
@@ -66,7 +69,7 @@
     },
     {
       "path": "tools/prepare_body_render_contract.py",
-      "sha256": "c6c2ff0152742fe7a9690a0bb7d6be61aeadbe73b6a80b0665c27a41cb1a1a03"
+      "sha256": "65ff51c51469f1e49d023c2b2dfa149121b2196c174c24dd111c4e870bcbcdd5"
     },
     {
       "path": "tools/run_sealed_session.py",
@@ -90,7 +93,7 @@
     },
     {
       "path": "tools/review_collar_integrity.py",
-      "sha256": "72f2793cd2c55805f294cb501fe413289752812c01d0e6e9f709a5fcd723ca79"
+      "sha256": "007387856290ac65a83f4d9dd127f8eeb9261444198ba081e08bb89fe78bfba3"
     },
     {
       "path": "probes/native/collar_cases.ws",
@@ -99,35 +102,35 @@
   ],
   "artifacts": [
     {
-      "path": "build/full-runtime/geralt-bindings-collar-2ad61e3/geralt.bindings",
-      "sha256": "b009239c36f93d4c18c35a6f041901f885ee29b6352db9c08c632545cfe94d8b"
+      "path": "build/full-runtime/geralt-bindings-collar-40dfa86/geralt.bindings",
+      "sha256": "8b84728e49661c83653e39d05418aad1050df124863b4992e698fb100b532895"
     },
     {
-      "path": "build/full-runtime/render-collar-2ad61e3/geralt.render",
-      "sha256": "2e6957a4a80650b148eb811e24d4582f5b69b1156f297299ebf8c9b364557c8f"
+      "path": "build/full-runtime/render-collar-40dfa86-verified/geralt.render",
+      "sha256": "b8b8fbb60b7fa2967ef746b3fd44512f6d23796cc97de3bf30ab4d58b4f8f275"
     },
     {
-      "path": "build/full-runtime/worker-proof-collar-2ad61e3/manifest.json",
-      "sha256": "1c9299a2c20e0990b22ab29574e38076ba5014f4f9922a52a04326ef3713541f"
+      "path": "build/full-runtime/worker-proof-collar-40dfa86/manifest.json",
+      "sha256": "9b1908fefa1280e335715ee55cbd4221b3d71264056c01b2a0585a8cd85b9e2d"
     },
     {
-      "path": "build/collar-review-20261006/body-render-final.txt",
-      "sha256": "e3e85815bd455377f90bf60d4cd1267196c21a9ba151b03d9522e656cce0f371"
+      "path": "build/collar-review-20261006/radial-body-render.txt",
+      "sha256": "023a0d50707f7bc9d3a045164cadebdc64e20a06d11b64c70fb3bb7315b3a01d"
     },
     {
-      "path": "build/collar-review-20261006/full-all-body-guard/collar-metrics.json",
-      "sha256": "f07a38beb43b9d843f6b387e18af352a3bd13b88afffc8aa57d8331ac860bf27"
+      "path": "build/collar-review-20261006/radial-accepted-full/collar-metrics.json",
+      "sha256": "95ec204b2f2f632d05aa1d58046afddb90e8e51a11fe8906e05c1935a1458cf4"
     },
     {
-      "path": "build/collar-review-20261006/adapter-tests.txt",
-      "sha256": "7a30fd037f3f45aaa30f579364839b52e33a3d173bed3f4a3b0cd3466f2eae67"
+      "path": "build/collar-review-20261006/radial-float-sdk.txt",
+      "sha256": "01c19d2ec10cc38986f6dff22b9908bdc5f275e23939358917476e525b552c01"
     },
     {
-      "path": "build/collar-review-20261006/present-sdk-test.txt",
+      "path": "build/collar-review-20261006/radial-present-sdk.txt",
       "sha256": "91e4e9c6159133997c7440f6a605e43154ad98b21f604dfa8a43c3f6bdc78570"
     }
   ],
-  "moduleSHA256": "fd1f3508fb3dffadd6f2ba27c3e2ae3570377108af7e94cdb5ffd48526615b09",
+  "moduleSHA256": "bfbc1e86bee9008268037a256307ee73cac503c8991d966b0b5c54bb1ccf1d0b",
   "installedManagedFiles": [
     {
       "path": "bin/x64_dx12/dinput8.dll",
@@ -135,7 +138,7 @@
     },
     {
       "path": "bin/x64_dx12/malemod-native/malemod_witcher.dll",
-      "sha256": "fd1f3508fb3dffadd6f2ba27c3e2ae3570377108af7e94cdb5ffd48526615b09"
+      "sha256": "bfbc1e86bee9008268037a256307ee73cac503c8991d966b0b5c54bb1ccf1d0b"
     },
     {
       "path": "bin/x64_dx12/malemod-native/surface_worker.exe",
@@ -143,19 +146,19 @@
     },
     {
       "path": "bin/x64_dx12/malemod-native/malemod-runtime.profile",
-      "sha256": "679cfc5d2d00c5e943fac223759d184f7d6a062cbb2fdbb0893221d510397046"
+      "sha256": "797a715553d58fdb7c303ced7341ef1ea29800b0d93df81f3e706b1e87b75ea5"
     },
     {
       "path": "bin/x64_dx12/malemod-native/geralt.bindings",
-      "sha256": "b009239c36f93d4c18c35a6f041901f885ee29b6352db9c08c632545cfe94d8b"
+      "sha256": "8b84728e49661c83653e39d05418aad1050df124863b4992e698fb100b532895"
     },
     {
       "path": "bin/x64_dx12/malemod-native/geralt.render",
-      "sha256": "2e6957a4a80650b148eb811e24d4582f5b69b1156f297299ebf8c9b364557c8f"
+      "sha256": "b8b8fbb60b7fa2967ef746b3fd44512f6d23796cc97de3bf30ab4d58b4f8f275"
     },
     {
       "path": "bin/x64_dx12/malemod-native/geralt.render.sha256",
-      "sha256": "6751bf82b070f560add1437fbf079706aa9be8a167d27b0512c37ba7cbd5d3d2"
+      "sha256": "1d12911f78e7416a9d4fa13e52015fd8a47cecbdf123734e30e96f136e0c7c1c"
     },
     {
       "path": "bin/x64_dx12/malemod-native/graphics-owned-fingerprints.bin",
@@ -231,19 +234,19 @@
     },
     {
       "path": "bin/x64_dx12/malemod-native/garment.bindings",
-      "sha256": "246fc3f45155abba9263ffacf320198a6237063e0cfa8e54b92a691c3ee4d27b"
+      "sha256": "57e109d466aaf4c77ca9a6285bd53d92a751f6cf4f706edc2fe0e8b889087450"
     },
     {
       "path": "bin/x64_dx12/malemod-native/garment.bindings.sha256",
-      "sha256": "24fe403e4ffcea3d9ef07e2f6427aac6c3d772d1499a11392bd27de7dd5b2016"
+      "sha256": "09b22c1a8bcf32696fc1c0b5ebd3253f309ded4aca9e9d9ef02b804448ebafcb"
     },
     {
       "path": "bin/x64_dx12/malemod-native/garment.reactions",
-      "sha256": "07c21b678a4a00f9af4af506b2096599b5a3e86a59795b3b6de6e59d03d6c5d7"
+      "sha256": "dcc21b05f5256e85b0eacae47ca98b49746851882c4bebb9a1f615657f59b116"
     },
     {
       "path": "bin/x64_dx12/malemod-native/garment.reactions.sha256",
-      "sha256": "4bca248fe73369a95543b671f224a6a235df2eee6bbc6ebe155fc24d0c62ccab"
+      "sha256": "481af51402c3e8b07120343753362ff4189d7fdb6ee431eaf0e3a6ff044e0868"
     },
     {
       "path": "bin/x64_dx12/malemod-native/garment.render",
@@ -305,11 +308,11 @@
     "bodyCases": 39,
     "resources": 2,
     "lods": 2,
-    "seamMaximumMetres": 1.1107025132438768e-07,
-    "normalMaximumDonorError": 0.00046926440516904984,
+    "seamMaximumMetres": 1.1040993258156963e-07,
+    "normalMaximumDonorError": 0.0007701707163424243,
     "reversedLocalCollarFaces": 0,
     "packingResolvedReversedBodyFaces": 0,
-    "rawMaximumProjectedBodyFacesReversed": 1,
+    "rawMaximumProjectedBodyFacesReversed": 0,
     "packingAmbiguityExplicitlyReported": true,
     "waistWeightAndLightingExact": true,
     "serialParallelBytesIdentical": true,
@@ -322,347 +325,354 @@
     "emptyConstraintFrameReplays": 110,
     "currentWorkerByteIdenticalFrames": 48,
     "physicalReactionCases": 18,
-    "adapterUnitTests": 13,
+    "floatPositionRendererAndPublicationRetention": true,
     "windowlessPresentAndPresent1": true
   },
   "native": [
     {
       "scene": "grey",
-      "proof": "build/probe/sealed-session-20261006-035528/collar-review.json",
-      "proofSHA256": "1253c2166fabed7dc6d152f4db1b1f0ea7f46b9ac341cec26e23693034a81e3f",
-      "checkpointSHA256": "cbc7ddb4ecf4838decc619164f130e514d4c1ae366d64a2e758dc4e6e483f6f9",
+      "proof": "build/probe/sealed-session-20261006-062601/collar-review.json",
+      "proofSHA256": "32609cc017f05b22b796eab1658f8224ae6bd12a27b2dba42d867d7a6240615c",
+      "checkpointSHA256": "621688fe6b11ffd5e1b0ac74bf9844a4091704ede7e7048ee690761d25120ee9",
       "captureHashes": [
         {
           "stage": 300,
-          "sha256": "54c3166fa7af6793aa095b92d21f5402e6cefe15c92df98ad3eb40ae6da526b9"
+          "sha256": "dfa5630b097d088ab6b9873f70a593ce26ee6a9a822949f804624d7df2b999be"
         },
         {
           "stage": 301,
-          "sha256": "031feef67fc06d7b269c4010c6a501ef638e5e98c1e1ef39df3ecaae1bec24e5"
+          "sha256": "b0743ef8afb33860ddfb46634783b8ceebcf8128cf794fc9aa4c0215a84200d2"
         },
         {
           "stage": 302,
-          "sha256": "22debce7c8eae7736cab476b1414f0d65dd95b8707c215d6701b3d076c41b501"
+          "sha256": "5cff076437e7caacdbabff62d0fba608b9ed9dc5bafd8610aad9ab5fbbcd67ba"
         },
         {
           "stage": 303,
-          "sha256": "18efa50b86cabab0c4d2c60b350f590c9d6c214d86c61825abc0bee2d5aeefd3"
+          "sha256": "d4b00b44bf94246cd3ebdb4fef345829c8e0fb7919103ad4c592fd78bd61d59f"
         },
         {
           "stage": 304,
-          "sha256": "77eba6e02dd1f961e2eed5a216b9209b19934fccb55f98917a3b5107c5f58500"
+          "sha256": "ab60839fa5733eb0954ba16f0dd1905f9bf9adf04054b07f9ea6c7662360939f"
         },
         {
           "stage": 305,
-          "sha256": "90545d15847b33dd30b58f449986231f1cb8ae0cc04ef26413002339a2ad76e9"
+          "sha256": "f1552c79be12e602f6ef6f8994f217141e788745aedd002a91b9830525de09b7"
         },
         {
           "stage": 306,
-          "sha256": "23720c51c78f28cf4b9de314d54fd66f049fc0f643dd0e420d8fe27c2ed0798a"
+          "sha256": "6458400ca1788093183a5ca15825ace752ec1aa3111e96e7cb6ea53214cbc161"
         },
         {
           "stage": 307,
-          "sha256": "0d53326fad8c2691ad698692601eb523c162ae23cdcec38589a180a4fd3401ff"
+          "sha256": "64a4e794d52e3375e5ab9f96d349a2d57861742ebc0ce666b4eed40b8d712351"
         },
         {
           "stage": 308,
-          "sha256": "6f311973dc690652446449dcca9dcaa0aad91b36c0efeaedeeef46c1f9a9adb3"
+          "sha256": "ae978589a7e38e5f1cc38680a8aae7ddd44751227fef3fbbee6865af79b03851"
         },
         {
           "stage": 309,
-          "sha256": "836bbcfd595b8496f8e73f3e67631236535634e8b7d6e6e488b890ef54c5ce9f"
+          "sha256": "b4355e372620319bc09610f8a6944c83a6b2f93e08e6b805d1aa9d5a777d5c4d"
         },
         {
           "stage": 310,
-          "sha256": "6539caabb5c740d23b18d0da54943ac467fd11c19ff8374f904def9268b9139b"
+          "sha256": "07c6b3779e6ce6b3b8667b2dbc80b1e056faa7c08766f896cb3c5a6a49fb24a7"
         },
         {
           "stage": 311,
-          "sha256": "a6b4a882bd34ab1123f1eec22978a773de7b76f6556c86a4a58db28bf7b291a7"
+          "sha256": "0f294847bac5e5f4ea01530a5f60b57ba890b50038a3aeef6429a2b3ed6b9af3"
         },
         {
           "stage": 312,
-          "sha256": "146ff2ef94b15b9ab750de51d80a1215be23806995acd0f366af2a58905ac6d2"
+          "sha256": "b5c8f164c9670bb76e8ff936c8a666798797e2462cb42feae21f87ece36dca3d"
         },
         {
           "stage": 313,
-          "sha256": "7a55f15b0959d44696a625bdfa55407977aab2acf22ad9617907bb1c5ccd4abf"
+          "sha256": "6517e1339f9a930f3f69662fdb0bb8d4cb7f212d0dc887352540e596d2c2819b"
         },
         {
           "stage": 314,
-          "sha256": "936745d6de1acaf0e02aa4f8a5c164c34d6f28c9d838c8dac621bca1a072ff60"
+          "sha256": "470f29f7152c4608f122d71d0de40d5fc487ad8ca8eda0476c89618d0767e0de"
         },
         {
           "stage": 315,
-          "sha256": "3650906b1fd48e11c55b08487dd55be5db58306a7f769ad6013476225fb97798"
+          "sha256": "db7efd93380d6d3cc256e4a7ef5abb23b83c60d2191e6a3fa1a1de8b12e50590"
         },
         {
           "stage": 316,
-          "sha256": "b7437660d3f78efeaab43ee4738e4833bcdb970259239558eeaf5d6397fa0849"
+          "sha256": "80e8a7f9943a2b21b3ad5ec12813bb1c62e9613564e686a9243c4cf2d86f2fe3"
         },
         {
           "stage": 317,
-          "sha256": "12348c42c57b44a55906d58f208ad500941fedc3bb929d453bb0bc20580b7508"
+          "sha256": "69617765b58266fcb52c0bad5a46ff181791a2a8a8e2bb5ef9706223fcdac20a"
         },
         {
           "stage": 318,
-          "sha256": "8c50676f4cadd49500b9333b3ad9998f70f5db5938fe4be29d547c8dab756ba6"
+          "sha256": "51a2f2692b0616e4e4df03b33497dd3e5789e3efebca49bd5d66fdabb23b339f"
         },
         {
           "stage": 319,
-          "sha256": "fe8b672d330612409694ca0d6edc8a38963d07e30a2eaebca37356890939258c"
+          "sha256": "f251230642d26c99a18657a52a0be16e5c9f7e5deef5439be24eb672e3c1e72f"
         },
         {
           "stage": 320,
-          "sha256": "39bb20300f10ba76ccbbe5c04634ed05eedae436393e45b3d2aaa2cae9bfeb5b"
+          "sha256": "e3edf6abedfb19e28a78177b7b18adc09c8ed56c18bb4b714bc68ac25474a5ad"
         },
         {
           "stage": 321,
-          "sha256": "dff315a0cec10f9d98f4c0b92b28e92658113602b65b67cec51fb33591f809a9"
+          "sha256": "1964a06c2fc6825687083d0d1fabeaae2e3b42e757777bed6d44d19f7a1dfde5"
         },
         {
           "stage": 322,
-          "sha256": "528e36ccc548c2724b431d152d9a338a89cf729b7909935df6095f1cbb2c3e6a"
+          "sha256": "f53600e0ce5780e77282c81aaf1aed5ece071696dae353afba855cadf3479abb"
         },
         {
           "stage": 323,
-          "sha256": "7398a16c2077eff7859c0bd6d618bf04e083229927fd552c24f466404e08d47e"
+          "sha256": "33fb2b14522b0e0945e6b2885d0c08b8578e8e008d5b0ee0c20213366ea04513"
         },
         {
           "stage": 324,
-          "sha256": "5fddd509ed18c54905262172ab6d1c681d304debef7c31315a61ca6a2b1044fb"
+          "sha256": "133b0ee8969a808ba172bdd01e29bd9b4239443817fbb95a674779686089fdfa"
         },
         {
           "stage": 325,
-          "sha256": "dc9ddb33193bc3369bf38f4e0827621683ecf92ce2ae2f61925660cfb5036b0f"
+          "sha256": "e4b7e14c134d1afa7a201355769557cd751cc588303b8b151cfada05a3e81f20"
         },
         {
           "stage": 326,
-          "sha256": "89fb0c3bce7751b3aa274916fe37309e39856c55c175baffec18f72077f5ea2e"
+          "sha256": "bf20aee8587f05015b6c7c5654ead45a085cbadbf863f09d066d88635390cc15"
         },
         {
           "stage": 327,
-          "sha256": "7f02ab522b1e692419e18fd81185a3646cf10bf57bd9134a8395fac16b6c1c71"
+          "sha256": "7e664e77d823411891e3afbede7e2a5d1b143943b80cf94c107459a89e1e69b1"
         },
         {
           "stage": 328,
-          "sha256": "7c92e224a02c600f70261d85a955cdbfa582315fbf43b557b1749f5040b760d5"
+          "sha256": "3d6c4d252365b127a3e0c42abb4d7c9a1991179dee88646995baf1025d075619"
         },
         {
           "stage": 329,
-          "sha256": "bef0666cca18f29a254a5bdfe4cf7a378f8d400dc4fc3197bc005e6c6f922250"
+          "sha256": "127dd6a09f25cb6ed5a11c80ef3fb4c177dac186ac297b4781678617ad788f24"
         },
         {
           "stage": 330,
-          "sha256": "52a3dbb2509f24692c54fc6e16c43079a1de53eedb58e0b9376343b335200aef"
+          "sha256": "c32111ea3a889690deffb29772b70d0a5e2b6c550ccdada1f636479f07f6ac04"
         },
         {
           "stage": 331,
-          "sha256": "b396d3edbf933163a33aa33f9a70395f07bcf27bccf02fc2615c54d58d31df02"
+          "sha256": "1bfccf22facc7f84e481e784c3e6db09218fd86dc5856efc78fd9eb5a73df670"
         },
         {
           "stage": 332,
-          "sha256": "c51f6b459085eacf12c9b695a9d2eaa38525a4c035f282228b171085f03af92d"
+          "sha256": "0eea2f4d13e3f5abe27f13bd6bf90bfc2345bcf8f67c26c56546eb88e4989c9c"
         },
         {
           "stage": 333,
-          "sha256": "da95309a548f3d8bcee7ad88d6fdb94caad93e34e48167c40f516f83aae678b4"
+          "sha256": "221bb255393afa120fc8b4b8076dbeaa674052d61f5e1e0806c9c117ca0a0f47"
         },
         {
           "stage": 334,
-          "sha256": "4e3f687748ef57215dfae7199ae9c277d2c82b3e9f79b8ec2a408d478c89f846"
+          "sha256": "2b602284354cecbad49706fa99250d303fc4e7c628b11e352bdbffdd80e470f9"
         },
         {
           "stage": 335,
-          "sha256": "4bdb83bd45b6e5a40ce6f5df6940e468a8e4685c7b9616aa2f7d9f44874198af"
+          "sha256": "71b763193e20a5d24b5da2e76066fde14372015c5765d1cd2857117304bf23d8"
         },
         {
           "stage": 336,
-          "sha256": "36955df4c9ac332e3ef75d958085a903983c9906a2c5a8bf67d601dde9dd727e"
+          "sha256": "8867390fa174bfb445cbea32fabc82588ede14f509025676a8678fec6e6d4b3a"
         },
         {
           "stage": 337,
-          "sha256": "c6103272873e1ad6365c5e5eb42ad563e78067b85ae044d1abc3f385bbb1c3fa"
+          "sha256": "4267c3844c0169f4aeb96884a512a83320ff13f09d0935c9a8b81bb11213abd2"
         },
         {
           "stage": 338,
-          "sha256": "d23c9a120aea877d0aef2e8b73ddf4027fb319e1045fa2b0649b17886e02bc9f"
+          "sha256": "0f1a04f8210d83a599c7ae4e676c3a48aad3af0a0a59ebdf1ab69a14b3df9234"
         }
       ],
       "nativeCases": 39,
       "visualAcceptance": true,
-      "movementMetres": 4.041780639529972,
-      "presentationIntervalMedianMs": 89.0222,
+      "movementMetres": 3.9858422460720426,
+      "presentationIntervalMedianMs": 90.6177,
       "actualPresentBoundaryObserved": true
     },
     {
       "scene": "campaign",
-      "proof": "build/probe/sealed-session-20261006-040250/collar-review.json",
-      "proofSHA256": "3e72392722ad292856bf1323bede4472c437c6c099976d7866c410352e4bf79e",
-      "checkpointSHA256": "0f4eb888a33286fcd0a33349d95a24ee29c0b6435e3364bb16bb774bfc1a7a5b",
+      "proof": "build/probe/sealed-session-20261006-063026/collar-review.json",
+      "proofSHA256": "27bb1db249c79f8db1d7b26a73ce85e380e51e38549e75373eb05b95438eb4f4",
+      "checkpointSHA256": "8f0a7de1a3ba2e085990c8c03e248dfa22f910cf3b6231b9fcf7cd4a64d26ae0",
       "captureHashes": [
         {
           "stage": 300,
-          "sha256": "0c53334ad8b0646ae1b7b05346636bc98e1baea62faa60f7614405ad6f51270b"
+          "sha256": "61e9034ca4410c1911a670e33711a9fdf71da05cbc32436830b0d9cb13d74781"
         },
         {
           "stage": 301,
-          "sha256": "f3a34d26ee61a3444f3defae839e9e1a6cd6d05cfe610959518158bda4ad390c"
+          "sha256": "2c8bba6fc19780e9bbf11fed10368d88305b892f57b9fcc9d31d2eefcc51bdb4"
         },
         {
           "stage": 302,
-          "sha256": "5e9a7ea6d77475da5101d60bf227db8cd181e0e9cfe6853dc84bdf90b105ec3a"
+          "sha256": "2ed7060653d0340632d5bead0a829a87cb007462e943f59ab04107b36d223ef1"
         },
         {
           "stage": 303,
-          "sha256": "0e6184b36a18e79c9a457bfef8881d793eb4a5bfbf243be3be03ca4715dfcf77"
+          "sha256": "e4b912af8d81e457a0e0019a7ae921904a0122f87780ee3afab9e4b02b9a63cc"
         },
         {
           "stage": 304,
-          "sha256": "057dda372d64c89de021181ceb59412534393eb0d5d537c4ed69e6846edbc7ae"
+          "sha256": "075ab92c0be8cc70bd13fbf506df11bd8425c4a3a0b91c26086df62a66eac090"
         },
         {
           "stage": 305,
-          "sha256": "e538dbd3decba263134e016878d8caf452db902b1ca7a5f1332bf62cfe921fff"
+          "sha256": "9c5070b86a86a89d3d14043b103453d21f3c1416a3b51fc4d14a42790bcd69b1"
         },
         {
           "stage": 306,
-          "sha256": "312036b7df0fd4ee2aa662303d84e1843485ed95ae421d91f6c25f62e161d09c"
+          "sha256": "c895a6aed7b70900ee6a5390ebff5cb6538d6537aa384c36fb42aa73bd8602ad"
         },
         {
           "stage": 307,
-          "sha256": "7c0494b79ef8ff14d944fbcdf4f48c9e2592bfd546500ba88b92864c60c89111"
+          "sha256": "f94e4372f36bd67410699d33ceba9f034c46c400be2fb77b75c37df5e5e7c802"
         },
         {
           "stage": 308,
-          "sha256": "1b375ab1ef288ad4982bdd552d4255b8dff5c414190a52f2551081b859d17669"
+          "sha256": "0f89d32aa68eecd78b56763837b99967cd73d28d37d6824d6b92201c6930e16f"
         },
         {
           "stage": 309,
-          "sha256": "72f56bbd8a72570a6509667d1c2dde3aba361fce684dabbd5f7e6a756d57bcec"
+          "sha256": "3d988beca23d4c4bcc7028c9e8aa4f82de7702b00d4a1f0ac2b3dd673ee952fe"
         },
         {
           "stage": 310,
-          "sha256": "2e09bb79208c20a771cc1762c54078df62215253e54c03b942135c581469544c"
+          "sha256": "ba63fff8530e2fdbd7fb805af4ed3a9a8cdfe7279bc06be50fcb6eb207648cae"
         },
         {
           "stage": 311,
-          "sha256": "5f65c739ec9b22b4aa70d0d05a680a4d7e0f764562703136a413bbc5e909a871"
+          "sha256": "bb679d2e40286f82db5f7221d32c2be086593a12d0f55e17bb3dcb5f55cce182"
         },
         {
           "stage": 312,
-          "sha256": "48f4bbb8806b11e3cf776496464ec27d759599dd66bcbc8bad0ad2014aeb653c"
+          "sha256": "3e586d6f13fb6ea4c454cae224818c914ad7f665b46f6f233b16b24445bcdd73"
         },
         {
           "stage": 313,
-          "sha256": "5ffcbc09bd46eb2e89c04d5813968fc6abbaea4d9cee2e4ca05f30b806a339c0"
+          "sha256": "1ec5147615398abf558e04abc9cce4157d9f64367642ee8796af29a6ce2fa10e"
         },
         {
           "stage": 314,
-          "sha256": "70908d3359230d5d1c42b68d02755dc2005f543e7160da5730eec21041f79432"
+          "sha256": "78c7b092a29315e480951ba06ea69119b1ea8c40a16772af446feb1075f55045"
         },
         {
           "stage": 315,
-          "sha256": "64dad97777b90debe360832bffc06a7a088a6d88ca35af6c293f17902ff81c39"
+          "sha256": "79cead785d163c50bd63d03df71176441af3a35e6e8d564c830d7cf5645b64c3"
         },
         {
           "stage": 316,
-          "sha256": "0f50e6c50b9921a2dcb0d446b464de1123a452d7e65e5955bb99b50efb318b0c"
+          "sha256": "6ce3aafe986cdf77498f62fa912a28294e00389dcce7090487b135327000a5c2"
         },
         {
           "stage": 317,
-          "sha256": "72224242f3da6e5ee7ef6446441a6015f7f7e8215663ae0f2384614b8ca904dc"
+          "sha256": "dbb979972f7bc12559e000e44d6a966f7496c34016f959cd59db6de24c98ccf5"
         },
         {
           "stage": 318,
-          "sha256": "ea1dfebce2d6adeb039f2adc989d1e90d2876f2d81498328e2d49dda463d1850"
+          "sha256": "63e356e2fe458aad40ba29b02290777f5d582f2c1e18f35f4a1e19616d26de76"
         },
         {
           "stage": 319,
-          "sha256": "13047909eab30dfd37743cdb5490d509330a98d6d83be71f6ef890a06c4a8000"
+          "sha256": "c8588975380d8da52dd09308305c43605a6bd009cb7d73d4667a4bc258bab537"
         },
         {
           "stage": 320,
-          "sha256": "b442d3151e876a74cf5628a3ea721be6879cbf50c170fb74e2dea069c152646b"
+          "sha256": "6209b4d4645d9d50e8a52a10c88e4f86d12172dbd01c94c9fb80d62a595408d3"
         },
         {
           "stage": 321,
-          "sha256": "730b0cba794e2d70dc2635d7df3f04383062f28f536f27ea267c2591c80ec147"
+          "sha256": "e16e0a1e01c39f859e6c4c11336a83567e16a289328e66881a462fb784f1fb22"
         },
         {
           "stage": 322,
-          "sha256": "35c2b403327424e50ac3e4e99428b87a29a66ae233e98b1e97b953d46c8f56bc"
+          "sha256": "533c3498e85b3ea493adc9d7b473fa3b51e7ea61b69fc34658dacabafb45a69d"
         },
         {
           "stage": 323,
-          "sha256": "2236e2dd0e8bb306bbf679cbeb648e0c5b1ab36c3dc5dad4e243ccb1b026ec0a"
+          "sha256": "6753d76223d0cd3ee1a0ca242f227f317a782ef96b68afc48e138218e41af480"
         },
         {
           "stage": 324,
-          "sha256": "8365fb7c15928edef83ddfce9ed96d16b7286e58865c33e7e7aaa232cefe8644"
+          "sha256": "b0adeeaa977adc0d6b1788a7d1e5a68878f44b8bdb598057737b30e5568112a1"
         },
         {
           "stage": 325,
-          "sha256": "d2f50433810f09c996bceaff26ef38bac36db7e7215720268060fde9e97933f5"
+          "sha256": "1665a016fbecb6b39f6baa076b90693ec28eb7934260f6498248615535d627b6"
         },
         {
           "stage": 326,
-          "sha256": "c3866eda248d9c9a1d274bab5e45552774648df540452cce910c37f35b5abc66"
+          "sha256": "f3d25993fdd23a378f35a23d38ef12fe116a7f74cbcd2a8e6d50e54d94840f14"
         },
         {
           "stage": 327,
-          "sha256": "97f659e34e795d95e1e0ac24c3cc0f1655a0ae329959ae4e704317d3a6491ffd"
+          "sha256": "bb0dcb18ca56cc0d427b47bf7c643e8a78ca84e018e3998e99c5a9148034c24d"
         },
         {
           "stage": 328,
-          "sha256": "70406ab20f397bba2cf5002b17c227b7bd4a614f91f0faff397c897e33ff70bd"
+          "sha256": "fa5e1cdc2203e3b72f83556b1229543d62758d69f19a4a3efa08df7387e91172"
         },
         {
           "stage": 329,
-          "sha256": "ccc8ba8d71c5043e6f13f73ac3b7f2cb915f37923f0d25086abd3e459b9513c6"
+          "sha256": "6d7dcf3d28ba0fe6f2b08966b0aaa467ecabd4ceab356b619570ab514732b0f8"
         },
         {
           "stage": 330,
-          "sha256": "4d7aa8ccffb837850b4248024999f749cfc634b39950c281fb3873d045520f07"
+          "sha256": "2449a93c77cb3a5c635e4ae3fd049e46445c5c0d6aedb8c49d7ed5b50b58ed26"
         },
         {
           "stage": 331,
-          "sha256": "834693cca7739299ae91c0d2580b66608beac7412eaf7a84b74ed3a0bfe0148d"
+          "sha256": "05859809c799d172ef944f40d69fb0975953840a4f27d61bfb6369f6e3c657a6"
         },
         {
           "stage": 332,
-          "sha256": "b9edd02164d8b2a420581d7e3d51922acbb57b40c3cb73d5100272e8aefa051a"
+          "sha256": "2674af23df4891da75b7f7aac19b2b20008bd90ceef9e60829c8b3ea18f8650d"
         },
         {
           "stage": 333,
-          "sha256": "bdfca2496f7516a21196d5ff6d70bffe4ea7401b86dd77484dcbd65bc6abdec0"
+          "sha256": "a9ea39ebb7bf5e2cd462ce2953604385a7a6599e69a7d175c3f54981f406fc67"
         },
         {
           "stage": 334,
-          "sha256": "6d517bdde040fc7092baf5c0f5084cfb2c0d2cfac7bb10acb3c00128eff46aa5"
+          "sha256": "cceef5e547794c116ee44aba5e632caf50b6e654696960dae8091d2271e3d872"
         },
         {
           "stage": 335,
-          "sha256": "a402ae7b46606dd2ed1cbf4b9b00db30c0eade687b75d8533b7d211fcd62fc95"
+          "sha256": "d5c743534ba96b1cd885a2408cc74fc513d1c7e53ab99b41b2a0277f3e7f5d4b"
         },
         {
           "stage": 336,
-          "sha256": "20294f396e10de972111c09154596ef85b21587376e3851761c11aa28cc5aca9"
+          "sha256": "e3c210593fa91f65d2cead7eeffdf7f1d1a83cfb0470afda2565f2c46cdadf83"
         },
         {
           "stage": 337,
-          "sha256": "80a4de22f75ffe8b98d7d6dbc31a387f77eaa07a30d113ccaac37a3393a29ea4"
+          "sha256": "d6591729f12d96a997581bfd9c2580f74c28bb614b7f17d39d0856be164de535"
         },
         {
           "stage": 338,
-          "sha256": "58f9f94c033b28a784f3b4c3616282873605153b0bcfcc354023ec91e466c7fb"
+          "sha256": "a0abecddd116ea217a6d16d4e457c3dffb26c6e40ec124b255fd3f131dc11f14"
         }
       ],
       "nativeCases": 39,
       "visualAcceptance": true,
-      "movementMetres": 3.853946548412993,
-      "presentationIntervalMedianMs": 89.017,
+      "movementMetres": 3.9741969825368457,
+      "presentationIntervalMedianMs": 92.8353,
       "actualPresentBoundaryObserved": true
+    }
+  ],
+  "rejectedCandidates": [
+    {
+      "baseCommit": "4f0148df2e974b45e81262031a47e8c8faf90452",
+      "reason": "Waist shelf at combined maximum in private grey-room review",
+      "restoredAcceptedBase": "2ad61e38fe59126a0175f8ccd2cd12ce6d0bedc7"
     }
   ],
   "preservation": {
@@ -671,14 +681,15 @@
     "scopedAudioRestored": true,
     "privateChildrenClosed": true,
     "temporaryDriverAndRoomRemoved": true,
-    "acceptedRollbackRetained": "local/native-backup-20261006-020555",
+    "acceptedRollbackRetained": "local/native-backup-20261006-062532",
     "wolverineRuntimeUntouched": true
   },
   "limitations": [
     "Native distant LOD transitions not observed; both LOD buffer geometry checked offline.",
     "DX11, ray tracing and all campaign lighting conditions not newly verified.",
-    "Physics presentation cadence remains about 89 ms; performance parity not claimed.",
+    "Measured native presentation interval retained in per-session proof; performance parity not claimed.",
     "Garment and clinical features not newly accepted by the Naked collar review.",
-    "Frozen beta.2 remains separate and unchanged."
+    "Frozen beta.2 remains separate and unchanged.",
+    "Unused historical pre-skinned stream-output SDK fixture still fails its surface-write assertion; installed FloatDraw path and native output passed."
   ]
 }

@@ -1,45 +1,49 @@
 # October 3 beta publication and shared follow-up
 
-## October 6 measured collar repair â€” installed and reviewed
+## October 6 progressive radial ramp — installed and reviewed
 
-Attachment continuity is now the mandatory highest-priority gate in this
-repository, Base and canonical Wolverine. See `AGENTS.md` and
-`docs/PROJECT-CONTEXT.md`; require visual acceptance in addition to welding.
+Attachment continuity remains the mandatory highest-priority gate in Base and
+both adapters. Read `AGENTS.md`, `docs/PROJECT-CONTEXT.md`,
+[repair construction and repeatable gate](COLLAR-REPAIR.md), and
+`provenance/collar-repair.json`. Installed clean Base is `40dfa86`; DLL SHA256:
+`bfbc1e86bee9008268037a256307ee73cac503c8991d966b0b5c54bb1ccf1d0b`.
 
-Read [repair construction and repeatable gate](COLLAR-REPAIR.md) and
-`provenance/collar-repair.json`. Installed development Base is `2ad61e3`;
-DLL SHA256 is `fd1f3508fb3dffadd6f2ba27c3e2ae3570377108af7e94cdb5ffd48526615b09`.
-The frozen beta.2 release below is unchanged and remains the exact rollback.
+The user accepted the prior repair as improved but marked an abrupt upper and
+lateral shoulder. Ordered concentric tissue rings now expand with dilation,
+with a wider quintic fade and anterior loft around the measured opening. The
+body solve preserves the target field's differential coordinates beside the
+prescribed waist; flattening those neighbors had produced a shelf. The same
+field drives both resources/LODs and all 37 waist knots. Rest angle/moving anatomy
+remain independent of the pelvic ramp. A cached constraint-only Base plan
+guards actual cooked body triangles after original-edge welding; exact seam
+and UV aliases remain intact. It builds no per-frame smoothing factorization.
 
-Geralt now recruits outward from his measured pelvic opening, with a bounded
-radial annulus and smooth anterior shoulder. Both body resources/LODs and all
-37 waist knots use the same field. Body recruitment is independent of rest
-angle and moving anatomy. Two sewn solves, body orientation constraints and
-original cooked position/lighting donors remove the old shield/seam mechanism.
-Depth/colour output selects one immutable pose at actual DXGI Present rather
-than script ticks; this removed the intermittent white/background patches.
+Full 278 native-buffer cases and 39 body/render cases pass. Maximum seam
+residual is 1.1041e-7 m; local, raw projected and packing-resolved body reversals
+are all zero. Shared tests/provenance and 22 default fixtures/110 frame replays
+pass; worker transport is byte-identical for 48 frames. Present/Present1 and
+the installed FloatDraw SDK gates pass. The unused historical pre-skinned
+stream-output fixture fails its surface-write assertion; it is not an acceptance
+proof for this installed draw backend.
 
-The 278-case native-buffer sweep and 39-case body/render test pass. Maximum
-seam residual is 1.111e-7 m; local reversed collar faces are zero. Raw all-body
-projected-normal changes retain one packing-ambiguous microscopic stock face;
-the measured error-bound check passes and this diagnostic is not hidden.
-Current wire6 worker replay passes 48 byte-identical frames; historical empty
-orientation replay passes 22 fixtures/110 frames. Shared provenance passes.
+Private grey `sealed-session-20261006-062601` and campaign
+`sealed-session-20261006-063026` each completed 39 native captures and about
+four metres of walking. All front/side/oblique contact sheets and native close
+319/322/334 views were reviewed. The marked junctions blend through a broader
+curved ramp; the attachment stays closed without the earlier platform or black
+ring in these tested Naked/DX12 views. Distant native LOD transitions, ray
+tracing, every campaign light and garments are not newly verified. Both LOD
+buffers were checked offline. Measured presentation intervals are 90.6/92.8 ms;
+performance parity is not claimed.
 
-Private grey `sealed-session-20261006-035528` and campaign
-`sealed-session-20261006-040250` each completed 39 reviewed front/side/oblique
-captures and roughly four metres of engine walking. The tested Naked/DX12
-attachment passes without raised shield, dark ring or background patches.
-Native distant LOD transitions, ray tracing, every campaign light and garments
-are not newly verified; both LOD geometries were checked offline. Cadence
-remains about 89 ms, so performance parity is not claimed.
-
-All private children are closed, scoped audio restored, ordinary settings and
-24 saves verified and temporary drivers/room files removed. All 37 native plus
-five .31 managed files match the repair receipt; accepted rollback is
-`local/native-backup-20261006-020555`. Wolverine runtime is unchanged.
-Ignored rejected candidates remain evidence only. Base's own candidate record
-is a source-only checkpoint; this adapter certificate owns native acceptance.
+All private children are closed, sound restored, ordinary settings and 24 saves
+verified, and temporary driver/room files removed. All 37 native plus five .31
+managed files match. Prior accepted Base 2ad61e3 rollback is retained in
+`local/native-backup-20261006-062532`. Wolverine runtime is unchanged. The
+stronger intermediate Base 4f0148d loft was rejected for a maximum-size waist
+shelf and restored before this final candidate. Frozen beta.2 is unchanged.
+Base's HANDOFF records the source checkpoint before native adoption; this
+adapter certificate owns the later installed acceptance. No push/release made.
 
 ## October 5 repository package and frozen next beta
 

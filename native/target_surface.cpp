@@ -63,6 +63,7 @@ struct TargetSurface::Impl {
    // so harmonic graft fitting cannot drag the pelvic tissue into a fold.
    l.waistMasters=l.domain.prescribedVertices;
    l.bodyDomain=l.domain;
+   l.bodyDomain.preserveTargetDifferential=true;
    for(unsigned i=0;i<l.bodyDomain.triangles.size();i++){
     const auto f=l.bodyDomain.triangles[i];
     // Guard the complete recruited annulus, including thin native waist

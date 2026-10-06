@@ -3,6 +3,7 @@
 #include <malemod/surface/lighting.hpp>
 #include <malemod/surface/presentation.hpp>
 #include <malemod/surface/binding.hpp>
+#include <malemod/surface/graft_runtime.hpp>
 #include <fstream>
 #include <filesystem>
 #include <cstring>
@@ -29,6 +30,9 @@ struct RenderLOD {
  std::vector<std::uint32_t> lightingGroups;
  std::vector<surface::LightingFrame> lightingFallback;
  std::vector<surface::LightingFrame> lightingReference;
+ std::vector<unsigned> guardAliases,guardRepresentatives;
+ std::vector<surface::PrecisePoint> guardRest;
+ std::shared_ptr<const surface::GraftPlan> bodyGuard;
 };
 struct RenderResource {
  unsigned firstVertex=0,vertexCount=0,firstPalette=0,paletteCount=0,indexBytes=0;
@@ -80,6 +84,36 @@ struct RenderContract {
   for(const auto& l:lods){auto& r=resources[l.resource];r.lodFirstVertex[l.lod]=l.firstVertex-r.firstVertex;r.lodVertexCount[l.lod]=unsigned(l.vertices.size());r.lodUVOffset[l.lod]=l.uvOffset;r.lodExtraOffset[l.lod]=l.extraOffset;}
   for(const auto& r:resources)if(r.lodVertexCount[0]+r.lodVertexCount[1]!=r.vertexCount)throw std::invalid_argument("Incomplete resource LOD range");
   if(f.peek()!=EOF)throw std::invalid_argument("Trailing native render data");
+  if(collar)for(auto& l:lods){
+   // The upper resource's minimum authored lineage is the observed lower-body
+   // count. It distinguishes native body triangles from the moving module
+   // without guessing from bones or copying a character-specific vertex ID.
+   unsigned lowerCount=~0u;for(const auto& upper:lods)if(upper.resource==1&&upper.lod==l.lod)
+    for(const auto& v:upper.vertices)lowerCount=(std::min)(lowerCount,v.authored);
+   if(lowerCount==~0u)throw std::invalid_argument("Missing measured body membership");
+   surface::GraftDomain domain;std::map<surface::PrecisePoint,unsigned> groups;
+   for(unsigned i=0;i<l.vertices.size();i++){
+    const auto& v=l.vertices[i];auto point=v.boundary?v.authoredReference:v.reference;
+    auto [entry,added]=groups.emplace(point,unsigned(domain.points.size()));
+    if(added){domain.points.push_back(point);l.guardRepresentatives.push_back(i);}
+    l.guardAliases.push_back(entry->second);
+   }
+   std::map<unsigned,surface::EdgeConstraint> edges;
+   for(auto e:l.collarSeams){surface::EdgeConstraint edge{l.guardAliases[e.slave],l.guardAliases[e.a],l.guardAliases[e.b],e.weight};
+    if((edge.slave==edge.a&&edge.weight==0)||(edge.slave==edge.b&&edge.weight==1))continue;
+    if(edge.a==edge.b||edge.slave==edge.a||edge.slave==edge.b)throw std::invalid_argument("Native guard seam collapsed");
+    auto [it,added]=edges.emplace(edge.slave,edge);if(!added&&(it->second.a!=edge.a||it->second.b!=edge.b||it->second.weight!=edge.weight))throw std::invalid_argument("Native guard aliases have conflicting donors");
+   }
+   for(auto [slave,e]:edges){domain.seams.push_back(e);for(unsigned a=0;a<3;a++)domain.points[slave][a]=(1-e.weight)*domain.points[e.a][a]+e.weight*domain.points[e.b][a];}
+   std::vector<unsigned> locks(domain.points.size());
+   for(unsigned i=0;i<l.vertices.size();i++)if(l.vertices[i].calibration)locks[l.guardAliases[i]]=2;else if(l.vertices[i].boundary)locks[l.guardAliases[i]]=(std::max)(locks[l.guardAliases[i]],1u);
+   for(unsigned i=0;i<locks.size();i++)if(locks[i]==2)domain.protectedVertices.push_back(i);else if(locks[i])domain.prescribedVertices.push_back(i);
+   for(auto face:l.faces){std::array<unsigned,3> mapped{l.guardAliases[face[0]],l.guardAliases[face[1]],l.guardAliases[face[2]]};
+    const auto index=unsigned(domain.triangles.size());domain.triangles.push_back(mapped);
+    if(mapped[0]!=mapped[1]&&mapped[1]!=mapped[2]&&mapped[0]!=mapped[2]&&(l.resource==1||(l.vertices[face[0]].authored<lowerCount&&l.vertices[face[1]].authored<lowerCount&&l.vertices[face[2]].authored<lowerCount)))domain.orientationTriangles.push_back(index);
+   }
+   l.guardRest=domain.points;l.bodyGuard=std::make_shared<surface::GraftPlan>(domain);
+  }
  }
  unsigned VertexCount()const{unsigned n=0;for(const auto& l:lods)n+=unsigned(l.vertices.size());return n;}
 };
@@ -103,6 +137,12 @@ inline std::vector<SourceRenderVertex> ComposeRenderVertices(const RenderContrac
   // cooked attributes only at the protected boundaries and their UV aliases.
   for(const auto& v:l.vertices){auto q=v.reference;if(!v.calibration){q=positions[lod][v.authored];if(!v.boundary)for(unsigned a=0;a<3;a++)q[a]+=v.reference[a]-v.authoredReference[a];}p.push_back(q);}
   const auto before=p;for(auto e:l.collarSeams)for(unsigned a=0;a<3;a++)p[e.slave][a]=(1-e.weight)*before[e.a][a]+e.weight*before[e.b][a];
+  if(l.bodyGuard){
+   std::vector<surface::PrecisePoint> delta(l.guardRest.size());
+   for(unsigned i=0;i<delta.size();i++)for(unsigned a=0;a<3;a++)delta[i][a]=p[l.guardRepresentatives[i]][a]-l.guardRest[i][a];
+   const auto corrected=l.bodyGuard->ProjectDisplacement(delta);
+   for(unsigned i=0;i<p.size();i++)for(unsigned a=0;a<3;a++)p[i][a]=l.guardRest[l.guardAliases[i]][a]+corrected[l.guardAliases[i]][a];
+  }
   auto light=surface::RebuildLighting(p,l.lightingUV,l.faces,l.lightingGroups,l.lightingFallback);
   // REDkit's cooked tangent frame carries the native normal-map convention.
   // Apply the shared geometric frame's change to that frame; rebuilding the

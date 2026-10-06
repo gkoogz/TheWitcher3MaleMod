@@ -8,7 +8,7 @@ from packed_mesh_format import CookedMesh
 from inspect_packed_mesh import inspect
 
 
-def prepare(job,cooked,binding_dir,output):
+def prepare(job,cooked,binding_dir,output,native_inspections=None):
     job,cooked,binding_dir,output=[Path(p).absolute() for p in [job,cooked,binding_dir,output]]
     cfg=settings();pin=base_checkout(cfg)['commit'];sys.path.insert(0,str(cfg['base']))
     from malemod_base.graft import topology_ids
@@ -21,10 +21,21 @@ def prepare(job,cooked,binding_dir,output):
     paths=[cooked/'characters/malemod/body/geralt_motion.w2mesh',cooked/'characters/models/geralt/body/model/t_01_mg__body_hires.w2mesh']
     output.mkdir(parents=True);meshes=[];specs=[];palette=[];inverse=[]
     for label,path in zip(['lower','upper'],paths):
-        run_wcc(cfg,'dumpfile',['-file='+str(path),'-out=\\\\?\\'],job/'intake','inspect-cooked-'+label)
+        if native_inspections is None:
+            run_wcc(cfg,'dumpfile',['-file='+str(path),'-out=\\\\?\\'],job/'intake','inspect-cooked-'+label)
+        else:
+            # Numerical-only edits do not alter the frozen native cook. Reuse
+            # its official dump only when every original input and reader is
+            # byte-identical; inspect the complete mapping again below.
+            previous=read_json(Path(native_inspections)/('inspection-'+label)/'inspection.json')
+            inputs={'meshSHA256':path,'bufferSHA256':Path(str(path)+'.1.buffer'),
+                'dumpSHA256':Path(str(path)+'.xml'),'fbxSHA256':job/(label+'.fbx'),
+                'recipeSHA256':ROOT/'tools/inspect_packed_mesh.py','binaryReaderSHA256':ROOT/'tools/packed_mesh_format.py'}
+            if any(previous.get(key)!=digest(source) for key,source in inputs.items()):
+                raise ValueError('Frozen native inspection input differs: '+label)
         spec=inspect(path,Path(str(path)+'.xml'),job/(label+'.fbx'),output/('inspection-'+label));specs.append(spec)
         mesh=CookedMesh(path.read_bytes());meshes.append(mesh);palette.extend(names.index(n) for n in mesh.palette);inverse.extend(np.asarray(mesh.inverse_binds).reshape(-1,4,4).transpose(0,2,1))
-    cal=profile['coordinateCalibration'];blob=b'MMRND006'+pin.encode()+digest(binding).encode()+np.asarray([*np.asarray(cal['basis']).flatten(),*cal['sourceRoot'],*cal['targetRootNative'],cal['nativeUnitsPerSourceUnit']],dtype='<f8').tobytes()
+    cal=profile['coordinateCalibration'];blob=bytearray(b'MMRND006'+pin.encode()+digest(binding).encode()+np.asarray([*np.asarray(cal['basis']).flatten(),*cal['sourceRoot'],*cal['targetRootNative'],cal['nativeUnitsPerSourceUnit']],dtype='<f8').tobytes())
     blob+=struct.pack('<I',len(palette))+np.asarray(palette,dtype='<u4').tobytes()+np.asarray(inverse,dtype='<f8').tobytes()+struct.pack('<I',2)
     first_vertex=first_palette=0;resources=[]
     for mesh,spec in zip(meshes,specs):
@@ -97,4 +108,5 @@ def prepare(job,cooked,binding_dir,output):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['job','cooked','bindings','output']:p.add_argument('--'+name,type=Path,required=True)
-    a=p.parse_args();prepare(a.job,a.cooked,a.bindings,a.output)
+    p.add_argument('--native-inspections',type=Path,help='Previous hash-verified official native dump of the unchanged cook')
+    a=p.parse_args();prepare(a.job,a.cooked,a.bindings,a.output,a.native_inspections)

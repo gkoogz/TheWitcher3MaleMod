@@ -2,7 +2,7 @@
 
 The working source checkpoint contains the shared collar/menu/clinical adoption,
 garment presentation and persistent-cloth experiments, plus the grey studio.
-The development Base lock is `2ad61e38fe59126a0175f8ccd2cd12ce6d0bedc7`.
+The development Base lock is `40dfa861eda0dce9d1b014ba3ed00732bf3c1e3f`.
 These source changes are preserved for future development; the failed new cloth
 and soft-material candidates have not been accepted or installed.
 

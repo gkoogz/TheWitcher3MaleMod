@@ -6,7 +6,7 @@
   "contract": "modules/pelvic-collar.json",
   "dependency": "dependencies/base.lock.json",
   "character": "geralt",
-  "status": "Measured concentric Base root transition installed and reviewed in Geralt Naked/DX12; both torso and legs receive one stable recruited ramp",
+  "status": "Progressive ordered concentric Base root ramp installed and reviewed in Geralt Naked/DX12; torso and legs preserve measured field differentials",
   "calibration": {
     "profile": "characters/geralt-attachment.json",
     "sourceToFBXScale": 1.0255218584141075,
@@ -25,7 +25,7 @@
   },
   "nativeDeformationBridge": "Native float-position DX12 draw, current native skin palette, immutable fence-retained source/target surface",
   "verification": {
-    "sourceMath": "Clean pinned Base wire6/behavior2 solver; 48 byte-identical worker frames; shared measured root transition and optional body orientation tests",
+    "sourceMath": "Clean pinned Base wire6/behavior2 solver; 48 byte-identical worker frames; shared measured root transition and optional body orientation tests; optional differential preservation and cached native constraint-only projection",
     "targetOfflineFit": "278 native-buffer cases and 39 body/render cases; exact common waist, original edge donors and donor lighting across both resources/LODs",
     "nativeRuntime": "MMRND006: two separate resources/four sections, 49884 rows; actual GPU bodyResourceMask 3; one immutable pose per real Present boundary",
     "observedGameplay": "39 reviewed grey-room and 39 campaign captures in Naked/DX12; extremes, reported large-size settings, combined controls and walking; collar-repair certificate",
