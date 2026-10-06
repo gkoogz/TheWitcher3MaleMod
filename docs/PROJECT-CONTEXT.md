@@ -1,5 +1,12 @@
 # October 3 shared collar and optional clothing
 
+Highest-priority enduring requirement (October 5): attachment integrity, smooth
+collar continuity and a natural pelvic ramp are the most critical aspects of
+the entire project at every scale. Every mod edit requires a regression pass
+for gaps, dark seams, folds, constrictions and wedges across size/angle/state/
+motion. Numerical welding is not visual acceptance. See the mandatory gate
+in AGENTS.md; preserve the last accepted runtime when a candidate fails.
+
 Latest iteration request (October 4): actual in-engine minimal worlds for both
 men, Geralt on a grey plane and Wolverine in a generic UE3 box, with real player
 animation/mod physics and quick entry. Keep common regression cases in Base
