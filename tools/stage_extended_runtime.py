@@ -16,7 +16,9 @@ def stage(selection):
     validate_adoption(ROOT/selected['bodyAdoption'],ROOT/selected['bodyPackage'],pin,settings())
     for key in ['clinical','garmentCarrier']:
         package=manifests[key]['package' if key=='clinical' else 'directory']
-        if verify_package(ROOT/package)['baseCommit']!=pin:raise ValueError('Cooked package differs')
+        if verify_package(ROOT/package)['baseCommit']!=pin:
+            from readopt_carrier_runtime import validate
+            validate(inputs[key],'clinical' if key=='clinical' else 'garment',pin)
     body=read_json(ROOT/selected['bodyJob']/'package.json')
     prepare(Path(selected['fingerprints']),Path(body['cooked'])/'characters/malemod/body',
         Path(body['cooked'])/'characters/models/geralt/body/model/t_01_mg__body_hires.w2mesh',

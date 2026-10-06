@@ -54,7 +54,7 @@ def run(wait=False, timeout_seconds=VERIFICATION_TIMEOUT_SECONDS, *, driver_sour
     if query.stdout.strip():raise ValueError('Preserve the existing game; private test requires a fresh process')
     source=Path(driver_source).resolve() if driver_source else ROOT/'probes/native/autocontinue.ws'
     proof_path=Path(compile_proof).resolve() if compile_proof else ROOT/'build/probe/native-session-compile.json'
-    if not source.is_relative_to(ROOT/'probes/native') or not proof_path.is_relative_to(ROOT/'build'):raise ValueError('Expected owned driver and compile proof')
+    if not (source.is_relative_to(ROOT/'probes/native') or source.is_relative_to(ROOT/'build/collar-sessions')) or not proof_path.is_relative_to(ROOT/'build'):raise ValueError('Expected owned driver and compile proof')
     proof=read_json(proof_path)
     if proof['exitCode'] or proof['ownedSourceHashes']['local/malemod/'+source.name]!=digest(source):raise ValueError('Private driver compilation proof differs')
     addon=game/'Mods/modMaleModContinueTest/content/scripts/local/malemod/autocontinue.ws'

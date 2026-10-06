@@ -89,6 +89,21 @@ int wmain(int argc,wchar_t** argv){
   if(type==D3D12_COMMAND_LIST_TYPE_DIRECT&&!replay.empty()&&malemod::witcher::TestOwnedDraw(list.Get(),110234)!=1)return 18;
   if(FAILED(list->Close()))return 15;
  }
+ // A windowless composition swap chain exercises the real factory/Present
+ // detours without creating a desktop window or consuming host input.
+ ComPtr<IDXGIFactory2> compositionFactory;ComPtr<ID3D12CommandQueue> presentQueue;
+ if(FAILED(factory.As(&compositionFactory)))return 35;
+ D3D12_COMMAND_QUEUE_DESC queueDesc{};
+ if(FAILED(device->CreateCommandQueue(&queueDesc,IID_PPV_ARGS(&presentQueue))))return 36;
+ DXGI_SWAP_CHAIN_DESC1 swap{};swap.Width=16;swap.Height=16;swap.Format=DXGI_FORMAT_R8G8B8A8_UNORM;swap.SampleDesc.Count=1;
+ swap.BufferUsage=DXGI_USAGE_RENDER_TARGET_OUTPUT;swap.BufferCount=2;swap.Scaling=DXGI_SCALING_STRETCH;
+ swap.SwapEffect=DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;swap.AlphaMode=DXGI_ALPHA_MODE_IGNORE;
+ ComPtr<IDXGISwapChain1> chain;
+ if(FAILED(compositionFactory->CreateSwapChainForComposition(presentQueue.Get(),&swap,nullptr,&chain)))return 37;
+ if(FAILED(chain->Present(0,DXGI_PRESENT_TEST))||(malemod::witcher::GraphicsProbeFlags()&0x10000))return 38;
+ if(FAILED(chain->Present(0,0))||!(malemod::witcher::GraphicsProbeFlags()&0x10000))return 39;
+ DXGI_PRESENT_PARAMETERS parameters{};if(FAILED(chain->Present1(0,0,&parameters)))return 40;
+ std::puts("PASS windowless Present/Present1 boundaries; test Present cannot advance the selected surface");
  const auto flags=malemod::witcher::GraphicsProbeFlags();
  std::printf("SDK copy/direct/bundle observer flags: %u\n",flags);
  // Restore patched SDK entry points before releasing their last owners.

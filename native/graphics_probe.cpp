@@ -5,6 +5,7 @@
 #define CINTERFACE
 #include <windows.h>
 #include <d3d12.h>
+#include <dxgi1_4.h>
 #include <MinHook.h>
 #include <atomic>
 #include <cstdio>
@@ -110,6 +111,21 @@ MethodHooks<ComputeConstants> computeConstantsHooks;
 MethodHooks<ComputeCBV> computeCBVHooks;
 MethodHooks<ComputeSRV> computeSRVHooks;
 MethodHooks<ComputeUAV> computeUAVHooks;
+using DXGIFactory=HRESULT(WINAPI*)(REFIID,void**);
+using DXGIFactory2=HRESULT(WINAPI*)(UINT,REFIID,void**);
+using SwapChain=decltype(IDXGIFactoryVtbl::CreateSwapChain);
+using SwapChainHwnd=decltype(IDXGIFactory2Vtbl::CreateSwapChainForHwnd);
+using SwapChainComposition=decltype(IDXGIFactory2Vtbl::CreateSwapChainForComposition);
+using Present=decltype(IDXGISwapChainVtbl::Present);
+using Present1=decltype(IDXGISwapChain1Vtbl::Present1);
+MethodHooks<DXGIFactory> dxgiFactoryHooks;
+DXGIFactory2 originalDXGIFactory2=nullptr;
+MethodHooks<SwapChain> swapChainHooks;
+MethodHooks<SwapChainHwnd> swapChainHwndHooks;
+MethodHooks<SwapChainComposition> swapChainCompositionHooks;
+MethodHooks<Present> presentHooks;
+MethodHooks<Present1> present1Hooks;
+thread_local unsigned presenting=0;
 thread_local bool injectingSurface=false;
 
 
@@ -733,8 +749,73 @@ HRESULT WINAPI GetInterfaceHook(REFCLSID clsid,REFIID iid,void** output){
  return result;
 }
 }
+// SDK script ticks can overlap recording of depth and colour lists. Select
+// the next immutable surface at the render thread's actual Present boundary,
+// never in the independently advancing script callback. Otherwise depth from
+// one anatomy pose exposes background/fabric colour from another pose.
+template<std::size_t N> HRESULT STDMETHODCALLTYPE PresentHook(IDXGISwapChain* chain,UINT interval,UINT options){
+ ++presenting;auto result=presentHooks.originals[N](chain,interval,options);
+ if(!--presenting&&SUCCEEDED(result)&&!(options&DXGI_PRESENT_TEST)){
+  FirstCall(0x10000,"presentBoundaryObserved");
+  FloatDrawFrameBoundary();FluidRendererFrameBoundary();GarmentRendererFrameBoundary();
+ }
+ return result;
+}
+template<std::size_t N> HRESULT STDMETHODCALLTYPE Present1Hook(IDXGISwapChain1* chain,UINT interval,UINT options,const DXGI_PRESENT_PARAMETERS* parameters){
+ ++presenting;auto result=present1Hooks.originals[N](chain,interval,options,parameters);
+ if(!--presenting&&SUCCEEDED(result)&&!(options&DXGI_PRESENT_TEST)){
+  FirstCall(0x10000,"presentBoundaryObserved");
+  FloatDrawFrameBoundary();FluidRendererFrameBoundary();GarmentRendererFrameBoundary();
+ }
+ return result;
+}
+template<std::size_t... N> auto PresentCallbacks(std::index_sequence<N...>){return std::array<Present,sizeof...(N)>{&PresentHook<N>...};}
+template<std::size_t... N> auto Present1Callbacks(std::index_sequence<N...>){return std::array<Present1,sizeof...(N)>{&Present1Hook<N>...};}
+void ObserveSwapChain(HRESULT result,void** output){
+ if(FAILED(result)||!output||!*output)return;
+ auto* unknown=static_cast<IUnknown*>(*output);IDXGISwapChain* chain=nullptr;
+ if(SUCCEEDED(unknown->lpVtbl->QueryInterface(unknown,IID_IDXGISwapChain,reinterpret_cast<void**>(&chain)))){
+  std::lock_guard<std::mutex> lock(hookMutex);
+  if(!HookMethod(presentHooks,chain->lpVtbl->Present,PresentCallbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);
+  IDXGISwapChain1* newer=nullptr;
+  if(SUCCEEDED(chain->lpVtbl->QueryInterface(chain,IID_IDXGISwapChain1,reinterpret_cast<void**>(&newer)))){
+   if(!HookMethod(present1Hooks,newer->lpVtbl->Present1,Present1Callbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);
+   newer->lpVtbl->Release(newer);
+  }
+  chain->lpVtbl->Release(chain);
+ }
+}
+template<std::size_t N> HRESULT STDMETHODCALLTYPE SwapChainHook(IDXGIFactory* factory,IUnknown* device,DXGI_SWAP_CHAIN_DESC* desc,IDXGISwapChain** output){auto result=swapChainHooks.originals[N](factory,device,desc,output);ObserveSwapChain(result,reinterpret_cast<void**>(output));return result;}
+template<std::size_t N> HRESULT STDMETHODCALLTYPE SwapChainHwndHook(IDXGIFactory2* factory,IUnknown* device,HWND hwnd,const DXGI_SWAP_CHAIN_DESC1* desc,const DXGI_SWAP_CHAIN_FULLSCREEN_DESC* fullscreen,IDXGIOutput* restrictTo,IDXGISwapChain1** output){auto result=swapChainHwndHooks.originals[N](factory,device,hwnd,desc,fullscreen,restrictTo,output);ObserveSwapChain(result,reinterpret_cast<void**>(output));return result;}
+template<std::size_t N> HRESULT STDMETHODCALLTYPE SwapChainCompositionHook(IDXGIFactory2* factory,IUnknown* device,const DXGI_SWAP_CHAIN_DESC1* desc,IDXGIOutput* restrictTo,IDXGISwapChain1** output){auto result=swapChainCompositionHooks.originals[N](factory,device,desc,restrictTo,output);ObserveSwapChain(result,reinterpret_cast<void**>(output));return result;}
+template<std::size_t... N> auto SwapChainCallbacks(std::index_sequence<N...>){return std::array<SwapChain,sizeof...(N)>{&SwapChainHook<N>...};}
+template<std::size_t... N> auto SwapChainHwndCallbacks(std::index_sequence<N...>){return std::array<SwapChainHwnd,sizeof...(N)>{&SwapChainHwndHook<N>...};}
+template<std::size_t... N> auto SwapChainCompositionCallbacks(std::index_sequence<N...>){return std::array<SwapChainComposition,sizeof...(N)>{&SwapChainCompositionHook<N>...};}
+void ObserveDXGIFactory(HRESULT result,void** output){
+ if(FAILED(result)||!output||!*output)return;auto* unknown=static_cast<IUnknown*>(*output);IDXGIFactory* factory=nullptr;
+ if(SUCCEEDED(unknown->lpVtbl->QueryInterface(unknown,IID_IDXGIFactory,reinterpret_cast<void**>(&factory)))){
+  std::lock_guard<std::mutex> lock(hookMutex);
+  if(!HookMethod(swapChainHooks,factory->lpVtbl->CreateSwapChain,SwapChainCallbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);
+  IDXGIFactory2* newer=nullptr;
+  if(SUCCEEDED(factory->lpVtbl->QueryInterface(factory,IID_IDXGIFactory2,reinterpret_cast<void**>(&newer)))){
+   if(!HookMethod(swapChainHwndHooks,newer->lpVtbl->CreateSwapChainForHwnd,SwapChainHwndCallbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);
+   if(!HookMethod(swapChainCompositionHooks,newer->lpVtbl->CreateSwapChainForComposition,SwapChainCompositionCallbacks(std::make_index_sequence<16>{})))flags.fetch_or(0x8000);
+   newer->lpVtbl->Release(newer);
+  }
+  factory->lpVtbl->Release(factory);
+ }
+}
+template<std::size_t N> HRESULT WINAPI DXGIFactoryHook(REFIID iid,void** output){auto result=dxgiFactoryHooks.originals[N](iid,output);ObserveDXGIFactory(result,output);return result;}
+template<std::size_t... N> auto DXGIFactoryCallbacks(std::index_sequence<N...>){return std::array<DXGIFactory,sizeof...(N)>{&DXGIFactoryHook<N>...};}
+HRESULT WINAPI DXGIFactory2Hook(UINT options,REFIID iid,void** output){auto result=originalDXGIFactory2(options,iid,output);ObserveDXGIFactory(result,output);return result;}
 bool InitializeGraphicsProbe(){
  OpenLog();
+ auto dxgi=LoadLibraryExW(L"dxgi.dll",nullptr,LOAD_LIBRARY_SEARCH_SYSTEM32);if(!dxgi)return false;
+ for(auto name:{"CreateDXGIFactory","CreateDXGIFactory1"}){
+  auto address=GetProcAddress(dxgi,name);if(!address||!HookMethod(dxgiFactoryHooks,reinterpret_cast<DXGIFactory>(address),DXGIFactoryCallbacks(std::make_index_sequence<16>{})))return false;
+ }
+ auto factory2=GetProcAddress(dxgi,"CreateDXGIFactory2");
+ if(factory2&&!Hook(reinterpret_cast<void*>(factory2),reinterpret_cast<void*>(&DXGIFactory2Hook),reinterpret_cast<void**>(&originalDXGIFactory2)))return false;
  // Resolve the system SDK factory; no DLL replacement or bootstrap device.
  auto library=LoadLibraryExW(L"d3d12.dll",nullptr,LOAD_LIBRARY_SEARCH_SYSTEM32);
  if(!library)return false;

@@ -1,0 +1,684 @@
+{
+  "schema": "malemod.measured-collar-delivery/1",
+  "date": "2026-10-06",
+  "baseCommit": "2ad61e38fe59126a0175f8ccd2cd12ce6d0bedc7",
+  "scope": "Geralt measured pelvic recruitment and attachment, DX12 Naked",
+  "installed": true,
+  "released": false,
+  "algorithm": {
+    "measuredOpening": true,
+    "progressiveConcentricSupport": true,
+    "anteriorShoulder": true,
+    "bodyIndependentOfShaftRestAngle": true,
+    "sharedWaistKnots": 37,
+    "originalEdgeDonors": true,
+    "renderContractVersion": 6,
+    "renderThreadPresentSelection": true
+  },
+  "sourceFiles": [
+    {
+      "path": "dependencies/base.lock.json",
+      "sha256": "74711d7df4b9d30c8ea4c9252044eb1e8ee3d8723b5ac9e21ebbb2d8460fb49b"
+    },
+    {
+      "path": "native/CMakeLists.txt",
+      "sha256": "78b1f10de4b68e0ccb88b41fe0dca8bb4c2c7af766576c01aaa65657657f7278"
+    },
+    {
+      "path": "native/engine_bridge.cpp",
+      "sha256": "e840411de793c358a66fbe1befe3dc8bcc34d1bfa02b2e167e9d0d35a5e55d4c"
+    },
+    {
+      "path": "native/float_draw_renderer.cpp",
+      "sha256": "927bd31a59d2b61e00ccecb8da6773d1d75a0f0f1250f996bb60825148413b49"
+    },
+    {
+      "path": "native/float_draw_renderer.hpp",
+      "sha256": "c473e7c705062a75a78c99ae9fc9716c0ade69d5520851bd33b910d1dd7063b3"
+    },
+    {
+      "path": "native/graphics_probe.cpp",
+      "sha256": "dfafcf5f23a63e989265dfdae3b049ccb184b835bf9fb19b6b6baf56d900f103"
+    },
+    {
+      "path": "native/graphics_probe_test.cpp",
+      "sha256": "646738792f5ac01ff2d93f9e98ca43d90bd97af98e6435b9e3e5b509a4b3fa30"
+    },
+    {
+      "path": "native/render_contract.hpp",
+      "sha256": "5fa601ce6abdcd48cd578fab7c4c92464da1f144f4919ab84c8df46e9e29cdc2"
+    },
+    {
+      "path": "native/target_surface.cpp",
+      "sha256": "119b4328f5084960ba31eefda31ea3eb88959659130e9875be31be91aba45627"
+    },
+    {
+      "path": "native/target_surface_test.cpp",
+      "sha256": "8e4645d4ef23b0e7e9d9187da865b39a4e85ec4516ff331ea405d6812e25837b"
+    },
+    {
+      "path": "native/collar_integrity_probe.cpp",
+      "sha256": "54161f9480b3a3d98853e526200504c4d39c24352c20072f962f4d7dfbf7cf78"
+    },
+    {
+      "path": "tools/install_native_runtime.py",
+      "sha256": "8279982d8db4b6e98f48feca5093421ea0796aea778e02b531e22aa3b65c8ceb"
+    },
+    {
+      "path": "tools/prepare_body_render_contract.py",
+      "sha256": "c6c2ff0152742fe7a9690a0bb7d6be61aeadbe73b6a80b0665c27a41cb1a1a03"
+    },
+    {
+      "path": "tools/run_sealed_session.py",
+      "sha256": "63906937019d514d4a1482088d5b2cf5b1b163225087b3d17e49dc84b5ee04f6"
+    },
+    {
+      "path": "tools/stage_extended_runtime.py",
+      "sha256": "f35480805c62e7145dd12dcb19c9de6d2e89f50be42f2c5c996dc976377f0463"
+    },
+    {
+      "path": "tools/prepare_collar_session.py",
+      "sha256": "275719b394ebbac0a84333a116e12eab00936e92114a94de574341cbe43cd5f6"
+    },
+    {
+      "path": "tools/readopt_carrier_runtime.py",
+      "sha256": "68614e9eb2213ae536ab6c8257c1d6330f225893c4f5840b334957c9a50bae03"
+    },
+    {
+      "path": "tools/record_collar_session.py",
+      "sha256": "9953ec36c61c6db374445b39d05c47bed9bedbf955c4248bb7ac1c551b7dfb14"
+    },
+    {
+      "path": "tools/review_collar_integrity.py",
+      "sha256": "72f2793cd2c55805f294cb501fe413289752812c01d0e6e9f709a5fcd723ca79"
+    },
+    {
+      "path": "probes/native/collar_cases.ws",
+      "sha256": "53f74858dccc7d66a9ed970908acdbab114bf16a4a16d03055b318c0039e28a4"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "build/full-runtime/geralt-bindings-collar-2ad61e3/geralt.bindings",
+      "sha256": "b009239c36f93d4c18c35a6f041901f885ee29b6352db9c08c632545cfe94d8b"
+    },
+    {
+      "path": "build/full-runtime/render-collar-2ad61e3/geralt.render",
+      "sha256": "2e6957a4a80650b148eb811e24d4582f5b69b1156f297299ebf8c9b364557c8f"
+    },
+    {
+      "path": "build/full-runtime/worker-proof-collar-2ad61e3/manifest.json",
+      "sha256": "1c9299a2c20e0990b22ab29574e38076ba5014f4f9922a52a04326ef3713541f"
+    },
+    {
+      "path": "build/collar-review-20261006/body-render-final.txt",
+      "sha256": "e3e85815bd455377f90bf60d4cd1267196c21a9ba151b03d9522e656cce0f371"
+    },
+    {
+      "path": "build/collar-review-20261006/full-all-body-guard/collar-metrics.json",
+      "sha256": "f07a38beb43b9d843f6b387e18af352a3bd13b88afffc8aa57d8331ac860bf27"
+    },
+    {
+      "path": "build/collar-review-20261006/adapter-tests.txt",
+      "sha256": "7a30fd037f3f45aaa30f579364839b52e33a3d173bed3f4a3b0cd3466f2eae67"
+    },
+    {
+      "path": "build/collar-review-20261006/present-sdk-test.txt",
+      "sha256": "91e4e9c6159133997c7440f6a605e43154ad98b21f604dfa8a43c3f6bdc78570"
+    }
+  ],
+  "moduleSHA256": "fd1f3508fb3dffadd6f2ba27c3e2ae3570377108af7e94cdb5ffd48526615b09",
+  "installedManagedFiles": [
+    {
+      "path": "bin/x64_dx12/dinput8.dll",
+      "sha256": "f9c52ce08e5c9c405b2fcee74e9f8eacc3057a7a930c887f58182b5dfde15b3e"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod_witcher.dll",
+      "sha256": "fd1f3508fb3dffadd6f2ba27c3e2ae3570377108af7e94cdb5ffd48526615b09"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/surface_worker.exe",
+      "sha256": "979647f61040910e2e0bd20fda7af34e42ab388254ae97a3f0b5b7359a9e4be1"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod-runtime.profile",
+      "sha256": "679cfc5d2d00c5e943fac223759d184f7d6a062cbb2fdbb0893221d510397046"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.bindings",
+      "sha256": "b009239c36f93d4c18c35a6f041901f885ee29b6352db9c08c632545cfe94d8b"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.render",
+      "sha256": "2e6957a4a80650b148eb811e24d4582f5b69b1156f297299ebf8c9b364557c8f"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.render.sha256",
+      "sha256": "6751bf82b070f560add1437fbf079706aa9be8a167d27b0512c37ba7cbd5d3d2"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/graphics-owned-fingerprints.bin",
+      "sha256": "6f58db1d3f593c266d9a06c752b35eef985aee8c81f2982bfaf49aa6975e8fbb"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod-overlay.enable",
+      "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/runtime.ws",
+      "sha256": "54e9be6f3d9a1cb48a649a221086df7b1b4b78cba831a8d6c81aaa1a0b3e1eab"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/render_bones.ws",
+      "sha256": "c9ce965f6c41b1a847fcad5e3579118163d960df2ec66df4ddab49923f758ee2"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/bundles/blob0.bundle",
+      "sha256": "66c6cb3fa165a1391a15519c3b3be01dac19f3f5bcc3e7adda6ef51f040dfbbc"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/bundles/buffers0.bundle",
+      "sha256": "8ecc81dc6702b7b29a84d7066b8d502ae09119e4a488dc2bf478a784a9156ad7"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/dep.cache",
+      "sha256": "429d2afda0555108623d3b1ecbe87d10d6b3930fe18f0d106f6f0b77020b9f5a"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/metadata.store",
+      "sha256": "e9a187409cbe0944f9281e116141ed767a7757bf86a44888af4b690cd534178d"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/texture.cache",
+      "sha256": "e41110437c30125452a4e0ea05c905f479668f4ca90483a147874fd218677c86"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/clinical.render",
+      "sha256": "12b574b17a85455def94544b9d36a2aad6279910141f9c76c9e1c6f08b5221ad"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/clinical.render.sha256",
+      "sha256": "96bb258fee76f6810a8a154cc68504561a4e580295bf9b4d292f533c69ff1eb3"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/splat_bakes.bin",
+      "sha256": "b41046ee1083da7f0921706022893a7aed78b74a9ff931776f12e746ab405fb5"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/clinical.ws",
+      "sha256": "7d8b0769492900ae2696d29972cd6666a354f54b12c6fc36bcda0941968d2413"
+    },
+    {
+      "path": "Mods/modMaleModGarments/content/bundles/blob0.bundle",
+      "sha256": "84bbe891ff90048e95814b1cd971b61a9a539492894cb3184f5d300cbac02f2f"
+    },
+    {
+      "path": "Mods/modMaleModGarments/content/bundles/buffers0.bundle",
+      "sha256": "91cb39ef2f0becb710e3982fece57c1abf4367db2d59225291e4faaa866b7cb6"
+    },
+    {
+      "path": "Mods/modMaleModGarments/content/dep.cache",
+      "sha256": "39605dcb5f928236347b8600b852f016d30213bb75987531b4362bb8cf0b784c"
+    },
+    {
+      "path": "Mods/modMaleModGarments/content/metadata.store",
+      "sha256": "58b05d669fa73a08f4fe549de516855f66f9b44309f2beceb5893e6aecdedac1"
+    },
+    {
+      "path": "Mods/modMaleModGarments/content/texture.cache",
+      "sha256": "6a554a95761e6974151b1dab2c4b3074ff3b5edafc9f2a30de29e67af883412d"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/garment.bindings",
+      "sha256": "246fc3f45155abba9263ffacf320198a6237063e0cfa8e54b92a691c3ee4d27b"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/garment.bindings.sha256",
+      "sha256": "24fe403e4ffcea3d9ef07e2f6427aac6c3d772d1499a11392bd27de7dd5b2016"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/garment.reactions",
+      "sha256": "07c21b678a4a00f9af4af506b2096599b5a3e86a59795b3b6de6e59d03d6c5d7"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/garment.reactions.sha256",
+      "sha256": "4bca248fe73369a95543b671f224a6a235df2eee6bbc6ebe155fc24d0c62ccab"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/garment.render",
+      "sha256": "6ff3b309e8bc4b82afc32d5c5ff0c1cb84ff4e5bda93e2cdcc979c1ea99ae84b"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/garment.render.sha256",
+      "sha256": "2f2aa1e5d47dee80e91d1aaf8825432387538ea8ca2f8e03d83e8fda2f680726"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/garment.ws",
+      "sha256": "c101a17495cb62a072650d6eb16d0898c3d5d429c2c43df31fb3d40f8483351a"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/blob0.bundle",
+      "sha256": "7f37a33a743dd6e55a999be50e2ea062169f3cba3f2e47c35ee56159215c9d35"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/buffers0.bundle",
+      "sha256": "012e7422544eb65b21f90c8e18fee5a49989760604e719ccd0a65feb3d103c29"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/dep.cache",
+      "sha256": "1dcdfbb93ebed39f4fb8a0b134089409dea3d88f8df401bc131119609310bed9"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/metadata.store",
+      "sha256": "ba66df5f3ba2d20faf31d30ca490f77b8723fd299643f82384fcca0fdbe1b2cc"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/texture.cache",
+      "sha256": "d7dbf9bcf79bb2eb6cdb2494006063f3fb753c7d854dfa534bfd568b283203c1"
+    }
+  ],
+  "fallbackFiles": [
+    {
+      "path": "content/bundles/blob0.bundle",
+      "sha256": "cfa7393bde48202f6c23610da34dc7f98ce3817036546e97b216c16c804be6c0"
+    },
+    {
+      "path": "content/bundles/buffers0.bundle",
+      "sha256": "e98b3d1ce3e80a55de80873bb5a8bd0256f0371f218fd992d241987e31f81110"
+    },
+    {
+      "path": "content/dep.cache",
+      "sha256": "5d91bffb0139d7192ab2443f9a90a55d64c1deb678ee2896acbd9279636b9239"
+    },
+    {
+      "path": "content/metadata.store",
+      "sha256": "35977ccd6a5894ede2e40fe66eed8419ac694153f5c48b493774e5aa10ae68e7"
+    },
+    {
+      "path": "content/scripts/local/maleModPhysics.ws",
+      "sha256": "c1b75d3e6c537c0ba0e89bd16761a9eea588455feccc667c6c8e2fe1fd908d52"
+    }
+  ],
+  "offline": {
+    "nativeBufferCases": 278,
+    "bodyCases": 39,
+    "resources": 2,
+    "lods": 2,
+    "seamMaximumMetres": 1.1107025132438768e-07,
+    "normalMaximumDonorError": 0.00046926440516904984,
+    "reversedLocalCollarFaces": 0,
+    "packingResolvedReversedBodyFaces": 0,
+    "rawMaximumProjectedBodyFacesReversed": 1,
+    "packingAmbiguityExplicitlyReported": true,
+    "waistWeightAndLightingExact": true,
+    "serialParallelBytesIdentical": true,
+    "pauseAndEpochChecks": true
+  },
+  "verification": {
+    "sharedRootTransition": true,
+    "sharedOptionalOrientation": true,
+    "emptyConstraintReferenceFixtures": 22,
+    "emptyConstraintFrameReplays": 110,
+    "currentWorkerByteIdenticalFrames": 48,
+    "physicalReactionCases": 18,
+    "adapterUnitTests": 13,
+    "windowlessPresentAndPresent1": true
+  },
+  "native": [
+    {
+      "scene": "grey",
+      "proof": "build/probe/sealed-session-20261006-035528/collar-review.json",
+      "proofSHA256": "1253c2166fabed7dc6d152f4db1b1f0ea7f46b9ac341cec26e23693034a81e3f",
+      "checkpointSHA256": "cbc7ddb4ecf4838decc619164f130e514d4c1ae366d64a2e758dc4e6e483f6f9",
+      "captureHashes": [
+        {
+          "stage": 300,
+          "sha256": "54c3166fa7af6793aa095b92d21f5402e6cefe15c92df98ad3eb40ae6da526b9"
+        },
+        {
+          "stage": 301,
+          "sha256": "031feef67fc06d7b269c4010c6a501ef638e5e98c1e1ef39df3ecaae1bec24e5"
+        },
+        {
+          "stage": 302,
+          "sha256": "22debce7c8eae7736cab476b1414f0d65dd95b8707c215d6701b3d076c41b501"
+        },
+        {
+          "stage": 303,
+          "sha256": "18efa50b86cabab0c4d2c60b350f590c9d6c214d86c61825abc0bee2d5aeefd3"
+        },
+        {
+          "stage": 304,
+          "sha256": "77eba6e02dd1f961e2eed5a216b9209b19934fccb55f98917a3b5107c5f58500"
+        },
+        {
+          "stage": 305,
+          "sha256": "90545d15847b33dd30b58f449986231f1cb8ae0cc04ef26413002339a2ad76e9"
+        },
+        {
+          "stage": 306,
+          "sha256": "23720c51c78f28cf4b9de314d54fd66f049fc0f643dd0e420d8fe27c2ed0798a"
+        },
+        {
+          "stage": 307,
+          "sha256": "0d53326fad8c2691ad698692601eb523c162ae23cdcec38589a180a4fd3401ff"
+        },
+        {
+          "stage": 308,
+          "sha256": "6f311973dc690652446449dcca9dcaa0aad91b36c0efeaedeeef46c1f9a9adb3"
+        },
+        {
+          "stage": 309,
+          "sha256": "836bbcfd595b8496f8e73f3e67631236535634e8b7d6e6e488b890ef54c5ce9f"
+        },
+        {
+          "stage": 310,
+          "sha256": "6539caabb5c740d23b18d0da54943ac467fd11c19ff8374f904def9268b9139b"
+        },
+        {
+          "stage": 311,
+          "sha256": "a6b4a882bd34ab1123f1eec22978a773de7b76f6556c86a4a58db28bf7b291a7"
+        },
+        {
+          "stage": 312,
+          "sha256": "146ff2ef94b15b9ab750de51d80a1215be23806995acd0f366af2a58905ac6d2"
+        },
+        {
+          "stage": 313,
+          "sha256": "7a55f15b0959d44696a625bdfa55407977aab2acf22ad9617907bb1c5ccd4abf"
+        },
+        {
+          "stage": 314,
+          "sha256": "936745d6de1acaf0e02aa4f8a5c164c34d6f28c9d838c8dac621bca1a072ff60"
+        },
+        {
+          "stage": 315,
+          "sha256": "3650906b1fd48e11c55b08487dd55be5db58306a7f769ad6013476225fb97798"
+        },
+        {
+          "stage": 316,
+          "sha256": "b7437660d3f78efeaab43ee4738e4833bcdb970259239558eeaf5d6397fa0849"
+        },
+        {
+          "stage": 317,
+          "sha256": "12348c42c57b44a55906d58f208ad500941fedc3bb929d453bb0bc20580b7508"
+        },
+        {
+          "stage": 318,
+          "sha256": "8c50676f4cadd49500b9333b3ad9998f70f5db5938fe4be29d547c8dab756ba6"
+        },
+        {
+          "stage": 319,
+          "sha256": "fe8b672d330612409694ca0d6edc8a38963d07e30a2eaebca37356890939258c"
+        },
+        {
+          "stage": 320,
+          "sha256": "39bb20300f10ba76ccbbe5c04634ed05eedae436393e45b3d2aaa2cae9bfeb5b"
+        },
+        {
+          "stage": 321,
+          "sha256": "dff315a0cec10f9d98f4c0b92b28e92658113602b65b67cec51fb33591f809a9"
+        },
+        {
+          "stage": 322,
+          "sha256": "528e36ccc548c2724b431d152d9a338a89cf729b7909935df6095f1cbb2c3e6a"
+        },
+        {
+          "stage": 323,
+          "sha256": "7398a16c2077eff7859c0bd6d618bf04e083229927fd552c24f466404e08d47e"
+        },
+        {
+          "stage": 324,
+          "sha256": "5fddd509ed18c54905262172ab6d1c681d304debef7c31315a61ca6a2b1044fb"
+        },
+        {
+          "stage": 325,
+          "sha256": "dc9ddb33193bc3369bf38f4e0827621683ecf92ce2ae2f61925660cfb5036b0f"
+        },
+        {
+          "stage": 326,
+          "sha256": "89fb0c3bce7751b3aa274916fe37309e39856c55c175baffec18f72077f5ea2e"
+        },
+        {
+          "stage": 327,
+          "sha256": "7f02ab522b1e692419e18fd81185a3646cf10bf57bd9134a8395fac16b6c1c71"
+        },
+        {
+          "stage": 328,
+          "sha256": "7c92e224a02c600f70261d85a955cdbfa582315fbf43b557b1749f5040b760d5"
+        },
+        {
+          "stage": 329,
+          "sha256": "bef0666cca18f29a254a5bdfe4cf7a378f8d400dc4fc3197bc005e6c6f922250"
+        },
+        {
+          "stage": 330,
+          "sha256": "52a3dbb2509f24692c54fc6e16c43079a1de53eedb58e0b9376343b335200aef"
+        },
+        {
+          "stage": 331,
+          "sha256": "b396d3edbf933163a33aa33f9a70395f07bcf27bccf02fc2615c54d58d31df02"
+        },
+        {
+          "stage": 332,
+          "sha256": "c51f6b459085eacf12c9b695a9d2eaa38525a4c035f282228b171085f03af92d"
+        },
+        {
+          "stage": 333,
+          "sha256": "da95309a548f3d8bcee7ad88d6fdb94caad93e34e48167c40f516f83aae678b4"
+        },
+        {
+          "stage": 334,
+          "sha256": "4e3f687748ef57215dfae7199ae9c277d2c82b3e9f79b8ec2a408d478c89f846"
+        },
+        {
+          "stage": 335,
+          "sha256": "4bdb83bd45b6e5a40ce6f5df6940e468a8e4685c7b9616aa2f7d9f44874198af"
+        },
+        {
+          "stage": 336,
+          "sha256": "36955df4c9ac332e3ef75d958085a903983c9906a2c5a8bf67d601dde9dd727e"
+        },
+        {
+          "stage": 337,
+          "sha256": "c6103272873e1ad6365c5e5eb42ad563e78067b85ae044d1abc3f385bbb1c3fa"
+        },
+        {
+          "stage": 338,
+          "sha256": "d23c9a120aea877d0aef2e8b73ddf4027fb319e1045fa2b0649b17886e02bc9f"
+        }
+      ],
+      "nativeCases": 39,
+      "visualAcceptance": true,
+      "movementMetres": 4.041780639529972,
+      "presentationIntervalMedianMs": 89.0222,
+      "actualPresentBoundaryObserved": true
+    },
+    {
+      "scene": "campaign",
+      "proof": "build/probe/sealed-session-20261006-040250/collar-review.json",
+      "proofSHA256": "3e72392722ad292856bf1323bede4472c437c6c099976d7866c410352e4bf79e",
+      "checkpointSHA256": "0f4eb888a33286fcd0a33349d95a24ee29c0b6435e3364bb16bb774bfc1a7a5b",
+      "captureHashes": [
+        {
+          "stage": 300,
+          "sha256": "0c53334ad8b0646ae1b7b05346636bc98e1baea62faa60f7614405ad6f51270b"
+        },
+        {
+          "stage": 301,
+          "sha256": "f3a34d26ee61a3444f3defae839e9e1a6cd6d05cfe610959518158bda4ad390c"
+        },
+        {
+          "stage": 302,
+          "sha256": "5e9a7ea6d77475da5101d60bf227db8cd181e0e9cfe6853dc84bdf90b105ec3a"
+        },
+        {
+          "stage": 303,
+          "sha256": "0e6184b36a18e79c9a457bfef8881d793eb4a5bfbf243be3be03ca4715dfcf77"
+        },
+        {
+          "stage": 304,
+          "sha256": "057dda372d64c89de021181ceb59412534393eb0d5d537c4ed69e6846edbc7ae"
+        },
+        {
+          "stage": 305,
+          "sha256": "e538dbd3decba263134e016878d8caf452db902b1ca7a5f1332bf62cfe921fff"
+        },
+        {
+          "stage": 306,
+          "sha256": "312036b7df0fd4ee2aa662303d84e1843485ed95ae421d91f6c25f62e161d09c"
+        },
+        {
+          "stage": 307,
+          "sha256": "7c0494b79ef8ff14d944fbcdf4f48c9e2592bfd546500ba88b92864c60c89111"
+        },
+        {
+          "stage": 308,
+          "sha256": "1b375ab1ef288ad4982bdd552d4255b8dff5c414190a52f2551081b859d17669"
+        },
+        {
+          "stage": 309,
+          "sha256": "72f56bbd8a72570a6509667d1c2dde3aba361fce684dabbd5f7e6a756d57bcec"
+        },
+        {
+          "stage": 310,
+          "sha256": "2e09bb79208c20a771cc1762c54078df62215253e54c03b942135c581469544c"
+        },
+        {
+          "stage": 311,
+          "sha256": "5f65c739ec9b22b4aa70d0d05a680a4d7e0f764562703136a413bbc5e909a871"
+        },
+        {
+          "stage": 312,
+          "sha256": "48f4bbb8806b11e3cf776496464ec27d759599dd66bcbc8bad0ad2014aeb653c"
+        },
+        {
+          "stage": 313,
+          "sha256": "5ffcbc09bd46eb2e89c04d5813968fc6abbaea4d9cee2e4ca05f30b806a339c0"
+        },
+        {
+          "stage": 314,
+          "sha256": "70908d3359230d5d1c42b68d02755dc2005f543e7160da5730eec21041f79432"
+        },
+        {
+          "stage": 315,
+          "sha256": "64dad97777b90debe360832bffc06a7a088a6d88ca35af6c293f17902ff81c39"
+        },
+        {
+          "stage": 316,
+          "sha256": "0f50e6c50b9921a2dcb0d446b464de1123a452d7e65e5955bb99b50efb318b0c"
+        },
+        {
+          "stage": 317,
+          "sha256": "72224242f3da6e5ee7ef6446441a6015f7f7e8215663ae0f2384614b8ca904dc"
+        },
+        {
+          "stage": 318,
+          "sha256": "ea1dfebce2d6adeb039f2adc989d1e90d2876f2d81498328e2d49dda463d1850"
+        },
+        {
+          "stage": 319,
+          "sha256": "13047909eab30dfd37743cdb5490d509330a98d6d83be71f6ef890a06c4a8000"
+        },
+        {
+          "stage": 320,
+          "sha256": "b442d3151e876a74cf5628a3ea721be6879cbf50c170fb74e2dea069c152646b"
+        },
+        {
+          "stage": 321,
+          "sha256": "730b0cba794e2d70dc2635d7df3f04383062f28f536f27ea267c2591c80ec147"
+        },
+        {
+          "stage": 322,
+          "sha256": "35c2b403327424e50ac3e4e99428b87a29a66ae233e98b1e97b953d46c8f56bc"
+        },
+        {
+          "stage": 323,
+          "sha256": "2236e2dd0e8bb306bbf679cbeb648e0c5b1ab36c3dc5dad4e243ccb1b026ec0a"
+        },
+        {
+          "stage": 324,
+          "sha256": "8365fb7c15928edef83ddfce9ed96d16b7286e58865c33e7e7aaa232cefe8644"
+        },
+        {
+          "stage": 325,
+          "sha256": "d2f50433810f09c996bceaff26ef38bac36db7e7215720268060fde9e97933f5"
+        },
+        {
+          "stage": 326,
+          "sha256": "c3866eda248d9c9a1d274bab5e45552774648df540452cce910c37f35b5abc66"
+        },
+        {
+          "stage": 327,
+          "sha256": "97f659e34e795d95e1e0ac24c3cc0f1655a0ae329959ae4e704317d3a6491ffd"
+        },
+        {
+          "stage": 328,
+          "sha256": "70406ab20f397bba2cf5002b17c227b7bd4a614f91f0faff397c897e33ff70bd"
+        },
+        {
+          "stage": 329,
+          "sha256": "ccc8ba8d71c5043e6f13f73ac3b7f2cb915f37923f0d25086abd3e459b9513c6"
+        },
+        {
+          "stage": 330,
+          "sha256": "4d7aa8ccffb837850b4248024999f749cfc634b39950c281fb3873d045520f07"
+        },
+        {
+          "stage": 331,
+          "sha256": "834693cca7739299ae91c0d2580b66608beac7412eaf7a84b74ed3a0bfe0148d"
+        },
+        {
+          "stage": 332,
+          "sha256": "b9edd02164d8b2a420581d7e3d51922acbb57b40c3cb73d5100272e8aefa051a"
+        },
+        {
+          "stage": 333,
+          "sha256": "bdfca2496f7516a21196d5ff6d70bffe4ea7401b86dd77484dcbd65bc6abdec0"
+        },
+        {
+          "stage": 334,
+          "sha256": "6d517bdde040fc7092baf5c0f5084cfb2c0d2cfac7bb10acb3c00128eff46aa5"
+        },
+        {
+          "stage": 335,
+          "sha256": "a402ae7b46606dd2ed1cbf4b9b00db30c0eade687b75d8533b7d211fcd62fc95"
+        },
+        {
+          "stage": 336,
+          "sha256": "20294f396e10de972111c09154596ef85b21587376e3851761c11aa28cc5aca9"
+        },
+        {
+          "stage": 337,
+          "sha256": "80a4de22f75ffe8b98d7d6dbc31a387f77eaa07a30d113ccaac37a3393a29ea4"
+        },
+        {
+          "stage": 338,
+          "sha256": "58f9f94c033b28a784f3b4c3616282873605153b0bcfcc354023ec91e466c7fb"
+        }
+      ],
+      "nativeCases": 39,
+      "visualAcceptance": true,
+      "movementMetres": 3.853946548412993,
+      "presentationIntervalMedianMs": 89.017,
+      "actualPresentBoundaryObserved": true
+    }
+  ],
+  "preservation": {
+    "originalSavesVerified": 24,
+    "ordinarySettingsUnchanged": true,
+    "scopedAudioRestored": true,
+    "privateChildrenClosed": true,
+    "temporaryDriverAndRoomRemoved": true,
+    "acceptedRollbackRetained": "local/native-backup-20261006-020555",
+    "wolverineRuntimeUntouched": true
+  },
+  "limitations": [
+    "Native distant LOD transitions not observed; both LOD buffer geometry checked offline.",
+    "DX11, ray tracing and all campaign lighting conditions not newly verified.",
+    "Physics presentation cadence remains about 89 ms; performance parity not claimed.",
+    "Garment and clinical features not newly accepted by the Naked collar review.",
+    "Frozen beta.2 remains separate and unchanged."
+  ]
+}

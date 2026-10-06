@@ -15,7 +15,7 @@ bool FloatDraw(void* list,void* original,const D3D12_VERTEX_BUFFER_VIEW& positio
 void FloatDrawSubmitted(void* queue,unsigned count,void* const* lists);
 void FloatDrawReset(void* list);
 void FloatDrawBundle(void* parent,void* bundle);
-// Called once by the SDK OnTick controller after it publishes the surface.
+// Called by the render thread after a real DXGI Present (not a test Present).
 // All depth/material/body lists consuming that engine frame share one surface.
 void FloatDrawFrameBoundary();
 unsigned FloatDrawFlags();

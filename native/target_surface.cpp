@@ -3,6 +3,7 @@
 #include <cstring>
 #include <algorithm>
 #include <limits>
+#include <malemod/surface/root_transition.hpp>
 
 namespace malemod::witcher {
 namespace {
@@ -19,14 +20,17 @@ struct Reader {
 };
 std::vector<PrecisePoint> Points(const Surface& s){std::vector<PrecisePoint> out;out.reserve(s.positions.size());for(auto p:s.positions)out.push_back({p.x,p.y,p.z});return out;}
 PrecisePoint Normalize(PrecisePoint p){double length=std::sqrt(p[0]*p[0]+p[1]*p[1]+p[2]*p[2]);if(!std::isfinite(length)||length<1e-10)throw std::invalid_argument("Invalid source collar direction");for(double& v:p)v/=length;return p;}
-bool Same(const GraftFrame& a,const GraftFrame& b){return a.root==b.root&&a.axis==b.axis&&a.up==b.up&&a.radius==b.radius&&a.length==b.length&&a.sourceLengthScale==b.sourceLengthScale;}
+bool Same(const GraftFrame& a,const GraftFrame& b){return a.root==b.root&&a.axis==b.axis&&a.up==b.up&&a.radius==b.radius&&a.length==b.length&&a.sourceLengthScale==b.sourceLengthScale&&a.seamSupportRadius==b.seamSupportRadius;}
 struct Lod {
  GraftDomain domain;
  std::vector<PrecisePoint> restSource,restNative;
  std::vector<std::uint32_t> aliases,unique,protectedRender;
+ std::vector<std::uint32_t> waistMasters;
  std::uint32_t bodyCount;
  DeltaBinding body,module;
- GraftFrame cachedFrame{};std::unique_ptr<GraftPlan> plan;
+ GraftFrame cachedFrame{};std::unique_ptr<GraftPlan> plan,bodyPlan;
+ GraftDomain bodyDomain;
+ std::unique_ptr<RootTransition> transition;
 };
 }
 struct TargetSurface::Impl {
@@ -34,6 +38,7 @@ struct TargetSurface::Impl {
  std::vector<PrecisePoint> neutralAnatomy,neutralBody;
  std::vector<Lod> lods;
  std::vector<PrecisePoint> neutralCollar;
+ double neutralRadius=0;
  Impl(const std::filesystem::path& path,const std::string& expected){
   Reader r(path);char magic[8],commit[40];r.Bytes(magic,8);r.Bytes(commit,40);
   const bool boundary=!std::memcmp(magic,"MMBIND03",8);
@@ -53,32 +58,64 @@ struct TargetSurface::Impl {
    for(auto id:l.unique)if(id>=n)throw std::invalid_argument("Character master outside rendered domain");
    for(auto id:l.protectedRender)if(id>=l.bodyCount)throw std::invalid_argument("Protected character boundary outside body");
    for(const auto* list:{&l.restSource,&l.restNative,&l.domain.points})for(auto p:*list)for(double x:p)if(!std::isfinite(x))throw std::invalid_argument("Non-finite character rest binding");
+   // Geralt's measured body is driven by the common radial field, not by
+   // independently moving shaft rows. Keep its independent masters prescribed
+   // so harmonic graft fitting cannot drag the pelvic tissue into a fold.
+   l.waistMasters=l.domain.prescribedVertices;
+   l.bodyDomain=l.domain;
+   for(unsigned i=0;i<l.bodyDomain.triangles.size();i++){
+    const auto f=l.bodyDomain.triangles[i];
+    // Guard the complete recruited annulus, including thin native waist
+    // subdivision faces. Moving anatomy is deliberately outside this guard.
+    if(l.unique[f[0]]<l.bodyCount&&l.unique[f[1]]<l.bodyCount&&l.unique[f[2]]<l.bodyCount)
+     l.bodyDomain.orientationTriangles.push_back(i);
+   }
+   std::vector<bool> prescribed(l.domain.points.size(),false);for(auto id:l.domain.prescribedVertices)prescribed[id]=true;
+   for(auto id:l.domain.protectedVertices)prescribed[id]=true;
+   std::vector<bool> slave(l.domain.points.size(),false);for(auto e:l.domain.seams)slave[e.slave]=true;
+   for(unsigned id=0;id<l.unique.size();id++)if(l.unique[id]<l.bodyCount&&!prescribed[id]&&!slave[id])l.domain.prescribedVertices.push_back(id);
+   std::vector<PrecisePoint> opening;for(auto e:l.domain.seams)opening.push_back(l.domain.points[e.slave]);
+   l.transition=std::make_unique<RootTransition>(l.restSource,l.bodyCount,opening);
   }
   if(r.remaining)throw std::invalid_argument("Trailing character binding data");
+  // One measured opening drives every LOD. Native LOD decimation must not
+  // introduce a different recruitment frame at the shared waist.
+  std::vector<PrecisePoint> opening;for(auto e:lods[0].domain.seams)opening.push_back(lods[0].domain.points[e.slave]);
+  for(auto& l:lods)l.transition=std::make_unique<RootTransition>(l.restSource,l.bodyCount,opening);
  }
  std::vector<PrecisePoint> Evaluate(unsigned id,const Output& source){
   if(id>=lods.size())throw std::out_of_range("Unknown character LOD");auto& l=lods[id];
-  auto anatomy=Points(source.anatomy),body=Points(source.body[0]);auto body1=Points(source.body[1]);body.insert(body.end(),body1.begin(),body1.end());
+  auto anatomy=Points(source.anatomy);
   const auto& metric=source.collarMetric;
   if(!metric.generation)throw std::invalid_argument("Source collar support metric is unavailable");
   GraftFrame frame;frame.root={metric.root.x,metric.root.y,metric.root.z};frame.axis=Normalize({metric.axis.x,metric.axis.y,metric.axis.z});
   frame.up=Normalize({metric.up.x,metric.up.y,metric.up.z});frame.radius=metric.radius;frame.length=metric.length;
-  if(!l.plan){l.plan=std::make_unique<GraftPlan>(l.domain,frame);l.cachedFrame=frame;}
-  else if(!Same(frame,l.cachedFrame)){l.plan->UpdateFrame(frame);l.cachedFrame=frame;}
-  auto bodyDelta=l.body.Apply(body,neutralBody),moduleDelta=l.module.Apply(anatomy,neutralAnatomy);
-  if(!source.collarDisplacements.empty()){
-   unsigned offset=0,total=0;for(unsigned k=0;k<lods.size();k++){if(k<id)offset+=lods[k].bodyCount;total+=lods[k].bodyCount;}
-   if(source.collarDisplacements.size()!=total||neutralCollar.size()!=total)throw std::invalid_argument("Incomplete coupled radial target field");
-   for(unsigned i=0;i<l.bodyCount;i++){auto p=source.collarDisplacements[offset+i];bodyDelta[i]={p.x-neutralCollar[offset+i][0],p.y-neutralCollar[offset+i][1],p.z-neutralCollar[offset+i][2]};}
-  }
+  frame.root=l.transition->Root();frame.seamSupportRadius=frame.radius*1.5;
+  if(neutralRadius<=0)throw std::invalid_argument("Neutral measured collar radius is unavailable");
+  if(!l.plan){l.plan=std::make_unique<GraftPlan>(l.domain,frame);l.bodyPlan=std::make_unique<GraftPlan>(l.bodyDomain,frame);l.cachedFrame=frame;}
+  else if(!Same(frame,l.cachedFrame)){l.plan->UpdateFrame(frame);l.bodyPlan->UpdateFrame(frame);l.cachedFrame=frame;}
+  auto moduleDelta=l.module.Apply(anatomy,neutralAnatomy);
   std::vector<PrecisePoint> delta(l.restSource.size());
-  for(unsigned i=0;i<l.bodyCount;i++)if(GraftRecruitmentWeight(l.restSource[i],frame)>1e-4)delta[i]=bodyDelta[i];
-  // The same canonical rest samples and donor field drive both part halves
-  // and both LODs. They remain movable masters in the coupled interior solve.
-  for(auto id:l.domain.prescribedVertices){auto render=l.unique[id];delta[render]=bodyDelta[render];}
+  // Source radial queries use Wolverine's opening and upper-sector exclusions.
+  // Geralt's body must recruit from its measured opening on BOTH resources;
+  // otherwise the source field raises a separate shield at his native waist.
+  for(unsigned i=0;i<l.bodyCount;i++)delta[i]=l.transition->BodyDisplacement(i,frame,neutralRadius);
+  // The same measured law drives both body resources and both LODs.
   std::copy(moduleDelta.begin(),moduleDelta.end(),delta.begin()+l.bodyCount);
+  delta=l.transition->Evaluate(delta,frame,neutralRadius);
+  // Canonical waist rest samples are identical across resources and LODs.
+  // Prescribe the one measured displacement on every alias of each sample.
+  for(auto master:l.waistMasters){auto render=l.unique[master];delta[render]=l.transition->BodyDisplacement(render,frame,neutralRadius);}
   for(auto i:l.protectedRender)delta[i]={0,0,0};
   std::vector<PrecisePoint> unique(l.unique.size());for(unsigned i=0;i<unique.size();i++)unique[i]=delta[l.unique[i]];
+  // Fair the recruited body against the stable root field first. Independent
+  // anatomy rotation belongs to the second, sewn attachment solve and cannot
+  // pull pelvic tissue into an angle-dependent wedge or folded triangle.
+  auto stable=unique;
+  for(unsigned i=0;i<stable.size();i++)if(l.unique[i]>=l.bodyCount)
+   stable[i]=l.transition->BodyDisplacement(l.unique[i],frame,neutralRadius);
+  const auto recruited=l.bodyPlan->SolveDisplacement(stable);
+  for(unsigned i=0;i<unique.size();i++)if(l.unique[i]<l.bodyCount)unique[i]=recruited[i];
   auto solved=l.plan->SolveDisplacement(unique);auto result=l.restNative;
   for(unsigned i=0;i<result.size();i++){
    auto v=calibration.VectorToTarget(solved[l.aliases[i]]);
@@ -93,5 +130,5 @@ std::vector<surface::PrecisePoint> TargetSurface::Evaluate(unsigned lod,const su
 unsigned TargetSurface::LODCount()const{return static_cast<unsigned>(impl_->lods.size());}
 std::vector<unsigned> TargetSurface::BodyCounts()const{std::vector<unsigned> counts;for(const auto& l:impl_->lods)counts.push_back(l.bodyCount);return counts;}
 std::vector<surface::Point> TargetSurface::CollarQueries()const{std::vector<surface::Point> p;for(const auto& l:impl_->lods)for(unsigned i=0;i<l.bodyCount;i++){auto q=l.restSource[i];p.push_back({float(q[0]),float(q[1]),float(q[2])});}return p;}
-void TargetSurface::SetNeutralCollar(const surface::Output& o){if(o.collarDisplacements.size()!=CollarQueries().size())throw std::invalid_argument("Missing neutral radial targets");impl_->neutralCollar.clear();for(auto p:o.collarDisplacements)impl_->neutralCollar.push_back({p.x,p.y,p.z});}
+void TargetSurface::SetNeutralCollar(const surface::Output& o){if(o.collarDisplacements.size()!=CollarQueries().size()||!std::isfinite(o.collarMetric.radius)||o.collarMetric.radius<=0)throw std::invalid_argument("Missing neutral radial targets");impl_->neutralRadius=o.collarMetric.radius;impl_->neutralCollar.clear();for(auto p:o.collarDisplacements)impl_->neutralCollar.push_back({p.x,p.y,p.z});}
 }

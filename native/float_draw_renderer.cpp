@@ -126,9 +126,9 @@ bool FloatDraw(void* pointer,void* original,const D3D12_VERTEX_BUFFER_VIEW& posi
   std::unique_lock<std::mutex> lock(mutex);auto p=pipelines->find(original);if(p==pipelines->end()||flags.load()&128)return false;
   if(list->GetType()!=D3D12_COMMAND_LIST_TYPE_DIRECT&&list->GetType()!=D3D12_COMMAND_LIST_TYPE_BUNDLE)return false;
   Collect();if(retired->size()>64)throw std::runtime_error("Float upload retirement backlog");
-  // The SDK component tick selects one published surface for command lists.
+  // The render-thread Present boundary selects one surface for command lists.
   // Each list retains that immutable selection while it is recorded; the next
-  // SDK tick can select new output without freezing the character surface.
+  // Present can select new output without freezing the character surface.
   if(*frameDelivery&&(*frameDelivery)->epoch==input->epoch)input=*frameDelivery;
   // A command list uses one immutable whole-body snapshot for all its draws.
   auto previousRecording=recordings->find(pointer);

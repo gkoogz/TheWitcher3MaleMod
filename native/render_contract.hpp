@@ -24,6 +24,7 @@ struct RenderLOD {
  unsigned authoredCount=0,firstVertex=0,firstIndex=0,indexCount=0,uvOffset=0,extraOffset=0;
  std::vector<RenderVertexBinding> vertices;
  std::vector<std::array<std::uint32_t,3>> faces;
+ std::vector<surface::LightingEdgeConstraint> collarSeams;
  std::vector<std::array<double,2>> lightingUV;
  std::vector<std::uint32_t> lightingGroups;
  std::vector<surface::LightingFrame> lightingFallback;
@@ -44,7 +45,7 @@ struct RenderContract {
   std::ifstream f(path,std::ios::binary);if(!f||std::filesystem::file_size(path)>32*1024*1024)throw std::runtime_error("Invalid render contract size");
   auto bytes=[&](void* p,std::size_t n){if(!f.read(static_cast<char*>(p),n))throw std::runtime_error("Truncated render contract");};
   auto text=[&](std::size_t n){std::string s(n,'\0');bytes(s.data(),n);return s;};auto integer=[&]{unsigned x;bytes(&x,4);return x;};
-  const auto magic=text(8);const bool residual=magic=="MMRND005";const bool multipart=residual||magic=="MMRND004";
+  const auto magic=text(8);const bool collar=magic=="MMRND006";const bool residual=collar||magic=="MMRND005";const bool multipart=residual||magic=="MMRND004";
   if((!multipart&&magic!="MMRND003")||text(40)!=pin||text(64)!=bindingHash)throw std::invalid_argument("Render contract differs from pinned geometry/binding");
   bytes(calibration.basis.data(),72);bytes(calibration.sourceRoot.data(),24);bytes(calibration.targetRoot.data(),24);bytes(&calibration.targetUnitsPerSourceUnit,8);calibration.Validate();
   auto count=integer();if(!count||count>256)throw std::invalid_argument("Unexpected native skin palette");nativeBones.resize(count);inverseBind.resize(count);bytes(nativeBones.data(),count*4);bytes(inverseBind.data(),count*sizeof(PoseMatrix));
@@ -70,6 +71,7 @@ struct RenderContract {
     encodedReference.push_back(encoded);
    }
    auto faces=integer();if(faces*3!=l.indexCount)throw std::invalid_argument("Native topology count differs");l.faces.resize(faces);bytes(l.faces.data(),faces*12);for(auto face:l.faces)for(auto i:face)if(i>=n)throw std::invalid_argument("Native triangle outside topology");firstVertex+=n;firstIndex+=l.indexCount;
+   if(collar){auto seams=integer();if(seams>n)throw std::invalid_argument("Oversize collar lighting binding");for(unsigned i=0;i<seams;i++){surface::LightingEdgeConstraint e;e.slave=integer();e.a=integer();e.b=integer();bytes(&e.weight,8);if(e.slave>=n||e.a>=n||e.b>=n||!std::isfinite(e.weight)||e.weight<0||e.weight>1)throw std::invalid_argument("Invalid native collar donor");l.collarSeams.push_back(e);}}
    l.lightingUV.reserve(n);l.lightingGroups.reserve(n);l.lightingFallback.reserve(n);
    std::vector<surface::LightingPoint> rest;
    for(const auto& v:l.vertices){l.lightingUV.push_back(v.uv);l.lightingGroups.push_back(v.normalGroup);l.lightingFallback.push_back(v.fallback);rest.push_back(residual&&v.boundary?v.authoredReference:v.reference);}
@@ -100,6 +102,7 @@ inline std::vector<SourceRenderVertex> ComposeRenderVertices(const RenderContrac
   // movable waist is published across both body resources below. Preserve
   // cooked attributes only at the protected boundaries and their UV aliases.
   for(const auto& v:l.vertices){auto q=v.reference;if(!v.calibration){q=positions[lod][v.authored];if(!v.boundary)for(unsigned a=0;a<3;a++)q[a]+=v.reference[a]-v.authoredReference[a];}p.push_back(q);}
+  const auto before=p;for(auto e:l.collarSeams)for(unsigned a=0;a<3;a++)p[e.slave][a]=(1-e.weight)*before[e.a][a]+e.weight*before[e.b][a];
   auto light=surface::RebuildLighting(p,l.lightingUV,l.faces,l.lightingGroups,l.lightingFallback);
   // REDkit's cooked tangent frame carries the native normal-map convention.
   // Apply the shared geometric frame's change to that frame; rebuilding the
@@ -107,6 +110,7 @@ inline std::vector<SourceRenderVertex> ComposeRenderVertices(const RenderContrac
   for(unsigned i=0;i<light.size();i++){
    light[i]=TransportCookedLighting(l.lightingReference[i],light[i],l.lightingFallback[i]);
   }
+  surface::WeldEdgeLighting(light,l.collarSeams);
   for(unsigned i=0;i<l.vertices.size();i++){if(l.vertices[i].calibration)light[i]=l.vertices[i].fallback;SourceRenderVertex row{};std::memcpy(&row.bones,l.vertices[i].bones.data(),4);std::memcpy(&row.weights,l.vertices[i].weights.data(),4);for(unsigned a=0;a<3;a++){row.position[a]=float(p[i][a]);row.reference[a]=float(l.vertices[i].reference[a]);row.normal[a]=float(light[i].normal[a]);row.tangent[a]=float(light[i].tangent[a]);}row.sign=float(light[i].sign);row.calibration=l.vertices[i].calibration;out.push_back(row);}
   return out;
  };

@@ -2,7 +2,7 @@
 
 The working source checkpoint contains the shared collar/menu/clinical adoption,
 garment presentation and persistent-cloth experiments, plus the grey studio.
-The development Base lock is `421a786b23a982c7bfb9c19888f0107c25bf488d`.
+The development Base lock is `2ad61e38fe59126a0175f8ccd2cd12ce6d0bedc7`.
 These source changes are preserved for future development; the failed new cloth
 and soft-material candidates have not been accepted or installed.
 
@@ -30,6 +30,17 @@ only its declared exact installation; it does not rebuild or silently adopt new
 source candidates. The installer supports clean installation, recognized beta.1
 and manual-snapshot upgrades, exact backups/rollback and uninstall. Preferences,
 user settings, saves and other mods are not payload files.
+
+## October 6 installed attachment repair
+
+The development runtime now has Geralt's measured concentric pelvic recruitment,
+shared upper/lower waist, original seam donors and render-thread pose selection.
+It is installed separately from frozen beta.2. The 278-case buffer sweep,
+39-case body/render test and 78 native grey/campaign views passed their recorded
+attachment scope. See `COLLAR-REPAIR.md` and `provenance/collar-repair.json`.
+Private sessions, saves/settings/audio and rollback were verified. Native
+distant transitions, other rendering modes, garments and performance parity
+remain outside this acceptance; measured private cadence is about 89 ms.
 
 ## Repository-only room
 

@@ -1,43 +1,45 @@
 # October 3 beta publication and shared follow-up
 
-## October 6 collar repair checkpoint — not installed
+## October 6 measured collar repair — installed and reviewed
 
 Attachment continuity is now the mandatory highest-priority gate in this
 repository, Base and canonical Wolverine. See `AGENTS.md` and
 `docs/PROJECT-CONTEXT.md`; require visual acceptance in addition to welding.
 
-The three October 5 23:23 screenshots reproduce a large-size seam regression.
-All 40 installed managed files still matched the frozen beta.2 manifest at
-investigation start. The target adapter replaces the complete mapped body
-field with only the source's final radial correction, and its support is
-centered on the source opening rather than Geralt's measured opening. Donors
-around much of the ring stay fixed while adjacent anatomy expands. The original
-edge position residual is approximately 14 micrometres, but median native
-normal disagreement is about 112 degrees for Width70 and 100 degrees for
-Width97. A numerical seam-only check had missed folded adjacent geometry.
+Read [repair construction and repeatable gate](COLLAR-REPAIR.md) and
+`provenance/collar-repair.json`. Installed development Base is `2ad61e3`;
+DLL SHA256 is `fd1f3508fb3dffadd6f2ba27c3e2ae3570377108af7e94cdb5ffd48526615b09`.
+The frozen beta.2 release below is unchanged and remains the exact rollback.
 
-Uncommitted candidate source uses Base's measured transition, optional seam
-support and explicit cooked position/lighting donor constraints (`MMRND006`).
-`build/collar-review-20261006` contains ignored exact installed-worker exports,
-rejected field-only/measured/fairing experiments, and current source diagnostics.
-The `base99` include snapshot is for offline wire-5 transport only: NEVER install
-that diagnostic build or call it a clean current-Base adoption. The current Base
-worker contract is wire6; deployment needs an explicit verified adoption.
+Geralt now recruits outward from his measured pelvic opening, with a bounded
+radial annulus and smooth anterior shoulder. Both body resources/LODs and all
+37 waist knots use the same field. Body recruitment is independent of rest
+angle and moving anatomy. Two sewn solves, body orientation constraints and
+original cooked position/lighting donors remove the old shield/seam mechanism.
+Depth/colour output selects one immutable pose at actual DXGI Present rather
+than script ticks; this removed the intermittent white/background patches.
 
-`artifacts-lit` is the installed target algorithm, `artifacts-shared` is the
-rejected multiplicative ramp (unfolds much of the seam but creates excess
-abdominal displacement), `artifacts-bounded` is the bounded-barrel candidate,
-and `artifacts-bounded-weld` adds the explicit native donor contract. The last
-two are not visual acceptance. `transition-comparison.png` and
-`bounded-comparison.png` are offline side projections, not native game captures.
-Posterior-facing triangle counts are diagnostic, not an inversion proof.
+The 278-case native-buffer sweep and 39-case body/render test pass. Maximum
+seam residual is 1.111e-7 m; local reversed collar faces are zero. Raw all-body
+projected-normal changes retain one packing-ambiguous microscopic stock face;
+the measured error-bound check passes and this diagnostic is not hidden.
+Current wire6 worker replay passes 48 byte-identical frames; historical empty
+orientation replay passes 22 fixtures/110 frames. Shared provenance passes.
 
-Basic Base transition, lighting, waist and prescribed-boundary tests pass.
-The exact screenshot settings and five angles export with the installed source
-worker. Minimum/intermediate/control combinations, posed contact, both LODs,
-native front/side/oblique captures and campaign lighting still require a complete
-attachment regression pass. No candidate has been installed or accepted, no
-game was launched during this checkpoint, and Wolverine runtime is unchanged.
+Private grey `sealed-session-20261006-035528` and campaign
+`sealed-session-20261006-040250` each completed 39 reviewed front/side/oblique
+captures and roughly four metres of engine walking. The tested Naked/DX12
+attachment passes without raised shield, dark ring or background patches.
+Native distant LOD transitions, ray tracing, every campaign light and garments
+are not newly verified; both LOD geometries were checked offline. Cadence
+remains about 89 ms, so performance parity is not claimed.
+
+All private children are closed, scoped audio restored, ordinary settings and
+24 saves verified and temporary drivers/room files removed. All 37 native plus
+five .31 managed files match the repair receipt; accepted rollback is
+`local/native-backup-20261006-020555`. Wolverine runtime is unchanged.
+Ignored rejected candidates remain evidence only. Base's own candidate record
+is a source-only checkpoint; this adapter certificate owns native acceptance.
 
 ## October 5 repository package and frozen next beta
 

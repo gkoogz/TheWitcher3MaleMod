@@ -200,11 +200,9 @@ void RuntimeFrame(void*,void* frame,void* result){
   if(garmentService){if(currentRenderPose)garmentService->Submit(currentRenderDelivery,*currentRenderPose,paused);auto garment=garmentService->Latest();GarmentRendererFeed(garment);if(!garmentService->Error().empty()||(garment&&garment->output.style!=garments::Style::Naked&&(!garment->output.contactBudgetSatisfied||!garment->output.physics.materialBudgetSatisfied)))runtimeFlags.fetch_or(1024);}
   if(clinicalService){clinicalService->Submit(unsigned(epoch),seconds,paused,currentRenderDelivery);FluidRendererFeed(clinicalService->Latest(),clinicalService->Scale());if(!clinicalService->Error().empty())runtimeFlags.fetch_or(512);}
   if(!epoch){LiveRenderFeed({});if(renderPose)renderPose->Reset();}
-  // SDK component OnTick precedes scene rendering. Freeze one complete
-  // publication for every body/depth/material command list in this frame.
-  // Background numerical and presentation workers continue independently.
-  FloatDrawFrameBoundary();
-  FluidRendererFrameBoundary();GarmentRendererFrameBoundary();
+  // Script ticks publish inputs independently of render-thread recording.
+  // graphics_probe freezes body/effect output at the actual DXGI Present
+  // boundary so depth and colour passes cannot select different poses.
  }
  }catch(const std::exception&){
   // Allocation, window creation and publication failures cannot unwind through

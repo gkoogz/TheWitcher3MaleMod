@@ -81,7 +81,10 @@ def install_native_runtime(cfg,remove=False):
             raise ValueError('Clinical bake differs from Base source')
         from mod import verify_package
         package=ROOT/clinical['package'];patch=verify_package(package)
-        if patch['baseCommit']!=pin or patch['project']!='modMaleModClinical':raise ValueError('Clinical native package differs')
+        if patch['project']!='modMaleModClinical':raise ValueError('Clinical native package differs')
+        if patch['baseCommit']!=pin:
+            from readopt_carrier_runtime import validate
+            validate(clinical_dir,'clinical',pin)
         for row in patch['files']:files[row['path']]=package/row['path']
         for name in ['clinical.render','clinical.render.sha256']:files['bin/x64_dx12/malemod-native/'+name]=release/name
         files['bin/x64_dx12/malemod-native/splat_bakes.bin']=cfg['base']/'legacy/wolverine/src/runtime/splat_bakes.bin'
@@ -93,7 +96,10 @@ def install_native_runtime(cfg,remove=False):
         package_manifest=read_json(ROOT/selection['garmentCarrier']/'package.json')
         from mod import verify_package
         package=ROOT/package_manifest['directory'];patch=verify_package(package)
-        if patch['baseCommit']!=pin or patch['project']!='modMaleModGarments':raise ValueError('Garment native package differs')
+        if patch['project']!='modMaleModGarments':raise ValueError('Garment native package differs')
+        if patch['baseCommit']!=pin:
+            from readopt_carrier_runtime import validate
+            validate(ROOT/selection['garmentCarrier'],'garment',pin)
         for row in patch['files']:files[row['path']]=package/row['path']
         reaction=garment.get('physicalReactionBinding',{})
         if reaction.get('version')!=1 or reaction.get('generalizedBodies')!=14 or reaction.get('nativeVertices')!=garment.get('anatomySemantics',{}).get('fullAnatomyVertices'):

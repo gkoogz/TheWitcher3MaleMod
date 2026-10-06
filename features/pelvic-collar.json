@@ -6,7 +6,7 @@
   "contract": "modules/pelvic-collar.json",
   "dependency": "dependencies/base.lock.json",
   "character": "geralt",
-  "status": "Shared Base multi-part waist and full native source/target runtime installed; both torso and legs receive expansion",
+  "status": "Measured concentric Base root transition installed and reviewed in Geralt Naked/DX12; both torso and legs receive one stable recruited ramp",
   "calibration": {
     "profile": "characters/geralt-attachment.json",
     "sourceToFBXScale": 1.0255218584141075,
@@ -20,15 +20,15 @@
   "seamBindings": {
     "restBindings": "generated/attachment.json",
     "dynamicCollarDomain": "Base malemod_base/graft_collar.py via tools/probe_pelvic_domain.py",
-    "canonicalWaistSamples": 51,
+    "canonicalWaistSamples": 37,
     "multiPartDomain": "Pinned Base prescribedVertices in MMBIND03; lower/upper and both LODs publish common masters"
   },
   "nativeDeformationBridge": "Native float-position DX12 draw, current native skin palette, immutable fence-retained source/target surface",
   "verification": {
-    "sourceMath": "complete strict Win32 source evaluation including final UnifiedCollar and both body sections",
-    "targetOfflineFit": "39 full source cases include nonzero upper/waist recruitment at Overall maximum; exact common boundary across both parts and LODs",
-    "nativeRuntime": "MMRND004: two separate resources/four sections, 43276 rows; actual GPU bodyResourceMask 3",
-    "observedGameplay": "64 private control/movement/pause/reload cases passed; final body-delivery certificate",
+    "sourceMath": "Clean pinned Base wire6/behavior2 solver; 48 byte-identical worker frames; shared measured root transition and optional body orientation tests",
+    "targetOfflineFit": "278 native-buffer cases and 39 body/render cases; exact common waist, original edge donors and donor lighting across both resources/LODs",
+    "nativeRuntime": "MMRND006: two separate resources/four sections, 49884 rows; actual GPU bodyResourceMask 3; one immutable pose per real Present boundary",
+    "observedGameplay": "39 reviewed grey-room and 39 campaign captures in Naked/DX12; extremes, reported large-size settings, combined controls and walking; collar-repair certificate",
     "nativeGraphResource": "isolated scale graph accepted by WCC; not installed or runtime verified",
     "fixedPartBoundaries": "Neck/wrists/ankles protected; waist has shared positions, named weight bytes and per-LOD shading"
   },
@@ -37,5 +37,7 @@
   ],
   "restGraftFeature": "features/rest-graft.json",
   "probeProvenance": "provenance/overall.json",
-  "deliveryProvenance": "provenance/body-delivery.json"
+  "deliveryProvenance": "provenance/body-delivery.json",
+  "attachmentRepairProvenance": "provenance/collar-repair.json",
+  "attachmentRepairGuide": "docs/COLLAR-REPAIR.md"
 }

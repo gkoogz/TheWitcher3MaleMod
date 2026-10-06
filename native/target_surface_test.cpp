@@ -4,11 +4,15 @@
 #include <iostream>
 #include <chrono>
 int main(int argc,char** argv){
- if(argc!=5)return 2;
+ // The independently exported neutral source is required; a deformed frame
+ // must never establish the reference radius.
+ if(argc!=6)return 2;
  try{
   std::ifstream input(argv[3],std::ios::binary);malemod::surface::wire::Bytes bytes((std::istreambuf_iterator<char>(input)),{});
   auto source=malemod::surface::wire::DecodeOutput(bytes);
   malemod::witcher::TargetSurface target(argv[1],argv[2]);
+  std::ifstream neutralInput(argv[5],std::ios::binary);malemod::surface::wire::Bytes neutralBytes((std::istreambuf_iterator<char>(neutralInput)),{});
+  target.SetNeutralCollar(malemod::surface::wire::DecodeOutput(neutralBytes));
   for(unsigned lod=0;lod<target.LODCount();lod++){
    auto start=std::chrono::steady_clock::now();auto result=target.Evaluate(lod,source);auto prepared=std::chrono::steady_clock::now();
    for(unsigned i=0;i<8;i++)if(target.Evaluate(lod,source)!=result)throw std::runtime_error("Repeated full target evaluation changed");
