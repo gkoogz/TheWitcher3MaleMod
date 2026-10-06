@@ -1,5 +1,200 @@
 # October 3 beta publication and shared follow-up
 
+## October 6 reviewed localized collar installed
+
+The user approved installation with "install" after the compact-root previews.
+Installed Base pin: 431e626cae6fb6720b552f8b20206727fe809c80. Native DLL SHA256:
+1f6c00ae41f1fcbd9b1f30c378852398e3f3c2fc101e2e316a169ef24254477a.
+All 37 managed file hashes, five .31 fallback files and the previous build's
+rollback files verify. Preferences remain byte-identical. Rollback snapshot:
+local/native-backup-20261006-135151. Install proof:
+build/full-runtime/install-compact-431e626.json in the Witcher adapter.
+
+No geometry was changed after preview approval: all six reviewed source hashes
+match. Fresh binding/render exports differ only in the embedded Base pin and
+binding identity; the remaining payload bytes match the reviewed artifacts.
+The source is locally committed and pinned; the stale graft archive hash was
+corrected to the final rebuilt library before the clean deployment build.
+Clean source-load proof and 48-frame direct/worker replay pass. Native startup
+and FloatDraw SDK tests pass; prior 278-case geometry and 39-case body gates
+remain applicable to the identical reviewed implementation/payload.
+
+This is installed-file verification, not observed gameplay. Extreme upward
+angle deformation remains unresolved. User preview approval does not certify
+every native pose, lighting condition or motion. Wolverine is untouched.
+Earlier preview-only and installed-40dfa86 checkpoints below are historical.
+
+
+## October 6 localized side flare and deeper underside - preview only
+
+This supersedes the broad lateral/ventral trial, which the user rejected for
+expanding the legs. Keep the prior .81*r0 + 2.18*dilation support annulus and
+1.12 base section flare. New thickness is compact at the root: .06*radius for
+pure lateral sectors (sixth-power angular taper), .14*radius on the underside,
+with a quintic envelope ending two neutral radii beyond the measured opening.
+The underside also reduces forward projection locally by up to 40%, returning
+the lower root deeper into the pelvis. Neutral and outer field stay unchanged.
+Both body and sewn anatomy consume this shared field.
+
+An early local trial failed one packing-resolved upper-body orientation face at
+maximum Erect size. Narrowing the angular sector alone did not fix it. Shared
+GraftDomain now exposes orientationAreaTargetRatio, default .02 for historical
+replay; Geralt's native body guard requests .10 for more area headroom. Exact
+donors, prescribed waist and protected boundaries remain constrained. This is
+an area projection target, not a promised C1 surface or exact target area after
+all coupled constraints. The existing final positive-area rejection remains.
+
+Root/orientation tests and Base provenance pass. Twenty-two default displacement
+and weight fixtures replay byte-identically in build/compact-root-default-replay.
+Witcher compact-root-full exports 278 cases with maximum seam gap 1.164e-7 m,
+normal donor error 7.089e-8, zero local or packing-resolved body reversals. Its
+39-case body/render test passes both resources/LODs, 37 exact waist pairs,
+parallel bytes and four presentation phases. No native game run or install.
+
+The lower-leg audit compares original native Z below .82 m across both lower
+resource LODs, not all pelvic vertices or animated gameplay. The initial compact
+field with the old guard had zero extra displacement there. With strengthened
+native area projection the final maximum difference is .000604855 m versus
+the preceding smooth-bell candidate: submillimetre safety corrections, so an
+exact-zero leg comparison does NOT pass and must not be claimed. The rejected
+broad trial had centimetre-scale leg changes. User visual approval is pending.
+
+Final previews: Witcher build/collar-review-20261006/compact-root-approval and
+compact-root-close-comparison. The latter uses previous/native candidate output
+at the same camera and light. tools/preview_collar_pairs.py now supports
+--reference-candidate; review_collar_integrity.py supports --metrics-only for
+isolated cases. Earlier lateral-bell, ventral-bell, local-root-full and sector
+trials are diagnostics, not installation candidates. Extreme upward anatomy
+deformation remains unresolved. Current source is dirty over 19da882.
+
+Shared adoption remains by tested Base pin, observed adapter units/bindings and
+native visual gates. Default solver replay remains unchanged. Wolverine is
+untouched. Installed 40dfa86 remains unchanged, with revoked visual acceptance.
+
+
+## October 6 continuous surface and broader bell - review candidate
+
+This supersedes the earlier forward-1.7 preview direction below. The user
+clarified that the join needs smooth geometry and shading on both sides, with
+a modest bell flare, rather than extra pelvic projection. Current source is
+uncommitted over 19da882; no runtime was installed or launched.
+
+The root law uses section flare 1.12, width .81*r0 + 2.18*dilation, and forward
+projection 1.3*dilation. Original exterior and measured seam constraints stay
+fixed. Optional SDK-free actual-position curvature fairing is disabled by
+default; Geralt opts in locally (distance 7, strength 64, body freedom 4 source
+units). Local geometric-normal alignment and eight normal-field iterations
+retain each UV chart's handedness/tangent and leave weight-zero lighting exact.
+
+Base root/orientation tests, target-lighting tests and provenance verification
+pass. Twenty-two default solver fixtures replay byte-identically with optional
+fairing disabled (build/bell-fair-default-replay/verification.json). Witcher
+exports 278 cases with maximum seam gap 1.125e-7 m, maximum normal donor error
+7.530e-8, zero local or packing-resolved body reversals. Its 39-case body/render
+test preserves all 37 waist pairs across both body resources/LODs and parallel
+output; four interpolation phases pass. This is offline output, not gameplay.
+
+Matched clay previews: Witcher build/collar-review-20261006/smooth-bell-approval.
+Maximum/medium/default views are softened, but extreme upward angle remains
+severely deformed. No visual acceptance or exact C1 continuity is claimed.
+Stronger fairing (256) raised a shield and explicit first-ring tangent projection
+folded the join; both trials were rejected and removed from current source.
+
+Adoption: retain default-off shared fairing for existing adapters; pin a tested
+Base revision before release and opt in using observed body/edge bindings and
+unit calibration. Wolverine and future spokes require their own native visual
+matrix before adoption. Wolverine source/runtime remains untouched.
+
+Adapter artifacts: build/collar-review-20261006/smooth-bell-full/collar-metrics.json,
+smooth-bell-body.txt, smooth-bell-review.txt and smooth-bell-approval/manifest.json.
+The preview manifest records six current source hashes and sourceDirty=true;
+its binding/render artifacts remain pinned to 19da882 because rest topology and
+lineage were not changed. Do not publish as a clean pinned build. Installed
+40dfa86 runtime remains unchanged and its prior aesthetic acceptance is revoked.
+
+
+## October 6 more forward pelvic blend - approval pending
+
+Latest request: bring recruited pelvic tissue forward for more blending. Base's
+draft forward bell is `1.7*dilation`, previously 1.3. The support width and exact
+exterior boundary remain unchanged. Shared tests/provenance pass. The probe
+uses an explicitly dirty diagnostic build with unchanged `19da882` binding/
+render rest data; do not deploy it as a clean pinned build.
+
+`build/collar-review-20261006/forward17-full` exports 278 cases. Strict review
+passes both resources/LODs: maximum seam gap 1.072624e-7 m, donor normal error
+0.000721592, zero local and packing-resolved body reversals. `forward17-body.txt`
+passes 39 cases, all 37 exact waist positions/weights/shading, parallel output,
+intermediate presentation, pause and epoch gates. Torso/waist maximum movement
+is 0.0333339/0.034214 m. This is offline evidence, not native gameplay proof.
+
+Matched original/candidate front, side and oblique sheets at three sizes and
+two maximum-size extreme angles are in `forward17-approval-renders`; its
+manifest records actual source/geometry hashes. `forward17-max-close` shows
+the maximum collar. Extreme upward anatomy deformation remains visible and
+unresolved. User visual approval is pending. No install, launch, push, release
+or Wolverine change; installed `40dfa86` and retained `2ad61e3` rollback remain.
+
+
+## October 6 wider ramp revision — approval pending
+
+The user requested a larger, smoother ramp after reviewing the first matched
+previews. This remains an offline source candidate; no installation or game
+launch is authorized before the requested preview approval. Base HEAD is still
+`19da882`, with a recorded uncommitted root-transition revision. Native probe
+build explicitly enables `MALEMOD_ALLOW_DIRTY_BASE_DIAGNOSTIC=ON`; do not deploy
+it as a clean pinned release.
+
+The shared annulus width is now `0.8*openingRadius + 2.6*dilation`, with a local
+forward bell of `1.3*dilation`. Neutral/exterior rest shape and positive ring
+spacing remain guarded. The anatomy-side graft now preserves the transition's
+differential field, avoiding displacement fairing into a collar lip. These are
+shared Base math and an adapter opt-in; no Wolverine runtime changed.
+
+`build/collar-review-20261006/differential-full` contains 278 actual authored/
+native-buffer cases, passing the strict review (maximum seam 1.0732e-7 m;
+zero local or packing-resolved body reversals). `differential-body.txt` passes
+39 body/render cases, both LODs/resources, all 37 exact waist knots, lighting,
+weights, serial/parallel output, pause and epoch checks. Torso/waist maximum
+movement is 0.0262661/0.0269799 m. Shared tests/provenance pass. This is not a
+native-game visual acceptance or a new performance claim.
+
+Updated matched previews and code hashes are in
+`build/collar-review-20261006/broader-approval-renders-v2/manifest.json` and the
+maximum-size close-up in `broader-collar-close-v2/manifest.json`. Five sheets
+cover default, medium, maximum and maximum-size extreme rest angles. The
+material is neutral clay, not game skin/shadows. Preserve visible limitations
+for the user's review; do not label the full attachment visually accepted.
+The previous installed `40dfa86` and exact older `2ad61e3` rollback are unchanged.
+
+
+## October 6 original-pelvis bell — approval previews, not installed
+
+The user rejected the installed `40dfa86` result for a raised shelf and asked
+for camera-matched original bare pelvis versus attached anatomy before further
+implementation/installation. Its historical acceptance below is superseded.
+Shared candidate `19da882` uses the measured opening and a local Hermite bell,
+with half the inner ring spacing retained to avoid coarse-LOD seam collapse.
+The adapter body projection preserves that measured field without harmonic
+fairing. 278 diagnostic native-buffer cases and 39 body/render cases pass;
+shared root-spacing/provenance, clean source consumption and 48 worker replays
+pass. Fresh clean build and five isolated preview exports use this exact pin.
+
+`tools/preview_collar_pairs.py` makes actual measured geometry pairs, with the
+original uncut lower-body triangles on the left. Generated review sheets:
+`build/collar-review-20261006/approval-renders-wide/manifest.json` (default,
+intermediate, maximum Overall/Width, and maximum-size low/high angles; each
+front/side/oblique). These are offline neutral-clay renders, not native game
+lighting or motion acceptance. The extreme upward-angle image still exposes
+anatomy deformation; do not mark this candidate visually accepted.
+
+User approval/feedback is pending. No new game files were installed and no game
+was launched this turn. Installed runtime remains the user-rejected `40dfa86`;
+last prior accepted `2ad61e3` rollback is retained in
+`local/native-backup-20261006-062532`. Do not resume installation without the
+requested preview review. Wolverine is untouched. No push/release this turn.
+
+
 ## October 6 progressive radial ramp — installed and reviewed
 
 Attachment continuity remains the mandatory highest-priority gate in Base and

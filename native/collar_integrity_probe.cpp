@@ -9,7 +9,7 @@ using namespace malemod::witcher;
 namespace surface=malemod::surface;
 template<class T>void Write(const std::filesystem::path& path,const std::vector<T>& v){std::ofstream f(path,std::ios::binary);f.write(reinterpret_cast<const char*>(v.data()),v.size()*sizeof(T));if(!f)throw std::runtime_error("Cannot write collar artifact");}
 int wmain(int argc,wchar_t** argv){try{
- if(argc!=7&&argc!=8)throw std::runtime_error("Usage: collar_integrity_probe worker binding render pin bindingHash output [quick]");const bool quick=argc==8;
+ if(argc!=7&&argc!=8)throw std::runtime_error("Usage: collar_integrity_probe worker binding render pin bindingHash output [quick|sN-oN-wN-aN]");const bool quick=argc==8&&!std::wcscmp(argv[7],L"quick");
  std::wstring pw=argv[4],hw=argv[5];std::string pin(pw.begin(),pw.end()),hash(hw.begin(),hw.end());RenderContract render(argv[3],pin,hash);
  const std::filesystem::path out=argv[6];if(std::filesystem::exists(out))throw std::runtime_error("Use fresh output");std::filesystem::create_directories(out);
  std::unique_ptr<SurfacePipeline> pipeline;
@@ -23,6 +23,10 @@ int wmain(int argc,wchar_t** argv){try{
   std::cout<<label<<"\n"<<std::flush;
  };
  surface::wire::Request q;q.reset=true;run("neutral",q);
+ if(argc==8&&!quick){std::wstring wide=argv[7];std::string label(wide.begin(),wide.end());unsigned state=0,overall=0,width=0,angle=0;int end=0;
+  if(std::sscanf(label.c_str(),"s%u-o%u-w%u-a%u%n",&state,&overall,&width,&angle,&end)!=4||end!=label.size()||state>2||overall<1||overall>100||width<1||width>100||angle<1||angle>100)throw std::invalid_argument("Invalid isolated case");
+  q={};q.reset=true;q.controls.values[0]=float(state);q.controls.values[1]=float(overall);q.controls.values[3]=float(width);q.controls.values[7]=float(angle);run(label,q);report<<"]\n";return 0;
+ }
  for(unsigned state=0;state<3;state++)for(unsigned overall:{1u,25u,50u,75u,100u})for(unsigned width:{1u,50u,100u})for(unsigned angle:{1u,50u,100u}){
   if(quick&&(overall!=100||width!=100))continue;
   q={};q.reset=true;q.controls.values[0]=float(state);q.controls.values[1]=float(overall);q.controls.values[3]=float(width);q.controls.values[7]=float(angle);

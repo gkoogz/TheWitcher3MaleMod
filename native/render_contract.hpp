@@ -30,6 +30,8 @@ struct RenderLOD {
  std::vector<std::uint32_t> lightingGroups;
  std::vector<surface::LightingFrame> lightingFallback;
  std::vector<surface::LightingFrame> lightingReference;
+ std::vector<double> collarNormalBlend;
+ std::vector<std::vector<unsigned>> collarNormalNeighbors;
  std::vector<unsigned> guardAliases,guardRepresentatives;
  std::vector<surface::PrecisePoint> guardRest;
  std::shared_ptr<const surface::GraftPlan> bodyGuard;
@@ -82,6 +84,16 @@ struct RenderContract {
    l.lightingReference=surface::RebuildLighting(rest,l.lightingUV,l.faces,l.lightingGroups,l.lightingFallback);
   }
   for(const auto& l:lods){auto& r=resources[l.resource];r.lodFirstVertex[l.lod]=l.firstVertex-r.firstVertex;r.lodVertexCount[l.lod]=unsigned(l.vertices.size());r.lodUVOffset[l.lod]=l.uvOffset;r.lodExtraOffset[l.lod]=l.extraOffset;}
+  for(auto& l:lods){
+   l.collarNormalNeighbors.resize(l.vertices.size());
+   auto link=[&](unsigned a,unsigned b){a=l.vertices[a].normalGroup;b=l.vertices[b].normalGroup;if(a!=b){l.collarNormalNeighbors[a].push_back(b);l.collarNormalNeighbors[b].push_back(a);}};
+   for(auto f:l.faces){link(f[0],f[1]);link(f[1],f[2]);link(f[2],f[0]);}for(auto e:l.collarSeams){link(e.slave,e.a);link(e.slave,e.b);}
+   for(auto& row:l.collarNormalNeighbors){std::sort(row.begin(),row.end());row.erase(std::unique(row.begin(),row.end()),row.end());}
+   std::vector<surface::LightingPoint> opening;for(const auto& lower:lods)if(lower.lod==l.lod)for(auto e:lower.collarSeams)opening.push_back(lower.vertices[e.slave].reference);
+   for(const auto& v:l.vertices){double distance=1e100;for(auto p:opening){auto q=surface::LightingSub(v.reference,p);distance=(std::min)(distance,std::sqrt(surface::LightingDot(q,q)));}
+    double t=std::clamp(1-distance/.07,0.,1.);l.collarNormalBlend.push_back(t*t*t*(t*(t*6-15)+10));
+   }
+  }
   for(const auto& r:resources)if(r.lodVertexCount[0]+r.lodVertexCount[1]!=r.vertexCount)throw std::invalid_argument("Incomplete resource LOD range");
   if(f.peek()!=EOF)throw std::invalid_argument("Trailing native render data");
   if(collar)for(auto& l:lods){
@@ -91,7 +103,7 @@ struct RenderContract {
    unsigned lowerCount=~0u;for(const auto& upper:lods)if(upper.resource==1&&upper.lod==l.lod)
     for(const auto& v:upper.vertices)lowerCount=(std::min)(lowerCount,v.authored);
    if(lowerCount==~0u)throw std::invalid_argument("Missing measured body membership");
-   surface::GraftDomain domain;std::map<surface::PrecisePoint,unsigned> groups;
+   surface::GraftDomain domain;domain.orientationAreaTargetRatio=.10;std::map<surface::PrecisePoint,unsigned> groups;
    for(unsigned i=0;i<l.vertices.size();i++){
     const auto& v=l.vertices[i];auto point=v.boundary?v.authoredReference:v.reference;
     auto [entry,added]=groups.emplace(point,unsigned(domain.points.size()));
@@ -140,7 +152,8 @@ inline std::vector<SourceRenderVertex> ComposeRenderVertices(const RenderContrac
   if(l.bodyGuard){
    std::vector<surface::PrecisePoint> delta(l.guardRest.size());
    for(unsigned i=0;i<delta.size();i++)for(unsigned a=0;a<3;a++)delta[i][a]=p[l.guardRepresentatives[i]][a]-l.guardRest[i][a];
-   const auto corrected=l.bodyGuard->ProjectDisplacement(delta);
+   std::vector<surface::PrecisePoint> corrected;
+   try{corrected=l.bodyGuard->ProjectDisplacement(delta);}catch(const std::exception& e){throw std::runtime_error(std::string("Native body orientation: ")+e.what());}
    for(unsigned i=0;i<p.size();i++)for(unsigned a=0;a<3;a++)p[i][a]=l.guardRest[l.guardAliases[i]][a]+corrected[l.guardAliases[i]][a];
   }
   auto light=surface::RebuildLighting(p,l.lightingUV,l.faces,l.lightingGroups,l.lightingFallback);
@@ -148,8 +161,10 @@ inline std::vector<SourceRenderVertex> ComposeRenderVertices(const RenderContrac
   // Apply the shared geometric frame's change to that frame; rebuilding the
   // entire frame from scratch changes UV seam handedness even on static skin.
   for(unsigned i=0;i<light.size();i++){
-   light[i]=TransportCookedLighting(l.lightingReference[i],light[i],l.lightingFallback[i]);
+   const auto geometric=light[i];
+   light[i]=surface::AlignGeometricNormal(TransportCookedLighting(l.lightingReference[i],geometric,l.lightingFallback[i]),geometric,l.collarNormalBlend[i]);
   }
+  surface::FairLightingNormals(light,l.lightingGroups,l.collarNormalNeighbors,l.collarNormalBlend);
   surface::WeldEdgeLighting(light,l.collarSeams);
   for(unsigned i=0;i<l.vertices.size();i++){if(l.vertices[i].calibration)light[i]=l.vertices[i].fallback;SourceRenderVertex row{};std::memcpy(&row.bones,l.vertices[i].bones.data(),4);std::memcpy(&row.weights,l.vertices[i].weights.data(),4);for(unsigned a=0;a<3;a++){row.position[a]=float(p[i][a]);row.reference[a]=float(l.vertices[i].reference[a]);row.normal[a]=float(light[i].normal[a]);row.tangent[a]=float(light[i].tangent[a]);}row.sign=float(light[i].sign);row.calibration=l.vertices[i].calibration;out.push_back(row);}
   return out;

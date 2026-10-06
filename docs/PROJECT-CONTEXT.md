@@ -1,3 +1,38 @@
+## October 6 installation approval
+
+The user explicitly approved installing the localized side flare / deeper
+underside compact-root candidate after the matched renders. It is installed;
+see HANDOFF for hashes and rollback. No new gameplay observation was made.
+The extreme upward-angle deformation remains a known unresolved limitation.
+
+Latest localized attachment clarification (October 6): side flare belongs
+right beside the weld, not in a wider leg/hip recruitment annulus. The user
+rejected the trial that expanded the legs. At large sizes thicken the underside
+root and return it deeper into the pelvis, filling the marked posterior ventral
+hollow while preserving the outer leg contours. Continue showing renders before
+installation. The original broad-body trial must not be installed.
+
+Latest clarification (October 6): the attachment should read as one continuous
+surface. Slightly broaden the bell and flare both the shaft base and pelvic
+side together. Do not satisfy this with extra forward displacement or a raised
+surrounding shelf. Preserve the original pelvis outside the local ramp. Show
+matched bare/attached previews at several sizes and angles before installation.
+
+Latest preview feedback (October 6): bring recruited pelvic tissue farther
+forward for more blend. Preserve the original exterior and show camera-matched
+renders before installation. Numerical tests do not imply visual acceptance.
+
+Latest preview feedback (October 6): the ramp must be larger and smoother.
+Continue matching original bare-pelvis and candidate cameras. Show updated
+geometry for approval before game installation.
+
+Latest attachment clarification (October 6): original bare pelvic shape is
+required. Accommodate the full enlarged shaft section with a localized,
+concentric bell-shaped ramp only. Do not raise the surrounding pelvis into a
+shelf/platform. The user rejected the 40dfa86 result; its former visual
+acceptance is superseded. Shared measured-opening math lives in Base; native
+body/resource donors and native aesthetic proof remain in this adapter.
+
 # October 3 shared collar and optional clothing
 
 Highest-priority enduring requirement (October 5): attachment integrity, smooth

@@ -63,7 +63,6 @@ struct TargetSurface::Impl {
    // so harmonic graft fitting cannot drag the pelvic tissue into a fold.
    l.waistMasters=l.domain.prescribedVertices;
    l.bodyDomain=l.domain;
-   l.bodyDomain.preserveTargetDifferential=true;
    for(unsigned i=0;i<l.bodyDomain.triangles.size();i++){
     const auto f=l.bodyDomain.triangles[i];
     // Guard the complete recruited annulus, including thin native waist
@@ -74,8 +73,18 @@ struct TargetSurface::Impl {
    std::vector<bool> prescribed(l.domain.points.size(),false);for(auto id:l.domain.prescribedVertices)prescribed[id]=true;
    for(auto id:l.domain.protectedVertices)prescribed[id]=true;
    std::vector<bool> slave(l.domain.points.size(),false);for(auto e:l.domain.seams)slave[e.slave]=true;
-   for(unsigned id=0;id<l.unique.size();id++)if(l.unique[id]<l.bodyCount&&!prescribed[id]&&!slave[id])l.domain.prescribedVertices.push_back(id);
    std::vector<PrecisePoint> opening;for(auto e:l.domain.seams)opening.push_back(l.domain.points[e.slave]);
+   for(unsigned id=0;id<l.unique.size();id++)if(l.unique[id]<l.bodyCount&&!prescribed[id]&&!slave[id]){
+    double distance=1e100;for(auto p:opening){double squared=0;for(unsigned a=0;a<3;a++)squared+=(p[a]-l.domain.points[id][a])*(p[a]-l.domain.points[id][a]);distance=std::min(distance,std::sqrt(squared));}
+    if(distance>=4)l.domain.prescribedVertices.push_back(id);
+   }
+   // Preserve the measured transition's differential shape on the anatomy
+   // side as well. Fairing its displacement toward zero against a fixed body
+   // seam concentrates the change in the first shaft rows and creates a lip.
+   l.domain.preserveTargetDifferential=true;
+   l.domain.surfaceFairingDistance=7;
+   l.domain.surfaceFairingStrength=64;
+   l.domain.orientationTriangles=l.bodyDomain.orientationTriangles;
    l.transition=std::make_unique<RootTransition>(l.restSource,l.bodyCount,opening);
   }
   if(r.remaining)throw std::invalid_argument("Trailing character binding data");
@@ -93,8 +102,8 @@ struct TargetSurface::Impl {
   frame.up=Normalize({metric.up.x,metric.up.y,metric.up.z});frame.radius=metric.radius;frame.length=metric.length;
   frame.root=l.transition->Root();frame.seamSupportRadius=frame.radius*1.5;
   if(neutralRadius<=0)throw std::invalid_argument("Neutral measured collar radius is unavailable");
-  if(!l.plan){l.plan=std::make_unique<GraftPlan>(l.domain,frame);l.bodyPlan=std::make_unique<GraftPlan>(l.bodyDomain,frame);l.cachedFrame=frame;}
-  else if(!Same(frame,l.cachedFrame)){l.plan->UpdateFrame(frame);l.bodyPlan->UpdateFrame(frame);l.cachedFrame=frame;}
+  if(!l.plan){l.plan=std::make_unique<GraftPlan>(l.domain,frame);l.bodyPlan=std::make_unique<GraftPlan>(l.bodyDomain);l.cachedFrame=frame;}
+  else if(!Same(frame,l.cachedFrame)){l.plan->UpdateFrame(frame);l.cachedFrame=frame;}
   auto moduleDelta=l.module.Apply(anatomy,neutralAnatomy);
   std::vector<PrecisePoint> delta(l.restSource.size());
   // Source radial queries use Wolverine's opening and upper-sector exclusions.
@@ -109,13 +118,17 @@ struct TargetSurface::Impl {
   for(auto master:l.waistMasters){auto render=l.unique[master];delta[render]=l.transition->BodyDisplacement(render,frame,neutralRadius);}
   for(auto i:l.protectedRender)delta[i]={0,0,0};
   std::vector<PrecisePoint> unique(l.unique.size());for(unsigned i=0;i<unique.size();i++)unique[i]=delta[l.unique[i]];
-  // Fair the recruited body against the stable root field first. Independent
+  // Preserve the measured bell field on the original body. Only exact donors
+  // and orientation constraints may correct it; a harmonic fairing step can
+  // spread mismatched seam targets into the surrounding pelvic surface.
+  // Independent
   // anatomy rotation belongs to the second, sewn attachment solve and cannot
   // pull pelvic tissue into an angle-dependent wedge or folded triangle.
   auto stable=unique;
   for(unsigned i=0;i<stable.size();i++)if(l.unique[i]>=l.bodyCount)
    stable[i]=l.transition->BodyDisplacement(l.unique[i],frame,neutralRadius);
-  const auto recruited=l.bodyPlan->SolveDisplacement(stable);
+  std::vector<PrecisePoint> recruited;
+  try{recruited=l.bodyPlan->ProjectDisplacement(stable);}catch(const std::exception& e){throw std::runtime_error(std::string("Authored body orientation LOD ")+std::to_string(id)+" radius "+std::to_string(frame.radius)+": "+e.what());}
   for(unsigned i=0;i<unique.size();i++)if(l.unique[i]<l.bodyCount)unique[i]=recruited[i];
   auto solved=l.plan->SolveDisplacement(unique);auto result=l.restNative;
   for(unsigned i=0;i<result.size();i++){

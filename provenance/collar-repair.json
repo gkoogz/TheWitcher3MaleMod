@@ -326,7 +326,8 @@
     "currentWorkerByteIdenticalFrames": 48,
     "physicalReactionCases": 18,
     "floatPositionRendererAndPublicationRetention": true,
-    "windowlessPresentAndPresent1": true
+    "windowlessPresentAndPresent1": true,
+    "userVisualAcceptance": false
   },
   "native": [
     {
@@ -673,6 +674,14 @@
       "baseCommit": "4f0148df2e974b45e81262031a47e8c8faf90452",
       "reason": "Waist shelf at combined maximum in private grey-room review",
       "restoredAcceptedBase": "2ad61e38fe59126a0175f8ccd2cd12ce6d0bedc7"
+    },
+    {
+      "artifacts": "build/collar-review-20261006/lateral-bell-approval",
+      "reason": "User rejected wider recruitment into legs; flare must be local"
+    },
+    {
+      "artifacts": "build/collar-review-20261006/local-root-full",
+      "reason": "One upper native body face reverses in maximum Erect case; final compact-root increases native area headroom"
     }
   ],
   "preservation": {
@@ -691,5 +700,82 @@
     "Garment and clinical features not newly accepted by the Naked collar review.",
     "Frozen beta.2 remains separate and unchanged.",
     "Unused historical pre-skinned stream-output SDK fixture still fails its surface-write assertion; installed FloatDraw path and native output passed."
-  ]
+  ],
+  "supersededByUserCorrection": {
+    "reason": "Unnatural surrounding pelvic shelf; preserve the original bare pelvis and use only a local bell ramp",
+    "baseCommit": "40dfa861eda0dce9d1b014ba3ed00732bf3c1e3f"
+  },
+  "pendingPreview": {
+    "bindingBaseCommit": "19da882a91de1d7675b557e21ddce6a03a174609",
+    "sourceDirty": true,
+    "installed": true,
+    "visualAcceptance": false,
+    "manifest": "build/collar-review-20261006/compact-root-approval/manifest.json",
+    "closeup": "build/collar-review-20261006/compact-root-close-comparison/manifest.json",
+    "offlineGate": "build/collar-review-20261006/compact-root-full/collar-metrics.json",
+    "bodyGate": "build/collar-review-20261006/compact-root-body.txt",
+    "userReviewRequiredBeforeInstallation": false,
+    "extremeUpwardAngleDeformationUnresolved": true,
+    "forwardDilationFactor": 1.3,
+    "sectionFlareFactor": 1.12,
+    "supportWidthOpeningFactor": 0.81,
+    "supportWidthDilationFactor": 2.18,
+    "surfaceFairingDistance": 7,
+    "surfaceFairingStrength": 64,
+    "bodyFairingDistance": 4,
+    "normalFieldIterations": 8,
+    "sourceHashes": {
+      "rootTransition": "c0bf268deebc19d74a09eb7ca7f0425dca24af3b0265e8c9f2422c6c73248f50",
+      "targetSurface": "bbc3e2ae58bcc72793def6998fa2a2a313716779334f7ae20067533404547513",
+      "graftHeader": "0a2ea4d14b4c026756253f6413685959098087c183c0d9d2455f9209cc5325d0",
+      "graftImplementation": "9f29efd1128957fe8a416d7f4803d3211adf70f9becf9e143d0b99efde01a98c",
+      "lighting": "4d31dbac8ba7dbd6f5f5e726fb911f8c198ca39f8d37696fb273dad1971c5107",
+      "renderContract": "e7603959fb821348a9bbd2c48ae843d803e65aca0145345df2b66ef1b8854b42"
+    },
+    "nativeAreaTargetRatio": 0.1,
+    "localRootThickness": {
+      "sideRadiusFactor": 0.06,
+      "sideAngularExponent": 6,
+      "inferiorRadiusFactor": 0.14,
+      "compactSupportNeutralRadii": 2,
+      "inferiorForwardReturn": 0.4
+    },
+    "legLocalityAudit": {
+      "path": "build/collar-review-20261006/compact-root-full/leg-locality-audit.json",
+      "scope": "both lower-resource LOD body vertices with original native Z below 0.82 m; not the entire pelvis or runtime poses",
+      "maximumAdditionalDisplacementMetres": 0.0006048548384569585,
+      "exactZeroComparisonPassed": false
+    },
+    "approvedForInstallation": true,
+    "installedBaseCommit": "431e626cae6fb6720b552f8b20206727fe809c80"
+  },
+  "reviewedCandidateInstallation": {
+    "baseCommit": "431e626cae6fb6720b552f8b20206727fe809c80",
+    "previewApprovedByUser": true,
+    "sourceHashes": {
+      "rootTransition": "c0bf268deebc19d74a09eb7ca7f0425dca24af3b0265e8c9f2422c6c73248f50",
+      "targetSurface": "bbc3e2ae58bcc72793def6998fa2a2a313716779334f7ae20067533404547513",
+      "graftHeader": "0a2ea4d14b4c026756253f6413685959098087c183c0d9d2455f9209cc5325d0",
+      "graftImplementation": "9f29efd1128957fe8a416d7f4803d3211adf70f9becf9e143d0b99efde01a98c",
+      "lighting": "4d31dbac8ba7dbd6f5f5e726fb911f8c198ca39f8d37696fb273dad1971c5107",
+      "renderContract": "e7603959fb821348a9bbd2c48ae843d803e65aca0145345df2b66ef1b8854b42"
+    },
+    "nativeModuleSHA256": "1f6c00ae41f1fcbd9b1f30c378852398e3f3c2fc101e2e316a169ef24254477a",
+    "installedFiles": 37,
+    "installedFileHashesVerified": true,
+    "rollbackFileHashesVerified": true,
+    "preferencesSHA256": "6b8c93972a6adbf1984b506c26acfdd4821c4fe34074c228db361c07b32cb4f9",
+    "preferencesPreserved": true,
+    "baselineFiles": 5,
+    "baselineHashesVerified": true,
+    "backup": "C:\\Users\\Administrator\\Documents\\ChatGPT\\TheWitcher3MaleMod\\local\\native-backup-20261006-135151",
+    "observedGameplay": false,
+    "extremeUpwardAngleDeformationUnresolved": true,
+    "installProof": "build/full-runtime/install-compact-431e626.json",
+    "installProofSHA256": "299b8ccb76ed0044fdd3286f9396e011e6623e5857bf35b054e6ea57d078789a",
+    "receipt": "local/native-installation.json",
+    "receiptSHA256": "0f2919d4951844ef16eb45e93a46a679f229f620c549749a1d648ba52f0e0a36",
+    "nativeVisualGatePassed": false,
+    "previewApprovalScope": "reviewed compact-root static renders; not all native poses"
+  }
 }

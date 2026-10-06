@@ -30,7 +30,7 @@ def contract(path):
     if at!=len(raw):raise ValueError('Render packet parse differs')
     return lods
 
-def review(artifacts,render,job,reference=None):
+def review(artifacts,render,job,reference=None,metrics_only=False):
     artifacts,render,job=map(lambda p:Path(p).absolute(),(artifacts,render,job));lods=contract(render/'geralt.render');cases=read_json(artifacts/'cases.json')
     neutral=np.fromfile(artifacts/'neutral-render.bin',VERTEX);rows=[]
     for case in cases:
@@ -59,6 +59,7 @@ def review(artifacts,render,job,reference=None):
     write_json(artifacts/'collar-metrics.json',report)
     worst=sorted(rows,key=lambda r:sum(l['bodyFacesReversedFromNeutral'] for l in r['lods']),reverse=True)[:10]
     print(json.dumps(dict(cases=len(rows),worst=worst),indent=2))
+    if metrics_only:return report
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
@@ -110,8 +111,9 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for n in ('artifacts','render','job'):p.add_argument('--'+n,type=Path,required=True)
     p.add_argument('--require-valid',action='store_true')
+    p.add_argument('--metrics-only',action='store_true',help='Validate an isolated case without the full-matrix plot sheets')
     p.add_argument('--reference-artifacts',type=Path,help='Earlier native-buffer export with identical topology, for meridian comparison')
-    a=p.parse_args();report=review(a.artifacts,a.render,a.job,a.reference_artifacts)
+    a=p.parse_args();report=review(a.artifacts,a.render,a.job,a.reference_artifacts,a.metrics_only)
     if a.require_valid:
         for row in report['rows']:
             if len(row['lods'])!=4:raise ValueError('Both body resources and LODs required')
