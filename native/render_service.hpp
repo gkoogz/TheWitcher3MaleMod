@@ -41,6 +41,7 @@ struct RenderDelivery {
  RenderPose pose;
  std::array<double,3> nozzleWorld{},nozzleDirectionWorld{1,0,0};
  surface::Controls controls;
+ std::array<std::array<double,3>,2> garmentLobeCenters{},garmentLobeRadii{};
  double sourceMilliseconds=0,targetMilliseconds=0,preparationMilliseconds=0,lightingMilliseconds=0;
  std::array<float,3> workerMilliseconds{};
  std::array<float,16> geometryMilliseconds{};
@@ -151,6 +152,7 @@ class RenderService {
     next->nozzleWorld=TransformPosePoint(nozzleTransform,shownNozzle);
     auto end=TransformPosePoint(nozzleTransform,surface::Add(shownNozzle,shownDirection));next->nozzleDirectionWorld=surface::Unit(surface::Sub(end,next->nozzleWorld));
     next->controls=source->surface->input.controls;next->sourceMilliseconds=source->surface->frame.sourceMilliseconds;next->targetMilliseconds=source->surface->frame.targetMilliseconds;
+    for(unsigned i=0;i<2;i++){next->garmentLobeCenters[i]=contract_.calibration.PointToSource(displayFrames[13+i].origin);next->garmentLobeRadii[i]=surface::Precise(source->surface->frame.source.lobeRadii[i]);}
     next->workerMilliseconds=source->surface->frame.workerMilliseconds;next->geometryMilliseconds=source->surface->frame.geometryMilliseconds;
     next->presentationPhase=phase;next->presentationIntervalMilliseconds=duration*1000;
     next->presentationSerial=++presentationSerial;

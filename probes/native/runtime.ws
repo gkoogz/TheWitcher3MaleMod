@@ -59,6 +59,7 @@ function OnTick()
     wrappedMethod();
     seconds = theGame.GetEngineTimeAsSeconds();
     MaleModClinicalStep();
+    MaleModGarmentStep();
     if (!thePlayer)
     {
         maleModNativeLastPlayer = NULL;

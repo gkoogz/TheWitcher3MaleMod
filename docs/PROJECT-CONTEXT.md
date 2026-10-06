@@ -1,4 +1,39 @@
-# Current body/material/presentation refinement
+# October 3 shared collar and optional clothing
+
+Latest iteration request (October 4): actual in-engine minimal worlds for both
+men, Geralt on a grey plane and Wolverine in a generic UE3 box, with real player
+animation/mod physics and quick entry. Keep common regression cases in Base
+and native world/launch integration in each adapter. External viewers and menu
+cinematics do not satisfy this request. See ITERATION-SANDBOX.md for verification.
+
+Latest clothing clarification: match the supplied classic white jockstrap
+reference with matte white elastic, thin red/blue horizontal stripes, a knitted
+pouch, small hem and flat straps descending under the glute folds. The pouch
+must scale with the intact anatomy and use persistent fabric simulation,
+including stretch, sag, inertia and contacts. A rigid or per-frame fitted shell
+does not fulfill this request. Shared cloth mechanics belong in Base and must
+be adopted by both Witcher and canonical Wolverine. Preserve private verification
+without host focus/input or ordinary-game audio changes.
+
+The user approved and requested publication of the accepted snapshot before
+further work. Witcher v0.5.0-beta.1 is published with its complete verified
+installer and rollback. Subsequent source changes implement shared extreme
+angle integrity in Witcher and canonical Wolverine, canonical menu names,
+clear early/ambient versus white final phase presentation and final-pump ground
+deposition. Audio assets remain deferred.
+
+Optional clothing is now authorized in both games: Naked default plus a white
+jockstrap with a thick waistband, thin red/blue stripes, ribbed scalable pouch,
+hem and rear straps under the glutes. Preserve the original internal anatomy
+and add gentle bounded support. Base owns common geometry, numerical contacts,
+support and contracts; each pinned adapter owns measured donors and native
+presentation. Do not infer visual success from contact flags or finite vertices.
+Private gameplay must not take host focus/input or mute ordinary user audio.
+
+The following sections are scope history; this authorization supersedes prior
+instructions to leave Wolverine unchanged for earlier Witcher phases.
+
+# Historical body/material/presentation refinement
 
 Latest authorization: deterministic Geralt skin matching without image
 generation, progressive radial pelvic recruitment, rear black-patch repair,

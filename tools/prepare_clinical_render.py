@@ -7,7 +7,8 @@ from packed_mesh_format import CookedMesh
 def verify_materials(job):
     job=Path(job).absolute();receipt=read_json(job/'authoring.json')
     rows={r['name']:r for r in receipt.get('textures',[])}
-    for name,group,compression in [('white','CharacterDiffuse','TCM_DXTNoAlpha'),('flat','CharacterNormal','TCM_Normals')]:
+    if receipt.get('phasePresentation',{}).get('version')!=2:raise ValueError('Clinical carrier lacks native phase-aware opacity contract')
+    for name,group,compression in [('white','CharacterDiffuse','TCM_DXTNoAlpha'),('flat','CharacterNormal','TCM_Normals'),('opacity','CharacterDiffuseWithAlpha','TCM_DXTAlpha')]:
         row=rows.get(name,{})
         if row.get('textureGroup')!=group or row.get('compression')!=compression or not row.get('nativeMetadataVerified') or not row.get('nativeMetadataDumpSHA256'):
             raise ValueError('Clinical texture lacks measured native group/encoding: '+name)
@@ -32,7 +33,7 @@ def prepare(job,output):
         blob+=struct.pack('<6fI',*mesh.scale[:3],*mesh.offset[:3],size)
         rows.append(dict(kind=kind,path=path.relative_to(ROOT).as_posix(),meshSHA256=digest(path),bufferSHA256=digest(Path(str(path)+'.1.buffer')),scale=mesh.scale,offset=mesh.offset,indexBytes=size))
     output.mkdir();packet=output/'clinical.render';packet.write_bytes(blob)
-    write_json(output/'manifest.json',dict(baseCommit=pin,packetSHA256=digest(packet),resources=rows,package=package['directory'],cookRoot=package['cooked'],authoring=job.relative_to(ROOT).as_posix(),authoringSHA256=digest(job/'authoring.json'),textures=textures,recipeSHA256=digest(Path(__file__)),bakeSHA256=read_json(settings()['base']/'provenance/clinical.json')['bakeSHA256'],nativeCooked=True,observedGameplay=False))
+    write_json(output/'manifest.json',dict(baseCommit=pin,packetSHA256=digest(packet),resources=rows,package=package['directory'],cookRoot=package['cooked'],authoring=job.relative_to(ROOT).as_posix(),authoringSHA256=digest(job/'authoring.json'),textures=textures,phasePresentation=read_json(job/'authoring.json')['phasePresentation'],recipeSHA256=digest(Path(__file__)),bakeSHA256=read_json(settings()['base']/'provenance/clinical.json')['bakeSHA256'],nativeCooked=True,observedGameplay=False))
     print('Prepared rigid clinical contract:',output)
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--job',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args();prepare(a.job,a.output)

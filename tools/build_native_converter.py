@@ -4,6 +4,7 @@ Obtain WolvenKit-7 commit and release archive documented in NATIVE-CONVERTER.md.
 Vendor sources and binaries remain ignored; this never edits the game or SDK.
 """
 import fnmatch
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -49,8 +50,11 @@ def build():
         if target.exists() and digest(target)!=digest(path):raise ValueError('Changed converter dependency '+path.name)
         if not target.exists():shutil.copy2(path,target)
         references.append(path)
-    references.append(Path('C:/Windows/Microsoft.NET/Framework64/v4.0.30319/System.Numerics.dll'))
-    csc=Path('C:/BuildTools/MSBuild/Current/Bin/Roslyn/csc.exe')
+    references.append(Path(os.environ.get('WINDIR', 'C:/Windows'))/'Microsoft.NET/Framework64/v4.0.30319/System.Numerics.dll')
+    configured=os.environ.get('MALEMOD_CSC')
+    csc=Path(configured) if configured else Path(shutil.which('csc.exe') or 'C:/BuildTools/MSBuild/Current/Bin/Roslyn/csc.exe')
+    if not csc.is_file():
+        raise ValueError('Set MALEMOD_CSC to Visual Studio Build Tools Roslyn/csc.exe')
     rsp=output/'compile.rsp'
     lines=['/nologo','/target:library','/unsafe','/platform:x64','/define:NGE_VERSION',
            '/out:"'+str(output/'WolvenKit.CR2W.dll')+'"']

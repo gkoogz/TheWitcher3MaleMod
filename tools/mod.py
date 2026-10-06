@@ -186,11 +186,32 @@ def native_assert_key(line):
     return None
 
 
-def run_wcc(cfg, command, options, workspace, label, *, baseline_asserts=()):
+def validate_readonly_depot(command, workspace, depot_alias):
+    """Reuse a measured view only for commandlets with separate output targets.
+
+    Resave/import/cook stay excluded. This does not create or modify a view;
+    every workspace override must still match the first command's intake.
+    """
+    if command not in ('dumpfile', 'buildcache', 'dependencies', 'pack', 'metadatastore') or depot_alias.parent.resolve() != workspace.parent.resolve() or not re.fullmatch(r'depot-[0-9a-f]{12}', depot_alias.name):
+        raise ValueError('Existing native depot is restricted to its read-only sibling commandlets')
+    for source in workspace.rglob('*'):
+        if source.is_file() and source.suffix not in ('.db', '.db-shm', '.db-wal'):
+            target = depot_alias / source.relative_to(workspace)
+            if not target.is_file() or digest(target) != digest(source):
+                raise ValueError('Existing depot override differs: ' + str(source))
+
+
+def run_wcc(cfg, command, options, workspace, label, *, baseline_asserts=(), existing_depot=None):
     required_file(cfg['wcc'])
     workspace = Path(workspace).absolute()
     workspace.mkdir(parents=True, exist_ok=True)
-    depot_alias = readthrough_depot(cfg['depot'], workspace)
+    if existing_depot is None:
+        depot_alias = readthrough_depot(cfg['depot'], workspace)
+    else:
+        # Only read-only native commandlets may reuse the exact owned view.
+        # Never change or recursively clean stock-linked read-through trees.
+        depot_alias = Path(existing_depot).absolute()
+        validate_readonly_depot(command, workspace, depot_alias)
     if ' ' in str(workspace):
         raise RuntimeError('WCC workspace startup path must have no spaces')
     log = ROOT / 'build/logs' / (time.strftime('%Y%m%d-%H%M%S') + '-' + label + '-' + uuid.uuid4().hex[:6] + '.log')
@@ -368,7 +389,7 @@ def empty_cache_expected(builder, log):
             int(count.group(1)) == len(re.findall(r"Mesh '[^'\r\n]+' does not contain collision", log)))
 
 
-def build(cfg, project_override=None, workspace_override=None):
+def build(cfg, project_override=None, workspace_override=None, *, native_resume=None):
     lock = base_checkout(cfg)
     project = project_override or read_json(ROOT / 'project.json')
     attachment_record=None
@@ -382,99 +403,111 @@ def build(cfg, project_override=None, workspace_override=None):
     workspace = Path(workspace_override).absolute() if workspace_override else overlay(project.get('generatedResources'))
     if not workspace.is_relative_to(ROOT/'build'):
         raise ValueError('Package workspace must be an owned build directory')
-    job = workspace.parent / ('package-' + uuid.uuid4().hex[:12])
-    job.mkdir()
-    records = []
+    if native_resume is None:
+        job = workspace.parent / ('package-' + uuid.uuid4().hex[:12])
+        job.mkdir()
+        records = []
+    else:
+        from native_build_continuation import validate_continuation
+        job, cook_record = validate_continuation(ROOT, cfg, workspace, project, native_resume)
+        records = [cook_record]
     scripts = workspace / 'scripts'
     if scripts.exists() and not project.get('scriptedCook'):
         records.append(compile_scripts(cfg, workspace))
-    resource_types = {'.xbm', '.redcloth', '.redfur', '.reddlc', '.redgame', '.redswf', '.swf', '.csv', '.xml'}
+    resource_types = {'.xbm', '.env', '.redcloth', '.redfur', '.reddlc', '.redgame', '.redswf', '.swf', '.csv', '.xml'}
     resources = [p for p in workspace.rglob('*') if p.is_file() and
                  (p.suffix.startswith(('.w2', '.w3')) or p.suffix in resource_types)]
     packed = job / 'packed'
     native_dumps=set()
     content = packed / 'Mods' / project['name'] / 'content'
-    content.mkdir(parents=True)
+    content.mkdir(parents=True, exist_ok=native_resume is not None)
     if resources:
-        # WCC creates a localization SQLite DB at startup in its writable
-        # workspace. Feed -mod a separate, explicit asset intake so this DB and
-        # loose scripts cannot accidentally become cooker seeds.
-        native_input = job / 'native-input'
-        native_input.mkdir()
-        isolated_resources={inside(workspace,p) for p in project.get('isolatedNativeResources',[])}
-        if any(p not in resources or p.suffix!='.w2ent' for p in isolated_resources):
-            raise ValueError('Isolated cooker inputs must be explicitly selected entity resources')
-        for path in resources:
-            if path in isolated_resources:continue
-            target = inside(native_input, path.relative_to(workspace))
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(path, target)
-        cooked = job / 'cooked'
-        cooked.mkdir()
-        cook_options=['-platform=' + project['platform'], '-mod=' + str(native_input),
-                      '-outdir=' + str(cooked) + os.sep]
-        if project.get('scriptedCook'):
-            from wcc_scripted import run_scripted_cook
-            from verify_cooked_motion import verify_binding
-            entity=inside(cooked,project['motionEntity'])
-            graph=inside(cooked,'characters/malemod/behavior/deformation.w2beh') if project.get('deformationBridge') else None
-            dump_resources=[entity]+([graph] if graph else [])+[inside(cooked,p) for p in project.get('additionalNativeDumps',[])]
-            isolated=[inside(cooked,p) for p in project.get('isolatedNativeDumps',[])]
-            if any(p not in dump_resources or p==entity or p==graph for p in isolated):
-                raise ValueError('Only additional standard resources may use isolated native inspection')
-            native_dumps={Path(str(item)+'.xml') for item in dump_resources}
-            records.append(run_scripted_cook(cfg,cook_options,workspace,'scripted-cook',
-                [p for p in dump_resources if p not in isolated]))
-            if isolated_resources:
-                from player_stack import verify_stock_template_baseline
-                baseline=verify_stock_template_baseline(cfg,project['nativeSourceBaseline'])
-                if {inside(cooked,p.relative_to(workspace)) for p in isolated_resources}!=set(isolated):
-                    raise ValueError('Isolated cooked entities require isolated native dumps')
-                intake=job/'standard-native-input';intake.mkdir()
-                for source in isolated_resources:
-                    target=inside(intake,source.relative_to(workspace))
-                    target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
-                records.append(run_wcc(cfg,'cook',['-platform='+project['platform'],
-                    '-mod='+str(intake),'-outdir='+str(cooked)+os.sep],workspace,'cook-effective-player',baseline_asserts=baseline))
-                if project.get('preserveCompiledPlayerTemplates'):
-                    raise ValueError('Unsafe SDK entity cache preservation is blocked after loading CTD')
-                if project.get('stageShippedPlayerTemplates'):
-                    from player_stack import stage_shipped_templates
-                    source_probe=inside(ROOT,project['deformationBridge']['sourceProbe'])/'deformation-probe.json'
-                    if digest(source_probe)!=project['deformationBridge']['sourceProbeSHA256']:
-                        raise ValueError('Compiled preservation probe changed')
-                    records.append(stage_shipped_templates(cfg,workspace,cooked,read_json(source_probe)))
-            for item in isolated:
-                records.append(run_wcc(cfg,'dumpfile',['-file='+str(required_file(item)),'-out=\\\\?\\'],
-                    workspace,'inspect-effective-player',baseline_asserts=baseline if isolated_resources else ()))
-                required_file(Path(str(item)+'.xml'))
-            binding=verify_binding(Path(str(entity)+'.xml'),output=project.get('motionOutput','dangle'),
-                require_late=(project.get('deformationBridge') or {}).get('lateActivation',False))
-            if project.get('overall'):
-                if not binding.get('cookedOverallMorphBindingVerified'):raise ValueError('Overall lost native morph binding')
-                states=project['overall']['states']
-                expected=[dict(source=a['resource'],target=b['resource'],ratio=0.0) for a,b in zip(states,states[1:])]
-                if binding['overallPairs']!=expected:raise ValueError('Cooked Overall resources differ from verified bank')
-            if project.get('deformationBridge') and not binding.get('cookedDeformationBindingVerified'):
-                raise RuntimeError('Deformation candidate lacks verified native skeleton/graph/output references')
-            if graph:
-                from verify_deformation_graph import verify_graph
-                probe=read_json(inside(ROOT,project['deformationBridge']['sourceProbe'])/'deformation-probe.json')
-                binding['poseGraph']=verify_graph(Path(str(graph)+'.xml'),stock_names=probe['stockNames'],
-                    identity_root=probe.get('identityRoot'),transform_controls=probe.get('fullTransformChannels',False),
-                    parent_space=probe.get('parentPoseSpace','local'),rest_joints=probe.get('authoredRestMask',False))
-            if project.get('motionOutput')=='player':
-                from player_stack import verify_native_player
-                binding['playerRig']=verify_native_player(cooked,probe)
-            write_json(job/'motion-binding-verification.json',binding)
+        if native_resume is not None:
+            cooked = job / 'cooked'
         else:
-            records.append(run_wcc(cfg,'cook',cook_options,workspace,'cook'))
+            # WCC creates a localization SQLite DB at startup in its writable
+            # workspace. Feed -mod a separate, explicit asset intake so this DB and
+            # loose scripts cannot accidentally become cooker seeds.
+            native_input = job / 'native-input'
+            native_input.mkdir()
+            isolated_resources={inside(workspace,p) for p in project.get('isolatedNativeResources',[])}
+            if any(p not in resources or p.suffix!='.w2ent' for p in isolated_resources):
+                raise ValueError('Isolated cooker inputs must be explicitly selected entity resources')
+            for path in resources:
+                if path in isolated_resources:continue
+                target = inside(native_input, path.relative_to(workspace))
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(path, target)
+            cooked = job / 'cooked'
+            cooked.mkdir()
+            cook_options=['-platform=' + project['platform'], '-mod=' + str(native_input),
+                          '-outdir=' + str(cooked) + os.sep]
+            if project.get('scriptedCook'):
+                from wcc_scripted import run_scripted_cook
+                from verify_cooked_motion import verify_binding
+                entity=inside(cooked,project['motionEntity'])
+                graph=inside(cooked,'characters/malemod/behavior/deformation.w2beh') if project.get('deformationBridge') else None
+                dump_resources=[entity]+([graph] if graph else [])+[inside(cooked,p) for p in project.get('additionalNativeDumps',[])]
+                isolated=[inside(cooked,p) for p in project.get('isolatedNativeDumps',[])]
+                if any(p not in dump_resources or p==entity or p==graph for p in isolated):
+                    raise ValueError('Only additional standard resources may use isolated native inspection')
+                native_dumps={Path(str(item)+'.xml') for item in dump_resources}
+                records.append(run_scripted_cook(cfg,cook_options,workspace,'scripted-cook',
+                    [p for p in dump_resources if p not in isolated]))
+                if isolated_resources:
+                    from player_stack import verify_stock_template_baseline
+                    baseline=verify_stock_template_baseline(cfg,project['nativeSourceBaseline'])
+                    if {inside(cooked,p.relative_to(workspace)) for p in isolated_resources}!=set(isolated):
+                        raise ValueError('Isolated cooked entities require isolated native dumps')
+                    intake=job/'standard-native-input';intake.mkdir()
+                    for source in isolated_resources:
+                        target=inside(intake,source.relative_to(workspace))
+                        target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
+                    records.append(run_wcc(cfg,'cook',['-platform='+project['platform'],
+                        '-mod='+str(intake),'-outdir='+str(cooked)+os.sep],workspace,'cook-effective-player',baseline_asserts=baseline))
+                    if project.get('preserveCompiledPlayerTemplates'):
+                        raise ValueError('Unsafe SDK entity cache preservation is blocked after loading CTD')
+                    if project.get('stageShippedPlayerTemplates'):
+                        from player_stack import stage_shipped_templates
+                        source_probe=inside(ROOT,project['deformationBridge']['sourceProbe'])/'deformation-probe.json'
+                        if digest(source_probe)!=project['deformationBridge']['sourceProbeSHA256']:
+                            raise ValueError('Compiled preservation probe changed')
+                        records.append(stage_shipped_templates(cfg,workspace,cooked,read_json(source_probe)))
+                for item in isolated:
+                    records.append(run_wcc(cfg,'dumpfile',['-file='+str(required_file(item)),'-out=\\\\?\\'],
+                        workspace,'inspect-effective-player',baseline_asserts=baseline if isolated_resources else ()))
+                    required_file(Path(str(item)+'.xml'))
+                binding=verify_binding(Path(str(entity)+'.xml'),output=project.get('motionOutput','dangle'),
+                    require_late=(project.get('deformationBridge') or {}).get('lateActivation',False))
+                if project.get('overall'):
+                    if not binding.get('cookedOverallMorphBindingVerified'):raise ValueError('Overall lost native morph binding')
+                    states=project['overall']['states']
+                    expected=[dict(source=a['resource'],target=b['resource'],ratio=0.0) for a,b in zip(states,states[1:])]
+                    if binding['overallPairs']!=expected:raise ValueError('Cooked Overall resources differ from verified bank')
+                if project.get('deformationBridge') and not binding.get('cookedDeformationBindingVerified'):
+                    raise RuntimeError('Deformation candidate lacks verified native skeleton/graph/output references')
+                if graph:
+                    from verify_deformation_graph import verify_graph
+                    probe=read_json(inside(ROOT,project['deformationBridge']['sourceProbe'])/'deformation-probe.json')
+                    binding['poseGraph']=verify_graph(Path(str(graph)+'.xml'),stock_names=probe['stockNames'],
+                        identity_root=probe.get('identityRoot'),transform_controls=probe.get('fullTransformChannels',False),
+                        parent_space=probe.get('parentPoseSpace','local'),rest_joints=probe.get('authoredRestMask',False))
+                if project.get('motionOutput')=='player':
+                    from player_stack import verify_native_player
+                    binding['playerRig']=verify_native_player(cooked,probe)
+                write_json(job/'motion-binding-verification.json',binding)
+            else:
+                records.append(run_wcc(cfg,'cook',cook_options,workspace,'cook'))
         db = required_file(cooked / 'cook.db')
+        reusable_depot = None
+        if project.get('reuseReadOnlyDepot') is True and not project.get('scriptedCook'):
+            cook_args = records[-1]['args']
+            reusable_depot = Path(cook_args[cook_args.index('-uncookDir') + 1])
         for builder in project['cacheBuilders']:
             name = {'textures': 'texture.cache', 'physics': 'collision.cache'}[builder]
             out = content / name
             record = run_wcc(cfg, 'buildcache', [builder, '-platform=' + project['platform'],
-                             '-db=' + str(db), '-out=' + str(out)], workspace, builder)
+                             '-db=' + str(db), '-out=' + str(out)], workspace, builder, existing_depot=reusable_depot)
             if out.exists() and out.stat().st_size:
                 required_file(out)
             elif empty_cache_expected(builder, (ROOT / record['logPath']).read_text(errors='replace')):
@@ -490,7 +523,7 @@ def build(cfg, project_override=None, workspace_override=None):
                 temporary.unlink()  # Empty temporary owned by this successful cache job.
             records.append(record)
         dep = content / 'dep.cache'
-        records.append(run_wcc(cfg, 'dependencies', ['-db=' + str(db), '-out=' + str(dep)], workspace, 'dependencies'))
+        records.append(run_wcc(cfg, 'dependencies', ['-db=' + str(db), '-out=' + str(dep)], workspace, 'dependencies', existing_depot=reusable_depot))
         required_file(dep)
         bundle_input = job / 'bundle-input'
         bundle_input.mkdir()
@@ -502,10 +535,10 @@ def build(cfg, project_override=None, workspace_override=None):
         bundles = content / 'bundles'
         bundles.mkdir()
         records.append(run_wcc(cfg, 'pack', ['-dir=' + str(bundle_input), '-outdir=' + str(bundles) + os.sep,
-                       '-compression=lz4'], workspace, 'pack'))
+                       '-compression=lz4'], workspace, 'pack', existing_depot=reusable_depot))
         if not list(bundles.glob('*.bundle')):
             raise RuntimeError('Packer produced no bundle')
-        records.append(run_wcc(cfg, 'metadatastore', ['-path=' + str(content) + os.sep], workspace, 'metadata'))
+        records.append(run_wcc(cfg, 'metadatastore', ['-path=' + str(content) + os.sep], workspace, 'metadata', existing_depot=reusable_depot))
         required_file(content / 'metadata.store')
     if scripts.exists():
         copy_tree(scripts, content / 'scripts')
@@ -589,6 +622,8 @@ def install_package(cfg, directory):
     directory = Path(directory).resolve()
     manifest = verify_package(directory)
     name = manifest['project']
+    if name == 'modMaleModIteration':
+        raise ValueError('Development rooms use tools/sandbox.py; preserve the ordinary rig installation receipt')
     if not re.fullmatch(r'mod[A-Za-z0-9_]+', name):
         raise ValueError('Invalid installation mod name')
     version, base_commit = manifest['version'], manifest['baseCommit']

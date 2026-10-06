@@ -7,6 +7,22 @@ an independent diagnostic reader, not an authoring converter or engine writer.
 import math,struct,zlib
 from player_rig_redirect import header_crc
 
+def decode_render_chunks(payload):
+    """Read the observed native two-LOD packed records, opaque or forward.
+
+    The official opaque rigid cook has six records (two full lighting records
+    and four reduced shadow records); the forward alpha cook has two. Classify
+    the actual bounded payload rather than choosing an opaque count by garment
+    filename. This does not establish an unmeasured soft-cloth cook.
+    """
+    if len(payload)<5:raise ValueError('Truncated packed render chunk prefix')
+    length=struct.unpack_from('<I',payload)[0];count=payload[4]
+    if count not in (2,6) or length!=1+37*count or len(payload)!=4+length:
+        raise ValueError('Unobserved packed render chunk record layout')
+    records=[payload[5+37*i:5+37*(i+1)] for i in range(count)]
+    if [r[36] for r in records[:2]]!=[1,2]:raise ValueError('Full packed records do not identify the two native LODs')
+    return records
+
 
 class CookedMesh:
     def __init__(self,raw,allow_rigid=False):

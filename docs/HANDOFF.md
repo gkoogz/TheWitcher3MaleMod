@@ -1,3 +1,174 @@
+# October 3 beta publication and shared follow-up
+
+## October 5 repository package and frozen next beta
+
+Read [current source/release boundary](DEVELOPMENT-STATUS.md). Development Base
+is `421a786`; frozen beta.2 payload is `99ff741`/DLL `d475`, independently identified by
+release/profiles/0.5.0-beta.2.json. Failed new cloth/material source is preserved
+as unfinished work, not deployed. Existing static clothing is an opt-in preview.
+The compact repository-only grey studio is in dev/sandbox/README.md; its files
+are excluded from anatomy release archives. Use it for future development first.
+
+## Current October 5 grey studio status
+
+The desktop `Witcher 3 Grey Sandbox.lnk` is playable without preview mode.
+Package `publish/20261005-151112-3a10d9` binds reviewed final acceptance
+`build/probe/sealed-session-20261005-212614/platform-acceptance.json`.
+The black movement patch was isolated to the engine particle pass and corrected
+only in the owned studio driver. Complete body output and 7.609 metres of
+grounded walking passed; start, mid-walk and end images are clean.
+
+Private/manual official compilation and manual launch preflight pass. Private
+children are closed; 24 saves, all 40 managed runtime files, original DX12
+preferences and scoped audio were preserved. No native runtime or Wolverine
+upgrade was installed. See [repair evidence](SANDBOX-FLOOR-REPAIR.md).
+
+This remains a transient grey studio over the stock q002 world, not a minimum
+standalone world. Cadence remains 72.0192 ms; F6 input/panel was not directly
+tested in this acceptance. Earlier checkpoints below are historical.
+
+## October 5 native sandbox checkpoint
+
+Supported HUD retirement removed all 27 present modules with zero remaining,
+but private20544 still crashed after the public own-world transition. Its
+exact deleted-pointer exception is RVAe6ba27; named SDK attribution remains
+pending. Child cleanup/audio/saves/runtime passed. Next native authoring
+comparison delegates layer root ownership to REDkit directory population,
+instead of hand-writing legacy embedded group tails. Source tests pass;
+native/gameplay acceptance does not yet exist. See ITERATION-SANDBOX09:15.
+
+Latest corrected256 package passes fresh native readbacks/cook/physics/pack,
+but cold18196 fails in TLSF free-list removal and warm21708 fails on own-world
+transition after successful stock gameplay. The latter is precisely matched to
+`CHud::OnSerialize` during GC with a deleted HUD module bucket node; terrain is
+not implicated by that fault. Both children are cleaned and saves/audio/runtime
+preserved. See ITERATION-SANDBOX08:32 for exact receipts and SDK matches. No own
+studio gameplay/rendering acceptance is claimed from successful cooking.
+
+Latest bounded warm control21052 enters stock gameplay, then stalls on supported
+transition to the unchanged own studio. The SDK occlusion initializer now proves
+that the authored128 world extent is invalid: it requires multiples of256 and
+otherwise derives zero tiles. Smallest valid256 extent is recooking; terrain,
+floor and source tile are unchanged. Native launch requires the cooked nonzero
+occlusion receipt. User's selected outdoor save is consistent with newest auto,
+not the sole manual inn thumbnail; fresh baseline and complete read-only native
+facts parsing are preserved. No guessed campaign facts were applied. All private
+children are closed and fresh24 saves/35 runtime files exact. See newest section
+of ITERATION-SANDBOX.md; corrected gameplay remains unaccepted.
+
+Custom native world/player entry is observed, but grounded movement, anatomy/F6
+and rendering remain unaccepted. Stock q002 control enters real gameplay and
+continues Tick240/360 with the same private launcher. Fixed native references,
+legal clipmap and mip dimensions remain certified; subsequent own-world crashes
+are varied GC/Flash/platform failures, not a proven remaining terrain fault.
+Latest deferred menu request/closure compiles, but PID6188 failed in REDGalaxy64
+worker+0x1c5240 before player. Next comparison uses the exact observed stock quest
+bootstrap with unchanged own scene, labelled diagnostic and not final minimal.
+
+Stock control rotated one original checkpoint trio at05:10. The original24 save
+files were restored/hash-verified and the exact private-created trio archived;
+all35 installed runtime files remain exact. Driver reacquires native no-save
+locks, and run_iteration_world now binds a tested save transaction that restores
+missing originals and refuses changed originals/foreign additions. All private
+children are closed/audio restored/temporary files removed. Current evidence
+and recovery receipts are in ITERATION-SANDBOX.md. No playable success claimed.
+
+See ITERATION-SANDBOX.md. Earlier native command success concealed NULL soft
+references. The Soft=4 writer fix and complete-depot official readback now bind
+all six resaved/cooked world/player/camera/quest/floor/environment references.
+The first loading fault at retail RVA0x23746ea was a missing native clipmap.
+Package `publish/20261005-015007-321e28` now passes strict cooked terrain tile
+readback plus physical cache/pack, but its one-tile runtime crashes in a native
+height copy at RVA0x28c2fcd: a four-sample halo extends outside the 1024 grid.
+Original converter `TerrainTiles` support is sufficient; no schema fork is used.
+See the exact private PID17784 dump and native receipts in ITERATION-SANDBOX.md.
+No playable sandbox, physics or F6 success is claimed. All
+temporary files are removed; all 35 original managed runtime files rehash clean.
+Source Base pin is now 61427b4 for shared iteration cases; installed runtime
+remains 99ff741e. Wolverine's bounded private commandlet check failed with
+elevation error 740 before launch; compatible map authoring support is unproven.
+
+## October 4 bounded playable attempt: original runtime restored
+
+The new cloth solver and material candidates are rejected, not installed.
+The conservative pressure prototype fails its first measured motion frame at
+1.7731 times material stretch and 234.2 ms, with a sewn upper-edge conflict.
+The new soft7 material passes official cook, explicit native instance opacity
+0.95, carrier packet equality and all 209 fingerprint equality checks, but
+fails actual gameplay: all nine clothed cases have geometry and accepted fit,
+yet zero native garment publications; the reviewed front image is naked.
+Do not infer forward-pass compatibility from buffer fingerprint equality.
+
+The private session completed all 53 ordered checkpoints; anatomy rendering
+continued without a body runtime fault. Its failed material package was rolled
+back. All 35 managed installed files and the complete installation receipt are
+byte-identical to the original `99ff741` baseline. The exact private child is
+closed, scoped audio restored and temporary Continue driver removed. The
+existing F6 controls, anatomy, physics and static fitted garment remain as before.
+No new walking38 pouch or load-bearing cloth is delivered, and no new release
+is published. Source work is preserved for continuation; this is a restored
+playable baseline, not completion of the requested garment upgrade.
+
+Ignored evidence: `build/full-runtime/bounded-playable-result-20261004.json`,
+`build/probe/sealed-session-20261004-162114`, and the rejected
+`build/garment-carrier-soft7-opacity` native package receipts. Raw private test
+images are retained on E: outside Git. `tools/adopt_garment_material.py` provides
+scoped five-file preparation/apply/rollback and passes ten transaction tests.
+
+The approved radial/skin/clinical snapshot is published as the public prerelease
+`v0.5.0-beta.1`, tag/source commit
+`f0d61b98a5b416c389692d444467e836cb993fc2`. Its installation ZIP is
+73,154,626 bytes, SHA256
+`53fd29e02e30aff011eddb65ea3ca6261523b5a47e7989e0a93e10ad37a6f557`.
+The exact archived installer passed 14 clean-install, upgrade, rollback and
+settings-preservation checks. Do not replace that immutable release payload.
+
+Separate follow-up work adopts shared Base pelvic-frame, control vocabulary,
+clinical birth-phase/deposition and optional garment modules. Canonical Wolverine
+also adopts Base; its immutable reference snapshot is not edited. Read
+SHARED-GARMENTS.md, GARMENT-PRESENTATION.md, GARMENT-RENDERER-GATES.md,
+CLINICAL-PHASE-REPAIR.md and WORKER-REVISION-ADOPTION.md.
+
+At this intermediate checkpoint, the pinned revision is `99ff741`. Naked,
+extreme-angle and dry-terrain clinical checks have run in the private game.
+White final flow and final-born deposits are observed. Clear flow uses verified
+native alpha but is too faint to resolve directly in current screenshots.
+Clothing is **not accepted yet**: corrected shared shape passes 41 actual Geralt
+and 96 Wolverine source cases, and native ownership/four draws work. Private
+PID29588 exposed a metallic material and transient moving stitch failure.
+The exact failure was captured by PID26056 and reproduced offline; it is a
+sewing incompatibility, with positive capsule clearance, not a world-origin
+precision problem. Base `99ff741` repairs that intact sewn endpoint in its actual
+hem frame. Private PID24268 passes all 53 checkpoints and moving contacts, but
+its material still appears metallic. An owned dry-cloth graph is being verified
+with the official importer/cooker; scalar `Roughness` on the old graph was ignored.
+The user's latest clarification also requires persistent fabric simulation,
+rather than the current fitted surface. Base cloth dynamics and both adapter
+adoptions are in progress. The classic strap recipe now uses measured .869m
+glute-fold donors instead of .740m posterior-thigh donors; its 41 offline cases
+pass, but it has not been approved visually in game.
+Do not treat finite geometry or `contactBudgetSatisfied` alone as visual proof.
+
+The last private child, PID24268, is closed. Its scoped audio was restored and
+temporary Continue source removed. Host focus/input/audio and unrelated voice
+work are preserved. The official final 53-case driver adds side and rear cloth
+views; its source SHA256 is
+`9b6d290295fb93769055086ea38fd2779d0722b80b0453514e28a59dc251792b`.
+
+The latest pouch requirement supersedes the radial shell: a single persistent
+cloth sheet starts at an 80-degree total arc along the lower front waistband,
+walks over the full shaft/glans and beneath both scrotal lobes, and returns to
+two small underside strap seams. The anatomy never disappears. MMGRB003
+preserves complete native anatomy/body topology and adds authored tissue
+supports; MMGFC005 captures exact expanded garment lineage with versions1..4
+compatibility. These changes are uninstalled development work pending shared
+cloth, actual-character performance, native material and private game gates.
+Do not relabel earlier radial previews or numerical passes as this new design.
+
+The following entries are historical verification of the released snapshot.
+
+---
+
 # Installed radial, skin, rear-patch and clinical delivery
 
 October 3. All four requested features are implemented and installed against

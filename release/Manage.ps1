@@ -58,6 +58,9 @@ if (Get-Process -Name witcher3 -ErrorAction SilentlyContinue) { throw 'Close Wit
 $package = $PSScriptRoot
 $manifest = ReadJson (Child $package 'manifest.json')
 if ($manifest.schema -ne 1) { throw 'Unsupported package schema' }
+if ($manifest.PSObject.Properties.Name -contains 'gameExecutableSHA256') {
+    if ((Hash $exe) -ne $manifest.gameExecutableSHA256) { throw 'Unsupported Witcher executable; this native adapter requires the verified next-gen DX12 build' }
+}
 CheckRows (Child $package 'payload') $manifest.files
 CheckRows $package $manifest.packageFiles
 $allowed = @{}

@@ -1,11 +1,13 @@
-Witcher 3 MaleMod 0.5.0-beta.1 - verified snapshot beta
+Witcher 3 MaleMod 0.5.0-beta.2 - verified frozen snapshot beta
 
 Windows 10/11, Witcher 3 next-gen DX12, ordinary Steam/game launcher.
 No REDkit, Python, development checkout, injector or additional SDK required.
 This is the current tested draft, not a claim of perfect runtime/visual parity.
-Known user-reported limitations: collar recruitment, fluid phase/floor behavior
-and interactive menu behavior need further refinement. Ray tracing and distant
-LOD transitions were not verified. Dialogue asset slots are intentionally empty.
+Includes the observed shared collar/clinical/menu corrections. The existing
+static fitted garment remains an opt-in preview with unresolved material/fit
+limitations. New persistent fabric candidates are source-only and were not
+accepted or installed. Ray tracing and distant LOD transitions were not verified.
+Dialogue asset slots are intentionally empty. Physics cadence still needs work.
 Wolverine is unchanged.
 
 INSTALL
@@ -34,9 +36,14 @@ Backups are in GAME ROOT/.malemod-installation/backups. Do not delete that folde
 if rollback is needed. Only installer metadata/backups remain after uninstall;
 empty mod directories are harmless. Rollback checks backup and installed hashes.
 
-The complete payload contains 25 native adapter files and five .31 baseline
+The complete payload contains 35 native adapter files and five .31 baseline
 files. It includes cooked body/clinical resources, startup proxy, DLL, numerical
 worker, bindings and runtime/script data. No private captures, settings or audio
 are distributed. The .31 baseline is required even with native full mode.
 SHA256SUMS.txt verifies package files; manifest.json lists every payload hash.
 Copyright/source provenance and verification are in the source repositories.
+
+The grey development room is deliberately excluded from this release ZIP.
+Its reproducible source, tools and SDK requirements are in dev/sandbox in Git.
+This ZIP freezes the accepted Base 99ff741 payload. The newer source development
+checkpoint is separately identified and is not claimed to rebuild these bytes.

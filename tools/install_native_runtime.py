@@ -86,10 +86,32 @@ def install_native_runtime(cfg,remove=False):
         for name in ['clinical.render','clinical.render.sha256']:files['bin/x64_dx12/malemod-native/'+name]=release/name
         files['bin/x64_dx12/malemod-native/splat_bakes.bin']=cfg['base']/'legacy/wolverine/src/runtime/splat_bakes.bin'
         files['Mods/modMaleModNative/content/scripts/local/malemod/clinical.ws']=ROOT/'probes/native/clinical.ws'
+    if selection.get('garments'):
+        garment_dir=ROOT/selection['garments'];garment=read_json(garment_dir/'manifest.json')
+        if garment['baseCommit']!=pin or garment['renderSHA256']!=render['packetSHA256'] or digest(garment_dir/'garment.bindings')!=garment['packetSHA256']:
+            raise ValueError('Garment binding differs from pinned native surface')
+        package_manifest=read_json(ROOT/selection['garmentCarrier']/'package.json')
+        from mod import verify_package
+        package=ROOT/package_manifest['directory'];patch=verify_package(package)
+        if patch['baseCommit']!=pin or patch['project']!='modMaleModGarments':raise ValueError('Garment native package differs')
+        for row in patch['files']:files[row['path']]=package/row['path']
+        reaction=garment.get('physicalReactionBinding',{})
+        if reaction.get('version')!=1 or reaction.get('generalizedBodies')!=14 or reaction.get('nativeVertices')!=garment.get('anatomySemantics',{}).get('fullAnatomyVertices'):
+            raise ValueError('Complete physical garment reaction binding missing')
+        for name in ['garment.bindings','garment.bindings.sha256','garment.reactions','garment.reactions.sha256','garment.render','garment.render.sha256']:files['bin/x64_dx12/malemod-native/'+name]=release/name
+        for name,expected in [('garment.bindings',garment['packetSHA256']),('garment.reactions',reaction['packetSHA256']),('garment.render',package_manifest['packetSHA256'])]:
+            if digest(required_file(release/name))!=expected or required_file(release/(name+'.sha256')).read_text().strip()!=expected:
+                raise ValueError('Staged garment input hash differs: '+name)
+        files['Mods/modMaleModNative/content/scripts/local/malemod/garment.ws']=ROOT/'probes/native/garment.ws'
     if selection.get('bodyPackage'):
         from mod import verify_package
         package=ROOT/selection['bodyPackage'];patch=verify_package(package)
-        if patch['baseCommit']!=pin or patch['project']!='mod0000MaleModBodyBoundary':raise ValueError('Body patch pin/priority package differs')
+        if patch['project']!='mod0000MaleModBodyBoundary':raise ValueError('Body priority package differs')
+        if patch['baseCommit']!=pin:
+            if not selection.get('bodyAdoption'):raise ValueError('Body patch differs from runtime pin and lacks verified adoption')
+            from readopt_body_runtime import validate_adoption
+            adoption=validate_adoption(ROOT/selection['bodyAdoption'],package,pin,cfg)
+            if adoption['bodyJob']!=selection.get('bodyJob'):raise ValueError('Body adoption authoring job differs from selection')
         for row in patch['files']:
             source=package/row['path']
             if digest(source)!=row['sha256']:raise ValueError('Body patch file differs')
@@ -100,7 +122,7 @@ def install_native_runtime(cfg,remove=False):
     proof=read_json(ROOT/'build/probe/native-bootstrap-compile.json')
     if proof['exitCode'] or proof['scriptImportsStubbed'] or digest(ROOT/proof['artifact'])!=proof['artifactSHA256']:
         raise ValueError('Official native startup compilation proof failed')
-    for name in ['runtime','render_bones']+(['clinical'] if selection.get('clinical') else []):
+    for name in ['runtime','render_bones']+(['clinical'] if selection.get('clinical') else [])+(['garment'] if selection.get('garments') else []):
         rel='local/malemod/'+name+'.ws';source=files['Mods/modMaleModNative/content/scripts/'+rel]
         if proof['ownedSourceHashes'].get(rel)!=digest(source):raise ValueError('Native script differs from compiler proof')
     baseline=read_json(ROOT/'local/installation.json')

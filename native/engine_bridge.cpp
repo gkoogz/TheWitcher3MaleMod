@@ -22,6 +22,8 @@
 #include "control_store.hpp"
 #include "clinical_service.hpp"
 #include "fluid_renderer.hpp"
+#include "garment_renderer.hpp"
+#include "garment_service.hpp"
 
 // All RVAs and allocation/bytecode layouts in this probe were observed in the
 // hash-locked game executable. This is not a REDkit-address compatibility shim.
@@ -52,6 +54,8 @@ RenderContract* renderContract=nullptr;
 RenderPoseInput* renderPose=nullptr;
 RenderService* renderService=nullptr;
 ClinicalService* clinicalService=nullptr;
+GarmentService* garmentService=nullptr;
+std::filesystem::path garmentPreferencePath;
 unsigned renderEpoch=0;
 bool overlayRequested=false;
 std::atomic<unsigned> runtimeFlags{0};
@@ -84,7 +88,7 @@ void CreateOverlayForGame(){
  EnumWindows([](HWND window,LPARAM data)->BOOL{DWORD pid=0;GetWindowThreadProcessId(window,&pid);RECT r{};
   if(pid==GetCurrentProcessId()&&!GetWindow(window,GW_OWNER)&&IsWindowVisible(window)&&GetClientRect(window,&r)&&r.right>=640&&r.bottom>=480){auto* list=reinterpret_cast<Windows*>(data);list->result=window;++list->count;}return TRUE;
  },reinterpret_cast<LPARAM>(&windows));
- if(windows.count==1)overlayPanel=new OverlayPanel(windows.result,ReadControls,WriteControl,[]{if(!clinicalService)return std::array<float,2>{};auto p=clinicalService->Projection();return std::array<float,2>{float(clinicalService->Mode()),p.active?1.f:0.f};},[](unsigned row,float v){if(clinicalService){if(row==18)clinicalService->SetMode(unsigned(v));else if(row==19)clinicalService->Action(v>0);}});
+ if(windows.count==1)overlayPanel=new OverlayPanel(windows.result,ReadControls,WriteControl,[]{auto p=clinicalService?clinicalService->Projection():surface::Frame::ClinicalProjection{};return std::array<float,3>{clinicalService?float(clinicalService->Mode()):0,p.active?1.f:0.f,garmentService?float(garmentService->Style()):0};},[](unsigned row,float v){if(clinicalService){if(row==18)clinicalService->SetMode(unsigned(v));else if(row==19)clinicalService->Action(v>0);}if(row==20&&garmentService){garmentService->Style(unsigned(v));if(!IsSealedStation())WritePrivateProfileStringW(L"Garment",L"Style",v>0?L"1":L"0",garmentPreferencePath.c_str());}});
 }
 
 bool VerifyFile(const std::filesystem::path& path,const std::string& expected){
@@ -129,6 +133,13 @@ void InitializeRuntime(){
   FluidRendererConfigure(dir/L"clinical.render");
   if(!VerifyFile(dir/L"splat_bakes.bin","b41046ee1083da7f0921706022893a7aed78b74a9ff931776f12e746ab405fb5"))throw std::runtime_error("Clinical source bake hash differs");
   clinicalService=new ClinicalService(p.calibration.targetUnitsPerSourceUnit,dir/L"splat_bakes.bin");
+  if(std::filesystem::exists(dir/L"garment.bindings")){
+   auto verified=[&](const wchar_t* name){auto file=dir/name;std::ifstream h(file.wstring()+L".sha256");std::string hash;h>>hash;if(hash.size()!=64||!VerifyFile(file,hash))throw std::runtime_error("Garment artifact hash differs");};
+   verified(L"garment.bindings");verified(L"garment.render");verified(L"garment.reactions");
+   GarmentRendererConfigure(dir/L"garment.render");garmentService=new GarmentService(*renderContract,GarmentBindings(dir/L"garment.bindings",p.revision,hash),p.contacts,IsSealedStation()?dir/(L"garment-failure-"+std::to_wstring(GetCurrentProcessId())):std::filesystem::path{});
+   garmentPreferencePath=dir/L"malemod-preferences.ini";
+   if(!IsSealedStation())garmentService->Style(GetPrivateProfileIntW(L"Garment",L"Style",0,garmentPreferencePath.c_str()));
+  }
  }
  runtimeFlags.store(1u|(p.diagnosticSourceContacts?64u:0u));
 }
@@ -170,13 +181,15 @@ void RuntimeFrame(void*,void* frame,void* result){
   for(unsigned i=0;i<4;i++)sample.thighsActorLocal[i]={v[i+4].x,v[i+4].y,v[i+4].z};
   const auto snapshot=ReadControls();
   if(overlayPanel&&overlayPanel->ConsumeFocusLoss()&&epoch>0){std::uint64_t pauseSequence=0;runtimeHost->Tick(std::uint32_t(epoch),sample,true,snapshot,pauseSequence);}
-  std::uint64_t sequence=0;status=runtimeHost->Tick(std::uint32_t(epoch),sample,paused,snapshot,sequence,clinicalService?clinicalService->Projection():surface::Frame::ClinicalProjection{});
+  std::uint64_t sequence=0;status=runtimeHost->Tick(std::uint32_t(epoch),sample,paused,snapshot,sequence,clinicalService?clinicalService->Projection():surface::Frame::ClinicalProjection{},garmentService?garmentService->Support(unsigned(epoch)):surface::Frame::GarmentSupport{});
   if(status==HostTick::Paused)runtimeFlags.fetch_or(8);
   if(status==HostTick::Busy||status==HostTick::Full)runtimeFlags.fetch_or(16);
   if(status==HostTick::Invalid||status==HostTick::Failed)runtimeFlags.fetch_or(32);
+  const auto currentRenderPose=renderPose?(paused?renderPose->LastComplete(unsigned(epoch)):renderPose->Complete(unsigned(epoch),seconds)):std::optional<RenderPose>{};
+  std::shared_ptr<const RenderDelivery> currentRenderDelivery;
   auto source=runtimeHost->Poll(std::uint32_t(epoch));
-  if(source){runtimeFlags.fetch_or(4);if(renderService&&renderPose){auto pose=paused?renderPose->LastComplete(unsigned(epoch)):renderPose->Complete(unsigned(epoch),seconds);if(pose){runtimeFlags.fetch_or(128);renderService->Submit(source,*pose,paused);}auto output=renderService->Latest();if(output&&output->epoch==unsigned(epoch)){
- LiveRenderFeed(std::move(output));
+  if(source){runtimeFlags.fetch_or(4);if(renderService&&renderPose){if(currentRenderPose){runtimeFlags.fetch_or(128);renderService->Submit(source,*currentRenderPose,paused);}auto output=renderService->Latest();if(output&&output->epoch==unsigned(epoch)){
+ currentRenderDelivery=output;LiveRenderFeed(output);
 }if(!renderService->Error().empty()){
  runtimeFlags.fetch_or(256);static bool recorded=false;if(!recorded){recorded=true;wchar_t path[32768]{};HMODULE module=nullptr;
  if(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&RuntimeFrame),&module)&&GetModuleFileNameW(module,path,32768)){
@@ -184,13 +197,14 @@ void RuntimeFrame(void*,void* frame,void* result){
  }
  }
 }}}
-  if(clinicalService){clinicalService->Submit(unsigned(epoch),seconds,paused,renderService?renderService->Latest():nullptr);FluidRendererFeed(clinicalService->Latest(),clinicalService->Scale());if(!clinicalService->Error().empty())runtimeFlags.fetch_or(512);}
+  if(garmentService){if(currentRenderPose)garmentService->Submit(currentRenderDelivery,*currentRenderPose,paused);auto garment=garmentService->Latest();GarmentRendererFeed(garment);if(!garmentService->Error().empty()||(garment&&garment->output.style!=garments::Style::Naked&&(!garment->output.contactBudgetSatisfied||!garment->output.physics.materialBudgetSatisfied)))runtimeFlags.fetch_or(1024);}
+  if(clinicalService){clinicalService->Submit(unsigned(epoch),seconds,paused,currentRenderDelivery);FluidRendererFeed(clinicalService->Latest(),clinicalService->Scale());if(!clinicalService->Error().empty())runtimeFlags.fetch_or(512);}
   if(!epoch){LiveRenderFeed({});if(renderPose)renderPose->Reset();}
   // SDK component OnTick precedes scene rendering. Freeze one complete
   // publication for every body/depth/material command list in this frame.
   // Background numerical and presentation workers continue independently.
   FloatDrawFrameBoundary();
-  FluidRendererFrameBoundary();
+  FluidRendererFrameBoundary();GarmentRendererFrameBoundary();
  }
  }catch(const std::exception&){
   // Allocation, window creation and publication failures cannot unwind through
@@ -294,10 +308,43 @@ void TestCheckpoint(void*,void* frame,void* result){
     std::fprintf(log,"],\"bounds\":[[%.9g,%.9g,%.9g],[%.9g,%.9g,%.9g]],\"actorOrigin\":[%.9g,%.9g,%.9g],\"poseSeconds\":%.9g,\"lightingMs\":%.9g,\"workerMs\":[%.9g,%.9g,%.9g],\"geometryMs\":[",low[0],low[1],low[2],high[0],high[1],high[2],output->pose.actorWorld[3],output->pose.actorWorld[7],output->pose.actorWorld[11],output->poseSeconds,output->lightingMilliseconds,output->workerMilliseconds[0],output->workerMilliseconds[1],output->workerMilliseconds[2]);
     for(unsigned i=0;i<16;i++)std::fprintf(log,"%s%.9g",i?",":"",output->geometryMilliseconds[i]);
     auto clinical=clinicalService?clinicalService->Latest():nullptr;auto collision=clinicalService?clinicalService->collisions.Counts():std::array<unsigned,3>{};
-    std::fprintf(log,"],\"clinicalMode\":%u,\"clinicalActive\":%s,\"clinicalTime\":%.9g,\"emittedVolume\":%.9g,\"liquidIndices\":%zu,\"depositIndices\":%zu,\"clinicalMs\":%.9g,\"clinicalCueMask\":%u,\"fluidRenderFlags\":%u,\"fluidPublications\":%u,\"pendingQueries\":%u,\"sceneQueries\":%u,\"sceneHits\":%u,\"callbackCount\":",clinicalService?clinicalService->Mode():0,clinical&&clinical->active?"true":"false",clinical?clinical->time:0,clinical?clinical->emittedVolume:0,clinical?clinical->mesh.indices.size():0,clinical?clinical->deposits.indices.size():0,clinical?clinical->milliseconds:0,clinical?clinical->cueMask:0,FluidDrawFlags(),FluidDrawPublications(),collision[0],collision[1],collision[2]);
+    std::fprintf(log,"],\"clinicalMode\":%u,\"clinicalActive\":%s,\"clinicalTime\":%.9g,\"emittedVolume\":%.9g,\"liquidIndices\":%zu,\"depositIndices\":%zu,\"clinicalMs\":%.9g,\"clinicalCueMask\":%u,\"fluidRenderFlags\":%u,\"fluidPublications\":%u,\"pendingQueries\":%u,\"sceneQueries\":%u,\"sceneHits\":%u,",clinicalService?clinicalService->Mode():0,clinical&&clinical->active?"true":"false",clinical?clinical->time:0,clinical?clinical->emittedVolume:0,clinical?clinical->mesh.indices.size():0,clinical?clinical->deposits.indices.size():0,clinical?clinical->milliseconds:0,clinical?clinical->cueMask:0,FluidDrawFlags(),FluidDrawPublications(),collision[0],collision[1],collision[2]);
+    auto garment=garmentService?garmentService->Latest():nullptr;
+    std::fprintf(log,"\"garmentContactBudgetSatisfied\":%s,\"garmentProjectedContacts\":%u,\"garmentCoverageMargin\":%.9g,\"garmentSupportEnabled\":%s,\"garmentServiceError\":%s,",garment&&garment->output.contactBudgetSatisfied?"true":"false",garment?garment->output.projectedContacts:0,garment?garment->output.coverageMargin:0,garment&&garment->support.enabled?"true":"false",garmentService&&!garmentService->Error().empty()?"true":"false");
+    const auto cloth=garment?garment->output.physics:garments::ClothTelemetry{};
+    const auto band=garment?garment->output.band:garments::BandTelemetry{};
+    const auto layout=garment?garment->output.layout:garments::MaterialLayout{};
+    const auto reaction=garment?garment->output.reaction:garments::ReactionTelemetry{};
+    std::fprintf(log,"\"garmentReactionMode\":%s,\"clothReactionContacts\":%u,\"clothReactionRecords\":%u,\"clothReactionSeconds\":%.9g,\"clothMass\":%.9g,",garment&&garment->support.enabled&&garment->support.contactReaction?"true":"false",reaction.contacts,reaction.records,reaction.activeSeconds,reaction.clothMass);
+    std::fprintf(log,"\"garmentMaterialOpacity\":[");for(unsigned i=0;i<4;i++)std::fprintf(log,"%s%.9g",i?",":"",garment?garment->output.materials[i].opacity:0);std::fprintf(log,"],");
+    const std::array<const char*,8> reactionNames{"clothContactImpulse","anatomyContactImpulse","clothContactMoment","anatomyContactMoment","clothParticleContactImpulse","clothParticleContactMoment","clothPrescribedSupportImpulse","clothPrescribedSupportMoment"};
+    const std::array<garments::Point,8> reactionVectors{reaction.clothImpulse,reaction.anatomyImpulse,reaction.clothMoment,reaction.anatomyMoment,reaction.particleImpulse,reaction.particleMoment,reaction.supportImpulse,reaction.supportMoment};
+    for(unsigned i=0;i<reactionNames.size();i++)std::fprintf(log,"\"%s\":[%.9g,%.9g,%.9g],",reactionNames[i],reactionVectors[i][0],reactionVectors[i][1],reactionVectors[i][2]);
+    std::fprintf(log,"\"garmentLayoutRevision\":%u,\"pouchUpperArcRadians\":%.9g,\"pouchSheetRows\":%u,\"pouchSheetColumns\":%u,\"pouchTopSeamVertices\":%zu,\"pouchBottomSeamVertices\":[%zu,%zu],",layout.revision,layout.upperArcRadians,layout.sheet.rows,layout.sheet.columns,layout.topSeam.size(),layout.bottomSeams[0].size(),layout.bottomSeams[1].size());
+    std::fprintf(log,"\"pouchSideHemSections\":[%u,%u],\"pouchSideBoundaryVertices\":[%zu,%zu],",layout.sideHems[0].sections,layout.sideHems[1].sections,layout.sideBoundary[0].size(),layout.sideBoundary[1].size());
+    std::fprintf(log,"\"bandTopAttachments\":%u,\"bandBottomAttachments\":%u,\"bandTopCircumference\":%.9g,\"bandBottomCircumference\":%.9g,\"bandPreferredClearance\":%.9g,\"bandMinimumInnerClearance\":%.9g,\"bandMaximumInnerClearance\":%.9g,",band.topAttachments,band.bottomAttachments,band.topCircumference,band.bottomCircumference,band.preferredClearance,band.minimumInnerClearance,band.maximumInnerClearance);
+    std::fprintf(log,"\"clothActive\":%s,\"clothStateReady\":%s,\"clothMaterialBudgetSatisfied\":%s,\"clothResetCount\":%u,\"clothNodes\":%u,\"clothConstraints\":%u,\"clothSubsteps\":%u,\"clothAdvancedSeconds\":%.9g,\"clothAccumulatedSeconds\":%.9g,\"clothStretchRatio\":%.9g,\"clothBendError\":%.9g,\"clothSeamGap\":%.9g,\"clothDisplacement\":%.9g,\"clothRmsSpeed\":%.9g,\"clothMaxSpeed\":%.9g,\"clothSolverMs\":%.9g,",cloth.active?"true":"false",cloth.stateReady?"true":"false",cloth.materialBudgetSatisfied?"true":"false",cloth.resetCount,cloth.nodes,cloth.constraints,cloth.substeps,cloth.advancedSeconds,cloth.accumulatedSeconds,cloth.maxStretchRatio,cloth.maxBendError,cloth.maxSeamGap,cloth.maxDisplacement,cloth.rmsSpeed,cloth.maxSpeed,cloth.solverMilliseconds);
+    std::fprintf(log,"\"garmentPresentationMs\":%.9g,\"garmentPoseSeconds\":%.9g,",garment?garment->presentationMilliseconds:0,garment?garment->poseSeconds:0);
+    std::fprintf(log,"\"clothFineStretchRatio\":%.9g,\"clothWorstFineA\":%u,\"clothWorstFineB\":%u,",cloth.maxRenderStretchRatio,cloth.worstRenderA,cloth.worstRenderB);
+    std::fprintf(log,"\"depositedVolume\":[%.9g,%.9g],\"depositedImpacts\":[%u,%u],\"finalPumpDepositedVolume\":%.9g,\"finalPumpDepositedImpacts\":%u,\"garmentStyle\":%u,\"garmentVertices\":%zu,\"garmentTriangles\":%zu,\"garmentMs\":%.9g,\"garmentFlags\":%u,\"garmentPublications\":%u,\"callbackCount\":",clinical?clinical->depositedVolume[0]:0,clinical?clinical->depositedVolume[1]:0,clinical?clinical->depositedImpacts[0]:0,clinical?clinical->depositedImpacts[1]:0,clinical?clinical->finalPumpDepositedVolume:0,clinical?clinical->finalPumpDepositedImpacts:0,garmentService?garmentService->Style():0,garment?garment->output.mesh.vertices.size():0,garment?garment->output.mesh.triangles.size():0,garment?garment->milliseconds:0,GarmentDrawFlags(),GarmentDrawPublications());
     std::fprintf(log,"%u,\"callbackMeanMs\":%.9g,\"callbackMaxMs\":%.9g,\"bodyResourceMask\":%u,\"displayPublications\":%u,\"presentationPhase\":%.9g,\"presentationIntervalMs\":%.9g}\n",verificationCallbackCount,verificationCallbackCount?verificationCallbackTotal/verificationCallbackCount:0,verificationCallbackMaximum,FloatDrawResourceMask(),FloatDrawPublicationCount(),output->presentationPhase,output->presentationIntervalMilliseconds);
     verificationCallbackCount=0;verificationCallbackTotal=verificationCallbackMaximum=0;
     std::fflush(log);last=stage;
+    if(garment&&(stage==96||stage==97||stage==101||stage==105||stage==106)){
+     wchar_t capture[32768]{};HMODULE owner=nullptr;
+     if(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&TestCheckpoint),&owner)&&GetModuleFileNameW(owner,capture,32768)){
+      auto* tail=wcsrchr(capture,L'\\');if(tail){swprintf_s(tail+1,32768-std::size_t(tail+1-capture),L"garment-frame-%lu-%d.obj",GetCurrentProcessId(),stage);FILE* file=nullptr;
+       if(!_wfopen_s(&file,capture,L"wb")){
+        const auto& mesh=garment->output.mesh;std::fprintf(file,"# epoch %u serial %llu pose %.9g\n",garment->epoch,static_cast<unsigned long long>(garment->serial),garment->poseSeconds);
+        for(const auto& v:mesh.vertices)std::fprintf(file,"v %.12g %.12g %.12g\n",v.position[0]-output->pose.actorWorld[3],v.position[1]-output->pose.actorWorld[7],v.position[2]-output->pose.actorWorld[11]);
+        for(const auto& v:mesh.vertices)std::fprintf(file,"vn %.12g %.12g %.12g\n",v.normal[0],v.normal[1],v.normal[2]);
+        for(const auto& v:mesh.vertices)std::fprintf(file,"vt %.12g %.12g\n",v.uv[0],v.uv[1]);
+        for(unsigned material=0;material<4;material++){std::fprintf(file,"usemtl garment%u\n",material);for(const auto& t:mesh.triangles)if(unsigned(t.material)==material){const auto a=t.vertices[0]+1,b=t.vertices[1]+1,c=t.vertices[2]+1;std::fprintf(file,"f %u/%u/%u %u/%u/%u %u/%u/%u\n",a,a,a,b,b,b,c,c,c);}}
+        std::fclose(file);
+       }
+      }
+     }
+    }
     if(stage==75||stage==82||stage==83){
      wchar_t capture[32768]{};HMODULE owner=nullptr;
      if(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&TestCheckpoint),&owner)&&GetModuleFileNameW(owner,capture,32768)){
@@ -312,12 +359,16 @@ void TestCheckpoint(void*,void* frame,void* result){
  }
  if(result)*static_cast<bool*>(result)=success;
 }
+void GarmentControl(void*,void* frame,void*){std::int32_t style=0;Parameter(frame,style);FinishParameters(frame);if(garmentService&&style>=0&&style<2)garmentService->Style(unsigned(style));}
+void GarmentState(void*,void* frame,void* result){FinishParameters(frame);ScriptVector v{};if(garmentService){auto d=garmentService->Latest();v={float(garmentService->Style()),d?float(d->output.mesh.triangles.size()):0,float(GarmentDrawFlags()),float(GarmentDrawPublications())};}if(result)std::memcpy(result,&v,sizeof(v));}
+void GarmentCarrier(void*,void* frame,void*){ScriptVector origin{};bool valid=false;Parameter(frame,origin);Parameter(frame,valid);FinishParameters(frame);GarmentRendererOrigin({origin.x,origin.y,origin.z},valid&&std::isfinite(origin.x)&&std::isfinite(origin.y)&&std::isfinite(origin.z));}
 void ClinicalControl(void*,void* frame,void*){std::int32_t row=0;float value=0;Parameter(frame,row);Parameter(frame,value);FinishParameters(frame);if(clinicalService&&std::isfinite(value)){if(row==0&&value>=0&&value<=3)clinicalService->SetMode(unsigned(value));if(row==1)clinicalService->Action(value>0);}}
 void ClinicalQuery(void*,void* frame,void* result){std::int32_t which=0;Parameter(frame,which);FinishParameters(frame);ScriptVector v{};if(clinicalService){static thread_local ClinicalCollision::Query query;if(which==0){query=clinicalService->collisions.Next();v={float(query.from.x*clinicalService->Scale()),float(query.from.y*clinicalService->Scale()),float(query.from.z*clinicalService->Scale()),float(query.token)};}else if(which==2){v.w=float(query.token);}else if(which==1){v={float(query.to.x*clinicalService->Scale()),float(query.to.y*clinicalService->Scale()),float(query.to.z*clinicalService->Scale()),float(query.radius*clinicalService->Scale())};}}
  if(result)std::memcpy(result,&v,sizeof(v));}
 void ClinicalHit(void*,void* frame,void*){std::int32_t token=0;bool hit=false;ScriptVector p{},n{};Parameter(frame,token);Parameter(frame,hit);Parameter(frame,p);Parameter(frame,n);FinishParameters(frame);if(clinicalService&&token>0&&std::isfinite(p.x)&&std::isfinite(p.y)&&std::isfinite(p.z)&&std::isfinite(n.x)&&std::isfinite(n.y)&&std::isfinite(n.z)){auto scale=clinicalService->Scale();clinicalService->collisions.Result(unsigned(token),hit,{float(p.x/scale),float(p.y/scale),float(p.z/scale)},{n.x,n.y,n.z});}}
 void ClinicalCarrier(void*,void* frame,void*){ScriptVector origin{};bool valid=false;Parameter(frame,origin);Parameter(frame,valid);FinishParameters(frame);FluidRendererOrigin({origin.x,origin.y,origin.z},valid&&std::isfinite(origin.x)&&std::isfinite(origin.y)&&std::isfinite(origin.z));}
 void ClinicalState(void*,void* frame,void* result){FinishParameters(frame);ScriptVector v{};if(clinicalService){auto p=clinicalService->Projection();auto out=clinicalService->Latest();v={float(clinicalService->Mode()),p.active?1.f:0.f,float(p.time),out?float(out->mesh.indices.size()+out->deposits.indices.size()):0.f};}if(result)std::memcpy(result,&v,sizeof(v));}
+void ClinicalDeposits(void*,void* frame,void* result){FinishParameters(frame);ScriptVector v{};if(clinicalService){auto out=clinicalService->Latest();if(out)v={float(out->depositedVolume[0]),float(out->depositedVolume[1]),float(out->finalPumpDepositedVolume),float(out->finalPumpDepositedImpacts)};}if(result)std::memcpy(result,&v,sizeof(v));}
 void ClinicalCue(void*,void* frame,void* result){FinishParameters(frame);ScriptVector v{};if(clinicalService){if(auto cue=clinicalService->PollCue())v={float(cue->phase+1),float(cue->seconds),float(cue->sequence),float(cue->epoch)};}if(result)std::memcpy(result,&v,sizeof(v));}
 bool RegistryContains(void* registry,std::uint32_t nameID,void* function){
  // Actual RegisterGlobalFunction disassembly: bucket capacity/count at 40/44,
@@ -355,8 +406,9 @@ bool Register(const char* name,NativeCallback callback){
 void RegisterHook(){
  originalRegisterGlobals();
  if(registered.load()||registrationFailed.load())return;
- for(const auto& entry:std::array<std::pair<const char*,NativeCallback>,19>{{
-  {"MaleModNativeClinicalCue",ClinicalCue},{"MaleModNativeClinicalCarrier",ClinicalCarrier},{"MaleModNativeClinicalControl",ClinicalControl},{"MaleModNativeClinicalQuery",ClinicalQuery},{"MaleModNativeClinicalHit",ClinicalHit},{"MaleModNativeClinicalState",ClinicalState},{"MaleModNativeReady",Ready},{"MaleModNativeSetControl",SetControl},
+ for(const auto& entry:std::array<std::pair<const char*,NativeCallback>,23>{{
+  {"MaleModNativeClinicalDeposits",ClinicalDeposits},
+  {"MaleModNativeGarmentControl",GarmentControl},{"MaleModNativeGarmentState",GarmentState},{"MaleModNativeGarmentCarrier",GarmentCarrier},{"MaleModNativeClinicalCue",ClinicalCue},{"MaleModNativeClinicalCarrier",ClinicalCarrier},{"MaleModNativeClinicalControl",ClinicalControl},{"MaleModNativeClinicalQuery",ClinicalQuery},{"MaleModNativeClinicalHit",ClinicalHit},{"MaleModNativeClinicalState",ClinicalState},{"MaleModNativeReady",Ready},{"MaleModNativeSetControl",SetControl},
   {"MaleModNativeGetControl",GetControl},{"MaleModNativeTypedProbe",TypedProbe},
   {"MaleModNativeTypedProbeResult",TypedProbeResult},{"MaleModNativePoseSample",ProbePoseSample},{"MaleModNativeFrame",RuntimeFrame},{"MaleModNativeOverlayOpen",OverlayOpen},{"MaleModNativeBonePose",BonePose},{"MaleModNativeSurfaceActive",SurfaceActive},{"MaleModNativeFullMode",FullMode},{"MaleModNativeSealedSession",SealedSession},{"MaleModNativeTestCheckpoint",TestCheckpoint}}}){
   if(!Register(entry.first,entry.second)){registrationFailed=true;OutputDebugStringW(L"MaleMod: native function registration/name readback failed\n");return;}
@@ -394,7 +446,7 @@ extern "C" __declspec(dllexport) DWORD WINAPI MaleModRenderSequence(void*){retur
 extern "C" __declspec(dllexport) DWORD WINAPI MaleModShutdownRuntime(void*){
  using namespace malemod::witcher;RuntimeHost* retired=nullptr;OverlayPanel* ui=nullptr;
  {std::lock_guard<std::mutex> lock(runtimeMutex);retired=runtimeHost;runtimeHost=nullptr;ui=overlayPanel;overlayPanel=nullptr;runtimeFlags.store(0);}
- LiveRenderFeed({});delete ui;delete clinicalService;clinicalService=nullptr;delete retired;delete renderService;renderService=nullptr;delete renderPose;renderPose=nullptr;delete renderContract;renderContract=nullptr;return 0; // Invoke outside engine/loader locks, never from DllMain.
+ LiveRenderFeed({});GarmentRendererFeed({});delete garmentService;garmentService=nullptr;delete ui;delete clinicalService;clinicalService=nullptr;delete retired;delete renderService;renderService=nullptr;delete renderPose;renderPose=nullptr;delete renderContract;renderContract=nullptr;return 0; // Invoke outside engine/loader locks, never from DllMain.
 }
 BOOL WINAPI DllMain(HINSTANCE,DWORD,LPVOID){
  // Keep CRT thread notifications: this probe uses the static MSVC runtime.

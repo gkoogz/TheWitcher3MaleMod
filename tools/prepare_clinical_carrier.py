@@ -17,8 +17,12 @@ def prepare_textures(job,cfg,workspace):
     records=[]
     for name,rgba,group,compression in [
         ('white',(246,245,242,255),'CharacterDiffuse','TCM_DXTNoAlpha'),
-        ('flat',(128,128,255,255),'CharacterNormal','TCM_Normals')]:
-        image=job/(name+'.tga');Image.new('RGBA',(256,256),rgba).save(image)
+        ('flat',(128,128,255,255),'CharacterNormal','TCM_Normals'),
+        ('opacity',None,'CharacterDiffuseWithAlpha','TCM_DXTAlpha')]:
+        image=job/(name+'.tga')
+        if name=='opacity':
+            pixels=np.zeros((256,256,4),dtype=np.uint8);pixels[:,:,:3]=[246,245,242];pixels[:,:,3]=np.arange(256,dtype=np.uint8)[None,:];Image.fromarray(pixels).save(image)
+        else:Image.new('RGBA',(256,256),rgba).save(image)
         target=workspace/'characters/malemod/clinical'/(name+'.xbm')
         command=run_wcc(cfg,'import',['-depot=local','-file='+str(image),'-out='+str(target),'-texturegroup='+group],workspace,'import-fluid-'+name)
         dump_command=run_wcc(cfg,'dumpfile',['-file='+str(target),'-out=\\\\?\\'],workspace,'verify-fluid-'+name)
@@ -63,9 +67,10 @@ def author(job):
                 if prop.values[0] in ['Lcl Translation','Lcl Rotation','Lcl Scaling']:
                     for p in prop.props[-3:]:p.value=1. if prop.values[0]=='Lcl Scaling' else 0.;p.raw=None
         fbx=job/(kind+'.fbx');document.save(fbx)
-        opacity='1.0' if kind=='opaque' else '.82'
+        opacity='1.0';diffuse='white' if kind=='opaque' else 'opacity'
+        specular='<param name="RSpecScale" type="Float" value="1.0"/><param name="RSpecBase" type="Float" value=".65"/>' if kind=='opaque' else ''
         fbx.with_suffix('.xml').write_text(f'''<?xml version="1.0" encoding="UTF-8"?>
-<mesh><mesh_data autohideDistance="500.00" isTwoSided="true" useExtraStreams="true" mergeInGlobalShadowMesh="false" entityProxy="false"><LODs><LOD_info distance="0.00"/><LOD_info distance="250.00"/></LODs></mesh_data><materials><material name="Material0" local="true" base="engine\\materials\\graphs\\{graph}.w2mg"><param name="Diffuse" type="handle:ITexture" value="characters\\malemod\\clinical\\white.xbm"/><param name="Normal" type="handle:ITexture" value="characters\\malemod\\clinical\\flat.xbm"/><param name="Opacity" type="Float" value="{opacity}"/><param name="RSpecScale" type="Float" value="1.0"/><param name="RSpecBase" type="Float" value=".65"/><param name="Refraction" type="Float" value=".015"/></material></materials></mesh>''')
+<mesh><mesh_data autohideDistance="500.00" isTwoSided="true" useExtraStreams="true" mergeInGlobalShadowMesh="false" entityProxy="false"><LODs><LOD_info distance="0.00"/><LOD_info distance="250.00"/></LODs></mesh_data><materials><material name="Material0" local="true" base="engine\\materials\\graphs\\{graph}.w2mg"><param name="Diffuse" type="handle:ITexture" value="characters\\malemod\\clinical\\{diffuse}.xbm"/><param name="Normal" type="handle:ITexture" value="characters\\malemod\\clinical\\flat.xbm"/><param name="Opacity" type="Float" value="{opacity}"/>{specular}</material></materials></mesh>''')
         target=workspace/'characters/malemod/clinical'/(kind+'.w2mesh');target.parent.mkdir(parents=True,exist_ok=True)
         resources.append(dict(kind=kind,path=target.relative_to(workspace).as_posix(),command=run_wcc(cfg,'import',['-depot=local','-file='+str(fbx),'-out='+str(target)],workspace,'import-fluid-'+kind)))
     # Dedicated solid/clear materials retain REDengine lighting and depth.
@@ -105,7 +110,7 @@ def author(job):
     edit(entity)
     recipe=job/'entity.json';write_json(recipe,entity);output=workspace/'characters/malemod/clinical/carrier.w2ent'
     subprocess.run([str(converter),'import',str(recipe),str(output)],capture_output=True,check=True)
-    write_json(job/'authoring.json',dict(recipeSHA256=digest(Path(__file__)),schemaSourceSHA256=digest(source),resources=resources,textures=textures,entitySHA256=digest(output),nativeCooked=False,observedGameplay=False))
+    write_json(job/'authoring.json',dict(recipeSHA256=digest(Path(__file__)),schemaSourceSHA256=digest(source),resources=resources,textures=textures,entitySHA256=digest(output),phasePresentation=dict(version=2,alphaSource='native Diffuse.a',atlas='opacity.xbm',clearFlowOpacity=.14,opaqueFlowMaterial='pbr_std',depositOpacity='phase times source density/fade'),nativeCooked=False,observedGameplay=False))
     return job
 
 
@@ -115,6 +120,7 @@ def refresh_materials(job,source):
     if not job.is_relative_to(ROOT/'build') or job.exists() or not source.is_relative_to(ROOT/'build'):
         raise ValueError('Use a fresh owned build output and an owned carrier source')
     receipt=json.loads((source/'authoring.json').read_text());intake=source/'intake'
+    if receipt.get('phasePresentation',{}).get('version')!=2:raise ValueError('Author new phase carriers; refreshing old materials cannot update graph handles')
     expected=[intake/'characters/malemod/clinical'/(n+ext) for n,ext in [('opaque','.w2mesh'),('clear','.w2mesh'),('carrier','.w2ent')]]
     if any(not p.is_file() for p in expected):raise ValueError('Owned carrier source is incomplete')
     job.mkdir(parents=True);workspace=job/'intake';shutil.copytree(intake,workspace)
@@ -123,7 +129,7 @@ def refresh_materials(job,source):
     textures=prepare_textures(job,cfg,workspace)
     for p in preserved:
         if digest(workspace/p['path'])!=p['sourceSHA256']:raise ValueError('Material refresh changed a native carrier')
-    write_json(job/'authoring.json',dict(recipeSHA256=digest(Path(__file__)),sourceAuthoringSHA256=digest(source/'authoring.json'),sourceJob=source.relative_to(ROOT).as_posix(),schemaSourceSHA256=receipt['schemaSourceSHA256'],resources=receipt['resources'],preservedCarriers=preserved,textures=textures,entitySHA256=digest(workspace/'characters/malemod/clinical/carrier.w2ent'),nativeCooked=False,observedGameplay=False))
+    write_json(job/'authoring.json',dict(recipeSHA256=digest(Path(__file__)),sourceAuthoringSHA256=digest(source/'authoring.json'),sourceJob=source.relative_to(ROOT).as_posix(),schemaSourceSHA256=receipt['schemaSourceSHA256'],resources=receipt['resources'],preservedCarriers=preserved,textures=textures,entitySHA256=digest(workspace/'characters/malemod/clinical/carrier.w2ent'),phasePresentation=receipt['phasePresentation'],nativeCooked=False,observedGameplay=False))
     return job
 
 def cook(job):

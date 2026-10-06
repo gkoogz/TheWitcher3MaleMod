@@ -5,9 +5,22 @@
 #include <stdexcept>
 #include <filesystem>
 #include "session_audio.hpp"
-namespace {void Check(bool b,const char* s){if(!b)throw std::runtime_error(std::string(s)+" Win32="+std::to_string(GetLastError()));}}
+namespace {
+void Check(bool b,const char* s){if(!b)throw std::runtime_error(std::string(s)+" Win32="+std::to_string(GetLastError()));}
+std::wstring QuoteArgument(const std::wstring& value){
+ // Older engine switch parsers inspect GetCommandLine rather than decoded
+ // argv; quoting a simple -windowed switch can hide it from those parsers.
+ if(!value.empty()&&value.find_first_of(L" \t\r\n\v\"")==std::wstring::npos)return value;
+ std::wstring result=L"\"";unsigned slashes=0;
+ for(const auto c:value){
+  if(c==L'\\'){++slashes;continue;}
+  result.append(c==L'\"'?2*slashes+1:slashes,L'\\');slashes=0;result+=c;
+ }
+ result.append(2*slashes,L'\\');result+=L'\"';return result;
+}
+}
 int wmain(int argc,wchar_t** argv){
- if(argc!=2)return 2;HWINSTA station=nullptr;HDESK desktop=nullptr;PROCESS_INFORMATION child{};
+ if(argc<2)return 2;HWINSTA station=nullptr;HDESK desktop=nullptr;PROCESS_INFORMATION child{};
  auto original=GetProcessWindowStation();
  try{
   // A standard user cannot name a window station. Let Windows allocate this
@@ -19,8 +32,10 @@ int wmain(int argc,wchar_t** argv){
   const auto desktopName=L"MaleModGame."+std::to_wstring(GetCurrentProcessId())+L"."+std::to_wstring(GetTickCount64());
   desktop=CreateDesktopW(desktopName.c_str(),nullptr,nullptr,0,DESKTOP_CREATEWINDOW|DESKTOP_READOBJECTS|DESKTOP_WRITEOBJECTS,nullptr);Check(desktop!=nullptr,"Create private game desktop");
   Check(SetProcessWindowStation(original)!=0,"Restore launcher station");
-  std::wstring privateDesktop=name+L"\\"+desktopName,command=L"\""+std::wstring(argv[1])+L"\"";
-  SetEnvironmentVariableW(L"SteamAppId",L"292030");SetEnvironmentVariableW(L"SteamGameId",L"292030");SetEnvironmentVariableW(L"MALEMOD_SEALED_SESSION",name.c_str());
+  std::wstring privateDesktop=name+L"\\"+desktopName,command=QuoteArgument(argv[1]);
+  for(int argument=2;argument<argc;++argument)command+=L" "+QuoteArgument(argv[argument]);
+  const bool witcher=_wcsicmp(std::filesystem::path(argv[1]).filename().c_str(),L"witcher3.exe")==0;
+  SetEnvironmentVariableW(L"SteamAppId",witcher?L"292030":nullptr);SetEnvironmentVariableW(L"SteamGameId",witcher?L"292030":nullptr);SetEnvironmentVariableW(L"MALEMOD_SEALED_SESSION",name.c_str());
   STARTUPINFOW startup{};startup.cb=sizeof(startup);startup.lpDesktop=privateDesktop.data();startup.dwFlags=STARTF_USESHOWWINDOW;startup.wShowWindow=SW_SHOWNORMAL;
   const auto directory=std::filesystem::path(argv[1]).parent_path();
   Check(CreateProcessW(argv[1],command.data(),nullptr,nullptr,FALSE,0,nullptr,directory.c_str(),&startup,&child)!=0,"Launch game in private desktop");

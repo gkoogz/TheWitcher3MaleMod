@@ -1,4 +1,8 @@
-"""Run the shipped PowerShell workflow in isolated, complete package fixtures."""
+"""Verify the immutable beta1 archive, then test current installer on its payload.
+
+The owned extracted fixture receives current installer sources. The published
+archive is never changed; tools/test_beta_release.py separately gates beta2/40.
+"""
 import hashlib,json,re,shutil,subprocess,sys,unittest,uuid,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
@@ -16,7 +20,10 @@ class InstallerTests(unittest.TestCase):
         m=json.loads((cls.shipped/'manifest.json').read_text())
         for row in m['packageFiles']:
             if digest(cls.shipped/row['path'])!=row['sha256']:raise AssertionError('Shipped installer hash differs')
-            if (cls.shipped/row['path']).read_bytes()!=(ROOT/'release'/row['path']).read_bytes():raise AssertionError('Shipped installer source differs')
+        for row in m['packageFiles']:
+            shutil.copy2(ROOT/'release'/row['path'],cls.shipped/row['path'])
+            row['sha256']=digest(cls.shipped/row['path'])
+        (cls.shipped/'manifest.json').write_text(json.dumps(m))
     def setUp(self):
         self.case=self.root/('c'+str(sorted(n for n in dir(self) if n.startswith('test_')).index(self._testMethodName)));self.case.mkdir()
         self.game=self.case/'Game';(self.game/'bin/x64_dx12').mkdir(parents=True)

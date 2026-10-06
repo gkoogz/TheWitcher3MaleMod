@@ -1,0 +1,704 @@
+{
+  "schema": "malemod.frozen-release-profile/1",
+  "gameExecutableSHA256": "9406eccc12b68e08920931442ef6a57340e910d3e01f2082e88232487433fe51",
+  "sourceCheckpointIsNotPayloadBuild": true,
+  "sandboxExcluded": true,
+  "version": "0.5.0-beta.2",
+  "baseCommit": "99ff741ea95f18ed84526c35a6c3f38a37d857b6",
+  "runtimeSHA256": "d475488fefe405213de5df058ccaa5c94190ee2089bead7920e1450fe5750099",
+  "nativeCount": 35,
+  "baselineCount": 5,
+  "files": [
+    {
+      "path": "bin/x64_dx12/dinput8.dll",
+      "sha256": "f9c52ce08e5c9c405b2fcee74e9f8eacc3057a7a930c887f58182b5dfde15b3e"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod_witcher.dll",
+      "sha256": "d475488fefe405213de5df058ccaa5c94190ee2089bead7920e1450fe5750099"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/surface_worker.exe",
+      "sha256": "9bd38ac1bb0d39f6ff96406f132bf7b3fe1156cbfc20fbf6995f8d2e79bebb55"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod-runtime.profile",
+      "sha256": "e797123f8c5466f419a65dd01a9e73093b7b4486eb4b3ce4f4710fef8f4287bb"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.bindings",
+      "sha256": "ce159101fb9c02436918d4dafe784bd36e9c510d0868e60be265360ba2d58b7b"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.render",
+      "sha256": "29a9abb037e333612068cb0c125658454a027931afd6e8d23432f01f92e269af"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/geralt.render.sha256",
+      "sha256": "d7b6f2f3cf4d9d3fa59f20fb945632bb6f05a7689a409b1fa99dabdbdeb0cee3"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/graphics-owned-fingerprints.bin",
+      "sha256": "6f58db1d3f593c266d9a06c752b35eef985aee8c81f2982bfaf49aa6975e8fbb"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/malemod-overlay.enable",
+      "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/runtime.ws",
+      "sha256": "54e9be6f3d9a1cb48a649a221086df7b1b4b78cba831a8d6c81aaa1a0b3e1eab"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/render_bones.ws",
+      "sha256": "c9ce965f6c41b1a847fcad5e3579118163d960df2ec66df4ddab49923f758ee2"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/bundles/blob0.bundle",
+      "sha256": "66c6cb3fa165a1391a15519c3b3be01dac19f3f5bcc3e7adda6ef51f040dfbbc"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/bundles/buffers0.bundle",
+      "sha256": "8ecc81dc6702b7b29a84d7066b8d502ae09119e4a488dc2bf478a784a9156ad7"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/dep.cache",
+      "sha256": "429d2afda0555108623d3b1ecbe87d10d6b3930fe18f0d106f6f0b77020b9f5a"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/metadata.store",
+      "sha256": "e9a187409cbe0944f9281e116141ed767a7757bf86a44888af4b690cd534178d"
+    },
+    {
+      "path": "Mods/modMaleModClinical/content/texture.cache",
+      "sha256": "e41110437c30125452a4e0ea05c905f479668f4ca90483a147874fd218677c86"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/clinical.render",
+      "sha256": "12b574b17a85455def94544b9d36a2aad6279910141f9c76c9e1c6f08b5221ad"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/clinical.render.sha256",
+      "sha256": "96bb258fee76f6810a8a154cc68504561a4e580295bf9b4d292f533c69ff1eb3"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/splat_bakes.bin",
+      "sha256": "b41046ee1083da7f0921706022893a7aed78b74a9ff931776f12e746ab405fb5"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/clinical.ws",
+      "sha256": "7d8b0769492900ae2696d29972cd6666a354f54b12c6fc36bcda0941968d2413"
+    },
+    {
+      "path": "Mods/modMaleModGarments/content/bundles/blob0.bundle",
+      "sha256": "84bbe891ff90048e95814b1cd971b61a9a539492894cb3184f5d300cbac02f2f"
+    },
+    {
+      "path": "Mods/modMaleModGarments/content/bundles/buffers0.bundle",
+      "sha256": "91cb39ef2f0becb710e3982fece57c1abf4367db2d59225291e4faaa866b7cb6"
+    },
+    {
+      "path": "Mods/modMaleModGarments/content/dep.cache",
+      "sha256": "39605dcb5f928236347b8600b852f016d30213bb75987531b4362bb8cf0b784c"
+    },
+    {
+      "path": "Mods/modMaleModGarments/content/metadata.store",
+      "sha256": "58b05d669fa73a08f4fe549de516855f66f9b44309f2beceb5893e6aecdedac1"
+    },
+    {
+      "path": "Mods/modMaleModGarments/content/texture.cache",
+      "sha256": "6a554a95761e6974151b1dab2c4b3074ff3b5edafc9f2a30de29e67af883412d"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/garment.bindings",
+      "sha256": "4fcce8e0cdcef3ccb6dfc5bd33d9ec6efd11ecd65792b98149502576dd7dbf3a"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/garment.bindings.sha256",
+      "sha256": "9056b119fd161a3e82b1cd00dec88412dfa0410d2ea80451687a025a8b916df3"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/garment.render",
+      "sha256": "6ff3b309e8bc4b82afc32d5c5ff0c1cb84ff4e5bda93e2cdcc979c1ea99ae84b"
+    },
+    {
+      "path": "bin/x64_dx12/malemod-native/garment.render.sha256",
+      "sha256": "2f2aa1e5d47dee80e91d1aaf8825432387538ea8ca2f8e03d83e8fda2f680726"
+    },
+    {
+      "path": "Mods/modMaleModNative/content/scripts/local/malemod/garment.ws",
+      "sha256": "c101a17495cb62a072650d6eb16d0898c3d5d429c2c43df31fb3d40f8483351a"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/blob0.bundle",
+      "sha256": "7f37a33a743dd6e55a999be50e2ea062169f3cba3f2e47c35ee56159215c9d35"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/buffers0.bundle",
+      "sha256": "012e7422544eb65b21f90c8e18fee5a49989760604e719ccd0a65feb3d103c29"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/dep.cache",
+      "sha256": "1dcdfbb93ebed39f4fb8a0b134089409dea3d88f8df401bc131119609310bed9"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/metadata.store",
+      "sha256": "ba66df5f3ba2d20faf31d30ca490f77b8723fd299643f82384fcca0fdbe1b2cc"
+    },
+    {
+      "path": "Mods/mod0000MaleModBodyBoundary/content/texture.cache",
+      "sha256": "d7dbf9bcf79bb2eb6cdb2494006063f3fb753c7d854dfa534bfd568b283203c1"
+    },
+    {
+      "path": "Mods/modMaleMod/content/bundles/blob0.bundle",
+      "sha256": "cfa7393bde48202f6c23610da34dc7f98ce3817036546e97b216c16c804be6c0"
+    },
+    {
+      "path": "Mods/modMaleMod/content/bundles/buffers0.bundle",
+      "sha256": "e98b3d1ce3e80a55de80873bb5a8bd0256f0371f218fd992d241987e31f81110"
+    },
+    {
+      "path": "Mods/modMaleMod/content/dep.cache",
+      "sha256": "5d91bffb0139d7192ab2443f9a90a55d64c1deb678ee2896acbd9279636b9239"
+    },
+    {
+      "path": "Mods/modMaleMod/content/metadata.store",
+      "sha256": "35977ccd6a5894ede2e40fe66eed8419ac694153f5c48b493774e5aa10ae68e7"
+    },
+    {
+      "path": "Mods/modMaleMod/content/scripts/local/maleModPhysics.ws",
+      "sha256": "c1b75d3e6c537c0ba0e89bd16761a9eea588455feccc667c6c8e2fe1fd908d52"
+    }
+  ],
+  "supportedManualInstalls": [
+    {
+      "version": "0.4.31-baseline",
+      "files": [
+        {
+          "path": "Mods/modMaleMod/content/bundles/blob0.bundle",
+          "sha256": "cfa7393bde48202f6c23610da34dc7f98ce3817036546e97b216c16c804be6c0"
+        },
+        {
+          "path": "Mods/modMaleMod/content/bundles/buffers0.bundle",
+          "sha256": "e98b3d1ce3e80a55de80873bb5a8bd0256f0371f218fd992d241987e31f81110"
+        },
+        {
+          "path": "Mods/modMaleMod/content/dep.cache",
+          "sha256": "5d91bffb0139d7192ab2443f9a90a55d64c1deb678ee2896acbd9279636b9239"
+        },
+        {
+          "path": "Mods/modMaleMod/content/metadata.store",
+          "sha256": "35977ccd6a5894ede2e40fe66eed8419ac694153f5c48b493774e5aa10ae68e7"
+        },
+        {
+          "path": "Mods/modMaleMod/content/scripts/local/maleModPhysics.ws",
+          "sha256": "c1b75d3e6c537c0ba0e89bd16761a9eea588455feccc667c6c8e2fe1fd908d52"
+        }
+      ]
+    },
+    {
+      "version": "verified-manual-20261003",
+      "files": [
+        {
+          "path": "bin/x64_dx12/dinput8.dll",
+          "sha256": "f9c52ce08e5c9c405b2fcee74e9f8eacc3057a7a930c887f58182b5dfde15b3e"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/malemod_witcher.dll",
+          "sha256": "879972cf06e2a6abca7b74ae3498085eac6e936c1c69cc0f3020f027eac8d216"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/surface_worker.exe",
+          "sha256": "2204ee8d0f92e3727de8589a5a20b0fae1c644b44a240eb321c2ed67d54b517a"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/malemod-runtime.profile",
+          "sha256": "77d42cc650434e0ce678a3cc33111e217f1a6345d811002a321b229c19826194"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/geralt.bindings",
+          "sha256": "ce7554598a33f9790c84449e76b6ad3e3e62461e138e05d6bc3502cdc03f3ee1"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/geralt.render",
+          "sha256": "869789697b781bc980617d84904425132c2aaaf7424c5cf15f87e442071fe5c8"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/geralt.render.sha256",
+          "sha256": "3f2212f76f8a396157b267d3a3428f3550b51ca89afedde4f28187e042ba0dce"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/graphics-owned-fingerprints.bin",
+          "sha256": "2a6ea7f4f2829d2289f92130a64dd3f3983dfbe9ce949295a080096c30b2f44c"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/malemod-overlay.enable",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "Mods/modMaleModNative/content/scripts/local/malemod/runtime.ws",
+          "sha256": "0f94c658c51edefb776eaf7f8cbe89afc08a7c3b41ac2ec6c910d18d043fc578"
+        },
+        {
+          "path": "Mods/modMaleModNative/content/scripts/local/malemod/render_bones.ws",
+          "sha256": "c9ce965f6c41b1a847fcad5e3579118163d960df2ec66df4ddab49923f758ee2"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/bundles/blob0.bundle",
+          "sha256": "4c71fe06ddc5bce863f22aff094db6e908bb84b2d82620193c86069d5cca44f1"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/bundles/buffers0.bundle",
+          "sha256": "8ecc81dc6702b7b29a84d7066b8d502ae09119e4a488dc2bf478a784a9156ad7"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/dep.cache",
+          "sha256": "1fab2d8a82b4d3584f937312a613f4c6cb8c6944f8fe2687fd91598bf84b0122"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/metadata.store",
+          "sha256": "5df70652c422576b38dfcceb27972977275ce132f1002d9f65c50871ba1603d3"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/texture.cache",
+          "sha256": "3165c187ae4ee7b8537f055b0db6ebbee7805c3a143cab19889f4bc2b18df609"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/clinical.render",
+          "sha256": "12b574b17a85455def94544b9d36a2aad6279910141f9c76c9e1c6f08b5221ad"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/clinical.render.sha256",
+          "sha256": "96bb258fee76f6810a8a154cc68504561a4e580295bf9b4d292f533c69ff1eb3"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/splat_bakes.bin",
+          "sha256": "b41046ee1083da7f0921706022893a7aed78b74a9ff931776f12e746ab405fb5"
+        },
+        {
+          "path": "Mods/modMaleModNative/content/scripts/local/malemod/clinical.ws",
+          "sha256": "62d88acc49b99164550c0e3b5503571665036c789df5e1107fbe7fdfce3b168d"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/blob0.bundle",
+          "sha256": "7f37a33a743dd6e55a999be50e2ea062169f3cba3f2e47c35ee56159215c9d35"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/buffers0.bundle",
+          "sha256": "012e7422544eb65b21f90c8e18fee5a49989760604e719ccd0a65feb3d103c29"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/dep.cache",
+          "sha256": "1dcdfbb93ebed39f4fb8a0b134089409dea3d88f8df401bc131119609310bed9"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/metadata.store",
+          "sha256": "ba66df5f3ba2d20faf31d30ca490f77b8723fd299643f82384fcca0fdbe1b2cc"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/texture.cache",
+          "sha256": "d7dbf9bcf79bb2eb6cdb2494006063f3fb753c7d854dfa534bfd568b283203c1"
+        },
+        {
+          "path": "Mods/modMaleMod/content/bundles/blob0.bundle",
+          "sha256": "cfa7393bde48202f6c23610da34dc7f98ce3817036546e97b216c16c804be6c0"
+        },
+        {
+          "path": "Mods/modMaleMod/content/bundles/buffers0.bundle",
+          "sha256": "e98b3d1ce3e80a55de80873bb5a8bd0256f0371f218fd992d241987e31f81110"
+        },
+        {
+          "path": "Mods/modMaleMod/content/dep.cache",
+          "sha256": "5d91bffb0139d7192ab2443f9a90a55d64c1deb678ee2896acbd9279636b9239"
+        },
+        {
+          "path": "Mods/modMaleMod/content/metadata.store",
+          "sha256": "35977ccd6a5894ede2e40fe66eed8419ac694153f5c48b493774e5aa10ae68e7"
+        },
+        {
+          "path": "Mods/modMaleMod/content/scripts/local/maleModPhysics.ws",
+          "sha256": "c1b75d3e6c537c0ba0e89bd16761a9eea588455feccc667c6c8e2fe1fd908d52"
+        }
+      ]
+    },
+    {
+      "version": "accepted-manual-20261002-230911",
+      "files": [
+        {
+          "path": "bin/x64_dx12/dinput8.dll",
+          "sha256": "f9c52ce08e5c9c405b2fcee74e9f8eacc3057a7a930c887f58182b5dfde15b3e"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/malemod_witcher.dll",
+          "sha256": "648e28833da7f5851339bc9b8defddaf632e2abc41923f5fb6c6e42b2b352f70"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/surface_worker.exe",
+          "sha256": "33dc993613af3cf1378b64c455769f497907f35cf61e372e4379756e9d37a3f4"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/malemod-runtime.profile",
+          "sha256": "ba308051da3f74801c239be18ecd161c52be30065d4d243dbac5829f42823414"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/geralt.bindings",
+          "sha256": "5f75ea0caafb4898cbc8bad357ae9c444d320c8d4c222e112c7e6b3b55cc7e7b"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/geralt.render",
+          "sha256": "e8bb0cee5e7b92ca6cf6e9e068a45ba92006922b2775cadcf581c5ef82cc16bd"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/geralt.render.sha256",
+          "sha256": "a1a1507ca9c1ac9ef5f71d71e4ec109c4fa46436604659864ce3659569a11065"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/graphics-owned-fingerprints.bin",
+          "sha256": "712cac1440e628b0c3768bc8aaef026f0a62fb5e08fe522cc40e174b5fcfcc80"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/malemod-overlay.enable",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "Mods/modMaleModNative/content/scripts/local/malemod/runtime.ws",
+          "sha256": "91e5d974566c879ccb0aff3033a501199007c900bc7e9a55a6309893d06e0592"
+        },
+        {
+          "path": "Mods/modMaleModNative/content/scripts/local/malemod/render_bones.ws",
+          "sha256": "c9ce965f6c41b1a847fcad5e3579118163d960df2ec66df4ddab49923f758ee2"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/blob0.bundle",
+          "sha256": "05cbac152053fae5b22985935f9c5ee8c21d613b430ccf190bb95f9e0decb835"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/buffers0.bundle",
+          "sha256": "3ef3ca6299ed2fc273a133228348638b152a733caab59fedd46c2dc1784300a4"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/dep.cache",
+          "sha256": "1dcdfbb93ebed39f4fb8a0b134089409dea3d88f8df401bc131119609310bed9"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/metadata.store",
+          "sha256": "ef95a4ef051565f2ca10b8e06ba9bad76c81b9ad17053ad46cb3e98f1bf1a558"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/texture.cache",
+          "sha256": "8251b6b17a47b3bddc388188af9a43136e262866c9553cd6098987d9b6795f99"
+        },
+        {
+          "path": "Mods/modMaleMod/content/bundles/blob0.bundle",
+          "sha256": "cfa7393bde48202f6c23610da34dc7f98ce3817036546e97b216c16c804be6c0"
+        },
+        {
+          "path": "Mods/modMaleMod/content/bundles/buffers0.bundle",
+          "sha256": "e98b3d1ce3e80a55de80873bb5a8bd0256f0371f218fd992d241987e31f81110"
+        },
+        {
+          "path": "Mods/modMaleMod/content/dep.cache",
+          "sha256": "5d91bffb0139d7192ab2443f9a90a55d64c1deb678ee2896acbd9279636b9239"
+        },
+        {
+          "path": "Mods/modMaleMod/content/metadata.store",
+          "sha256": "35977ccd6a5894ede2e40fe66eed8419ac694153f5c48b493774e5aa10ae68e7"
+        },
+        {
+          "path": "Mods/modMaleMod/content/scripts/local/maleModPhysics.ws",
+          "sha256": "c1b75d3e6c537c0ba0e89bd16761a9eea588455feccc667c6c8e2fe1fd908d52"
+        }
+      ]
+    },
+    {
+      "version": "0.5.0-beta.1",
+      "files": [
+        {
+          "path": "bin/x64_dx12/dinput8.dll",
+          "sha256": "f9c52ce08e5c9c405b2fcee74e9f8eacc3057a7a930c887f58182b5dfde15b3e"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/malemod_witcher.dll",
+          "sha256": "879972cf06e2a6abca7b74ae3498085eac6e936c1c69cc0f3020f027eac8d216"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/surface_worker.exe",
+          "sha256": "2204ee8d0f92e3727de8589a5a20b0fae1c644b44a240eb321c2ed67d54b517a"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/malemod-runtime.profile",
+          "sha256": "77d42cc650434e0ce678a3cc33111e217f1a6345d811002a321b229c19826194"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/geralt.bindings",
+          "sha256": "ce7554598a33f9790c84449e76b6ad3e3e62461e138e05d6bc3502cdc03f3ee1"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/geralt.render",
+          "sha256": "869789697b781bc980617d84904425132c2aaaf7424c5cf15f87e442071fe5c8"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/geralt.render.sha256",
+          "sha256": "3f2212f76f8a396157b267d3a3428f3550b51ca89afedde4f28187e042ba0dce"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/graphics-owned-fingerprints.bin",
+          "sha256": "2a6ea7f4f2829d2289f92130a64dd3f3983dfbe9ce949295a080096c30b2f44c"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/malemod-overlay.enable",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "Mods/modMaleModNative/content/scripts/local/malemod/runtime.ws",
+          "sha256": "0f94c658c51edefb776eaf7f8cbe89afc08a7c3b41ac2ec6c910d18d043fc578"
+        },
+        {
+          "path": "Mods/modMaleModNative/content/scripts/local/malemod/render_bones.ws",
+          "sha256": "c9ce965f6c41b1a847fcad5e3579118163d960df2ec66df4ddab49923f758ee2"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/bundles/blob0.bundle",
+          "sha256": "4c71fe06ddc5bce863f22aff094db6e908bb84b2d82620193c86069d5cca44f1"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/bundles/buffers0.bundle",
+          "sha256": "8ecc81dc6702b7b29a84d7066b8d502ae09119e4a488dc2bf478a784a9156ad7"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/dep.cache",
+          "sha256": "1fab2d8a82b4d3584f937312a613f4c6cb8c6944f8fe2687fd91598bf84b0122"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/metadata.store",
+          "sha256": "5df70652c422576b38dfcceb27972977275ce132f1002d9f65c50871ba1603d3"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/texture.cache",
+          "sha256": "3165c187ae4ee7b8537f055b0db6ebbee7805c3a143cab19889f4bc2b18df609"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/clinical.render",
+          "sha256": "12b574b17a85455def94544b9d36a2aad6279910141f9c76c9e1c6f08b5221ad"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/clinical.render.sha256",
+          "sha256": "96bb258fee76f6810a8a154cc68504561a4e580295bf9b4d292f533c69ff1eb3"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/splat_bakes.bin",
+          "sha256": "b41046ee1083da7f0921706022893a7aed78b74a9ff931776f12e746ab405fb5"
+        },
+        {
+          "path": "Mods/modMaleModNative/content/scripts/local/malemod/clinical.ws",
+          "sha256": "62d88acc49b99164550c0e3b5503571665036c789df5e1107fbe7fdfce3b168d"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/blob0.bundle",
+          "sha256": "7f37a33a743dd6e55a999be50e2ea062169f3cba3f2e47c35ee56159215c9d35"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/buffers0.bundle",
+          "sha256": "012e7422544eb65b21f90c8e18fee5a49989760604e719ccd0a65feb3d103c29"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/dep.cache",
+          "sha256": "1dcdfbb93ebed39f4fb8a0b134089409dea3d88f8df401bc131119609310bed9"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/metadata.store",
+          "sha256": "ba66df5f3ba2d20faf31d30ca490f77b8723fd299643f82384fcca0fdbe1b2cc"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/texture.cache",
+          "sha256": "d7dbf9bcf79bb2eb6cdb2494006063f3fb753c7d854dfa534bfd568b283203c1"
+        },
+        {
+          "path": "Mods/modMaleMod/content/bundles/blob0.bundle",
+          "sha256": "cfa7393bde48202f6c23610da34dc7f98ce3817036546e97b216c16c804be6c0"
+        },
+        {
+          "path": "Mods/modMaleMod/content/bundles/buffers0.bundle",
+          "sha256": "e98b3d1ce3e80a55de80873bb5a8bd0256f0371f218fd992d241987e31f81110"
+        },
+        {
+          "path": "Mods/modMaleMod/content/dep.cache",
+          "sha256": "5d91bffb0139d7192ab2443f9a90a55d64c1deb678ee2896acbd9279636b9239"
+        },
+        {
+          "path": "Mods/modMaleMod/content/metadata.store",
+          "sha256": "35977ccd6a5894ede2e40fe66eed8419ac694153f5c48b493774e5aa10ae68e7"
+        },
+        {
+          "path": "Mods/modMaleMod/content/scripts/local/maleModPhysics.ws",
+          "sha256": "c1b75d3e6c537c0ba0e89bd16761a9eea588455feccc667c6c8e2fe1fd908d52"
+        }
+      ]
+    },
+    {
+      "version": "accepted-manual-20261005-99ff741",
+      "files": [
+        {
+          "path": "bin/x64_dx12/dinput8.dll",
+          "sha256": "f9c52ce08e5c9c405b2fcee74e9f8eacc3057a7a930c887f58182b5dfde15b3e"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/malemod_witcher.dll",
+          "sha256": "d475488fefe405213de5df058ccaa5c94190ee2089bead7920e1450fe5750099"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/surface_worker.exe",
+          "sha256": "9bd38ac1bb0d39f6ff96406f132bf7b3fe1156cbfc20fbf6995f8d2e79bebb55"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/malemod-runtime.profile",
+          "sha256": "e797123f8c5466f419a65dd01a9e73093b7b4486eb4b3ce4f4710fef8f4287bb"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/geralt.bindings",
+          "sha256": "ce159101fb9c02436918d4dafe784bd36e9c510d0868e60be265360ba2d58b7b"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/geralt.render",
+          "sha256": "29a9abb037e333612068cb0c125658454a027931afd6e8d23432f01f92e269af"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/geralt.render.sha256",
+          "sha256": "d7b6f2f3cf4d9d3fa59f20fb945632bb6f05a7689a409b1fa99dabdbdeb0cee3"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/graphics-owned-fingerprints.bin",
+          "sha256": "6f58db1d3f593c266d9a06c752b35eef985aee8c81f2982bfaf49aa6975e8fbb"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/malemod-overlay.enable",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "Mods/modMaleModNative/content/scripts/local/malemod/runtime.ws",
+          "sha256": "54e9be6f3d9a1cb48a649a221086df7b1b4b78cba831a8d6c81aaa1a0b3e1eab"
+        },
+        {
+          "path": "Mods/modMaleModNative/content/scripts/local/malemod/render_bones.ws",
+          "sha256": "c9ce965f6c41b1a847fcad5e3579118163d960df2ec66df4ddab49923f758ee2"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/bundles/blob0.bundle",
+          "sha256": "66c6cb3fa165a1391a15519c3b3be01dac19f3f5bcc3e7adda6ef51f040dfbbc"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/bundles/buffers0.bundle",
+          "sha256": "8ecc81dc6702b7b29a84d7066b8d502ae09119e4a488dc2bf478a784a9156ad7"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/dep.cache",
+          "sha256": "429d2afda0555108623d3b1ecbe87d10d6b3930fe18f0d106f6f0b77020b9f5a"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/metadata.store",
+          "sha256": "e9a187409cbe0944f9281e116141ed767a7757bf86a44888af4b690cd534178d"
+        },
+        {
+          "path": "Mods/modMaleModClinical/content/texture.cache",
+          "sha256": "e41110437c30125452a4e0ea05c905f479668f4ca90483a147874fd218677c86"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/clinical.render",
+          "sha256": "12b574b17a85455def94544b9d36a2aad6279910141f9c76c9e1c6f08b5221ad"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/clinical.render.sha256",
+          "sha256": "96bb258fee76f6810a8a154cc68504561a4e580295bf9b4d292f533c69ff1eb3"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/splat_bakes.bin",
+          "sha256": "b41046ee1083da7f0921706022893a7aed78b74a9ff931776f12e746ab405fb5"
+        },
+        {
+          "path": "Mods/modMaleModNative/content/scripts/local/malemod/clinical.ws",
+          "sha256": "7d8b0769492900ae2696d29972cd6666a354f54b12c6fc36bcda0941968d2413"
+        },
+        {
+          "path": "Mods/modMaleModGarments/content/bundles/blob0.bundle",
+          "sha256": "84bbe891ff90048e95814b1cd971b61a9a539492894cb3184f5d300cbac02f2f"
+        },
+        {
+          "path": "Mods/modMaleModGarments/content/bundles/buffers0.bundle",
+          "sha256": "91cb39ef2f0becb710e3982fece57c1abf4367db2d59225291e4faaa866b7cb6"
+        },
+        {
+          "path": "Mods/modMaleModGarments/content/dep.cache",
+          "sha256": "39605dcb5f928236347b8600b852f016d30213bb75987531b4362bb8cf0b784c"
+        },
+        {
+          "path": "Mods/modMaleModGarments/content/metadata.store",
+          "sha256": "58b05d669fa73a08f4fe549de516855f66f9b44309f2beceb5893e6aecdedac1"
+        },
+        {
+          "path": "Mods/modMaleModGarments/content/texture.cache",
+          "sha256": "6a554a95761e6974151b1dab2c4b3074ff3b5edafc9f2a30de29e67af883412d"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/garment.bindings",
+          "sha256": "4fcce8e0cdcef3ccb6dfc5bd33d9ec6efd11ecd65792b98149502576dd7dbf3a"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/garment.bindings.sha256",
+          "sha256": "9056b119fd161a3e82b1cd00dec88412dfa0410d2ea80451687a025a8b916df3"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/garment.render",
+          "sha256": "6ff3b309e8bc4b82afc32d5c5ff0c1cb84ff4e5bda93e2cdcc979c1ea99ae84b"
+        },
+        {
+          "path": "bin/x64_dx12/malemod-native/garment.render.sha256",
+          "sha256": "2f2aa1e5d47dee80e91d1aaf8825432387538ea8ca2f8e03d83e8fda2f680726"
+        },
+        {
+          "path": "Mods/modMaleModNative/content/scripts/local/malemod/garment.ws",
+          "sha256": "c101a17495cb62a072650d6eb16d0898c3d5d429c2c43df31fb3d40f8483351a"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/blob0.bundle",
+          "sha256": "7f37a33a743dd6e55a999be50e2ea062169f3cba3f2e47c35ee56159215c9d35"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/bundles/buffers0.bundle",
+          "sha256": "012e7422544eb65b21f90c8e18fee5a49989760604e719ccd0a65feb3d103c29"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/dep.cache",
+          "sha256": "1dcdfbb93ebed39f4fb8a0b134089409dea3d88f8df401bc131119609310bed9"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/metadata.store",
+          "sha256": "ba66df5f3ba2d20faf31d30ca490f77b8723fd299643f82384fcca0fdbe1b2cc"
+        },
+        {
+          "path": "Mods/mod0000MaleModBodyBoundary/content/texture.cache",
+          "sha256": "d7dbf9bcf79bb2eb6cdb2494006063f3fb753c7d854dfa534bfd568b283203c1"
+        },
+        {
+          "path": "Mods/modMaleMod/content/bundles/blob0.bundle",
+          "sha256": "cfa7393bde48202f6c23610da34dc7f98ce3817036546e97b216c16c804be6c0"
+        },
+        {
+          "path": "Mods/modMaleMod/content/bundles/buffers0.bundle",
+          "sha256": "e98b3d1ce3e80a55de80873bb5a8bd0256f0371f218fd992d241987e31f81110"
+        },
+        {
+          "path": "Mods/modMaleMod/content/dep.cache",
+          "sha256": "5d91bffb0139d7192ab2443f9a90a55d64c1deb678ee2896acbd9279636b9239"
+        },
+        {
+          "path": "Mods/modMaleMod/content/metadata.store",
+          "sha256": "35977ccd6a5894ede2e40fe66eed8419ac694153f5c48b493774e5aa10ae68e7"
+        },
+        {
+          "path": "Mods/modMaleMod/content/scripts/local/maleModPhysics.ws",
+          "sha256": "c1b75d3e6c537c0ba0e89bd16761a9eea588455feccc667c6c8e2fe1fd908d52"
+        }
+      ]
+    }
+  ]
+}

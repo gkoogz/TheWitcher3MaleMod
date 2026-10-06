@@ -31,6 +31,28 @@ static void CheckService(const std::filesystem::path& bake){
  Check(!service.Projection().active&&!service.PollCue()&&service.Error().empty(),"Character reset retained timeline, cues or fault");service.collisions.Result(prior.token,true,{7,0,6},{0,0,1});Check(service.collisions.Counts()[0]==0,"Old character's scene result was accepted");
  service.Action(true);Await([&]{auto out=service.Latest();return out&&out->epoch==2&&out->active&&out->time==0;},"New character's explicit Start failed");Check(service.Latest()->deposits.vertices.empty(),"New character inherited prior deposits");
 }
+static void CheckPhaseService(const std::filesystem::path& bake,unsigned framesPerSecond=60){
+ ClinicalService service(.02,bake);auto input=std::make_shared<RenderDelivery>();input->epoch=1;input->nozzleWorld={0,0,.6};
+ service.Submit(1,0,false,input);std::this_thread::sleep_for(std::chrono::milliseconds(15));service.Action(true);
+ Await([&]{auto out=service.Latest();return out&&out->active;},"Phase fixture failed to start");
+ bool earlyClear=false,earlyOpaque=false;std::shared_ptr<const ClinicalDelivery> latest;
+ for(unsigned frame=1;frame<=24*framesPerSecond;frame++){
+  auto serial=service.Latest()->serial;service.Submit(1,double(frame)/framesPerSecond,false,input);
+  Await([&]{auto out=service.Latest();return out&&out->serial>serial;},"Phase fixture did not publish");
+  latest=service.Latest();if(frame%(2*framesPerSecond)==0){auto counts=service.collisions.Counts();std::cout<<"phase fixture fps="<<framesPerSecond<<" t="<<frame/framesPerSecond<<" clear="<<latest->depositedVolume[0]<<" opaque="<<latest->depositedVolume[1]<<" final="<<latest->finalPumpDepositedVolume<<" scene="<<counts[0]<<","<<counts[1]<<","<<counts[2]<<" render="<<latest->deposits.vertices.size()<<"\n";}if(frame<7*framesPerSecond){earlyClear|=latest->depositedVolume[0]>0;earlyOpaque|=latest->depositedVolume[1]>0;}
+  // The same 96-query VM budget as actual Witcher. This is an explicit offline
+  // receiver fixture, not a synthetic plane introduced into the adapter.
+  for(unsigned i=0;i<96;i++){auto q=service.collisions.Next();if(!q.token)break;bool hit=q.from.z>=0&&q.to.z<=0&&q.from.z>q.to.z;auto p=hit?q.from+(q.to-q.from)*(q.from.z/(q.from.z-q.to.z)):V3{};service.collisions.Result(q.token,hit,p,{0,0,1});}
+ }
+ Check(service.Error().empty()&&latest&&!latest->active&&latest->time==20,"Phase fixture timeline/fault state differs");
+ Check(earlyClear&&!earlyOpaque,"Preliminary flow did not deposit only clear liquid");
+ Check(latest->depositedVolume[1]>0&&latest->finalPumpDepositedVolume>0&&latest->finalPumpDepositedImpacts>0,"Final-born opaque pump did not survive bounded native scene handoff");
+ bool white=false;for(auto v:latest->deposits.vertices)white|=v.phase==clinical::volumeFluid::LiquidPhase::opaque&&v.alpha>0;
+ Check(white&&!latest->deposits.indices.empty(),"Final receiver output lacks visible opaque deposit geometry");
+ service.Action(false);Await([&]{auto out=service.Latest();return out&&!out->active&&out->time==0&&out->deposits.indices.empty()&&out->mesh.indices.empty();},"Explicit Cancel retained completed receiver fields");
+ Check(service.Latest()->depositedVolume==std::array<double,2>{}&&service.Latest()->finalPumpDepositedVolume==0&&service.collisions.Counts()[0]==0,"Explicit Cancel retained phase ledger or native contacts");
+ std::cout<<"PASS phase-specific native service: preliminary clear only, final-born opaque ground contacts with96queries/frame at"<<framesPerSecond<<"FPS, white receiver mesh,20second cue/deformation end with physical drain; final volume="<<latest->finalPumpDepositedVolume<<" impacts="<<latest->finalPumpDepositedImpacts<<"\n";
+}
 int main(int argc,char** argv){try{
  clinical::Session reset;reset.timeline.Start();reset.deposits.marks.emplace_back();reset.Cancel();Check(!reset.timeline.active&&reset.deposits.marks.empty()&&!reset.fluid.Live(),"Pinned Base Cancel did not remove character deposits and fluid");
  ClinicalCollision c;clinical::volumeFluid::FluidImpact impact;
@@ -44,7 +66,13 @@ int main(int argc,char** argv){try{
  // internal from point, so a later particle can reuse that same origin.
  c.Sweep({3,0,10},{3,0,5},1,impact);q=c.Next();c.Result(q.token,false,{},{});c.Sweep({3,0,10},{3,0,3},1,impact);c.AdvanceTime(40);
  Check(c.Counts()[0]==0,"Extended pending path did not expire");Check(c.Sweep({3,0,10},{3,0,2},1,impact)==R::deferred,"Expired extended path left a stale key");q=c.Next();Check(q.from.z==10&&q.to.z==2,"Reused origin kept an expired segment");c.Clear();
+ // Completed and pending abandoned particles free capacity quickly, while
+ // a surface anchor with the same geometry retains its separate retry lease.
+ c.Sweep({20,0,10},{20,0,5},1,impact);auto particle=c.Next();
+ c.Sweep({20,0,10},{20,0,5},1,impact,true);auto anchor=c.Next();Check(particle.token!=anchor.token,"Projection alias consumed moving-particle ownership");
+ c.Result(anchor.token,true,{20,0,6},{0,0,1});c.AdvanceTime(40.4);Check(c.Counts()[0]==1,"Abandoned moving path blocked native queue capacity");
+ Check(c.Sweep({20,0,10},{20,0,5},1,impact,true)==R::hit&&impact.p.z==6,"Source anchor retry lifetime was shortened with particles");c.Clear();
  for(unsigned i=0;i<4096;i++)Check(c.Sweep({float(i),0,10},{float(i),0,5},1,impact)==R::deferred,"Queue capacity changed");Check(c.Counts()[0]==4096,"Queue limit differs");c.AdvanceTime(71);Check(c.Counts()[0]==0,"Full abandoned queue did not expire");
- if(argc>1){CheckService(argv[1]);std::cout<<"PASS clinical lifecycle: queued start/restart, pause/resume, fault cleanup and explicit recovery, benign active/passive teleports with automatic ambient resume, character epoch/output/contact/cue/deposit isolation\n";}
+ if(argc>1){CheckService(argv[1]);CheckPhaseService(argv[1]);CheckPhaseService(argv[1],20);std::cout<<"PASS clinical lifecycle: queued start/restart, pause/resume, fault cleanup and explicit recovery, benign active/passive teleports with automatic ambient resume, character epoch/output/contact/cue/deposit isolation\n";}
  std::cout<<"PASS deferred engine scene paths retain crossings, accept delayed hits, consume misses, reject stale epoch results and expire abandoned anchors\n";return 0;
  }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

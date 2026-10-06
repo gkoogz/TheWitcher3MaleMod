@@ -1,0 +1,131 @@
+{
+  "_type": "CR2W",
+  "_extension": "",
+  "_imports": [],
+  "_properties": [],
+  "_buffers": [],
+  "_embedded": [],
+  "_chunks": {
+    "CEntityTemplate #0": {
+      "_type": "CEntityTemplate",
+      "_key": "CEntityTemplate #0",
+      "_parentKey": "",
+      "_flags": 0,
+      "_vars": {
+        "entityClass": {
+          "_type": "CName",
+          "_value": "CEntity"
+        },
+        "entityObject": {
+          "_type": "ptr:CEntity",
+          "_vars": {
+            "_reference": {
+              "_type": "string",
+              "_value": "CEntity #1"
+            }
+          }
+        }
+      }
+    },
+    "CEntity #1": {
+      "_type": "CEntity",
+      "_key": "CEntity #1",
+      "_parentKey": "CEntityTemplate #0",
+      "_flags": 0,
+      "_vars": {
+        "name": {
+          "_type": "String",
+          "_value": "Iteration floor"
+        },
+        "guid": {
+          "_type": "CGUID",
+          "_value": "07li/QJms1yAPGenic56gA=="
+        },
+        "entityStaticFlags": {
+          "_type": "EEntityStaticFlags",
+          "_value": "ESF_None"
+        },
+        "Components": {
+          "_type": "array:0,0,ptr:CComponent",
+          "_elements": [
+            {
+              "_type": "ptr:CComponent",
+              "_vars": {
+                "_reference": {
+                  "_type": "string",
+                  "_value": "CStaticMeshComponent #2"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "CStaticMeshComponent #2": {
+      "_type": "CStaticMeshComponent",
+      "_key": "CStaticMeshComponent #2",
+      "_parentKey": "CEntity #1",
+      "_flags": 0,
+      "_vars": {
+        "name": {
+          "_type": "String",
+          "_value": "floor"
+        },
+        "guid": {
+          "_type": "CGUID",
+          "_value": "3mr2pxFv9V6F20n+oiECoQ=="
+        },
+        "transform": {
+          "_type": "EngineTransform",
+          "_vars": {
+            "X": {
+              "_type": "Float",
+              "_value": 0.0
+            },
+            "Y": {
+              "_type": "Float",
+              "_value": 0.0
+            },
+            "Z": {
+              "_type": "Float",
+              "_value": 0.0
+            },
+            "Scale_x": {
+              "_type": "Float",
+              "_value": 32.0
+            },
+            "Scale_y": {
+              "_type": "Float",
+              "_value": 32.0
+            },
+            "Scale_z": {
+              "_type": "Float",
+              "_value": 0.5
+            }
+          }
+        },
+        "mesh": {
+          "_type": "handle:CMesh",
+          "_vars": {
+            "_depotPath": {
+              "_type": "string",
+              "_value": "levels\\malemod_iteration\\floor.w2mesh"
+            },
+            "_className": {
+              "_type": "string",
+              "_value": "CMesh"
+            },
+            "_flags": {
+              "_type": "Uint16",
+              "_value": 0
+            },
+            "_chunkHandle": {
+              "_type": "bool",
+              "_value": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

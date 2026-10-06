@@ -21,7 +21,8 @@ def inspect(symbol):
         match = re.match(r'\s+0001:[0-9a-f]+\s+(\S+)\s+([0-9a-f]{16})\s+f\s', line)
         if match:
             functions.append((int(match[2], 16), match[1]))
-    matches = [(a, n) for a, n in functions if symbol in n]
+    exact = [(a, n) for a, n in functions if symbol == n]
+    matches = exact or [(a, n) for a, n in functions if symbol in n]
     if len(matches) != 1:
         raise ValueError('Expected one symbol: ' + repr(matches))
     address, name = matches[0]

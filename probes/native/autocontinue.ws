@@ -23,18 +23,21 @@ private var maleModVerificationPauseTicks : int;
 @addMethod(CR4Game)
 function MaleModPrivateVerificationStep()
 {
-    var i, control, part : int;
+    var i, control, part, caseIndex, sizeIndex, garmentStyle : int;
     var terrainGroups : array<name>;
     var value, seconds : float;
     var cameraRotation : EulerAngles;
-    var target, cameraPosition, cameraAim, cameraDirection, cameraRight, traceFrom, traceTo, ground, groundNormal : Vector;
-    if (!thePlayer || (IsPaused() && maleModVerificationStage != 60) || maleModVerificationStage >= 84) { return; }
+    var target, cameraPosition, cameraAim, cameraDirection, cameraRight, traceFrom, traceTo, ground, groundNormal, clinicalState, clinicalDeposits, garmentState : Vector;
+    if (!thePlayer || (IsPaused() && maleModVerificationStage != 60) || maleModVerificationStage >= 117) { return; }
     seconds = GetEngineTimeAsSeconds();
     if (!maleModVerificationStarted)
     {
         if (maleModVerificationTime == 0.0) { maleModVerificationTime = seconds; return; }
         if (seconds-maleModVerificationTime < 2.0) { return; }
         theGame.SetGameTime(GameTimeCreate(GameTimeDays(theGame.GetGameTime()),12,0,0),false);
+        // MoveToAsync's third argument is speed, not a duration. An existing
+        // action otherwise resumes steering after Teleport and leaves land.
+        thePlayer.ActionCancelAll();
         maleModVerificationOrigin = thePlayer.GetWorldPosition();
         // Query actual loaded terrain and water level; never invent a floor.
         for (i=0;i<32;i+=1)
@@ -77,15 +80,25 @@ function MaleModPrivateVerificationStep()
         cameraAim = thePlayer.GetWorldPosition(); cameraAim.Z += 1.0;
         cameraDirection = RotForward(thePlayer.GetWorldRotation());
         cameraRight = RotRight(thePlayer.GetWorldRotation());
-        if ((maleModVerificationStage == 75 || maleModVerificationStage >= 84)) { cameraDirection = cameraDirection * -1.0; }
-        else if (maleModVerificationStage == 76) { cameraDirection = cameraRight; }
+        // Maximum-size cloth cases add orthogonal views of the waistband and
+        // the two straps below the gluteal folds, preserving their controls.
+        if (maleModVerificationStage == 75 || maleModVerificationStage == 101) { cameraDirection = cameraDirection * -1.0; }
+        else if (maleModVerificationStage == 76 || maleModVerificationStage == 100 || (maleModVerificationStage >= 84 && maleModVerificationStage <= 89) || maleModVerificationStage == 112) { cameraDirection = cameraRight; }
         else if (maleModVerificationStage == 78) { cameraDirection = cameraRight * -1.0; }
         else { cameraDirection = cameraDirection + cameraRight * 0.35; }
         cameraPosition = cameraAim + VecNormalize(cameraDirection) * 2.6;
         cameraPosition.Z += 0.35;
+        // Resolve the preliminary transparent flow against actual dry terrain;
+        // the wider body camera cannot show this small low-opacity stream.
+        if (maleModVerificationStage == 109 || maleModVerificationStage == 110)
+        {
+            cameraAim = thePlayer.GetWorldPosition(); cameraAim.Z += 0.85;
+            cameraPosition = cameraAim + VecNormalize(cameraDirection) * 1.2;
+            cameraPosition.Z += 0.15;
+        }
         // Inspect actual contact deposits from above at sequence completion.
         // Engine camera only; the user's physical desktop is never activated.
-        if (maleModVerificationStage == 71 || maleModVerificationStage == 72)
+        if (maleModVerificationStage == 71 || maleModVerificationStage == 72 || (maleModVerificationStage >= 113 && maleModVerificationStage <= 115))
         {
             cameraAim = thePlayer.GetWorldPosition() + RotForward(thePlayer.GetWorldRotation()) * 0.3;
             cameraAim.Z += 0.15;
@@ -108,11 +121,31 @@ function MaleModPrivateVerificationStep()
         maleModVerificationPauseTicks += 1;
         if (maleModVerificationPauseTicks < 80) { return; }
     }
+    else if (maleModVerificationStage >= 102 && maleModVerificationStage <= 107) { if (seconds-maleModVerificationTime < 0.4) { return; } }
+    else if (maleModVerificationStage == 109) { if (seconds-maleModVerificationTime < 3.4) { return; } }
+    else if (maleModVerificationStage == 113 || maleModVerificationStage == 115) { if (seconds-maleModVerificationTime < 4.0) { return; } }
+    else if (maleModVerificationStage == 114)
+    {
+        clinicalState = MaleModNativeClinicalState(); clinicalDeposits = MaleModNativeClinicalDeposits();
+        // Bound the wait. A failed receiver is captured with zero final-pump
+        // telemetry and rejected by the recorder rather than hidden by a loop.
+        if ((clinicalState.Y != 0.0 || clinicalState.Z < 20.0 || clinicalDeposits.Z <= 0.0 || clinicalDeposits.W <= 0.0) && seconds-maleModVerificationTime < 12.0) { return; }
+    }
     else if (maleModVerificationStage >= 69 && maleModVerificationStage <= 72) { if (seconds-maleModVerificationTime < 4.0) { return; } }
     else if (seconds-maleModVerificationTime < 2.0) { return; }
     if (!maleModVerificationCaptured)
     {
-        if (!MaleModNativeTestCheckpoint(maleModVerificationStage)) { return; }
+        if (maleModVerificationStage >= 96 && maleModVerificationStage <= 101)
+        {
+            garmentState = MaleModNativeGarmentState();
+            if ((garmentState.X != 1.0 || garmentState.Y <= 0.0) && seconds-maleModVerificationTime < 12.0) { return; }
+        }
+        if (!MaleModNativeTestCheckpoint(maleModVerificationStage))
+        {
+            // Missing source/GPU publication fails the ordered case gate.
+            if (seconds-maleModVerificationTime >= 15.0) { maleModVerificationStage = 117; }
+            return;
+        }
         TakeScreenshot();
         maleModVerificationCaptured = true; maleModVerificationTime = seconds; return;
     }
@@ -120,6 +153,8 @@ function MaleModPrivateVerificationStep()
 
     maleModVerificationStage += 1;
     maleModVerificationTime = seconds;
+    // Stationary angle/fit captures must not inherit an asynchronous move.
+    if (maleModVerificationStage >= 84 && maleModVerificationStage <= 101) { thePlayer.ActionCancelAll(); }
     // Each test begins at the exact full-floppy reset contract.
     MaleModNativeSetControl(0,2.0);
     for (i=1;i<18;i+=1) { MaleModNativeSetControl(i,50.0); }
@@ -142,6 +177,34 @@ function MaleModPrivateVerificationStep()
     else if (maleModVerificationStage == 73) { MaleModNativeClinicalControl(1,1.0); }
     else if (maleModVerificationStage == 74) { MaleModNativeClinicalControl(1,0.0); }
     else if (maleModVerificationStage >= 79 && maleModVerificationStage <= 82) { MaleModNativeSetControl(1,25.0*(float)(maleModVerificationStage-78)); }
+    if (maleModVerificationStage >= 84 && maleModVerificationStage <= 89)
+    {
+        caseIndex = maleModVerificationStage-84; MaleModNativeGarmentControl(0);
+        MaleModNativeSetControl(0,(float)(caseIndex/2)); MaleModNativeSetControl(1,100.0);
+        if (caseIndex%2 == 0) { MaleModNativeSetControl(7,1.0); } else { MaleModNativeSetControl(7,100.0); }
+    }
+    else if (maleModVerificationStage >= 90 && maleModVerificationStage <= 101)
+    {
+        caseIndex = maleModVerificationStage-90; garmentStyle = caseIndex/6; sizeIndex = (caseIndex%6)/3;
+        MaleModNativeGarmentControl(garmentStyle); MaleModNativeSetControl(0,(float)(caseIndex%3));
+        if (sizeIndex == 1) { MaleModNativeSetControl(1,100.0); }
+    }
+    else if (maleModVerificationStage >= 102 && maleModVerificationStage <= 107)
+    {
+        caseIndex = maleModVerificationStage-102; MaleModNativeGarmentControl(caseIndex/3);
+        MaleModNativeSetControl(0,(float)(caseIndex%3)); MaleModNativeSetControl(1,100.0);
+        target = maleModVerificationOrigin;
+        if (caseIndex%2 == 0) { target.X += 8.0; } else { target.X -= 8.0; }
+        thePlayer.ActionMoveToAsync(target,MT_Run,3.0,0.25);
+    }
+    else if (maleModVerificationStage == 108)
+    {
+        thePlayer.ActionCancelAll();
+        MaleModNativeGarmentControl(0); MaleModNativeClinicalControl(0,0.0); MaleModNativeClinicalControl(1,0.0);
+        thePlayer.Teleport(maleModVerificationOrigin);
+    }
+    else if (maleModVerificationStage == 109) { MaleModNativeClinicalControl(1,1.0); }
+    else if (maleModVerificationStage == 116) { MaleModNativeClinicalControl(1,0.0); }
     // Move through the game's actor API inside the private station. No host
     // keys, mouse or focus changes, and the existing SDK no-save lock remains.
     if (maleModVerificationStage < 63 && maleModVerificationStage != 60)

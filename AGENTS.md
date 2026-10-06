@@ -9,6 +9,14 @@ this repository translates its data into REDengine formats. Resolve the Base
 commit through dependencies/base.lock.json. Do not silently build against a
 different revision or maintain another copy of shared geometry/physics code.
 
+For future modeling, clothing, controls and physics development, use the cheap
+grey room in dev/sandbox/README.md before campaign testing. Maintain its compact
+tracked source delta and generate local SDK-derived resources and acceptance
+receipts on each machine. This development room is excluded from mod releases.
+The maintained playable path is the transient platform, not the failed standalone
+world experiments. Never inherit another machine's gameplay proof or steal host
+focus/input. Preserve ordinary audio and saves; close owned sessions by receipt.
+
 Proactively move shared anatomy, body morphology, garment rules, preferences,
 numerical physics and clinical timing into Base. Keep observed Geralt bindings,
 WitcherScript lifecycle/input/menu hooks, native materials, asset import/export,

@@ -10,3 +10,13 @@ __pycache__/
 *.pyc
 workspace/*.db
 workspace/*.db-*
+/probes/native/iteration_platform_human.ws
+/$dest/
+/tools/voice-review/
+/probes/native/iteration_render_control.ws
+/probes/native/iteration_render_disabled.ws
+/probes/native/iteration_surface_effects.ws
+/probes/native/iteration_stock_control.ws
+/probes/native/iteration_warm_control.ws
+/probes/native/iteration_warm_nohud.ws
+/probes/native/iteration_world.ws

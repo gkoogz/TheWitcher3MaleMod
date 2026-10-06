@@ -2,6 +2,7 @@
 // emission and liquid geometry remain in the pinned Base.
 import function MaleModNativeClinicalControl(index : int, value : float);
 import function MaleModNativeClinicalState() : Vector;
+import function MaleModNativeClinicalDeposits() : Vector;
 import function MaleModNativeClinicalQuery(which : int) : Vector;
 import function MaleModNativeClinicalHit(token : int, hit : bool, point : Vector, normal : Vector);
 import function MaleModNativeClinicalCue() : Vector;

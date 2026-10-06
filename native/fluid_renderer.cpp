@@ -6,6 +6,7 @@
 #include <map>
 #include <mutex>
 #include <atomic>
+#include <DirectXPackedVector.h>
 namespace malemod::witcher { namespace {
 using Microsoft::WRL::ComPtr;
 std::mutex mutex;std::atomic<unsigned> flags{0},publications{0};thread_local bool creating=false;
@@ -123,8 +124,11 @@ bool FluidDraw(void* pointer,void* original,const std::array<D3D12_VERTEX_BUFFER
  auto* list=static_cast<ID3D12GraphicsCommandList*>(pointer);bool bound=false;
  try{std::unique_lock<std::mutex> lock(mutex);Collect();auto found=pipelines->find(original);if(found==pipelines->end()){flags.fetch_or(2);return true;}if(retired->size()>128)throw std::runtime_error("Fluid retirement backlog");auto pipeline=found->second;Clone(*pipeline);auto& record=(*recordings)[pointer];auto upload=record.uploads[kind];if(record.uploads[1-kind])packet=record.uploads[1-kind]->packet;
   if(!upload){upload=std::make_shared<Upload>();upload->packet=packet;const auto& mesh=packet->input->mesh;std::vector<Vertex> vertices;vertices.reserve(mesh.vertices.size()+packet->input->deposits.vertices.size());const auto& r=resources[kind];
-   auto append=[&](malemod::V3 p,malemod::V3 n,float alpha){Vertex v{};for(unsigned a=0;a<3;a++){float value=a==0?p.x:a==1?p.y:p.z;v.p[a]=float((double(value)*packet->scale-packet->origin[a]-r.bias[a])/r.scale[a]);if(!std::isfinite(v.p[a]))throw std::runtime_error("Nonfinite clinical vertex");}skin::Point normal{n.x,n.y,n.z};auto tangent=Unit(Cross(n,std::abs(n.z)<.8f?malemod::V3{0,0,1}:malemod::V3{0,1,0}));v.normal=PackDirection(normal,1);v.tangent=PackDirection({tangent.x,tangent.y,tangent.z},3);v.color=0x00ffffffu|(unsigned(std::clamp(alpha,0.f,1.f)*255+.5f)<<24);vertices.push_back(v);};
-   for(const auto& v:mesh.vertices)append(v.p,v.n,1);unsigned first=unsigned(vertices.size());for(const auto& v:packet->input->deposits.vertices)append(v.p,v.n,v.alpha);
+   auto append=[&](malemod::V3 p,malemod::V3 n,float alpha){Vertex v{};for(unsigned a=0;a<3;a++){float value=a==0?p.x:a==1?p.y:p.z;v.p[a]=float((double(value)*packet->scale-packet->origin[a]-r.bias[a])/r.scale[a]);if(!std::isfinite(v.p[a]))throw std::runtime_error("Nonfinite clinical vertex");}skin::Point normal{n.x,n.y,n.z};auto tangent=Unit(Cross(n,std::abs(n.z)<.8f?malemod::V3{0,0,1}:malemod::V3{0,1,0}));v.normal=PackDirection(normal,1);v.tangent=PackDirection({tangent.x,tangent.y,tangent.z},3);// Native transparent_lit_vert ignores COLOR: its actual opacity reads Diffuse.a.
+    // Sample the alpha ramp at texel centers; mip averages preserve its linear ramp.
+    v.uv=unsigned(DirectX::PackedVector::XMConvertFloatToHalf((.5f+255.f*std::clamp(alpha,0.f,1.f))/256.f))|(0x3800u<<16);v.color=0x00ffffffu|(unsigned(std::clamp(alpha,0.f,1.f)*255+.5f)<<24);vertices.push_back(v);};
+   std::vector<bool> opaqueVertex(mesh.vertices.size());for(unsigned i=0;i<mesh.opaqueIndices;i++){if(i>=mesh.indices.size()||mesh.indices[i]>=opaqueVertex.size())throw std::runtime_error("Invalid opaque liquid slice");opaqueVertex[mesh.indices[i]]=true;}
+   for(unsigned i=0;i<mesh.vertices.size();i++){const auto& v=mesh.vertices[i];append(v.p,v.n,opaqueVertex[i]?1.f:.14f);}unsigned first=unsigned(vertices.size());for(const auto& v:packet->input->deposits.vertices)append(v.p,v.n,v.alpha*(v.phase==clinical::volumeFluid::LiquidPhase::opaque?1.f:.14f));
    auto topology=mesh.indices;upload->opaque=mesh.opaqueIndices;for(unsigned id:packet->input->deposits.indices)topology.push_back(first+id);upload->count=unsigned(topology.size());
    for(auto id:topology)if(id>=vertices.size())throw std::runtime_error("Invalid clinical index");if(vertices.size()>250000||topology.size()>1500000)throw std::runtime_error("Clinical output capacity exceeded");
    if(vertices.empty()||topology.empty())return true;ComPtr<ID3D12Device> device;HR(list->GetDevice(IID_PPV_ARGS(&device)));

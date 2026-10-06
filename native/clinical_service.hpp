@@ -11,16 +11,16 @@ namespace malemod::witcher {
 // its own worker. Deferred paths preserve the full untested crossing segment.
 class ClinicalCollision {
  using V=malemod::V3;
- struct Entry {unsigned token;V from,to;float radius;bool issued=false,ready=false,hit=false;clinical::volumeFluid::FluidImpact impact;double touched=0;std::array<float,4> key{};};
- std::mutex mutex_;std::map<unsigned,Entry> entries_;std::map<std::array<float,4>,unsigned> keys_;std::deque<unsigned> queue_;unsigned next_=1,issued_=0,hits_=0;
+ struct Entry {unsigned token;V from,to;float radius;bool issued=false,ready=false,hit=false;clinical::volumeFluid::FluidImpact impact;double touched=0;bool projection=false;std::array<float,5> key{};};
+ std::mutex mutex_;std::map<unsigned,Entry> entries_;std::map<std::array<float,5>,unsigned> keys_;std::deque<unsigned> queue_;unsigned next_=1,issued_=0,hits_=0;
  double now_=0;
  public:
- clinical::volumeFluid::SweepResult Sweep(V from,V to,float radius,clinical::volumeFluid::FluidImpact& impact){
-  using Result=clinical::volumeFluid::SweepResult;std::lock_guard<std::mutex> lock(mutex_);const std::array<float,4> key{from.x,from.y,from.z,radius};
+ clinical::volumeFluid::SweepResult Sweep(V from,V to,float radius,clinical::volumeFluid::FluidImpact& impact,bool projection=false){
+  using Result=clinical::volumeFluid::SweepResult;std::lock_guard<std::mutex> lock(mutex_);const std::array<float,5> key{from.x,from.y,from.z,radius,projection?1.f:0.f};
   auto found=keys_.find(key);
   if(found==keys_.end()){
    if(entries_.size()>=4096)return Result::deferred;
-   unsigned id;do{id=next_++;if(next_>=16777216u)next_=1;}while(entries_.count(id));Entry e{id,from,to,radius};e.touched=now_;e.key=key;entries_.emplace(id,e);keys_[key]=id;queue_.push_back(id);return Result::deferred;
+   unsigned id;do{id=next_++;if(next_>=16777216u)next_=1;}while(entries_.count(id));Entry e{id,from,to,radius};e.touched=now_;e.key=key;e.projection=projection;entries_.emplace(id,e);keys_[key]=id;queue_.push_back(id);return Result::deferred;
   }
   auto& e=entries_.at(found->second);
   e.touched=now_;
@@ -42,12 +42,18 @@ class ClinicalCollision {
  Query Next(){std::lock_guard<std::mutex> lock(mutex_);while(!queue_.empty()){unsigned id=queue_.front();queue_.pop_front();auto f=entries_.find(id);if(f!=entries_.end()&&!f->second.issued){auto& e=f->second;e.issued=true;++issued_;return {id,e.from,e.to,e.radius};}}return {};}
  void Result(unsigned token,bool hit,V p,V n){std::lock_guard<std::mutex> lock(mutex_);auto i=entries_.find(token);if(i==entries_.end())return;auto& e=i->second;if(!e.issued||e.ready)return;e.ready=true;e.hit=hit;if(hit)++hits_;e.impact.p=p;e.impact.n=Unit(n);e.impact.kind=clinical::volumeFluid::FLUID_IMPACT_WORLD;}
  std::array<unsigned,3> Counts(){std::lock_guard<std::mutex> lock(mutex_);return {unsigned(entries_.size()),issued_,hits_};}
- void AdvanceTime(double seconds){std::lock_guard<std::mutex> lock(mutex_);now_=seconds;for(auto i=entries_.begin();i!=entries_.end();){auto& e=i->second;if(now_-e.touched>(e.ready?8:30)){keys_.erase(e.key);i=entries_.erase(i);}else ++i;}}
+ // A live moving path refreshes touched each solver step. Retired nodes must
+ // release their completed/pending slots promptly or early clear flow fills
+ // all 4096 slots and later opaque pumps can never request a receiver. Surface
+ // anchors retry on the Base schedule, so they have a separate three-second
+ // lifetime and key namespace. Neither limit consumes extra VM queries.
+ void AdvanceTime(double seconds){std::lock_guard<std::mutex> lock(mutex_);now_=seconds;for(auto i=entries_.begin();i!=entries_.end();){auto& e=i->second;if(now_-e.touched>(e.projection?3:.35)){keys_.erase(e.key);i=entries_.erase(i);}else ++i;}}
  void Clear(){std::lock_guard<std::mutex> lock(mutex_);entries_.clear();keys_.clear();queue_.clear();issued_=hits_=0;}
 };
 struct ClinicalDelivery {
  unsigned epoch=0;std::uint64_t serial=0;float time=0;bool active=false;unsigned throbMode=0,cueMask=0;
  double emittedVolume=0,milliseconds=0;unsigned impacts=0;
+ std::array<double,2> depositedVolume{};std::array<unsigned,2> depositedImpacts{};double finalPumpDepositedVolume=0;unsigned finalPumpDepositedImpacts=0;
  clinical::DepositMesh deposits;
  clinical::teaching::LiquidMesh mesh; // calibrated source-unit world positions
 };
@@ -78,7 +84,7 @@ class ClinicalService {
   session.audio.playPhase=[&](unsigned phase){cueMask|=1u<<phase;std::lock_guard<std::mutex> l(mutex_);if(cues_.size()<64)cues_.push_back({phase,epoch,handled,session.timeline.time});}; // delivered to the VM; empty slots stay silent
   session.fluid.settings.catchPlane=false;
   if(!session.deposits.splatBakes.LoadFile(bakes_.string())){std::lock_guard<std::mutex> l(mutex_);error_="Clinical deposit bake unavailable";return;}
-  session.deposits.project=[&](const auto& contact,malemod::V3 p,auto& result){auto a=p+contact.n*2,b=p-contact.n*2;return collisions.Sweep(a,b,.02f,result)==clinical::volumeFluid::SweepResult::hit;};
+  session.deposits.project=[&](const auto& contact,malemod::V3 p,auto& result){auto a=p+contact.n*2,b=p-contact.n*2;return collisions.Sweep(a,b,.02f,result,true)==clinical::volumeFluid::SweepResult::hit;};
   session.fluid.collisionQuery.callback=[this](auto a,auto b,float r,auto& hit){return collisions.Sweep(a,b,r,hit);};
   for(;;){unsigned nextEpoch,mode,action,actionSerial,actionEpoch;double seconds;bool paused;std::shared_ptr<const RenderDelivery> input;
    {std::unique_lock<std::mutex> l(mutex_);changed_.wait_for(l,std::chrono::milliseconds(8));if(stopping_)return;nextEpoch=epoch_;mode=mode_;action=action_;actionSerial=actionSerial_;actionEpoch=actionEpoch_;seconds=seconds_;paused=paused_;input=input_;}
@@ -96,11 +102,11 @@ class ClinicalService {
     if(faulted&&(!actionChanged||action!=1)){handled=actionSerial;continue;}
     if(!std::isfinite(seconds)||!clinical::Session::Finite(nozzle.position)||!clinical::Session::Finite(nozzle.direction)||Length(nozzle.direction)<1e-6f||!clinical::Session::Finite(nozzle.inheritedVelocity))throw std::runtime_error("Clinical emitter pose and clock must be finite with a nonzero direction");
     if(!resume&&elapsed==0&&!actionChanged&&!modeChanged)continue;
-    if(actionChanged){{std::lock_guard<std::mutex> l(mutex_);cues_.clear();}handled=actionSerial;if(action==1){collisions.Clear();gate.Reset();session.fluid.SetVariationSeed(0x6d2b79f5u+actionSerial);if(!session.Begin(nozzle.position))throw std::runtime_error(session.fluid.error);session.fluid.lastDir=Unit(nozzle.direction);session.fluid.surfaceDeposits=true;cueMask=0;faulted=false;resetError=true;}else{session.timeline.Cancel();session.audio.End();session.fluid.Clear();collisions.Clear();}}
+    if(actionChanged){{std::lock_guard<std::mutex> l(mutex_);cues_.clear();}handled=actionSerial;if(action==1){collisions.Clear();gate.Reset();session.fluid.SetVariationSeed(0x6d2b79f5u+actionSerial);if(!session.Begin(nozzle.position))throw std::runtime_error(session.fluid.error);session.fluid.lastDir=Unit(nozzle.direction);session.fluid.surfaceDeposits=true;cueMask=0;faulted=false;resetError=true;}else{session.Cancel();collisions.Clear();}}
     clock.SetMode(mode);
     if(resetError){std::lock_guard<std::mutex> l(mutex_);error_.clear();resetError=false;}
     auto started=std::chrono::steady_clock::now();
-    if(!session.timeline.active&&mode){if(!session.fluid.ready||!session.fluid.passiveMode){if(!session.fluid.BeginPassive(nozzle.position))throw std::runtime_error(session.fluid.error);session.fluid.lastDir=Unit(nozzle.direction);session.fluid.surfaceDeposits=true;gate.Reset();}}
+    if(!session.timeline.active&&mode){if(!session.fluid.ready||(!session.fluid.passiveMode&&!session.fluid.Live())){if(!session.fluid.BeginPassive(nozzle.position))throw std::runtime_error(session.fluid.error);session.fluid.lastDir=Unit(nozzle.direction);session.fluid.surfaceDeposits=true;gate.Reset();}}
     else if(!session.timeline.active&&session.fluid.passiveMode){session.fluid.Clear();gate.Reset();}
     bool emitterStopped=false;
     auto stopEmitter=[&]{
@@ -110,12 +116,12 @@ class ClinicalService {
      collisions.Clear();gate.Reset();cueMask=0;emitterStopped=true;
      std::lock_guard<std::mutex> l(mutex_);cues_.clear();
     };
-    while(elapsed>1e-7){float dt=float((std::min)(elapsed,1./60.));clock.Advance(dt);if(session.fluid.passiveMode){if(gate.Update(clock.Pulse()))session.fluid.TriggerPassiveClear();session.fluid.Advance(dt,nozzle.position,Unit(nozzle.direction),nozzle.inheritedVelocity);if(!session.fluid.ready){stopEmitter();break;}session.deposits.Add(session.fluid.impacts,std::uint32_t(seconds*1000));session.deposits.Update(std::uint32_t(seconds*1000));}else{bool wasActive=session.timeline.active;if(!session.Advance(dt,nozzle,std::uint32_t(seconds*1000)))throw std::runtime_error(session.fluid.error);if(wasActive&&!session.fluid.ready){stopEmitter();break;}if(wasActive&&!session.timeline.active)session.fluid.Clear();}elapsed-=dt;}
+    while(elapsed>1e-7){float dt=float((std::min)(elapsed,1./60.));clock.Advance(dt);if(session.fluid.passiveMode){if(gate.Update(clock.Pulse()))session.fluid.TriggerPassiveClear();session.fluid.Advance(dt,nozzle.position,Unit(nozzle.direction),nozzle.inheritedVelocity);if(!session.fluid.ready){stopEmitter();break;}session.DepositImpacts(std::uint32_t(seconds*1000));session.deposits.Update(std::uint32_t(seconds*1000));}else{bool wasActive=session.timeline.active;if(!session.Advance(dt,nozzle,std::uint32_t(seconds*1000)))throw std::runtime_error(session.fluid.error);if(wasActive&&!session.fluid.ready){stopEmitter();break;}}elapsed-=dt;}
     last=seconds;previousActor=actor;resume=emitterStopped;
     surface::Frame::ClinicalProjection p;p.active=session.timeline.active;p.time=session.timeline.time;p.throbMode=clock.mode;p.sizeTime=clock.sizeTime;p.twitchTime=clock.twitchTime;p.lateralWobbleDegrees=session.fluid.settings.lateralWobbleDegrees;std::copy(std::begin(session.fluid.lateralGain),std::end(session.fluid.lateralGain),p.lateralGain.begin());std::copy(std::begin(session.fluid.angleGain),std::end(session.fluid.angleGain),p.angleGain.begin());
     {std::lock_guard<std::mutex> l(mutex_);projection_=p;}
     if(session.timeline.active||session.fluid.Live()||!session.deposits.marks.empty()||Latest()){
-     auto out=std::make_shared<ClinicalDelivery>();out->epoch=epoch;out->serial=++serial;out->time=float(session.timeline.time);out->active=session.timeline.active;out->throbMode=mode;out->cueMask=cueMask;out->emittedVolume=session.fluid.emittedVolume;out->impacts=unsigned(session.fluid.impacts.size());out->mesh=session.fluid.mesh;out->deposits=clinical::BuildDepositMesh(session.deposits,std::uint32_t(seconds*1000));out->milliseconds=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-started).count();std::atomic_store(&delivery_,std::shared_ptr<const ClinicalDelivery>(out));
+     auto out=std::make_shared<ClinicalDelivery>();out->epoch=epoch;out->serial=++serial;out->time=float(session.timeline.time);out->active=session.timeline.active;out->throbMode=mode;out->cueMask=cueMask;out->emittedVolume=session.fluid.emittedVolume;out->impacts=unsigned(session.fluid.impacts.size());out->depositedVolume=session.depositedVolume;out->depositedImpacts=session.depositedImpacts;out->finalPumpDepositedVolume=session.finalPumpDepositedVolume;out->finalPumpDepositedImpacts=session.finalPumpDepositedImpacts;out->mesh=session.fluid.mesh;out->deposits=clinical::BuildDepositMesh(session.deposits,std::uint32_t(seconds*1000));out->milliseconds=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-started).count();std::atomic_store(&delivery_,std::shared_ptr<const ClinicalDelivery>(out));
     }
    }catch(const std::exception& e){session.Cancel();collisions.Clear();gate.Reset();resume=true;faulted=true;resetError=false;handled=actionSerial;cueMask=0;std::atomic_store(&delivery_,std::shared_ptr<const ClinicalDelivery>{});std::lock_guard<std::mutex> l(mutex_);error_=e.what();projection_={};cues_.clear();}
  }

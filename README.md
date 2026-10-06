@@ -1,5 +1,15 @@
 # The Witcher 3 MaleMod adapter
 
+Repository-only development room: [portable grey sandbox delta and setup](dev/sandbox/README.md).
+Use it first for future modeling, clothing and physics iteration. It is excluded
+from anatomy releases; every new machine generates its own cooking/gameplay proof.
+
+**Grey studio:** the desktop `Witcher 3 Grey Sandbox` shortcut now binds a
+reviewed playable room, with complete body output and clean movement captures.
+The black floor artifact was corrected in the studio's particle pass. See
+[sandbox status and limits](docs/ITERATION-SANDBOX.md). The stock world remains
+loaded beneath the room; numerical physics cadence was not improved by this fix.
+
 Translation layer from [MaleModBase](https://github.com/gkoogz/MaleModBase) into
 REDengine. This repository can be developed from chat and built with the
 **official REDkit command-line tools**, without operating its editor.
@@ -8,11 +18,16 @@ REDengine. This repository can be developed from chat and built with the
 Read [the durable educational context](docs/PROJECT-CONTEXT.md)
 and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
 
-Installed native DX12 adapter: Base `2a7b38a`, all 18 source controls,
+Frozen beta.2 native DX12 payload: Base `99ff741`, all 18 source controls,
 full source numerical physics, live coupled pelvic recruitment and both Geralt
-LODs. Wolverine is unchanged. F6 opens/closes the separate live panel; arrow keys
+LODs. Wolverine adoption is managed in its own adapter. F6 opens/closes the separate live panel; arrow keys
 select/adjust and Shift increases the step. Defaults match Base's full-floppy
 reset. The original .31 cooked resources remain as the rig/fallback.
+
+The newer development source is pinned independently to Base `421a786` and
+includes unfinished persistent-cloth candidates. The frozen release is not a
+claimed rebuild of that source. Existing static clothing remains a preview.
+See [development and release status](docs/DEVELOPMENT-STATUS.md).
 
 The current radial implementation drives both torso and lower body from shared
 waist bindings. It adds deterministic skin matching, source clinical timing,

@@ -2,21 +2,22 @@
 #include "overlay_panel.hpp"
 #include <windowsx.h>
 #include <string>
+#include <malemod/controls/presentation.hpp>
 
 namespace malemod::witcher {
 namespace {
-constexpr const wchar_t* labels[]={L"State",L"Overall size",L"Length",L"Width",L"Glans size",L"Scrotum size",L"Hang",L"Rest angle",L"Forward offset",L"Vertical offset",L"Shaft stiffness",L"Shaft weight",L"Shaft bounce",L"Shaft response",L"Scrotum stiffness",L"Scrotum weight",L"Scrotum bounce",L"Scrotum response"};
+constexpr auto labels=controls::WideLabels;
 void Box(HDC dc,int x,int y,int w,int h,COLORREF color){auto brush=CreateSolidBrush(color);RECT r{x,y,x+w,y+h};FillRect(dc,&r,brush);DeleteObject(brush);}
 void Text(HDC dc,const wchar_t* text,int x,int y,int w,int h,COLORREF color){SetTextColor(dc,color);RECT r{x,y,x+w,y+h};DrawTextW(dc,text,-1,&r,DT_LEFT|DT_VCENTER|DT_SINGLELINE);}
 }
-void OverlayPanel::Paint(HDC dc,const surface::Controls& c,bool expanded,int w,int h,unsigned selected,std::array<float,2> clinical){
+void OverlayPanel::Paint(HDC dc,const surface::Controls& c,bool expanded,int w,int h,unsigned selected,std::array<float,3> clinical){
  const int saved=SaveDC(dc);SetMapMode(dc,MM_ANISOTROPIC);SetWindowExtEx(dc,expanded?width:92,expanded?height:32,nullptr);SetViewportExtEx(dc,w,h,nullptr);SetBkMode(dc,TRANSPARENT);
  auto font=CreateFontW(-14,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,CLEARTYPE_QUALITY,DEFAULT_PITCH,L"Segoe UI");SelectObject(dc,font);
  const COLORREF bg=RGB(20,28,37),fg=RGB(226,234,240),dim=RGB(151,168,183),accent=RGB(88,200,183),line=RGB(52,68,83);
  Box(dc,0,0,width,height,bg);if(!expanded){Box(dc,0,0,3,32,accent);Text(dc,L"Anatomy",13,0,78,32,fg);RestoreDC(dc,saved);DeleteObject(font);return;}
  Box(dc,0,0,width,2,accent);Text(dc,L"MaleMod  /  Anatomy  [F6]",16,8,350,22,fg);Text(dc,L"Arrows: select / adjust   Shift: 5 steps",16,31,365,18,dim);Text(dc,L"\x00d7",388,8,22,26,dim);
  if(selected==0)Box(dc,12,54,396,34,line);
- const wchar_t* states[]={L"Rigid",L"Intermediate",L"Flexible"};
+ const auto& states=controls::WideStates;
  for(unsigned i=0;i<3;i++){const int x=16+int(i)*132;Box(dc,x,57,124,28,c.values[0]==float(i)?accent:line);Text(dc,states[i],x+10,57,112,28,c.values[0]==float(i)?bg:fg);}
  Text(dc,L"SHAPE",16,94,180,20,dim);Text(dc,L"PHYSICS",16,370,180,20,dim);
  for(unsigned i=1;i<18;i++){
@@ -25,10 +26,11 @@ void OverlayPanel::Paint(HDC dc,const surface::Controls& c,bool expanded,int w,i
   Box(dc,trackLeft,y+11,trackRight-trackLeft,3,line);Box(dc,trackLeft,y+11,x-trackLeft,3,accent);Box(dc,x-3,y+6,6,13,accent);
  }
  Text(dc,L"PHYSIOLOGY",16,624,180,22,dim);
- if(selected==18)Box(dc,10,650,402,25,line);Text(dc,L"Ambient throb",16,650,195,25,selected==18?accent:fg);
- const wchar_t* modes[]={L"Off",L"Gentle",L"Moderate",L"Strong"};Text(dc,modes[unsigned(clinical[0])%4],220,650,180,25,accent);
- if(selected==19)Box(dc,10,678,402,25,line);Text(dc,L"Ejaculation sequence",16,678,195,25,selected==19?accent:fg);Text(dc,clinical[1]>0?L"Running / Cancel":L"Start",220,678,180,25,accent);
- Box(dc,16,716,126,30,line);Text(dc,L"Reset defaults",28,716,114,30,fg);Text(dc,L"Live in gameplay",160,718,245,26,dim);
+ if(selected==18)Box(dc,10,650,402,25,line);Text(dc,L"Throb",16,650,195,25,selected==18?accent:fg);
+ const auto& modes=controls::WideThrobModes;Text(dc,modes[unsigned(clinical[0])%4],220,650,180,25,accent);
+ if(selected==19)Box(dc,10,678,402,25,line);Text(dc,L"Ejaculation",16,678,195,25,selected==19?accent:fg);Text(dc,clinical[1]>0?L"Running / Cancel":L"Start",220,678,180,25,accent);
+ if(selected==20)Box(dc,10,706,402,25,line);Text(dc,L"Clothing",16,706,195,25,selected==20?accent:fg);Text(dc,controls::WideGarments[unsigned(clinical[2])%2],220,706,180,25,accent);
+ Box(dc,16,750,126,30,line);Text(dc,L"Reset defaults",28,750,114,30,fg);Text(dc,L"Live in gameplay",160,752,245,26,dim);
  RestoreDC(dc,saved);DeleteObject(font);
 }
 OverlayPanel::OverlayPanel(HWND parent,Read read,Write write,ReadClinical clinical,WriteClinical action):parent_(parent),read_(std::move(read)),write_(std::move(write)),clinical_(std::move(clinical)),action_(std::move(action)),thread_([this]{
@@ -43,8 +45,8 @@ void OverlayPanel::Click(int x,int y){
  if(!Open()){expanded_=true;Resize();return;}
  if(x>=378&&y<44){expanded_=false;dragging_=-1;Resize();return;}
  if(y>=57&&y<85&&x>=16&&x<404){navigation_.selected=0;write_(0,float((x-16)/132));return;}
- if(y>=716&&y<746&&x>=16&&x<142){for(unsigned i=0;i<18;i++)write_(i,i?50.f:2.f);if(action_){action_(18,0);action_(19,0);}return;}
- if(action_&&y>=650&&y<703){navigation_.selected=y<678?18:19;auto c=clinical_();action_(navigation_.selected,navigation_.selected==18?float((unsigned(c[0])+1)%4):(c[1]>0?0.f:1.f));return;}
+ if(y>=750&&y<780&&x>=16&&x<142){for(unsigned i=0;i<18;i++)write_(i,i?50.f:2.f);if(action_){action_(18,0);action_(19,0);action_(20,0);}return;}
+ if(action_&&y>=650&&y<731){navigation_.selected=y<678?18:y<706?19:20;auto c=clinical_();action_(navigation_.selected,navigation_.selected==18?float((unsigned(c[0])+1)%4):navigation_.selected==20?float((unsigned(c[2])+1)%2):(c[1]>0?0.f:1.f));return;}
  dragging_=Hit(x,y);if(dragging_>=1){navigation_.selected=unsigned(dragging_);write_(unsigned(dragging_),Value(unsigned(dragging_),x));}
 }
 void OverlayPanel::PollKeys(bool foreground){
@@ -54,10 +56,10 @@ void OverlayPanel::PollKeys(bool foreground){
  keys_=now;foreground_=foreground;if(!foreground)return;
  if(edge[0]){expanded_=!Open();dragging_=-1;Resize();}
  if(!Open())return;
- if(edge[1])navigation_.Move(-1,action_?20:18);if(edge[2])navigation_.Move(1,action_?20:18);
+ if(edge[1])navigation_.Move(-1,action_?21:18);if(edge[2])navigation_.Move(1,action_?21:18);
  const int direction=edge[3]?-1:edge[4]?1:0;
  if(direction){if(navigation_.selected<18)write_(navigation_.selected,navigation_.Adjust(read_(),direction,(GetAsyncKeyState(VK_SHIFT)&0x8000)!=0));
- else if(action_){auto c=clinical_();action_(navigation_.selected,navigation_.selected==18?float((int(c[0])+direction+4)%4):(c[1]>0?0.f:1.f));}}
+ else if(action_){auto c=clinical_();action_(navigation_.selected,navigation_.selected==18?float((int(c[0])+direction+4)%4):navigation_.selected==20?float((int(c[2])+direction+2)%2):(c[1]>0?0.f:1.f));}}
 }
 LRESULT CALLBACK OverlayPanel::Procedure(HWND window,UINT message,WPARAM wp,LPARAM lp){
  auto* self=reinterpret_cast<OverlayPanel*>(GetWindowLongPtrW(window,GWLP_USERDATA));
@@ -73,7 +75,7 @@ LRESULT CALLBACK OverlayPanel::Procedure(HWND window,UINT message,WPARAM wp,LPAR
   case WM_LBUTTONUP:case WM_CANCELMODE:self->dragging_=-1;if(GetCapture()==window)ReleaseCapture();return 0;
   case WM_TIMER:{const bool visible=IsWindow(self->parent_)&&IsWindowVisible(self->parent_)&&GetForegroundWindow()==self->parent_;self->PollKeys(visible);
    if(bool(IsWindowVisible(window))!=visible)ShowWindow(window,visible?SW_SHOWNOACTIVATE:SW_HIDE);
-   const auto controls=self->read_();auto clinical=self->clinical_?self->clinical_():std::array<float,2>{};if(visible&&(clinical!=self->paintedClinical_||!self->painted_||controls.values!=self->paintedControls_.values||self->Open()!=self->paintedExpanded_||self->navigation_.selected!=self->paintedSelection_))InvalidateRect(window,nullptr,FALSE);
+   const auto controls=self->read_();auto clinical=self->clinical_?self->clinical_():std::array<float,3>{};if(visible&&(clinical!=self->paintedClinical_||!self->painted_||controls.values!=self->paintedControls_.values||self->Open()!=self->paintedExpanded_||self->navigation_.selected!=self->paintedSelection_))InvalidateRect(window,nullptr,FALSE);
    if(!IsWindow(self->parent_))PostMessageW(window,WM_CLOSE,0,0);return 0;}
   case WM_ERASEBKGND:return 1;
   case WM_SIZE:self->painted_=false;InvalidateRect(window,nullptr,FALSE);return 0;
@@ -82,7 +84,7 @@ LRESULT CALLBACK OverlayPanel::Procedure(HWND window,UINT message,WPARAM wp,LPAR
    // A layered HWND must receive one complete frame. Painting each text/bar
    // directly into its visible DC exposes intermediate beige/blank frames.
    if(rect.right>0&&rect.bottom>0){auto back=CreateCompatibleDC(dc);auto bitmap=CreateCompatibleBitmap(dc,rect.right,rect.bottom);
-    if(back&&bitmap){auto old=SelectObject(back,bitmap);auto clinical=self->clinical_?self->clinical_():std::array<float,2>{};Paint(back,controls,expanded,rect.right,rect.bottom,self->navigation_.selected,clinical);self->paintedClinical_=clinical;BitBlt(dc,0,0,rect.right,rect.bottom,back,0,0,SRCCOPY);SelectObject(back,old);self->painted_=true;}
+    if(back&&bitmap){auto old=SelectObject(back,bitmap);auto clinical=self->clinical_?self->clinical_():std::array<float,3>{};Paint(back,controls,expanded,rect.right,rect.bottom,self->navigation_.selected,clinical);self->paintedClinical_=clinical;BitBlt(dc,0,0,rect.right,rect.bottom,back,0,0,SRCCOPY);SelectObject(back,old);self->painted_=true;}
     if(bitmap)DeleteObject(bitmap);if(back)DeleteDC(back);
    }
    self->paintedControls_=controls;self->paintedExpanded_=expanded;self->paintedSelection_=self->navigation_.selected;
