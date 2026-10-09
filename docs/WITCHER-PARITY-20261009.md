@@ -249,13 +249,16 @@ actual source masses, root spring/damping/active soft stop, compliant distance,
 bending alpha/gamma, shear/tension suspension and active hard-suspension Schur
 constraints. It applies configuration changes together with velocity changes
 and updates accepted compliant multipliers. This is also **rejected**: eight
-measured input histories produced284 reversed-hemisphere steps, angular rate
+measured input histories produced284 relative angular-limit diagnostic failures
+(`abs(relative pitch/yaw) >= pi/2`), angular rate
 222.326 rad/s and late-settle rate158.061 rad/s. Fixed root, exact first link
 and finite values alone do not detect this failure. Receipt:
 `implicit-response/proof.json`; the sampled first failure is firm-max step480.
 Independent1000-case hard-Schur sign checks satisfy the constrained quadratic
 residual within4.36e-14 and incremental hard strain within4.69e-17. Disabled
-full history is again byte-identical to the earlier source reference.
+full history is again byte-identical to the earlier source reference. That284
+count is not a measured global-world hemisphere or a final surface certificate;
+direct dot(firstSegment, drivenRestDirection) remains a separate check.
 
 The linear response is not a nonlinear convergence proof. The trial freezes
 its response matrix during a contact pass while configuration changes rotate
@@ -266,3 +269,22 @@ bridge folds and fractional-curve surface defects also remain open. Neither
 private experiment changes the adapter's numerical Base pin, installed worker,
 native DLL, bindings/render/profile, saves/settings/audio or rollback. Full
 motion, skin, native attachment and campaign acceptance remain false.
+
+The per-increment source trace has650,315 records and preserves the complete
+enabled history byte-for-byte versus its uninstrumented private predecessor:
+`implicit-response-trace/analysis.json`. Its first source inequality failure is
+default step3/pass0/contact4: tension1 becomes+.00522024 although the source
+requires a nonpositive multiplier. The first relative pitch-limit event is
+firm-max470/pass0/contact12; the source root/distance/bend residual was already
+7.599 before that contact increment. The reported maximum residual13.5238 mixes
+source length and angular units and is a failure signal, not a normalized
+acceptance threshold. Momentum, individual source residuals, complementarity
+and geometry must be evaluated together.
+
+A frozen actual-source49-term affine release oracle is retained in
+`implicit-release-snapshot/response-proof.json`. Removing the released tension
+row and including its force bias gives tensions[-.145601523,0] with generalized
+momentum residual1.03e-13 and lower local convex objective. It recomputes the
+correlated configuration response rather than clamping a multiplier after the
+old displacement. This is sensitivity to the same fixed impulse; it does not
+reproject contact pressure, solve nonlinear residuals or pass runtime acceptance.
