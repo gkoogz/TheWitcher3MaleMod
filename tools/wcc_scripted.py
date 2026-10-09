@@ -29,6 +29,7 @@ def checked(ok):
 def q(b,off=0):return struct.unpack_from('<Q',b,off)[0]
 def put(b,off,v):struct.pack_into('<Q',b,off,v)
 ABI_PROFILES = {
+ '9f448e0c8b9ea1ea803d0ae543f2fcd6e905088b8b71f54da2bff22c6cf318fc':dict(dispatcher=0x5211e0,cleanup=0x521a35,constructor=0x2933610,destructor=0x29339c0),
  '56503cf15e29062579ca26531ec8aa387d056590030bf534a878411ad9c5417e':dict(dispatcher=0x5214f0,cleanup=0x521d45,constructor=0x293e240,destructor=0x293e5f0),
  '37ac28519adc8bc234653fcf973ba76935096aea50003b0f3a03af4007788f7d':dict(dispatcher=0x5299d0,cleanup=0x52a225,constructor=0x293e730,destructor=0x293eae0),
 }

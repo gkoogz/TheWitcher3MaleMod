@@ -9,11 +9,11 @@ import pefile
 from mod import ROOT, settings, base_checkout, digest, copy_tree, readthrough_depot, native_args, write_json, native_failure
 from wcc_scripted import Session, ABI_PROFILES, alloc, checked, terminate, close, q, put
 
-# Actual wcc_lite.exe disassembly: LogChannel registration at RVA 0x2ab75a0.
+# Actual current wcc_lite.exe LogChannel registration at RVA 0x2aac536.
 # These are not editor.map or game addresses. Prefix checks precede execution.
-WCC_SHA = '37ac28519adc8bc234653fcf973ba76935096aea50003b0f3a03af4007788f7d'
-WCC_RVAS = dict(allocate=0x463fa0, intern=0x294a8e0, construct=0x29deeb0,
-                registry=0x45b890, register=0x294ff60)
+WCC_SHA = '9f448e0c8b9ea1ea803d0ae543f2fcd6e905088b8b71f54da2bff22c6cf318fc'
+WCC_RVAS = dict(allocate=0x45b7b0, intern=0x293f7c0, construct=0x29d3d90,
+                registry=0x4530a0, register=0x2944e40)
 
 
 def compile_native(workspace, imports=('MaleModNativeReady',)):
@@ -27,6 +27,8 @@ def compile_native(workspace, imports=('MaleModNativeReady',)):
     profile=__import__('json').loads((ROOT/'characters/compiler-native-profile.json').read_text())
     if profile['executableSHA256']!=WCC_SHA or profile['functions'].keys()!=WCC_RVAS.keys():
         raise ValueError('Native compiler profile differs')
+    from verify_wcc_profile import verify as verify_profile
+    verify_profile(cfg['wcc'],profile)
     pe=pefile.PE(str(cfg['wcc']),fast_load=True)
     for name,rva in WCC_RVAS.items():
         row=profile['functions'][name]

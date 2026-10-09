@@ -1,27 +1,50 @@
 {
-  "executableSHA256": "37ac28519adc8bc234653fcf973ba76935096aea50003b0f3a03af4007788f7d",
-  "imageSize": 188235776,
-  "method": "Actual wcc_lite LogChannel registration xrefs and bounded disassembly, independent of game and editor",
+  "executableSHA256": "9f448e0c8b9ea1ea803d0ae543f2fcd6e905088b8b71f54da2bff22c6cf318fc",
+  "imageSize": 188317696,
+  "method": "Current installed official WCC: native LogChannel registration RIP xref, enclosing unwind range and actual call targets; independent of editor and game",
+  "registrationReferenceRVA": 44746038,
+  "registrationFunctionRange": [
+    44745856,
+    44747340
+  ],
   "functions": {
     "allocate": {
-      "rva": 4603808,
+      "rva": 4569008,
       "prefix": "4c8bdc49895b0849896b105657415648"
     },
     "intern": {
-      "rva": 43296992,
+      "rva": 43251648,
       "prefix": "48895c2408574883ec30488bda488bf9"
     },
     "construct": {
-      "rva": 43904688,
+      "rva": 43859344,
       "prefix": "48895c24084889742410574883ec3033"
     },
     "registry": {
-      "rva": 4569232,
-      "prefix": "4883ec38488b05351a5b084885c00f85"
+      "rva": 4534432,
+      "prefix": "4883ec38488b0565e15c084885c00f85"
     },
     "register": {
-      "rva": 43319136,
+      "rva": 43273792,
       "prefix": "4057415641574883ec404c8bfa488bf9"
+    }
+  },
+  "sessionABI": {
+    "dispatcher": {
+      "rva": 5378528,
+      "prefix": "48895c24184889542410555657415441"
+    },
+    "cleanup": {
+      "rva": 5380661,
+      "prefix": "e8e680f3ff410fb6c5488b9c24f00000"
+    },
+    "constructor": {
+      "rva": 43202064,
+      "prefix": "4889742410574883ec2033c0488bf248"
+    },
+    "destructor": {
+      "rva": 43203008,
+      "prefix": "40534883ec2048833900488bd97419ba"
     }
   }
 }

@@ -30,6 +30,9 @@ struct Lod {
  DeltaBinding body,module;
  GraftFrame cachedFrame{};std::unique_ptr<GraftPlan> plan,bodyPlan;
  GraftDomain bodyDomain;
+ // Projection depends on this immutable LOD domain and its complete input.
+ // Reuse only an exactly equal field; motion and shape inputs remain unrounded.
+ std::vector<PrecisePoint> projectedBodyInput,projectedBodyOutput;
  std::unique_ptr<RootTransition> transition;
 };
 }
@@ -128,7 +131,16 @@ struct TargetSurface::Impl {
   for(unsigned i=0;i<stable.size();i++)if(l.unique[i]>=l.bodyCount)
    stable[i]=l.transition->BodyDisplacement(l.unique[i],frame,neutralRadius);
   std::vector<PrecisePoint> recruited;
-  try{recruited=l.bodyPlan->ProjectDisplacement(stable);}catch(const std::exception& e){throw std::runtime_error(std::string("Authored body orientation LOD ")+std::to_string(id)+" radius "+std::to_string(frame.radius)+": "+e.what());}
+  try{
+   if(stable==l.projectedBodyInput&&!l.projectedBodyOutput.empty())recruited=l.projectedBodyOutput;
+   else{
+    recruited=l.bodyPlan->ProjectDisplacement(stable);
+    // Commit the pair only after both allocations succeed; a rejected cache
+    // preparation must not pair the new key with an older projection.
+    auto nextInput=stable,nextOutput=recruited;
+    l.projectedBodyInput.swap(nextInput);l.projectedBodyOutput.swap(nextOutput);
+   }
+  }catch(const std::exception& e){throw std::runtime_error(std::string("Authored body orientation LOD ")+std::to_string(id)+" radius "+std::to_string(frame.radius)+": "+e.what());}
   for(unsigned i=0;i<unique.size();i++)if(l.unique[i]<l.bodyCount)unique[i]=recruited[i];
   auto solved=l.plan->SolveDisplacement(unique);auto result=l.restNative;
   for(unsigned i=0;i<result.size();i++){
