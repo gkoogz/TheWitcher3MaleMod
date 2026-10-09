@@ -1,3 +1,13 @@
+## October 9 - resumed parity and minimal shared menus
+
+The user explicitly resumed Witcher development through a delegated agent for
+appearance, physics, fit and functionality relative to Wolverine. A third agent
+was requested to harmonize the in-game menus with better type and a masculine,
+minimal presentation. Shared geometry, numerical physics, controls and theme
+stay in Base; Geralt bindings, GDI/native input, cooker and installation stay in
+this adapter. Source, SDK fixture, native gameplay and visual acceptance remain
+separate. No replacement installation is implied by either agent's work.
+
 ## October 6 installation approval
 
 The user explicitly approved installing the localized side flare / deeper

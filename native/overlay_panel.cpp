@@ -37,10 +37,11 @@ void OverlayPanel::Paint(HDC dc,const surface::Controls& c,bool expanded,int w,i
  Box(dc,16,750,126,30,selection);Text(dc,L"Reset defaults",28,750,114,30,fg);Text(dc,L"Live",160,752,245,26,dim);
  RestoreDC(dc,saved);DeleteObject(font);
 }
-OverlayPanel::OverlayPanel(HWND parent,Read read,Write write,ReadClinical clinical,WriteClinical action):parent_(parent),read_(std::move(read)),write_(std::move(write)),clinical_(std::move(clinical)),action_(std::move(action)),thread_([this]{
+OverlayPanel::OverlayPanel(HWND parent,Read read,Write write,ReadClinical clinical,WriteClinical action,bool probeAuthorized):parent_(parent),read_(std::move(read)),write_(std::move(write)),clinical_(std::move(clinical)),action_(std::move(action)),probe_(PanelProbe::FromEnvironment(parent,probeAuthorized)),thread_([this]{
  WNDCLASSW wc{};wc.lpfnWndProc=Procedure;wc.hInstance=GetModuleHandleW(nullptr);wc.lpszClassName=L"MaleMod.Anatomy.Overlay";wc.hCursor=LoadCursorW(nullptr,MAKEINTRESOURCEW(32512));RegisterClassW(&wc);
  RECT r{};GetWindowRect(parent_,&r);auto window=CreateWindowExW(WS_EX_TOOLWINDOW|WS_EX_NOACTIVATE|WS_EX_LAYERED,wc.lpszClassName,L"MaleMod anatomy",WS_POPUP,r.left+24,r.top+110,92,32,parent_,nullptr,wc.hInstance,this);
  if(!window)return;window_.store(window);SetLayeredWindowAttributes(window,0,245,LWA_ALPHA);SetTimer(window,1,40,nullptr);
+ if(probe_.Enabled()){PollKeys(true);try{probe_.Ready(parent_,window);}catch(const std::exception&){probe_.Disable();OutputDebugStringW(L"MaleMod: owned panel probe ready receipt failed\n");}}
  MSG msg{};while(!stop_.load()&&GetMessageW(&msg,nullptr,0,0)>0){TranslateMessage(&msg);DispatchMessageW(&msg);}if(IsWindow(window))DestroyWindow(window);window_.store(nullptr);
 }){}
 OverlayPanel::~OverlayPanel(){stop_=true;auto w=window_.load();if(w)PostMessageW(w,WM_CLOSE,0,0);if(thread_.joinable())thread_.join();}
@@ -56,13 +57,14 @@ void OverlayPanel::Click(int x,int y){
 void OverlayPanel::PollKeys(bool foreground){
  if(foreground_&&!foreground)focusLost_=true;
  constexpr int codes[]={VK_F6,VK_UP,VK_DOWN,VK_LEFT,VK_RIGHT};std::array<bool,5> now{},edge{};
- for(unsigned i=0;i<5;i++){now[i]=(GetAsyncKeyState(codes[i])&0x8000)!=0;edge[i]=foreground&&foreground_&&now[i]&&!keys_[i];}
+ const auto keyState=[this](int key){return probe_.Private()?probe_.KeyState(key):GetAsyncKeyState(key);};
+ for(unsigned i=0;i<5;i++){now[i]=(keyState(codes[i])&0x8000)!=0;edge[i]=foreground&&foreground_&&now[i]&&!keys_[i];}
  keys_=now;foreground_=foreground;if(!foreground)return;
  if(edge[0]){expanded_=!Open();dragging_=-1;Resize();}
  if(!Open())return;
  if(edge[1])navigation_.Move(-1,action_?21:18);if(edge[2])navigation_.Move(1,action_?21:18);
  const int direction=edge[3]?-1:edge[4]?1:0;
- if(direction){if(navigation_.selected<18)write_(navigation_.selected,navigation_.Adjust(read_(),direction,(GetAsyncKeyState(VK_SHIFT)&0x8000)!=0));
+ if(direction){if(navigation_.selected<18)write_(navigation_.selected,navigation_.Adjust(read_(),direction,(keyState(VK_SHIFT)&0x8000)!=0));
  else if(action_){auto c=clinical_();action_(navigation_.selected,navigation_.selected==18?float((int(c[0])+direction+4)%4):navigation_.selected==20?float((int(c[2])+direction+2)%2):(c[1]>0?0.f:1.f));}}
 }
 LRESULT CALLBACK OverlayPanel::Procedure(HWND window,UINT message,WPARAM wp,LPARAM lp){
@@ -77,10 +79,14 @@ LRESULT CALLBACK OverlayPanel::Procedure(HWND window,UINT message,WPARAM wp,LPAR
   case WM_LBUTTONDOWN:self->Click(x,y);if(self->dragging_>=0)SetCapture(window);InvalidateRect(window,nullptr,FALSE);return 0;
   case WM_MOUSEMOVE:if(self->dragging_>=1&&(wp&MK_LBUTTON)){self->write_(unsigned(self->dragging_),Value(unsigned(self->dragging_),x));InvalidateRect(window,nullptr,FALSE);}return 0;
   case WM_LBUTTONUP:case WM_CANCELMODE:self->dragging_=-1;if(GetCapture()==window)ReleaseCapture();return 0;
-  case WM_TIMER:{const bool visible=IsWindow(self->parent_)&&IsWindowVisible(self->parent_)&&GetForegroundWindow()==self->parent_;self->PollKeys(visible);
+  case WM_TIMER:{PanelProbeRequest request;const bool probe=self->probe_.Private(),command=self->probe_.Read(request);
+   const bool visible=IsWindow(self->parent_)&&(probe||(IsWindowVisible(self->parent_)&&GetForegroundWindow()==self->parent_));self->PollKeys(visible);
+   if(command&&request.action==PanelProbeRequest::Action::Reset&&self->Open())self->Click(30,760);
    if(bool(IsWindowVisible(window))!=visible)ShowWindow(window,visible?SW_SHOWNOACTIVATE:SW_HIDE);
    const auto controls=self->read_();auto clinical=self->clinical_?self->clinical_():std::array<float,3>{};if(visible&&(clinical!=self->paintedClinical_||!self->painted_||controls.values!=self->paintedControls_.values||self->Open()!=self->paintedExpanded_||self->navigation_.selected!=self->paintedSelection_))InvalidateRect(window,nullptr,FALSE);
-   if(!IsWindow(self->parent_))PostMessageW(window,WM_CLOSE,0,0);return 0;}
+   if(command){try{const bool captured=request.action==PanelProbeRequest::Action::Capture&&self->probe_.Capture(window,request.revision);self->probe_.Record(self->parent_,window,request,self->read_().values,self->clinical_?self->clinical_():std::array<float,3>{},self->navigation_.selected,self->Open(),captured);}catch(const std::exception&){self->probe_.Disable();OutputDebugStringW(L"MaleMod: owned panel probe command receipt failed\n");}}
+   self->probe_.EndTick();if(command&&request.action==PanelProbeRequest::Action::Press)self->PollKeys(visible);if(!IsWindow(self->parent_))PostMessageW(window,WM_CLOSE,0,0);return 0;}
+  case WM_PRINTCLIENT:{const auto controls=self->read_();Paint(reinterpret_cast<HDC>(wp),controls,self->Open(),client.right,client.bottom,self->navigation_.selected,self->clinical_?self->clinical_():std::array<float,3>{});return 0;}
   case WM_ERASEBKGND:return 1;
   case WM_SIZE:self->painted_=false;InvalidateRect(window,nullptr,FALSE);return 0;
   case WM_PAINT:{PAINTSTRUCT paint{};auto dc=BeginPaint(window,&paint);RECT rect{};GetClientRect(window,&rect);
