@@ -219,3 +219,50 @@ adapter's Base lock. New worker wire7 requires a separately tested private/nativ
 adoption receipt; historical wire6 receipts must not be relabeled. The parent
 may consume this shared numerical API for isolated Wolverine inspection while
 retaining its native source fallback; no generated Base loop fork is authorized.
+
+## Prescribed growth and coupled contact residual checkpoint
+
+Shared successor `6931c68eb1fb58599b6baee12b33d33b1424c4e8` adds an
+independently tested, currently **unused** `tangent_root::DrivenVelocity` API.
+It adds prescribed segment-length rate and actual root translation to tangent
+angular velocity. Central derivative, growing/shrinking link, angular recovery,
+radial projection, exact zero-drive parity and Windows-header tests pass. The
+checked extractor still uses the earlier reconstruction; the source/buffer
+proofs above belong to `4d5ef528` and are not relabeled as new adoption evidence.
+An adapter must retain the exact prior accepted source rest segment, seeding it
+only at an actual solver reset. Inferring growth from rounded node positions
+creates false prescribed motion. Angular impulse mobility remains tangent.
+
+Private compliant-contact diagnostics are retained on
+`D:/MaleModDiagnostics/witcher-parity-20261009`. The bare contact/rod velocity
+interleave is rejected: increasing passes from10 to64 to128 does not converge.
+With zero incremental velocity warm-start and exact prescribed growth history,
+the corresponding maximum length-velocity residuals are15.065/36.096/90.491,
+and maximum angular rates21.782/41.450/48.130 rad/s. Disabled history remains
+byte-identical (`a9a1d0e4...`). Complete receipt:
+`rod-incremental-velocity/convergence-proof.json`. The hard length-velocity
+constraint in that experiment is only a diagnostic; it differs from the source
+distance compliance and cannot be promoted as the material law.
+
+The next private trial assembles a44-DOF Gauss-Newton implicit response from the
+actual source masses, root spring/damping/active soft stop, compliant distance,
+bending alpha/gamma, shear/tension suspension and active hard-suspension Schur
+constraints. It applies configuration changes together with velocity changes
+and updates accepted compliant multipliers. This is also **rejected**: eight
+measured input histories produced284 reversed-hemisphere steps, angular rate
+222.326 rad/s and late-settle rate158.061 rad/s. Fixed root, exact first link
+and finite values alone do not detect this failure. Receipt:
+`implicit-response/proof.json`; the sampled first failure is firm-max step480.
+Independent1000-case hard-Schur sign checks satisfy the constrained quadratic
+residual within4.36e-14 and incremental hard strain within4.69e-17. Disabled
+full history is again byte-identical to the earlier source reference.
+
+The linear response is not a nonlinear convergence proof. The trial freezes
+its response matrix during a contact pass while configuration changes rotate
+gradients and may change unilateral active sets. Constraint-residual tracing
+and objective/inequality-based Newton acceptance remain unfinished. No rate
+filter, guessed inertia or altered source law is accepted. Lower recruited
+bridge folds and fractional-curve surface defects also remain open. Neither
+private experiment changes the adapter's numerical Base pin, installed worker,
+native DLL, bindings/render/profile, saves/settings/audio or rollback. Full
+motion, skin, native attachment and campaign acceptance remain false.
