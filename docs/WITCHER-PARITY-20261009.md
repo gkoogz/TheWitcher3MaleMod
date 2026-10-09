@@ -129,3 +129,42 @@ Appearance/root motion remains active work. Before replacement installation:
 finish the measured root/skin transfer, compare every required shape/state/angle
 and body resource/LOD, inspect native front/side/oblique motion, and run the
 campaign gate. Retain the exact installed runtime and rollback until acceptance.
+
+## Continuous-motion rejection and private transport isolation
+
+The Win32-header compatibility successor is Base
+`389f6c04e07b290da34a5261356c745f58f3bb1d`. It changes only the portable header's
+max-macro compatibility and adds a real Windows-header compile regression.
+Its numerical worker evidence is explicitly inherited from the clean e421
+receipt; it is not a new accepted Witcher worker or binding pin.
+
+The parent tested that shared opt-in in the separate Wolverine owned room,
+source `6c05893`, Base389, runtime `446739b2`, run
+`MaleMod/build/posterior-final-room-20261008/runs/20261009-175027-cd4fe9`.
+Those native traces reject the enabled joint: contact recovery can produce
+excessive angular travel/rates and curl the anatomy backward/up. They are
+Wolverine observations, not Witcher gameplay evidence. The continuous actual
+adapter replay at `MaleMod/build/wardrobe-defects-20261009/root-joint-motion-proof`
+also reports enabled angular rates up to228.419 rad/s versus .3905 for the
+disabled reference. Its finite/fixed-root/first-link/hemisphere checks are
+insufficient for angular-stability acceptance. Neither opt-in is installable.
+
+The private Witcher per-station rotation experiment preserves radial length
+and handedness through a half-turn and exact zero-ownership coordinates. Its
+46-case measured-bind replay preserves native seam/donor and body orientation
+checks across both resources/LODs, but the actual composed attachment ridge
+still fails the visual gate. Its private kernel temporarily piggybacks the
+root flag solely for diagnostic use; that conflation must not become a public
+transport API. Bypassing the source logical-surface reassertion makes wrinkles
+worse; bypassing the adapter transition or solve produces discontinuities or
+different overall fitting. None is a repair to promote.
+
+Private tangent-angular mobility and an implicit source soft-stop experiment
+now take priority. The earlier scalar first-point mass plus final radial
+normalization does not account for all coupled angular reactions and travel.
+The tangent experiment alone still fails motion/visual acceptance and remains
+under `build/`, outside the clean shared API and installed runtime. Any modal
+inertia/stiffness conversion must use actual source masses/stations and retain
+disabled byte parity; it is not a guessed game-unit multiplier. A new public
+algorithm needs independent continuous-motion, mechanical and attachment
+evidence before either spoke adopts it.
