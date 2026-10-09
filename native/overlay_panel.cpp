@@ -3,34 +3,38 @@
 #include <windowsx.h>
 #include <string>
 #include <malemod/controls/presentation.hpp>
+#include <malemod/controls/menu_theme.hpp>
 
 namespace malemod::witcher {
 namespace {
 constexpr auto labels=controls::WideLabels;
+COLORREF Color(controls::menu::Color c){return RGB(c.r,c.g,c.b);}
+int CALLBACK FindFont(const LOGFONTW*,const TEXTMETRICW*,DWORD,LPARAM found){*reinterpret_cast<bool*>(found)=true;return 0;}
+HFONT MenuFont(HDC dc,int height){LOGFONTW candidate{};candidate.lfCharSet=DEFAULT_CHARSET;wcscpy_s(candidate.lfFaceName,controls::menu::Font);bool present=false;EnumFontFamiliesExW(dc,&candidate,FindFont,reinterpret_cast<LPARAM>(&present),0);return CreateFontW(-height,0,0,0,controls::menu::FontWeight,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,DEFAULT_PITCH,present?controls::menu::Font:controls::menu::FallbackFont);}
 void Box(HDC dc,int x,int y,int w,int h,COLORREF color){auto brush=CreateSolidBrush(color);RECT r{x,y,x+w,y+h};FillRect(dc,&r,brush);DeleteObject(brush);}
 void Text(HDC dc,const wchar_t* text,int x,int y,int w,int h,COLORREF color){SetTextColor(dc,color);RECT r{x,y,x+w,y+h};DrawTextW(dc,text,-1,&r,DT_LEFT|DT_VCENTER|DT_SINGLELINE);}
 }
 void OverlayPanel::Paint(HDC dc,const surface::Controls& c,bool expanded,int w,int h,unsigned selected,std::array<float,3> clinical){
  const int saved=SaveDC(dc);SetMapMode(dc,MM_ANISOTROPIC);SetWindowExtEx(dc,expanded?width:92,expanded?height:32,nullptr);SetViewportExtEx(dc,w,h,nullptr);SetBkMode(dc,TRANSPARENT);
- auto font=CreateFontW(-14,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,CLEARTYPE_QUALITY,DEFAULT_PITCH,L"Segoe UI");SelectObject(dc,font);
- const COLORREF bg=RGB(20,28,37),fg=RGB(226,234,240),dim=RGB(151,168,183),accent=RGB(88,200,183),line=RGB(52,68,83);
- Box(dc,0,0,width,height,bg);if(!expanded){Box(dc,0,0,3,32,accent);Text(dc,L"Anatomy",13,0,78,32,fg);RestoreDC(dc,saved);DeleteObject(font);return;}
- Box(dc,0,0,width,2,accent);Text(dc,L"MaleMod  /  Anatomy  [F6]",16,8,350,22,fg);Text(dc,L"Arrows: select / adjust   Shift: 5 steps",16,31,365,18,dim);Text(dc,L"\x00d7",388,8,22,26,dim);
- if(selected==0)Box(dc,12,54,396,34,line);
+ auto font=MenuFont(dc,int(controls::menu::TextHeight));SelectObject(dc,font);
+ const COLORREF bg=Color(controls::menu::Background),fg=Color(controls::menu::Text),dim=Color(controls::menu::Muted),accent=Color(controls::menu::Accent),line=Color(controls::menu::Track),selection=Color(controls::menu::Selection);
+ Box(dc,0,0,width,height,bg);Box(dc,0,0,3,expanded?height:32,accent);if(!expanded){Text(dc,controls::menu::WideTitle,13,0,78,32,fg);RestoreDC(dc,saved);DeleteObject(font);return;}
+ Text(dc,controls::menu::WideTitle,16,8,320,22,fg);Text(dc,L"F6",345,8,35,22,dim);Text(dc,controls::menu::WideNavigation,16,31,365,18,dim);Text(dc,L"\x00d7",388,8,22,26,dim);
+ if(selected==0)Box(dc,12,54,396,34,selection);
  const auto& states=controls::WideStates;
- for(unsigned i=0;i<3;i++){const int x=16+int(i)*132;Box(dc,x,57,124,28,c.values[0]==float(i)?accent:line);Text(dc,states[i],x+10,57,112,28,c.values[0]==float(i)?bg:fg);}
+ for(unsigned i=0;i<3;i++){const int x=16+int(i)*132;Box(dc,x,57,124,28,c.values[0]==float(i)?accent:selection);Text(dc,states[i],x+10,57,112,28,c.values[0]==float(i)?bg:fg);}
  Text(dc,L"SHAPE",16,94,180,20,dim);Text(dc,L"PHYSICS",16,370,180,20,dim);
  for(unsigned i=1;i<18;i++){
-  int y=Row(i);if(selected==i)Box(dc,10,y,402,25,line);Text(dc,labels[i],16,y,150,24,selected==i?accent:fg);wchar_t number[32]{};swprintf_s(number,L"%.0f",c.values[i]);Text(dc,number,165,y,32,24,dim);
+  int y=Row(i);if(selected==i){Box(dc,10,y,402,25,selection);Box(dc,10,y,2,25,accent);}Text(dc,labels[i],16,y,150,24,selected==i?accent:fg);wchar_t number[32]{};swprintf_s(number,L"%.0f",c.values[i]);Text(dc,number,165,y,32,24,dim);
   const float low=i==2||i==4?0.f:1.f;const int x=trackLeft+int((trackRight-trackLeft)*(c.values[i]-low)/(100-low));
-  Box(dc,trackLeft,y+11,trackRight-trackLeft,3,line);Box(dc,trackLeft,y+11,x-trackLeft,3,accent);Box(dc,x-3,y+6,6,13,accent);
+  Box(dc,trackLeft,y+11,trackRight-trackLeft,3,line);Box(dc,trackLeft,y+11,x-trackLeft,3,accent);Box(dc,x-2,y+7,4,11,accent);
  }
  Text(dc,L"PHYSIOLOGY",16,624,180,22,dim);
- if(selected==18)Box(dc,10,650,402,25,line);Text(dc,L"Throb",16,650,195,25,selected==18?accent:fg);
+ if(selected==18){Box(dc,10,650,402,25,selection);Box(dc,10,650,2,25,accent);}Text(dc,L"Throb",16,650,195,25,selected==18?accent:fg);
  const auto& modes=controls::WideThrobModes;Text(dc,modes[unsigned(clinical[0])%4],220,650,180,25,accent);
- if(selected==19)Box(dc,10,678,402,25,line);Text(dc,L"Ejaculation",16,678,195,25,selected==19?accent:fg);Text(dc,clinical[1]>0?L"Running / Cancel":L"Start",220,678,180,25,accent);
- if(selected==20)Box(dc,10,706,402,25,line);Text(dc,L"Clothing",16,706,195,25,selected==20?accent:fg);Text(dc,controls::WideGarments[unsigned(clinical[2])%2],220,706,180,25,accent);
- Box(dc,16,750,126,30,line);Text(dc,L"Reset defaults",28,750,114,30,fg);Text(dc,L"Live in gameplay",160,752,245,26,dim);
+ if(selected==19){Box(dc,10,678,402,25,selection);Box(dc,10,678,2,25,accent);}Text(dc,L"Ejaculation",16,678,195,25,selected==19?accent:fg);Text(dc,clinical[1]>0?L"Running / Cancel":L"Start",220,678,180,25,accent);
+ if(selected==20){Box(dc,10,706,402,25,selection);Box(dc,10,706,2,25,accent);}Text(dc,L"Clothing",16,706,195,25,selected==20?accent:fg);Text(dc,controls::WideGarments[unsigned(clinical[2])%2],220,706,180,25,accent);
+ Box(dc,16,750,126,30,selection);Text(dc,L"Reset defaults",28,750,114,30,fg);Text(dc,L"Live",160,752,245,26,dim);
  RestoreDC(dc,saved);DeleteObject(font);
 }
 OverlayPanel::OverlayPanel(HWND parent,Read read,Write write,ReadClinical clinical,WriteClinical action):parent_(parent),read_(std::move(read)),write_(std::move(write)),clinical_(std::move(clinical)),action_(std::move(action)),thread_([this]{
