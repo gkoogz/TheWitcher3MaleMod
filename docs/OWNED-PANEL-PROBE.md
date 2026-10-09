@@ -80,3 +80,19 @@ The isolated sandbox builds above injected the identical header explicitly.
 A clean normal production build using the new dependency resolver remains to
 be checked separately. No compiled replacement is installed by this source
 change, and native attachment/campaign acceptance remains incomplete.
+
+The clean normal production build at adapter6c9c2e2 passed with the committed
+resolver, Base431 numerical pin and theme-onlyc75da1a menu pin. No private CMake
+append or explicit header injection was used. Default-off production DLL:
+SHA256bf67ed490f1dff02960b4b7e3b1519b212c19725b22f93bb2fb174eebafe0d20.
+The actual resolved header matches5c16fe91. The production SDK fixture passed
+and emitted no panel-ready transport even with probe environment variables.
+Separate configure tests rejected a numerical-changing component pin and an
+incorrect header hash. Existing SDK alignment/shadow and historical cloth
+initialization warnings remain in the log; compilation success is not a claim
+that the full runtime has no warnings or passed gameplay acceptance.
+
+Private evidence: D:/MaleModBuilds/witcher-menu-production-20261009/build-proof.json
+and dependency-guards/proof.json. This production DLL remains uninstalled;
+native menu command evidence above belongs to its explicitly identified probe
+build. Full attachment, campaign and performance gates are still false.
