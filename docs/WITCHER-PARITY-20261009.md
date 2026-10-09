@@ -88,13 +88,32 @@ translation and a virtual straight-section angular projection were all rejected
 after mesh previews. Numerical seam checks alone failed to reveal their folds.
 They were not installed and must not be promoted as repairs.
 
-An isolated clean Base branch from `2c1547927184b7789ad79e592a2384d73d08dbbb`
-is testing a calibrated angular root joint with an explicit default-off API.
-Its wire7 experiment has not been adopted in this adapter. The first disabled
-worker replay preserved all 138 native buffers. A later coupled-joint iteration
-must repeat that proof and review the actual curved tube, attachment surfaces
-and native rendered motion before adoption; virtual capsule clearance is not an
-attachment certificate. The previous installed worker and wire6 Base pin remain.
+The isolated clean Base branch `codex/witcher-root-contact` at
+`C:/Users/Administrator/.codex/worktrees/witcher-root-contact-base/MaleMod`
+contains the default-off calibrated angular joint candidate `e42147c75d854a8666bc40d0ccd71b29b0ebd1a8`.
+It preserves the fixed root and rest drive and recovers suspension angles/rates
+relative to the moving imposed pitch and clinical yaw. No rejected virtual
+projection or new neutral-pelvis rod repulsion remains. Its enabled numerical
+regression covers moving rest pitch, clinical yaw and clinical deactivation.
+
+`build/witcher-parity-root-relative-disabled-proof.json` repeats the exact
+46-case/138-buffer measured-bind parity proof on the corrected candidate.
+Base `build/root-contact-source-consumption-current/proof.json` also compares
+70 original control/physics inputs in 560 full source geometry/body/attribute/
+mechanics files and all three states/six CDF modes with the preserved pre-root
+library. This is source/offline evidence, not the full attachment gate or a clean
+production worker adoption receipt. The oldest original oracle remains a valid
+record of its different pre-stable-collar algorithm and is not relabeled.
+
+The joint reduces the shaft wrinkles, but the upper attachment ridge/lower
+bridge still fails visual acceptance. Coupling it with whole-module translation,
+source-pivot rotation and much stronger curvature fairing also fails the bridge.
+Those target experiments remain private and uninstalled. Source per-station
+rotation interpolation is under investigation because linear interpolation of
+different local frame rotations can collapse radial offsets. Review the actual
+curved tube, attachment surfaces and native motion before adoption; virtual
+capsule clearance is not an attachment certificate. The installed worker and
+wire6 Base pin remain unchanged.
 
 ## Dependency boundary and next work
 
@@ -102,8 +121,9 @@ The frozen menu theme needs Base `e514bf8` or a tested descendant; the parent
 identified clean `2c15479`. The pre-existing uncommitted garment-service work
 calls `TimeContinuity::Continuous`, which is absent from that clean pin. Do not
 combine that dirty dependency accidentally with this candidate or claim a clean
-native DLL build. Preserve those earlier changes and repair/adopt their matching
-shared API separately.
+native DLL build. Preserve those earlier changes; use the committed garment
+service/cadence source for the isolated root candidate instead of introducing an
+API solely to compile unrelated uncommitted experiments.
 
 Appearance/root motion remains active work. Before replacement installation:
 finish the measured root/skin transfer, compare every required shape/state/angle
