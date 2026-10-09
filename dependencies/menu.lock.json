@@ -1,0 +1,7 @@
+{
+  "contractVersion": 1,
+  "repository": "https://github.com/gkoogz/MaleModBase.git",
+  "commit": "c75da1a38570d4a39a76f1f96e51dbdeeaefd3c7",
+  "header": "include/malemod/controls/menu_theme.hpp",
+  "headerSHA256": "5c16fe913613feea8c03eab5f1f37b499c948a1c91e6305438ca541be323066c"
+}

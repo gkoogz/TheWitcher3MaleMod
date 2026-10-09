@@ -1,0 +1,32 @@
+# A separately pinned presentation component preserves the tested numerical
+# worker/profile contract. This generated include cache is never edited.
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/menu.lock.json" menu_lock)
+string(JSON menu_repository GET "${menu_lock}" repository)
+string(JSON base_repository GET "${base_lock}" repository)
+string(JSON menu_commit GET "${menu_lock}" commit)
+string(JSON menu_header GET "${menu_lock}" header)
+string(JSON menu_sha256 GET "${menu_lock}" headerSHA256)
+if(NOT menu_repository STREQUAL base_repository OR
+   NOT menu_header STREQUAL "include/malemod/controls/menu_theme.hpp")
+ message(FATAL_ERROR "Shared menu dependency does not match the Base repository/header contract")
+endif()
+execute_process(COMMAND "${GIT_EXECUTABLE}" -C "${MALEMOD_BASE_PATH}" diff --name-only "${expected_base}" "${menu_commit}"
+ OUTPUT_VARIABLE menu_changes OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE menu_diff_result)
+if(NOT menu_diff_result EQUAL 0 OR NOT menu_changes STREQUAL "docs/MENU-PRESENTATION.md\ninclude/malemod/controls/menu_theme.hpp")
+ message(FATAL_ERROR "The menu component must add only presentation to the numerical Base pin; ensure its exact commit is available locally")
+endif()
+set(menu_include "${CMAKE_CURRENT_BINARY_DIR}/pinned-menu/include")
+set(menu_cached_header "${CMAKE_CURRENT_BINARY_DIR}/pinned-menu/${menu_header}")
+file(MAKE_DIRECTORY "${menu_include}/malemod/controls")
+execute_process(COMMAND "${GIT_EXECUTABLE}" -C "${MALEMOD_BASE_PATH}" show "${menu_commit}:${menu_header}"
+ OUTPUT_FILE "${menu_cached_header}.pending" RESULT_VARIABLE menu_show_result)
+if(NOT menu_show_result EQUAL 0)
+ message(FATAL_ERROR "Cannot resolve the pinned shared menu header")
+endif()
+file(SHA256 "${menu_cached_header}.pending" actual_menu_sha256)
+if(NOT actual_menu_sha256 STREQUAL menu_sha256)
+ message(FATAL_ERROR "Pinned shared menu header hash differs")
+endif()
+file(RENAME "${menu_cached_header}.pending" "${menu_cached_header}")
+add_library(malemod_menu INTERFACE)
+target_include_directories(malemod_menu INTERFACE "${menu_include}")

@@ -66,3 +66,17 @@ Exact child cleanup returned0, restored one muted audio session, verified all
 retail installation occurred. Private source/runtime/command/capture/cleanup
 identities are in D:/MaleModBuilds/witcher-menu-parent-fixed-20261009/native-menu-proof.json.
 Attachment, garments, LODs, campaign and performance parity remain unaccepted.
+
+The normal native CMake build now resolves the shared presentation header from
+`dependencies/menu.lock.json` into a generated, hash-verified build cache.
+The menu pin c75da1a is exactly Base431e626 plus the shared theme and its
+presentation document. Configure rejects numerical differences, a different
+repository/header or a mismatched header hash. The worker/profile/binding Base
+pin remains431e626; this avoids rebuilding or relabeling source-derived wire6
+artifacts just to consume a native menu theme. The cache is reproduced from the
+pinned Git blob and is not an independently maintained copy of shared source.
+
+The isolated sandbox builds above injected the identical header explicitly.
+A clean normal production build using the new dependency resolver remains to
+be checked separately. No compiled replacement is installed by this source
+change, and native attachment/campaign acceptance remains incomplete.
