@@ -168,3 +168,54 @@ inertia/stiffness conversion must use actual source masses/stations and retain
 disabled byte parity; it is not a guessed game-unit multiplier. A new public
 algorithm needs independent continuous-motion, mechanical and attachment
 evidence before either spoke adopts it.
+
+
+## Provisional tangent successor - source/offline checkpoint
+
+Clean shared Base `4d5ef52859365b88628db0e8cc798bd5209c1964` provides the
+SDK-free `surface/tangent_root.hpp` API and a complete staged caller recipe in
+`docs/TANGENT-ROOT-ADOPTION.md`. It replaces the experimental scalar first-point
+mass with angular Jacobians, tensor mobility, an implicit spring/soft-stop solve
+and source-station-derived nominal modal inertia. Persistent total angles avoid
+chart flips within position iterations; accepted tangent velocity is reconstructed
+before contact impulses, and actual per-step imposed drive is separated again.
+Root, rest command, original skin boundary/UV/donor lineage remain unchanged.
+
+Independent tests cover Jacobians/virtual work/radial nullspace, exact first-link
+length, SPD bending, nominal960-step free-response equivalence, soft-stop release
+and real Windows-header compilation. Correct ordinary Hermite gradient terms
+remain inverseMass times gradient norm squared; only station1 uses generalized
+root mobility. Source analytical suspension mass agrees with finite differencing
+within.002083 relative error in the moving measured fixture.
+
+Adding branches to the original float distance arithmetic first broke disabled
+parity; the checked extractor now keeps complete original solver functions and
+routes only the opt-in path through separate generated functions. The final
+70-case source control/physics sweep preserves all560 complete geometry/body/
+normal/tangent/UV/index/mechanics artifacts and all18 CDF consumption modes
+exactly. Final proof: `D:/MaleModDiagnostics/witcher-parity-20261009/
+tangent-source-consumption-final/proof.json`. Final Geralt measured-bind46-case
+replay preserves138 complete buffers across both LODs/native composition exactly:
+`build/witcher-parity-tangent-gradient-final-proof.json`. Continuous disabled
+8x960-step history CSV is also byte-identical to reconstructed389 source.
+
+The opt-in moving source fixture is **not accepted**. It has no nonfinite,
+fixed-root/link or diagnostic hemisphere errors, but peak relative angular rate
+is15.610714 rad/s and late-settle maximum.119973 rad/s. A separate moving-rest/
+clinical-yaw fixture has guide-direction consistency error1.54e-6 but large lateral
+excursion.957741. Maximum-angle actual offline mesh still folds at the source
+wall and recruited lower bridge. Root-contact correction does not repair the
+separate fractional-curve transport/body recruitment defect. Full motion, skin,
+native, campaign and installed acceptance are explicitly false in shared
+`provenance/root-contact.json`.
+
+C: exhaustion interrupted duplicate exports; exact recipes/hash receipts/source
+and key previews were retained while redundant regenerable buffers were removed
+from owned Base build folders only. The bounded retention receipt is shared
+worktree `build/replay-retention-20261009.json`; final buffers are on D:. Neither
+this checkpoint nor the parent's separate owned panel probe changes retail game,
+normal saves/settings/audio, installed431 bindings/render/profile/worker or the
+adapter's Base lock. New worker wire7 requires a separately tested private/native
+adoption receipt; historical wire6 receipts must not be relabeled. The parent
+may consume this shared numerical API for isolated Wolverine inspection while
+retaining its native source fallback; no generated Base loop fork is authorized.
