@@ -1,5 +1,6 @@
 #define NOMINMAX
 #include "overlay_panel.hpp"
+#include "overlay_parent.hpp"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -18,12 +19,14 @@ int wmain(int argc,wchar_t** argv){try{
  const int width=std::stoi(argv[1]),height=std::stoi(argv[2]);Check(width>=640&&width<=3840&&height>=480&&height<=2160,"Unsupported fixture viewport");
  const auto directory=std::filesystem::path(Env(L"MALEMOD_PANEL_PROBE_DIR"));const auto token=Env(L"MALEMOD_PANEL_PROBE_TOKEN");Check(!directory.empty()&&token.size()==32,"Missing owned probe identity");
  std::string asciiToken;for(auto c:token){Check((c>=L'0'&&c<=L'9')||(c>=L'a'&&c<=L'f'),"Nonhex fixture token");asciiToken+=static_cast<char>(c);}
- WNDCLASSW wc{};wc.lpfnWndProc=DefWindowProcW;wc.hInstance=GetModuleHandleW(nullptr);wc.lpszClassName=L"MaleMod.Owned.Panel.Fixture";RegisterClassW(&wc);
+ WNDCLASSW wc{};wc.lpfnWndProc=DefWindowProcW;wc.hInstance=GetModuleHandleW(nullptr);wc.lpszClassName=L"W2ViewportClass";RegisterClassW(&wc);
  auto parent=CreateWindowExW(WS_EX_NOACTIVATE|WS_EX_TOOLWINDOW,wc.lpszClassName,L"Owned SDK fixture",WS_POPUP,0,0,width,height,nullptr,nullptr,wc.hInstance,nullptr);Check(parent!=nullptr,"Fixture parent creation failed");
  Check(!PanelProbe::FromEnvironment(parent,false).Enabled(),"Unauthorised parent accepted");Check(!PanelProbe::FromEnvironment(nullptr,true).Enabled(),"Missing parent accepted");
+ Check(!EligibleOverlayParent(parent,false),"Hidden parent accepted without authorization");
  SetEnvironmentVariableW(L"MALEMOD_PANEL_PROBE_TOKEN",L"bad");Check(!PanelProbe::FromEnvironment(parent,true).Enabled(),"Malformed token accepted");SetEnvironmentVariableW(L"MALEMOD_PANEL_PROBE_TOKEN",token.c_str());
  const auto station=Env(L"MALEMOD_SEALED_SESSION");SetEnvironmentVariableW(L"MALEMOD_SEALED_SESSION",L"wrong-station");Check(!PanelProbe::FromEnvironment(parent,true).Enabled(),"Wrong station accepted");SetEnvironmentVariableW(L"MALEMOD_SEALED_SESSION",station.c_str());
  Check(PanelProbe::FromEnvironment(parent,true).Enabled(),"Verified scoped probe was rejected");
+ Check(!IsWindowVisible(parent)&&EligibleOverlayParent(parent,true),"Verified hidden engine-parent fixture was rejected");
  std::mutex lock;malemod::surface::Controls controls;std::array<float,3> clinical{};
  auto read=[&]{std::lock_guard<std::mutex> guard(lock);return controls;};
  auto write=[&](unsigned i,float value){std::lock_guard<std::mutex> guard(lock);controls.values.at(i)=value;return true;};

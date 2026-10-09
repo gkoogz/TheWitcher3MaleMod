@@ -1,5 +1,6 @@
 #define NOMINMAX
 #include "overlay_panel.hpp"
+#include "overlay_parent.hpp"
 #include <fstream>
 #include <iostream>
 using namespace malemod::witcher;
@@ -7,6 +8,9 @@ static void Check(bool b,const char* text){if(!b)throw std::runtime_error(text);
 int wmain(int argc,wchar_t** argv){try{
  Check(argc==2,"Usage: overlay_panel_test owned-preview.bmp");
  malemod::surface::Controls c;
+ WNDCLASSW wc{};wc.lpfnWndProc=DefWindowProcW;wc.hInstance=GetModuleHandleW(nullptr);wc.lpszClassName=L"W2ViewportClass";RegisterClassW(&wc);
+ auto hidden=CreateWindowExW(WS_EX_NOACTIVATE,wc.lpszClassName,L"Owned production-stub guard",WS_POPUP,0,0,1280,720,nullptr,nullptr,wc.hInstance,nullptr);
+ Check(hidden&&!IsWindowVisible(hidden)&&!EligibleOverlayParent(hidden,true),"Production stub accepted a hidden probe parent");DestroyWindow(hidden);
  OverlayNavigation navigation;navigation.Move(-1);Check(navigation.selected==17,"Selection does not wrap upward");navigation.Move(1);Check(navigation.selected==0,"Selection does not wrap downward");
  Check(navigation.Adjust(c,1,true)==0&&navigation.Adjust(c,-1,false)==1,"State does not match Wolverine cycling");
  for(unsigned i=1;i<18;i++){navigation.selected=i;Check(navigation.Adjust(c,1,false)==51&&navigation.Adjust(c,-1,true)==45,"Arrow/Shift step differs from Wolverine");}

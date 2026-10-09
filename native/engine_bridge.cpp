@@ -17,6 +17,7 @@
 #include "runtime_profile.hpp"
 #include "runtime_host.hpp"
 #include "overlay_panel.hpp"
+#include "overlay_parent.hpp"
 #include "live_renderer.hpp"
 #include "float_draw_renderer.hpp"
 #include "control_store.hpp"
@@ -84,9 +85,10 @@ bool WriteControl(unsigned index,float value){
 }
 void CreateOverlayForGame(){
  if(!overlayRequested||overlayPanel)return;
- struct Windows {HWND result=nullptr;unsigned count=0;} windows;
- EnumWindows([](HWND window,LPARAM data)->BOOL{DWORD pid=0;GetWindowThreadProcessId(window,&pid);RECT r{};
-  if(pid==GetCurrentProcessId()&&!GetWindow(window,GW_OWNER)&&IsWindowVisible(window)&&GetClientRect(window,&r)&&r.right>=640&&r.bottom>=480){auto* list=reinterpret_cast<Windows*>(data);list->result=window;++list->count;}return TRUE;
+ struct Windows {HWND result=nullptr;unsigned count=0;bool ownedProbeAuthorized=false;} windows;
+ windows.ownedProbeAuthorized=IsSealedStation();
+ EnumWindows([](HWND window,LPARAM data)->BOOL{auto* list=reinterpret_cast<Windows*>(data);
+  if(EligibleOverlayParent(window,list->ownedProbeAuthorized)){list->result=window;++list->count;}return TRUE;
  },reinterpret_cast<LPARAM>(&windows));
  if(windows.count==1)overlayPanel=new OverlayPanel(windows.result,ReadControls,WriteControl,[]{auto p=clinicalService?clinicalService->Projection():surface::Frame::ClinicalProjection{};return std::array<float,3>{clinicalService?float(clinicalService->Mode()):0,p.active?1.f:0.f,garmentService?float(garmentService->Style()):0};},[](unsigned row,float v){if(clinicalService){if(row==18)clinicalService->SetMode(unsigned(v));else if(row==19)clinicalService->Action(v>0);}if(row==20&&garmentService){garmentService->Style(unsigned(v));if(!IsSealedStation())WritePrivateProfileStringW(L"Garment",L"Style",v>0?L"1":L"0",garmentPreferencePath.c_str());}},IsSealedStation());
 }

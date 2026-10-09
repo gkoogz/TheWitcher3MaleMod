@@ -30,3 +30,18 @@ Final fixture identities: 720p PID 10228, creation time
 134360583801016738; 1440p PID 21364, creation time
 134360583813103927; production stub PID 14620, creation time
 134360583824617498. All were absent after their child handles exited.
+
+A sealed native run using adapter 2943cf1 and the isolated shared menu component
+rendered the owned grey room at checkpoints 200/201 (both body resources,
+49,884 vertices). Its hidden W2ViewportClass parent prevented menu discovery.
+The default-off owned probe may now select that hidden engine parent only after
+validating the noninteractive station, same-process parent and probe identity.
+Normal production builds continue to reject hidden parents. This does not show
+or activate the engine window and does not send host input.
+
+The corrected SDK fixture and production-stub guard passed at 1280x720 and
+2560x1440; exact child exit codes were zero and audio restoration counts zero.
+Private evidence is D:/MaleModBuilds/witcher-menu-parent-guard-20261009/sdk-proof.json.
+The 1440p client capture was visually reviewed. Native menu interaction remains
+pending; the earlier room run alone does not pass attachment, garment, LOD,
+campaign or performance acceptance. Retail runtime and rollback remain intact.
