@@ -45,3 +45,24 @@ Private evidence is D:/MaleModBuilds/witcher-menu-parent-guard-20261009/sdk-proo
 The 1440p client capture was visually reviewed. Native menu interaction remains
 pending; the earlier room run alone does not pass attachment, garment, LOD,
 campaign or performance acceptance. Retail runtime and rollback remain intact.
+
+The corrected ccb268d adapter, isolated DLL db52f317f30805b6, subsequently
+attached the native panel to Witcher PID4180 / creation134360616148804702
+in the sealed private clone. Sixteen token/PID/creation-bound commands verified
+expand/collapse, wrapped selection, one-step and Shift five-step adjustments,
+reset, collapsed-input rejection and four GDI client captures. The expanded
+native client was visually reviewed. This uses the actual overlay instance;
+physical keyboard routing, clinical/garment actions and host-focus transitions
+were not exercised. No host input or desktop focus was used.
+
+The owned grey room separately reached checkpoints200/201 with both body
+resources and49,884 vertices. The final rear-view native room image was
+reviewed; it cannot certify the front attachment. The underlying geometry
+worker/bindings remain Base431e626/wire6; only the explicit menu component
+comes from4d5ef52. No numerical source was repinned to an unaccepted candidate.
+
+Exact child cleanup returned0, restored one muted audio session, verified all
+24 preserved saves/settings and37 original installed files. No replacement
+retail installation occurred. Private source/runtime/command/capture/cleanup
+identities are in D:/MaleModBuilds/witcher-menu-parent-fixed-20261009/native-menu-proof.json.
+Attachment, garments, LODs, campaign and performance parity remain unaccepted.
