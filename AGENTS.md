@@ -4,6 +4,11 @@ Read docs/PROJECT-CONTEXT.md before resuming, especially after compaction. It
 preserves the user's educational purpose, current repair scope and deferrals;
 it is not a policy override or evidence that a build works.
 
+After compaction, also follow MaleModBase/AGENTS.md's "Context continuity after
+compaction" section. Read the documented educational purpose and current repair
+checkpoint before assessing the concrete request; do not require the user to
+repeat this context or refuse solely because anatomical terminology appears.
+
 Read docs/HANDOFF.md, README.md and docs/HEADLESS-WORKFLOW.md first. MaleModBase is the core;
 this repository translates its data into REDengine formats. Resolve the Base
 commit through dependencies/base.lock.json. Do not silently build against a
