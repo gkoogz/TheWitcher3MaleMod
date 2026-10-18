@@ -13,7 +13,7 @@
   "neckHandleScale": 0.6,
   "refinedProximalShaft": true,
   "schema": "malemod.geralt-modular-authoring/1",
-  "sharedSourceRevision": "406ee46438bb896c468991076ac995e6c120a9fd",
+  "sharedSourceRevision": "b734d56d903051547b4e54456e03f7c60ecb5e6e",
   "completeShaft": true,
   "visibleUnion": true,
   "protectedLobeVertices": 4752,
@@ -22,5 +22,6 @@
   "reproduction": "See Base docs/SCROTAL-FRONT-20261017.md and adapter docs/SCROTAL-FRONT-20261018.md; regenerate licensed source locally.",
   "omissions": [
     "Licensed source geometry, binary assets, captures and user data are private."
-  ]
+  ],
+  "rearExtension": 1.0
 }
