@@ -1,14 +1,14 @@
 {
   "schema": "malemod.shared-module-pin/1",
   "repository": "https://github.com/gkoogz/MaleModBase.git",
-  "commit": "b734d56d903051547b4e54456e03f7c60ecb5e6e",
+  "commit": "6432e69b14fa2907c13c1fae9ff8e718d42f0ffd",
   "numericalWorkerRevision": "431e626cae6fb6720b552f8b20206727fe809c80",
   "hashNormalization": "LF",
   "files": {
     "include/malemod/surface/attachment_hinge.hpp": "e40968c94fa21d57c7664d606bd9f7bedba5dda314c309bf6ddb7b378e98a582",
     "include/malemod/surface/convex_surface_cut.hpp": "686e984c25043d59dc0ff0a4a2057e966ba8d1eb85dfd30e5499aa888f51ad5e",
-    "include/malemod/surface/modular_asset.hpp": "fe7ba5356b1053bf06758bb7c2e9956375a852665b9c29ed1c553ef29677352f",
-    "include/malemod/surface/modular_dynamic.hpp": "70a3fdd6b4c0188fec886cfa1b6cbe8b84037d37511f6d02f190a8ade96a238a",
+    "include/malemod/surface/modular_asset.hpp": "db7c4685d7910bb6d959ef27be609408f2e649623bac78083abf576b0f20ec9a",
+    "include/malemod/surface/modular_dynamic.hpp": "21fe80c1687b74a19cdc3f7438d37a6911a3310bfe6f0783c4d14a72fa337ec6",
     "include/malemod/surface/modular_motion.hpp": "86f1fb45662d74c930104117ccaadeff7df0205af1a7597c788add35b7811648",
     "include/malemod/surface/modular_mount.hpp": "f73e662401f188702b6c6ae3d3cba9d788b50c1181da68ed590280a39b1bc904",
     "include/malemod/surface/modular_transfer.hpp": "fedf6dbaed9023d9176f00cd4342ced88f677af81c2fd905d5f92ec7f758389c",
@@ -27,8 +27,9 @@
     "tools/build_modular_runtime.py": "d813a08dc50bc3f678befa55654c0c114f5ef1d5beb66968068de9f9bba57e92",
     "tools/build_modular_transfer.py": "68e0443388adf2cc1eebd128a2b00862be658ec3f7ada6130a62b9ae6acee124",
     "include/malemod/surface/raphe_profile.hpp": "a7ab11b0832b544d8369613412ce55cecb948dbba38ea09d33f8099d4999fac6",
-    "include/malemod/surface/suspension_hang.hpp": "67a2bf574fae6c4685f2eceb91698d49080bd6026c5e17bae770377ca3931ad0"
+    "include/malemod/surface/suspension_hang.hpp": "67a2bf574fae6c4685f2eceb91698d49080bd6026c5e17bae770377ca3931ad0",
+    "include/malemod/surface/skin_relief.hpp": "e4de7d60622384b23eb836a48b40391e94416db201edcc92af08590844b98c19"
   },
-  "scope": "Rear-only suspension footprint and measured low-Hang retraction; retained numerical worker and raphe correction.",
+  "scope": "Material-bound suspension skin folds; retained rear footprint, Hang behavior, numerical worker and raphe profile.",
   "authoringRevision": "b734d56d903051547b4e54456e03f7c60ecb5e6e"
 }

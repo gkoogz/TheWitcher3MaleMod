@@ -1,3 +1,20 @@
+## October 18 - scrotal folds and longitudinal web installed
+
+Shared6432e69; installed DLL372a3be3222bafe7c36c5cba9e5b2eb43d15117483bc4544cfa1f571b7162b15.
+Material-bound irregular folds and a shallow web beside the raphe preserve
+shaft/pelvis, rear footprint, low-Hang placement and numerical suspension.
+Seven C++ tests,32 baseline and56 candidate captured-pose audits pass.
+216 native stages reviewed across size/angle/state/skin/motion/resume/LOD/campaign;
+three installed startup/movement images reviewed. All49 managed and31 protected
+files verified. Steam grey-room preflight passes; owned sessions closed.
+Full distant occlusions were superseded by the dedicated nine-frame check.
+Display processing overhead and unchanged distal extremes remain documented.
+See docs/SCROTAL-SKIN-20261018.md for exact evidence, limits and adoption.
+Evidence: D:/MaleModBuilds/modular-anatomy-20261015/scrotal-folds-20261018/candidate.
+Rollback: C:\Users\Administrator\Documents\ChatGPT\TheWitcher3MaleMod\local\native-backup-modular-20261018-194521.
+Adapter contains pre-existing uncommitted native code; exact113 compiler inputs
+and tooling are archived. Do not treat the adapter checkout as clean.
+
 ## October 18 - rear scrotal attachment and low Hang installed
 
 Current request completed. Rear-only footprint extends one measured source unit
