@@ -1,7 +1,7 @@
 {
   "schema": "malemod.shared-module-pin/1",
   "repository": "https://github.com/gkoogz/MaleModBase.git",
-  "commit": "406ee46438bb896c468991076ac995e6c120a9fd",
+  "commit": "92039f48b104cc5d58ef9bae22d72733de2ce25e",
   "numericalWorkerRevision": "431e626cae6fb6720b552f8b20206727fe809c80",
   "hashNormalization": "LF",
   "files": {
@@ -11,7 +11,7 @@
     "include/malemod/surface/modular_dynamic.hpp": "7c964fec6c3e50b8fa88c2946692d68b65f1f9774aa15a39e850524ae5ea19ad",
     "include/malemod/surface/modular_motion.hpp": "a2a1eb892b6c9c09da6ffbb6646a3da0a292d9a139510913ecbd8e0fca163124",
     "include/malemod/surface/modular_mount.hpp": "f73e662401f188702b6c6ae3d3cba9d788b50c1181da68ed590280a39b1bc904",
-    "include/malemod/surface/modular_transfer.hpp": "3433f87da0b08f6148a0bdad4767fb2edbd52477632e8a5bda02b523f5a43750",
+    "include/malemod/surface/modular_transfer.hpp": "fedf6dbaed9023d9176f00cd4342ced88f677af81c2fd905d5f92ec7f758389c",
     "include/malemod/surface/pelvic_aperture.hpp": "c80ed41b6f5861283d509a97bc7e42dcda19374f7e5f628fb351e5a15ba331ba",
     "include/malemod/surface/root_articulation.hpp": "5dfa0a9d1d7521d08a2a8ddfec270b9553bfe726b3737a393db6790331caf688",
     "include/malemod/surface/root_motion.hpp": "3c28019e65601ed6f68c40034fda100e103ba05833b94d59de2e17a8478c1b65",
@@ -25,8 +25,9 @@
     "tools/build_modular_anatomy.py": "87a0338a58d51665a35faf88a57efa112d37fe0138ea3611fda2a10b468662f8",
     "tools/build_modular_dynamic.py": "fb37b8ffff6511e4777bf5d642f9dc3677bc5780ed8906b0e2a7f7feb099f517",
     "tools/build_modular_runtime.py": "d813a08dc50bc3f678befa55654c0c114f5ef1d5beb66968068de9f9bba57e92",
-    "tools/build_modular_transfer.py": "68e0443388adf2cc1eebd128a2b00862be658ec3f7ada6130a62b9ae6acee124"
+    "tools/build_modular_transfer.py": "68e0443388adf2cc1eebd128a2b00862be658ec3f7ada6130a62b9ae6acee124",
+    "include/malemod/surface/raphe_profile.hpp": "a7ab11b0832b544d8369613412ce55cecb948dbba38ea09d33f8099d4999fac6"
   },
-  "scope": "Shared modular runtime plus geometry authoring; scrotal-front asset revision uses the unchanged accepted DLL and numerical worker.",
-  "retainedRuntimeSourceRevision": "37cc67f2970ed0a5225ed46d37e919b6b82114df"
+  "scope": "Shared modular material-space raphe contour; retained scrotal authoring and numerical worker.",
+  "retainedAuthoringRevision": "406ee46438bb896c468991076ac995e6c120a9fd"
 }
