@@ -121,6 +121,8 @@ assert np.array_equal(results[0]['rect'],results[1]['rect'])
 selected,newuv,*_=chart(p,rings,f,results[0]['rect']);newuv[:,:,0]=(newuv[:,:,0]+1)*.5
 mat['uv'][selected]=newuv
 mesh=Mesh(p,f,mat['uv'].astype(float),sparse.load_npz(N/'assembly-01/body-union-donors.npz'),m['source_faces'],m['generated'],m['normal_field'])
-frames=corner_frames(mesh);mat['tangent']=frames['tangent'];mat['sign']=frames['sign']
+frames=corner_frames(mesh)
+mat['tangent'][selected]=frames['tangent'][selected]
+mat['sign'][selected]=frames['sign'][selected]
 dest=R/'materials.bin';dest.write_bytes(raw[:offset]+mat.tobytes());dest.with_suffix('.bin.sha256').write_text(hashlib.sha256(dest.read_bytes()).hexdigest()+'\n')
 (R/'bake-manifest.json').write_text(json.dumps(dict(textures=results,material=str(dest),materialSHA256=hashlib.sha256(dest.read_bytes()).hexdigest(),sourceMaterialSHA256=hashlib.sha256(raw).hexdigest(),sourceGeometrySHA256=hashlib.sha256((N/'assembly-01/body-union.npz').read_bytes()).hexdigest(),bodyGeometryChanged=False,retainedUVExact=True,rectangle=results[0]['rect'],tileCenter=tile_center.tolist(),tileRadius=radius),indent=2))
