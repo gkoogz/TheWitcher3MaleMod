@@ -51,16 +51,30 @@ distance=distance_transform_edt(np.asarray(mask)>0);cy,cx=np.unravel_index(dista
 tile_center=np.array([cx,cy])/1023;radius=min(12.,distance[cy,cx]*.6)/1023
 print('Measured skin tile',tile_center,radius,flush=True)
 def unit(v):return v/np.maximum(np.linalg.norm(v,axis=-1,keepdims=True),1e-12)
+# Use the exact new UV alias tangent frame, including its handedness. A
+# circumference derivative is only an approximation at the irregular cut.
+actual_rect=np.rint(np.asarray(rect)*4096)/4095
+selected,newuv,*_=chart(p,rings,f,actual_rect);newuv[:,:,0]=(newuv[:,:,0]+1)*.5
+candidate=mat.copy();candidate['uv'][selected]=newuv
+mesh=Mesh(p,f,candidate['uv'].astype(float),sparse.load_npz(N/'assembly-01/body-union-donors.npz'),m['source_faces'],m['generated'],m['normal_field'])
+new_frames=corner_frames(mesh)
 normal=np.zeros((len(p),3));tangent=np.zeros_like(normal);sign=np.ones(len(p))
-normal[f]=mat['normal'];tangent[f]=mat['tangent'];sign[f]=mat['sign']
+normal[f[selected]]=mat['normal'][selected]
+tangent[f[selected]]=new_frames['tangent'][selected];sign[f[selected]]=new_frames['sign'][selected]
 def boundary_normal(image,ids,row):
- n=unit(normal[ids]);old_t=unit(tangent[ids]-np.sum(tangent[ids]*n,axis=1)[:,None]*n);old_b=np.cross(n,old_t)*sign[ids,None]
- q=p[rings[row]];new_t=np.roll(q,-1,axis=0)-np.roll(q,1,axis=0);new_t=unit(new_t-n*np.sum(new_t*n,axis=1)[:,None]);new_b=np.cross(n,new_t)
- direction=p[rings[1]]-p[rings[0]] if row==0 else p[rings[-1]]-p[rings[-2]]
- new_b*=np.where(np.sum(new_b*direction,axis=1)<0,-1,1)[:,None]
- sampled=unit(sample(image,uv[ids])[:,:3]/127.5-1)
- world=old_t*sampled[:,0,None]+old_b*sampled[:,1,None]+n*sampled[:,2,None]
- return unit(np.stack([np.sum(world*new_t,axis=1),np.sum(world*new_b,axis=1),np.sum(world*n,axis=1)],axis=1))
+ # Sample the retained side, not the old generated strip. Its tangent frame
+ # differs even where the UV coordinates and positions happen to agree.
+ touching=(~selected)&np.isin(f,ids).any(1);tri=f[touching];corners=mat[touching]
+ n=unit(corners['normal']);old_t=unit(corners['tangent']);old_b=np.cross(n,old_t)*corners['sign'][:,:,None]
+ sampled=unit(sample(image,oldcorners[touching])[:,:,:3]/127.5-1)
+ world=old_t*sampled[:,:,0,None]+old_b*sampled[:,:,1,None]+n*sampled[:,:,2,None]
+ area=np.linalg.norm(np.cross(p[tri[:,1]]-p[tri[:,0]],p[tri[:,2]]-p[tri[:,0]]),axis=1)
+ sums=np.zeros((len(p),3));np.add.at(sums,tri.ravel(),(world*area[:,None,None]).reshape(-1,3))
+ world=unit(sums[ids]);n=unit(normal[ids]);new_t=unit(tangent[ids]);new_b=np.cross(n,new_t)*sign[ids,None]
+ result=unit(np.stack([np.sum(world*new_t,axis=1),np.sum(world*new_b,axis=1),np.sum(world*n,axis=1)],axis=1))
+ reconstructed=new_t*result[:,0,None]+new_b*result[:,1,None]+n*result[:,2,None]
+ if np.max(np.linalg.norm(reconstructed-world,axis=1))>1e-5:raise ValueError('Boundary normal transport differs')
+ return result
 results=[]
 for channel,stock,source in [
  ('diffuse',A/'build/probe/geralt_lower.fbm/body_01_mg__geralt_d01.tga',B/'assets/materials/wolverine/R14-skin-natural.dds'),
