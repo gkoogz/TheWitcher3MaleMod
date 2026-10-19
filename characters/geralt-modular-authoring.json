@@ -4,24 +4,25 @@
   "scrotumCut": 72,
   "lobeProtection": 70,
   "neckFlare": 1.38695737555697,
-  "sideWrapDegrees": 100,
-  "proximalFill": 0.65,
+  "sideWrapDegrees": 125,
+  "proximalFill": 0.8,
   "stationBounds": [
-    4.56114258982752,
-    15.229930394059204
+    3.25,
+    12.8
   ],
-  "neckHandleScale": 0.6,
+  "neckHandleScale": 0.25,
   "refinedProximalShaft": true,
   "schema": "malemod.geralt-modular-authoring/1",
-  "sharedSourceRevision": "b734d56d903051547b4e54456e03f7c60ecb5e6e",
+  "sharedSourceRevision": "d89920edd2168f399ccd06263a7af0eb5318ae1c",
   "completeShaft": true,
   "visibleUnion": true,
-  "protectedLobeVertices": 4752,
+  "protectedLobeVertices": 4759,
   "sourceUnits": "Measured legacy source coordinates; not physical centimeters.",
   "boundary": "Keep joined stock torso/lower-body resources and shared waist exact.",
-  "reproduction": "See Base docs/SCROTAL-FRONT-20261017.md and adapter docs/SCROTAL-FRONT-20261018.md; regenerate licensed source locally.",
+  "reproduction": "See docs/SCROTAL-PROXIMAL-HOURGLASS-20261018.md; regenerate licensed source locally.",
   "omissions": [
     "Licensed source geometry, binary assets, captures and user data are private."
   ],
-  "rearExtension": 1.0
+  "rearExtension": 0.0,
+  "suspensionShift": 1.5
 }
