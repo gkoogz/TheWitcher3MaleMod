@@ -13,7 +13,7 @@
   "neckHandleScale": 0.25,
   "refinedProximalShaft": true,
   "schema": "malemod.geralt-modular-authoring/1",
-  "sharedSourceRevision": "a0a1fbf651fb3b5cbe86eb7c614814cf9f72fb0f",
+  "sharedSourceRevision": "629363c838685f5815cd47f3d3c599908419fef9",
   "completeShaft": true,
   "visibleUnion": true,
   "protectedLobeVertices": 4759,
@@ -32,5 +32,6 @@
   "upperMaterialTransitionFraction": 0.2,
   "upperFineDetailTransitionFraction": 0.03,
   "neckMaterialNormalBiasRemoved": true,
-  "neckPigmentFullSpan": true
+  "neckPigmentFullSpan": true,
+  "endpointNormalConstraint": "quintic spherical blend, 0.25 loft parameter, generated strip only"
 }

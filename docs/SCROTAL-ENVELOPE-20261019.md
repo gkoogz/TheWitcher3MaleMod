@@ -22,21 +22,30 @@ corrective recesses the projecting medial bridge and limits the raised web to
 the upper connecting skin. Compact C2 falloffs preserve the lateral supports,
 back and mounted rim; the existing area safeguard prevents relief-induced
 triangle reversals. This changes display skin, not the numerical bodies.
-One of 114 native compiler inputs changes: shared skin_relief.hpp. The
-numerical worker is unchanged.
+Three of 114 native compiler inputs change: shared skin_relief.hpp,
+surface_stitch.hpp and the adapter modular_dynamic_render.hpp. The numerical
+worker is unchanged. Native gameplay omits legacy shaft normals with immutable
+morphology; the old join correction therefore skipped the upper endpoint.
+The replacement constrains both endpoints using the current native endpoint
+when no transferred field exists. A quintic spherical blend also suppresses
+the interior shading spike instead of merely correcting the boundary value.
+The original captured last strip turned its normal by median 6.18 degrees
+over median 0.0235 source units. A replay probe exports actual packed native
+normals to verify the repair without changing the captured pose.
 
 Shared commits: a9ea9b0 (independent tangents), f501fb1 (lower material blend),
 7207e62 (separate broad shading and fine detail), 4162c13 (medial bridge),
 8840071 (mounted rim broad/fine blend), a0a1fbf (remove reused tile slope
-bias and blend pigment across the complete neck).
+bias and blend pigment across the complete neck), 629363c (shared endpoint
+normal constraint).
 27 Python tests and eight C++ tests pass. The synthetic tapered-sac
 regression specifically requires a full lower tangent while the upper handle
 is constrained below 0.5. The material regression prevents a narrow lower cuff.
 
 Private evidence and regeneration scripts:
 `D:/MaleModBuilds/modular-anatomy-20261015/scrotal-envelope-20261019`.
-Candidates 01-04 are uninstalled diagnostics. Candidate 05 also removes the
-source tile normal slope bias and uses a full-length pigment transition.
+Candidates 01-06 are uninstalled diagnostics. Candidate 07 adds the live
+endpoint normal constraint to candidate 05 material and medial skin repairs.
 Boundary color, vertex normal, color/reflection attributes were checked to match
 exactly; the remaining generated interior was transporting the source tile
 mean slope and retaining a lower-pigment plateau. Tests now forbid both.
