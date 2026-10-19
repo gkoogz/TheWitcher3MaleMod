@@ -1,3 +1,26 @@
+## October19 - two suspension shading seams repaired and installed
+
+The user rejected the previous repair: a horizontal lower band and sharp upper
+material transition remained. A common rest-space skin field now spans both
+joins. Proximal shaft UVs move into an independent U chart while preserving root
+sampling. Final join normals are reconciled after relief/detail passes, which
+previously recreated the lower crease. Geometry, pelvic collar and physics are
+unchanged. Base material pin efb8255; adapter authoring5c52940.
+
+31 Python and8 C++ tests pass.252 native stages captured,245 usable views reviewed
+(seven wall-occluded views replaced by a dedicated distance run),68 pose audits
+pass. Installed startup/walking observed;53 managed and31 protected files verify.
+All owned sessions closed; saves/audio restored, exact input settings preserved.
+Steam grey-room preflight passes. DLL e81ae761b6231ab391da2144a33e72fe092d7d828d85fd4453d7525363438611.
+Rollback:TheWitcher3MaleMod/local/native-backup-modular-20261019-101835.
+Evidence:D:/MaleModBuilds/modular-anatomy-20261015/scrotal-seams-20261019/candidate-04.
+
+One initial offline replay bone-binding failure did not reproduce in the full
+recheck or six identical-input repeats; retained as an unexplained diagnostic
+anomaly.114 compiler inputs archived, including pre-existing uncommitted code;
+not a clean-checkout release. See docs/SEAM-MATERIAL-CONTINUITY-20261019.md for
+causes, exact identities, adoption path, finite coverage and remaining limits.
+
 ## October 19 - continuous suspension skin and shading installed
 
 Shared surface pin 629363c; Witcher adoption d7b35bd. Independent lower tangent
