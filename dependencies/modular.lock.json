@@ -1,7 +1,7 @@
 {
   "schema": "malemod.shared-module-pin/1",
   "repository": "https://github.com/gkoogz/MaleModBase.git",
-  "commit": "7207e62194e622999007b1a42df007a416460460",
+  "commit": "8840071d95f51e678e8501eeff599020d17e4cbf",
   "numericalWorkerRevision": "431e626cae6fb6720b552f8b20206727fe809c80",
   "hashNormalization": "LF",
   "files": {
@@ -28,10 +28,10 @@
     "tools/build_modular_transfer.py": "68e0443388adf2cc1eebd128a2b00862be658ec3f7ada6130a62b9ae6acee124",
     "include/malemod/surface/raphe_profile.hpp": "a7ab11b0832b544d8369613412ce55cecb948dbba38ea09d33f8099d4999fac6",
     "include/malemod/surface/suspension_hang.hpp": "67a2bf574fae6c4685f2eceb91698d49080bd6026c5e17bae770377ca3931ad0",
-    "include/malemod/surface/skin_relief.hpp": "e4de7d60622384b23eb836a48b40391e94416db201edcc92af08590844b98c19",
-    "malemod_base/loft_material.py": "ab0722af0802f78efd666b4d0d47cb9bb94bfa8d7a4708b36efde0023ad8562e",
+    "include/malemod/surface/skin_relief.hpp": "1c2a8638086a3cf1b66a1a138ca3fa5862ff60f373abe2aedfdb758d04e9dbec",
+    "malemod_base/loft_material.py": "f5f73f9a6c4f621d52e258322ec15d0db31b338f7062eeacb9c1a6e01bf97337",
     "include/malemod/surface/suspension_profile.hpp": "4e3f822d63d206c478329c9548eb9818ace8ffff5c82d6b1cdb4835bcfb84c3a"
   },
-  "scope": "Independent suspension endpoint tangents; continuous lower skin transition, retained mechanics, attachment footprint and pelvis.",
-  "authoringRevision": "7207e62194e622999007b1a42df007a416460460"
+  "scope": "Continuous suspension skin with independent endpoint tangents, broad material blends at both rims, bounded medial bridge recession; preserved pelvis, upper footprint and numerical worker.",
+  "authoringRevision": "8840071d95f51e678e8501eeff599020d17e4cbf"
 }

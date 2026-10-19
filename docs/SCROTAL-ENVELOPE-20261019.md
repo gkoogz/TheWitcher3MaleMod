@@ -11,27 +11,31 @@ surface. These are local geometric checks, not a global intersection proof.
 
 The generated material also switched from retained boundary detail to the
 independent neck tile in only 2.5% of meridian length. That narrow normal/detail
-transition exposed a cuff despite welded geometry. The lower transition now
-occupies 20% of measured length. Fine detail transitions separately over 3%, preventing long pore streaks.
-The upper transition, boundary samples, retained
+transition exposed a cuff despite welded geometry. Both transitions now occupy 20% of measured length. Fine detail transitions
+separately over 3%, preventing long pore streaks. Boundary samples, retained
 UVs and texture pixels outside the generated chart remain unchanged.
 
 The intent is a thinner-looking continuous outer skin envelope. This does not
-claim a new tissue-thickness simulation. The retained lobes, complete shaft,
-mount footprint, pelvis, UV lineage and independent numerical motion are exact.
-The native DLL and all 114 compiler inputs are unchanged from the preceding
-accepted runtime; this update changes shared authoring geometry and material.
+claim a new tissue-thickness simulation. The retained rest assets, complete shaft, mount footprint, pelvis, UV lineage
+and independent numerical motion are preserved. A bounded material-space
+corrective recesses the projecting medial bridge and limits the raised web to
+the upper connecting skin. Compact C2 falloffs preserve the lateral supports,
+back and mounted rim; the existing area safeguard prevents relief-induced
+triangle reversals. This changes display skin, not the numerical bodies.
+One of 114 native compiler inputs changes: shared skin_relief.hpp. The
+numerical worker is unchanged.
 
 Shared commits: a9ea9b0 (independent tangents), f501fb1 (lower material blend),
-7207e62 (separate broad shading and fine detail).
-25 Python tests and eight existing C++ tests pass. The synthetic tapered-sac
+7207e62 (separate broad shading and fine detail), 4162c13 (medial bridge),
+8840071 (mounted rim broad/fine blend).
+26 Python tests and eight C++ tests pass. The synthetic tapered-sac
 regression specifically requires a full lower tangent while the upper handle
 is constrained below 0.5. The material regression prevents a narrow lower cuff.
 
 Private evidence and regeneration scripts:
 `D:/MaleModBuilds/modular-anatomy-20261015/scrotal-envelope-20261019`.
-Candidates 01 and 02 are diagnostic only; candidate 03 separates fine detail
-from the broad material transition.
+Candidates 01-03 are uninstalled diagnostics. Candidate 04 adds the medial
+bridge correction and broad/fine mounted-rim material transition.
 Native attachment acceptance and installation are pending. Retain the preceding
 accepted runtime and its exact rollback until the full gate passes.
 
