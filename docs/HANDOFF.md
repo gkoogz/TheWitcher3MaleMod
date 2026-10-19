@@ -1,3 +1,23 @@
+## October 19 - continuous suspension skin and shading installed
+
+Shared surface pin 629363c; Witcher adoption d7b35bd. Independent lower tangent
+length removes the constrained lower shoulder. Broad color/normal transitions
+at both rims preserve fine detail; a bounded medial recess reduces the forward
+skin bridge. The native upper join now uses current shaft normals when legacy
+normal transfer is absent, removing the shaded cap without changing mechanics.
+35 source tests pass. Native gate:252 captured stages,246 usable reviewed views
+(six wall-occluded views superseded by the dedicated distant run),68 pose audits.
+Installed startup/movement observed;53 managed and31 protected files verified.
+All owned sessions closed, saves/audio/settings restored; Steam preflight passes.
+DLL b974338b3236289e1ddbbb965f3825eadab7e0c4cdc528949238c2fe1a485a05.
+Evidence: D:/MaleModBuilds/modular-anatomy-20261015/scrotal-envelope-20261019/candidate-07.
+Rollback: TheWitcher3MaleMod/local/native-backup-modular-20261019-031102.
+See docs/SCROTAL-ENVELOPE-20261019.md for causes, adoption, exact evidence and limits.
+Original pelvis, complete shaft rest asset, upper footprint and numerical worker
+preserved. Regional pigmentation and existing distal extreme defects remain.
+114 compiler inputs archived, including pre-existing uncommitted adapter code;
+this is not a clean-checkout release or a numerical performance improvement.
+
 ## October 19 - proximal suspension and Hang profile installed
 
 Base d89920e; adapter adoption d7c98ad. The retained sac and attachment move
