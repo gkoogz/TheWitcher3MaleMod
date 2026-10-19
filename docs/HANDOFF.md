@@ -1,3 +1,22 @@
+## October 19 - proximal suspension and Hang profile installed
+
+Base d89920e; adapter adoption d7c98ad. The retained sac and attachment move
+rootward; upper wrap grows from200 to250 degrees. A bounded generated-skin
+profile is fuller at low Hang and waisted at long Hang, with exact endpoint
+positions/tangents. Original pelvis, complete shaft, source lineage and numerical
+worker preserved. Materials rebaked against the new geometry.
+30 source tests pass;252 native stages reviewed plus68 captured-pose audits.
+Installed startup/movement observed.53 managed and31 protected files verify;
+all owned sessions closed, saves/audio/settings restored; Steam preflight passes.
+DLL e03b77c0219190b13f2bb487cd483b57aa2f674c7e9df5657de91614ba1e1240.
+Evidence: D:/MaleModBuilds/modular-anatomy-20261015/scrotal-proximal-hourglass-20261018/candidate-02.
+Rollback: TheWitcher3MaleMod/local/native-backup-modular-20261019-003322.
+See docs/SCROTAL-PROXIMAL-HOURGLASS-20261018.md for measured parameters,
+reproduction, acceptance, display-cost limits and other-spoke adoption.
+Existing distal extremes remain. No numerical cadence improvement or publication.
+114 compiler inputs archived; pre-existing dirty adapter code is not a clean
+checkout release. The narrower diagnostic candidate was never installed.
+
 ## October 18 - scrotal neck material continuity installed
 
 Shared material authoring ec7374a; adapter material implementation a401c59.
