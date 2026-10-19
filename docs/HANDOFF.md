@@ -1,3 +1,22 @@
+## October 18 - scrotal neck material continuity installed
+
+Shared material authoring ec7374a; adapter material implementation a401c59.
+Dedicated arclength chart, retained-skin density and exact boundary normal frames
+repair the generated neck's texture/shading mismatch with the retained sac.
+Material a731bd099723112aede87381d4bf53454a5ce31ed3b6fef8384df319a72d3a8f.
+DLL372a3be3222bafe7c36c5cba9e5b2eb43d15117483bc4544cfa1f571b7162b15
+and all113 compiler inputs, geometry, physics and retained material rows exact.
+16 tests pass;180 native candidate stages reviewed, including39 campaign stages;
+three installed startup/movement images reviewed. Distant wall-occluded views
+superseded by a dedicated nine-frame LOD check.53 managed and31 protected files
+verify; Steam grey-room preflight passes; all owned sessions closed.
+Existing distal extreme folds/glans behavior and regional pigmentation remain.
+See docs/SCROTAL-MATERIAL-20261018.md for evidence, limits and adoption.
+Evidence: D:/MaleModBuilds/modular-anatomy-20261015/scrotal-material-20261018/delivery-candidate.
+Rollback: TheWitcher3MaleMod/local/native-backup-modular-20261018-222856.
+Pre-existing uncommitted adapter runtime/tooling remains archived, not a clean
+checkout release. Optional material package is now part of managed identities.
+
 ## October 18 - scrotal folds and longitudinal web installed
 
 Shared6432e69; installed DLL372a3be3222bafe7c36c5cba9e5b2eb43d15117483bc4544cfa1f571b7162b15.
