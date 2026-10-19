@@ -27,15 +27,19 @@ numerical worker is unchanged.
 
 Shared commits: a9ea9b0 (independent tangents), f501fb1 (lower material blend),
 7207e62 (separate broad shading and fine detail), 4162c13 (medial bridge),
-8840071 (mounted rim broad/fine blend).
-26 Python tests and eight C++ tests pass. The synthetic tapered-sac
+8840071 (mounted rim broad/fine blend), a0a1fbf (remove reused tile slope
+bias and blend pigment across the complete neck).
+27 Python tests and eight C++ tests pass. The synthetic tapered-sac
 regression specifically requires a full lower tangent while the upper handle
 is constrained below 0.5. The material regression prevents a narrow lower cuff.
 
 Private evidence and regeneration scripts:
 `D:/MaleModBuilds/modular-anatomy-20261015/scrotal-envelope-20261019`.
-Candidates 01-03 are uninstalled diagnostics. Candidate 04 adds the medial
-bridge correction and broad/fine mounted-rim material transition.
+Candidates 01-04 are uninstalled diagnostics. Candidate 05 also removes the
+source tile normal slope bias and uses a full-length pigment transition.
+Boundary color, vertex normal, color/reflection attributes were checked to match
+exactly; the remaining generated interior was transporting the source tile
+mean slope and retaining a lower-pigment plateau. Tests now forbid both.
 Native attachment acceptance and installation are pending. Retain the preceding
 accepted runtime and its exact rollback until the full gate passes.
 
