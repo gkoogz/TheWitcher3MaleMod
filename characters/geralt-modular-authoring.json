@@ -13,13 +13,13 @@
   "neckHandleScale": 0.25,
   "refinedProximalShaft": true,
   "schema": "malemod.geralt-modular-authoring/1",
-  "sharedSourceRevision": "629363c838685f5815cd47f3d3c599908419fef9",
+  "sharedSourceRevision": "efb825580ffacf47fc3b66be505c7e54ddcdc228",
   "completeShaft": true,
   "visibleUnion": true,
   "protectedLobeVertices": 4759,
   "sourceUnits": "Measured legacy source coordinates; not physical centimeters.",
   "boundary": "Keep joined stock torso/lower-body resources and shared waist exact.",
-  "reproduction": "See docs/SCROTAL-ENVELOPE-20261019.md; regenerate licensed sources locally.",
+  "reproduction": "See docs/SEAM-MATERIAL-CONTINUITY-20261019.md and tools/prepare_join_material.py",
   "omissions": [
     "Licensed source geometry, binary assets, captures and user data are private."
   ],
@@ -33,5 +33,15 @@
   "upperFineDetailTransitionFraction": 0.03,
   "neckMaterialNormalBiasRemoved": true,
   "neckPigmentFullSpan": true,
-  "endpointNormalConstraint": "quintic spherical blend, 0.25 loft parameter, generated strip only"
+  "endpointNormalConstraint": "quintic spherical blend, 0.25 loft parameter, generated strip only",
+  "continuousJoinMaterial": {
+    "shaftBandWidth": 3.0,
+    "proximalUVOffset": [
+      0,
+      0.5
+    ],
+    "pigmentFalloff": 0.12,
+    "sourceUnits": "Measured legacy coordinates",
+    "nativeUVPrecision": "float16"
+  }
 }
