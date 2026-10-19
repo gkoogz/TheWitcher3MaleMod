@@ -37,8 +37,8 @@
   "continuousJoinMaterial": {
     "shaftBandWidth": 3.0,
     "proximalUVOffset": [
-      0,
-      0.5
+      -0.25,
+      0
     ],
     "pigmentFalloff": 0.12,
     "sourceUnits": "Measured legacy coordinates",

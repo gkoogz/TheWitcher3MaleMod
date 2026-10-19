@@ -31,11 +31,11 @@ def main():
     section=float(np.load(N/'module-02/attachment.npz')['section_center'][0])
     remapped=shaft&(p[f][:,:,0].min(1)<section+1e-6)
     old_uv=mat[:,:,:2].astype('f2').astype(float)
-    mat[remapped,:,1]+=.5
+    mat[remapped,:,0]-=.25
     uv=mat[:,:,:2].astype('f2').astype(float)
-    if (uv[remapped,:,1]>=.99).any():raise ValueError('Relocated shaft chart exceeds atlas')
+    if (uv[remapped,:,0]<.5).any() or (uv[remapped,:,0]>=.75).any():raise ValueError('Relocated shaft chart exceeds reserved half-tile')
     relevant=(~o['body'][f].any(1))&(~ramp)&(~remapped)
-    if (uv[relevant,:,1]>=.5).any():raise ValueError('Reserved lower atlas is occupied')
+    if (uv[relevant,:,0]<.75).any():raise ValueError('Reserved anatomy half-tile is occupied')
     active=(weights[f].max(1)>0)|remapped
     assert (uv[active,:,0]>=.5).all()
     # Rasterize the runtime's half-precision UVs, including their texel-center
@@ -74,6 +74,10 @@ def main():
     reports=[]
     for channel in ['diffuse','normal']:
         original=np.asarray(Image.open(maps[channel]['path']).convert('RGBA'));out=original.copy()
+        # A U-only translation is exact in native float16 UVs and preserves
+        # the adapter's root-ramp V strip. Copy the whole source half-tile so
+        # the ramp still samples its original skin beyond the retained cut.
+        out[:,4096:6144]=original[:,6144:8192]
         from scipy.ndimage import map_coordinates
         coords=np.stack([source_uv[:,1]*4096-.5,source_uv[:,0]*8192-.5])
         source=np.stack([map_coordinates(original[:,:,k].astype(float),coords,order=1,mode='nearest') for k in range(3)],-1)
@@ -92,13 +96,13 @@ def main():
         gutter=(dist<=8)&(~changed)&(np.indices(changed.shape)[1]>=4096)
         out[gutter]=out[nearest[0][gutter],nearest[1][gutter]]
         assert np.array_equal(out[:,:4096],original[:,:4096])
-        mask=changed|gutter
+        mask=changed|gutter;mask[:,4096:6144]=True
         assert np.array_equal(out[~mask],original[~mask])
         dest=J/f'atlas-{channel}.tga';Image.fromarray(out,'RGBA').save(dest)
         reports.append(dict(channel=channel,path=str(dest),sha256=hashlib.sha256(dest.read_bytes()).hexdigest(),changedPixels=int(np.any(out!=original,axis=2).sum()),bodyPixelsExact=True,outsideSupportExact=True))
         print(channel,reports[-1],flush=True)
     updated=raw[:offset]+mat.tobytes();(R/'materials.bin').write_bytes(updated)
     (R/'materials.bin.sha256').write_text(hashlib.sha256(updated).hexdigest()+'\n')
-    (R/'bake-manifest.json').write_text(json.dumps(dict(textures=reports,materialSHA256=hashlib.sha256(updated).hexdigest(),source=str(P),geometryChanged=False,materialBindingsExact=False,relocatedProximalShaftFaces=int(remapped.sum()),relocationUV=[0,.5],onlyUVBindingChanged=True,shaftBandWidth=3.,rootColorLinear=root_color.tolist(),commonPigmentFalloff=.12,sourceFineDetail='Measured retained skin tile sampled in common rest-space coordinates',normalTreatment='Map relief fades on both sides; native measured surface normals and dynamic folds retained',supportVertices=int((weights>0).sum()),protectedWeightMaximum=float(weights[protected].max())),indent=2))
+    (R/'bake-manifest.json').write_text(json.dumps(dict(textures=reports,materialSHA256=hashlib.sha256(updated).hexdigest(),source=str(P),geometryChanged=False,materialBindingsExact=False,relocatedProximalShaftFaces=int(remapped.sum()),relocationUV=[-.25,0],onlyUVBindingChanged=True,shaftBandWidth=3.,rootColorLinear=root_color.tolist(),commonPigmentFalloff=.12,sourceFineDetail='Measured retained skin tile sampled in common rest-space coordinates',normalTreatment='Map relief fades on both sides; native measured surface normals and dynamic folds retained',supportVertices=int((weights>0).sum()),protectedWeightMaximum=float(weights[protected].max())),indent=2))
 
 if __name__=='__main__':main()

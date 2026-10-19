@@ -17,7 +17,7 @@ surface. The adapter must give the proximal shaft an independent atlas region.
 Base `join_material.py` supplies geodesic support with smooth protected-surface
 limits, measured skin detail sampled in common rest coordinates, and a
 texel-center triangle rasterizer. The Witcher adapter relocates proximal shaft
-UVs into the unused lower atlas, bakes a common pigment/detail field across
+UVs into the unused half of the anatomy tile, bakes a common pigment/detail field across
 sac/neck and a bounded shaft overlap, and fades back to original shaft material.
 The incompatible normal-map layers are replaced locally by a common neutral
 map; existing native source normals and dynamic wrinkle fields still supply
@@ -27,7 +27,9 @@ filter footprint instead of being blocked by unused authoring ramp UVs.
 
 31 Python material, geometry, shading, union and transfer tests pass.
 Private evidence: `D:/MaleModBuilds/modular-anatomy-20261015/scrotal-seams-20261019`.
-Material08 is the first candidate with the proximal shaft UV relocation.
+Material08 used a V translation and was rejected for root-ramp stripes.
+Material09 uses an exactly representable U translation and copies the full
+original half-tile, preserving the root-ramp V sampling and its filter support.
 Native visual acceptance and installation remain pending.
 
 Other adapters adopt the Base functions through a pinned revision, measure
