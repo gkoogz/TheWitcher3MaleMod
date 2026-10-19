@@ -1,7 +1,7 @@
 {
   "schema": "malemod.shared-module-pin/1",
   "repository": "https://github.com/gkoogz/MaleModBase.git",
-  "commit": "d89920edd2168f399ccd06263a7af0eb5318ae1c",
+  "commit": "7207e62194e622999007b1a42df007a416460460",
   "numericalWorkerRevision": "431e626cae6fb6720b552f8b20206727fe809c80",
   "hashNormalization": "LF",
   "files": {
@@ -16,22 +16,22 @@
     "include/malemod/surface/root_articulation.hpp": "5dfa0a9d1d7521d08a2a8ddfec270b9553bfe726b3737a393db6790331caf688",
     "include/malemod/surface/root_motion.hpp": "3c28019e65601ed6f68c40034fda100e103ba05833b94d59de2e17a8478c1b65",
     "include/malemod/surface/surface_stitch.hpp": "9e93be3611730d9db393c1f3c29a8d7675c5fbec84a0772ccbc05e718b60a181",
-    "malemod_base/modular_anatomy.py": "e532aaaf0c84865efe045c8855699b7b1cc45ed805eef0ce1c953fd163209550",
+    "malemod_base/modular_anatomy.py": "3504bd8ca8b7d2ca82fe2c436b818e57d2920da563e443fc8d13d89fea5cb76a",
     "malemod_base/modular_mount.py": "4fa60c14bf7999f68bff3588730e84abdf86b7b738a226b5a7369856b29355e7",
     "malemod_base/modular_pelvis.py": "5a70d5292fdb7ae387c88de12370464dd67ff4b6f63ea22372ce1832ce877657",
     "malemod_base/modular_shading.py": "8cfaf9d3cd76f270b26d01bbb6e0249b7a5a56fc68b3be9fc32caac5d0ba4111",
     "malemod_base/modular_union.py": "680e446e9ac09a3cef82767ff8cf4002db961cf45032ccdd65cef66317c91ddc",
     "tools/assemble_modular_pelvis.py": "d60aab8ee71964b48b9047cfc5e7ea1feea335d56961b3d23cd8ce12d5e442bc",
-    "tools/build_modular_anatomy.py": "1cfecfcb348ad1bb034adb747144a2849b39167a35e4fd01fdb1085d1d527260",
+    "tools/build_modular_anatomy.py": "19cd570c0cfd3655615f8a91dbbeaf46e84c95cee8daf40ed5d750e88a7cbf2f",
     "tools/build_modular_dynamic.py": "fb37b8ffff6511e4777bf5d642f9dc3677bc5780ed8906b0e2a7f7feb099f517",
     "tools/build_modular_runtime.py": "d813a08dc50bc3f678befa55654c0c114f5ef1d5beb66968068de9f9bba57e92",
     "tools/build_modular_transfer.py": "68e0443388adf2cc1eebd128a2b00862be658ec3f7ada6130a62b9ae6acee124",
     "include/malemod/surface/raphe_profile.hpp": "a7ab11b0832b544d8369613412ce55cecb948dbba38ea09d33f8099d4999fac6",
     "include/malemod/surface/suspension_hang.hpp": "67a2bf574fae6c4685f2eceb91698d49080bd6026c5e17bae770377ca3931ad0",
     "include/malemod/surface/skin_relief.hpp": "e4de7d60622384b23eb836a48b40391e94416db201edcc92af08590844b98c19",
-    "malemod_base/loft_material.py": "9caad92d140dad1ac471a1ffa7b12fa34db48d1c5ef07391b0d63613e609911d",
+    "malemod_base/loft_material.py": "ab0722af0802f78efd666b4d0d47cb9bb94bfa8d7a4708b36efde0023ad8562e",
     "include/malemod/surface/suspension_profile.hpp": "4e3f822d63d206c478329c9548eb9818ace8ffff5c82d6b1cdb4835bcfb84c3a"
   },
-  "scope": "Proximal suspended tissue, broader upper attachment and bounded Hang-dependent neck profile; retained numerical worker and pelvic ramp.",
-  "authoringRevision": "d89920edd2168f399ccd06263a7af0eb5318ae1c"
+  "scope": "Independent suspension endpoint tangents; continuous lower skin transition, retained mechanics, attachment footprint and pelvis.",
+  "authoringRevision": "7207e62194e622999007b1a42df007a416460460"
 }

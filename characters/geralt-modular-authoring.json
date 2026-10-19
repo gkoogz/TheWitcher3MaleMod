@@ -13,16 +13,20 @@
   "neckHandleScale": 0.25,
   "refinedProximalShaft": true,
   "schema": "malemod.geralt-modular-authoring/1",
-  "sharedSourceRevision": "d89920edd2168f399ccd06263a7af0eb5318ae1c",
+  "sharedSourceRevision": "7207e62194e622999007b1a42df007a416460460",
   "completeShaft": true,
   "visibleUnion": true,
   "protectedLobeVertices": 4759,
   "sourceUnits": "Measured legacy source coordinates; not physical centimeters.",
   "boundary": "Keep joined stock torso/lower-body resources and shared waist exact.",
-  "reproduction": "See docs/SCROTAL-PROXIMAL-HOURGLASS-20261018.md; regenerate licensed source locally.",
+  "reproduction": "See docs/SCROTAL-ENVELOPE-20261019.md; regenerate licensed sources locally.",
   "omissions": [
     "Licensed source geometry, binary assets, captures and user data are private."
   ],
   "rearExtension": 0.0,
-  "suspensionShift": 1.5
+  "suspensionShift": 1.5,
+  "neckStartHandleScale": 1.0,
+  "neckEndHandleScale": 0.25,
+  "lowerMaterialTransitionFraction": 0.2,
+  "lowerFineDetailTransitionFraction": 0.03
 }
