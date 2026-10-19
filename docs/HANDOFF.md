@@ -1,3 +1,23 @@
+## October19 - compact raised root ramp installed
+
+Shared pin fcb98a4 adds a small clearance-bounded forward shoulder to the root
+annulus and modestly expands its radial footprint. Initial stitch and live
+repose agree; original pelvis, waist, donor/UV lineage, suspension materials and
+numerical physics remain intact. Witcher adoption:b977c39. Eight C++ tests,
+32 prior-pose replays and68 new captured-pose audits pass.252 native stages
+captured;246 usable views reviewed across controls/states/motion/LOD/campaign,
+with six wall-occluded views superseded by a dedicated distance run.
+Installed startup/walking observed;53 managed and31 protected files verify.
+Owned sessions closed; saves/audio/settings preserved; Steam preflight passes.
+DLL fd95ca61331a983788208480b9ecd372b16d61d24751a3274eaaf64c240b0935.
+Rollback:TheWitcher3MaleMod/local/native-backup-modular-20261019-114157.
+Evidence:D:/MaleModBuilds/modular-anatomy-20261015/root-ramp-20261019/candidate-01.
+See docs/ROOT-RADIAL-RAMP-20261019.md for construction, adoption and limits.
+Finite representative coverage; existing extreme distal defects remain.
+114 compiler inputs archived, including pre-existing dirty adapter code;
+not a clean-checkout release. Preview copy checksum failure repaired from the
+verified original before any native run; validation remained enabled.
+
 ## October19 - two suspension shading seams repaired and installed
 
 The user rejected the previous repair: a horizontal lower band and sharp upper
