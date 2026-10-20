@@ -1,3 +1,7 @@
+## October 20 - storage consolidation
+
+Canonical repositories now live under D:/MaleMod; all generated/private working data belongs in D:/MaleMod/Work. Read docs/STORAGE-LAYOUT.md before generating output. Current source is backed up on GitHub branch codex/storage-consolidation-20261020. Historical backup images, preview games and diagnostic banks were explicitly retired by the user; old evidence paths below are historical, not retained files. No new runtime was installed by this storage operation.
+
 ## 2026-10-19: live pulse / slider cadence repair, Candidate14 (not installed)
 
 Latest user defect: visible pulses and slider geometry updated roughly once
@@ -999,7 +1003,7 @@ unresolved. User visual approval is pending. No install, launch, push, release
 or Wolverine change; installed `40dfa86` and retained `2ad61e3` rollback remain.
 
 
-## October 6 wider ramp revision — approval pending
+## October 6 wider ramp revision ï¿½ approval pending
 
 The user requested a larger, smoother ramp after reviewing the first matched
 previews. This remains an offline source candidate; no installation or game
@@ -1031,7 +1035,7 @@ for the user's review; do not label the full attachment visually accepted.
 The previous installed `40dfa86` and exact older `2ad61e3` rollback are unchanged.
 
 
-## October 6 original-pelvis bell — approval previews, not installed
+## October 6 original-pelvis bell ï¿½ approval previews, not installed
 
 The user rejected the installed `40dfa86` result for a raised shelf and asked
 for camera-matched original bare pelvis versus attached anatomy before further
@@ -1058,7 +1062,7 @@ last prior accepted `2ad61e3` rollback is retained in
 requested preview review. Wolverine is untouched. No push/release this turn.
 
 
-## October 6 progressive radial ramp — installed and reviewed
+## October 6 progressive radial ramp ï¿½ installed and reviewed
 
 Attachment continuity remains the mandatory highest-priority gate in Base and
 both adapters. Read `AGENTS.md`, `docs/PROJECT-CONTEXT.md`,
@@ -2675,3 +2679,4 @@ its diagnostic material-mask correction is not a shipped repair. Reject the
 radius, loft/profile and owned-arc15 studies; constrained continuous/spatial
 profile studies stopped short. No worker is running and no candidate installed.
 All37 installed managed hashes matched. Preserve existing runtime/rollback.
+
