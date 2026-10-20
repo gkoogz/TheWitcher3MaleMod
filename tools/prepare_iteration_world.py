@@ -410,7 +410,7 @@ def prepare(native=False, cook=False, stock_bootstrap=False, native_layer_struct
         terrainResolutionDerivation=dict(clipSize=256,totalResolution=1024,levels=2,
             nativeRule='CClipMap::Reinit halves total until <=clipSize; power-of-two clipSize>=256',
             sdkSymbol='CClipMap::Reinit(SClipmapParameters const&)',sdkAddress='0x142af32b0',
-            diagnosticDisassemblySHA256=digest(Path('E:/MaleModBuilds/isolation-capability/clipmap-init-sdk.txt'))),
+            diagnosticDisassemblySHA256=digest((ROOT/'build/isolation-capability/clipmap-init-sdk.txt'))),
         terrainTileLineage=dict(originalTileCoordinates=[0,0],originalTileResolution=1024,
             originalElevationRange=[-50,100],ownedElevationRange=[-200,-50],
             verticalTranslation=-150,nativeTileBytesUnchanged=True),
