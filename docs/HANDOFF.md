@@ -10,6 +10,21 @@ The final DLL completed grey-room, campaign and cadence sessions; consult
 records for deployment identity. Preserve the documented scrotal shading
 limitation separately from the reviewed pelvic root.
 
+**Installed October 20:** runtime source `ebbb316`, pinned Base `5ae173f`.
+DLL `2ceb410e92dc53c42a092362d9d36f90b01f41eda6df2d335579dfaf0b17534d`;
+worker `d5120a7f81cfbe5f59234de210d0aaabe55b99c89d04feb8f96c5c00bc070044`.
+All 53 managed files and 31 protected files verified. One rollback is retained
+at `local/native-rollback-current`; it contains the preceding managed runtime,
+not a game image. Installed-runtime grey-room startup and grounded walking
+were observed in `sealed-session-20261020-174941`; all 24 saves and audio were
+restored after closing. The existing Steam room entry is rebound to the current
+locally generated package and passes `tools/play_grey_room.py --check`.
+This does not establish normal campaign-menu startup or exact Wolverine parity.
+Base and adapter source are backed up on `codex/storage-consolidation-20261020`.
+Final evidence is under `Work/witcher/runtime-rearchitecture`. Current captures
+were relocated from C to that folder; 240 verified-restored temporary save
+copies were removed, retaining their transaction receipts.
+
 Canonical repositories now live under D:/MaleMod; all generated/private working data belongs in D:/MaleMod/Work. Read docs/STORAGE-LAYOUT.md before generating output. Current source is backed up on GitHub branch codex/storage-consolidation-20261020. Historical backup images, preview games and diagnostic banks were explicitly retired by the user; old evidence paths below are historical, not retained files. No new runtime was installed by this storage operation.
 
 ## 2026-10-19: live pulse / slider cadence repair, Candidate14 (not installed)

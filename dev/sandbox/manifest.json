@@ -93,13 +93,13 @@
     },
     {
       "path": "tools/run_sealed_session.py",
-      "sha256": "4e6933ad746644b76ab49196f57b73d43b3f98d0567a82210793eaddaccf4de8",
-      "bytes": 7199
+      "sha256": "e382fddbbd05c5498bc7578e0a7d5a13ab678e113d8480d90b5101e924153691",
+      "bytes": 7248
     },
     {
       "path": "tools/close_sealed_session.py",
-      "sha256": "162eaebda717656a0da9e3936ec0760536fd63eea8a09641b9844608cab0e988",
-      "bytes": 4885
+      "sha256": "ad82f6c8a1d4967724e4aac7dd5f8ede877e51d40002b797cd2998b7ef93d7bb",
+      "bytes": 4897
     },
     {
       "path": "native/launch_sealed.cpp",
@@ -128,8 +128,8 @@
     },
     {
       "path": "tools/compile_native_scripts.py",
-      "sha256": "14daeb6762df88e1de967941ef1afab6c71418a02fa3fe02b55e987867558ffb",
-      "bytes": 6274
+      "sha256": "896d720f371d640b7317c5f6ae553fce4d5d1077c16445d735d2343771f23c8c",
+      "bytes": 6286
     },
     {
       "path": "characters/compiler-native-profile.json",

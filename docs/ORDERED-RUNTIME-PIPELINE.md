@@ -85,3 +85,12 @@ Private, hash-bound build, parity, native, visual and installation records live
 under `D:/MaleMod/Work/witcher/runtime-rearchitecture`. They are not source
 assets and are excluded from Git. The installation receipt is authoritative for
 whether this candidate has actually replaced the installed runtime.
+
+## Deployment
+
+Installed on October 20 after the pelvic-attachment matrix review and installer
+preflight. All 53 managed files and 31 protected files verified. An additional
+sealed run of the installed runtime observed grounded movement in the room;
+the manual Steam room entry was rebound and its preflight passes. No host
+keyboard, mouse or focus automation was used. The one preceding managed runtime
+is retained at `local/native-rollback-current`.
