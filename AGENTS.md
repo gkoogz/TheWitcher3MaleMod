@@ -83,3 +83,7 @@ source, offline, native and visual evidence separately. If any part is untested,
 state it explicitly and do not claim the attachment gate passed. Retain the last
 accepted runtime and exact rollback until the replacement passes. Put shared
 algorithms and regression cases in Base and adopt them through pinned adapters.
+
+## Storage consolidation
+Read docs/STORAGE-LAYOUT.md before generating builds, captures, previews or backups. All non-repository work belongs under D:/MaleMod/Work. GitHub is the source backup; do not recreate retired backup images.
+
