@@ -35,9 +35,9 @@ class RuntimeHost {
    case RuntimeTick::Invalid:return HostTick::Invalid;default:error_=controller_->Error();return HostTick::Failed;
   }}catch(const std::exception& e){error_=e.what();return HostTick::Failed;}
  }
- std::shared_ptr<const RuntimeDelivery> Poll(std::uint32_t epoch){
+ std::shared_ptr<const RuntimeDelivery> Poll(std::uint32_t epoch,bool skin=false){
   std::unique_lock<std::mutex> lock(mutex_,std::try_to_lock);if(!lock.owns_lock()||!epoch||active_!=epoch||requested_!=epoch||!controller_)return {};
-  controller_->Publish();return controller_->Latest();
+  controller_->Publish();return skin?controller_->LatestSkin():controller_->Latest();
  }
  std::string Error(){std::lock_guard<std::mutex> lock(mutex_);return error_;}
 };

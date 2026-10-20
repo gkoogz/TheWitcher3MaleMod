@@ -61,6 +61,58 @@ def session_game(receipt):
     return load_preview(receipt['nativePreview'], receipt['nativePreviewSHA256'], False)[0]
 
 
+def refresh_closed(manifest, receipt, dll, worker=None):
+    """Replace only binaries in a verified, closed owned preview."""
+    manifest, receipt = Path(manifest).resolve(), Path(receipt).resolve()
+    session = read_json(receipt)
+    if (not session.get('closed') or not session.get('audioRestored')
+            or not session.get('iterationWorldFilesRemoved')
+            or Path(session.get('nativePreview', '')).resolve() != manifest):
+        raise ValueError('Preview refresh needs its verified closed room receipt')
+    running = subprocess.check_output(
+        ['tasklist', '/FI', 'IMAGENAME eq witcher3.exe', '/FO', 'CSV', '/NH'],
+        creationflags=subprocess.CREATE_NO_WINDOW, text=True)
+    if 'witcher3.exe' in running.lower():
+        raise ValueError('Close the game before refreshing the private preview')
+    game, data = load_preview(manifest)
+    original_manifest = manifest.read_bytes()
+    prefix = 'bin/x64_dx12/malemod-native/'
+    replacements = {prefix+'malemod_witcher.dll': Path(dll).read_bytes()}
+    if worker:
+        replacements[prefix+'surface_worker.exe'] = Path(worker).read_bytes()
+        profile = game/(prefix+'malemod-runtime.profile')
+        raw = profile.read_bytes()
+        if raw[:8] != b'MMRUN001' or raw[48:112] != digest(game/(prefix+'surface_worker.exe')).encode('ascii'):
+            raise ValueError('Existing private worker binding differs')
+        replacements[prefix+'malemod-runtime.profile'] = raw[:48]+digest(Path(worker)).encode('ascii')+raw[112:]
+    original = {}
+    try:
+        for relative, payload in replacements.items():
+            target = game/relative
+            if target.resolve() != target or target.is_symlink() or target.stat().st_nlink != 1:
+                raise ValueError('Preview binary is not an owned regular copy')
+            original[relative] = target.read_bytes()
+            target.write_bytes(payload)
+            row = next(item for item in data['files'] if item['path'] == relative)
+            row.update(sha256=digest(target), derived='Closed private runtime refresh')
+            if relative.endswith('malemod_witcher.dll'):
+                row['source'] = str(Path(dll).resolve())
+            elif relative.endswith('surface_worker.exe'):
+                row['source'] = str(Path(worker).resolve())
+            else:
+                row['workerSHA256'] = digest(Path(worker))
+        data['candidateAccepted'] = False
+        data['previousClosedSession'] = str(receipt)
+        write_json(manifest, data)
+        load_preview(manifest)
+    except Exception:
+        for relative, payload in original.items():
+            (game/relative).write_bytes(payload)
+        manifest.write_bytes(original_manifest)
+        raise
+    return manifest
+
+
 def prepare(dll=None, worker=None, sewn_corrective=None, recruitment=None, modular_geometry=None, modular_native=None, modular_dynamic=None, modular_materials=None, modular_transfer=None, material_package=None):
     stock = settings()['game']
     installed = read_json(ROOT/'local/native-installation.json')

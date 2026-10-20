@@ -1,5 +1,10 @@
 # The Witcher 3 MaleMod adapter
 
+**October 20 development architecture:** independent numerical, retained-skin
+and presentation stages remove the mesh dependency from physics admission.
+See [measurements, native coverage and limits](docs/ORDERED-RUNTIME-PIPELINE.md).
+This is not a new published release or a claim of measured Wolverine parity.
+
 **October 11 local startup repair:** Steam build 25773555 is observed working
 with the installed native compatibility update and narrow startup-movie helper.
 See [repair identities, verification and rollback](docs/HANDOFF.md).

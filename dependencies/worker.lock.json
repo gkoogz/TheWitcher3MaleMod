@@ -1,0 +1,12 @@
+{
+  "schema": "malemod.numerical-worker-pin/1",
+  "repository": "https://github.com/gkoogz/MaleModBase.git",
+  "commit": "5ae173f45c5ce5687c4c44ad179bcbf15f3e0e13",
+  "bindingRevision": "431e626cae6fb6720b552f8b20206727fe809c80",
+  "wireVersion": 6,
+  "orderedRuntimeOperations": true,
+  "mechanicalOperation": 4,
+  "retainedSkinOperation": 5,
+  "sourceConsumptionProof": "build/physical-reaction-source-proof-5ae173f/proof.json",
+  "compatibility": "240 ordered numerical samples and 7218 retained donors exact against preceding worker; six packed native cases exact. Native acceptance remains a separate gate."
+}

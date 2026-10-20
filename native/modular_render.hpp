@@ -5,10 +5,12 @@
 #include <malemod/surface/modular_transfer.hpp>
 #include <malemod/surface/root_articulation.hpp>
 #include <malemod/surface/live_controls.hpp>
+#include <malemod/surface/ordered_normals.hpp>
 #include <memory>
 #include <chrono>
 
 namespace malemod::witcher {
+inline TaskArena& ModularPresentationArena(){thread_local TaskArena arena(4);return arena;}
 struct ModularVertex {
  std::array<float,3> position;std::uint32_t bones=0,weights=0,normal=0,tangent=0;
  std::array<std::uint16_t,2> uv{};std::uint32_t color=0;std::array<std::uint16_t,2> reflection{};
@@ -27,10 +29,14 @@ struct ModularControlTopology {
  std::vector<surface::LiveControlLoft> lofts;
  std::vector<unsigned> sourceLofts;
  std::vector<surface::LiveControlDonor> bodyDonors;
+ std::shared_ptr<const surface::OrderedNormals> normals;
 };
 struct ModularFrame {
  std::array<ModularPart,4> parts;surface::PresentationFrames frames{};
  double milliseconds=0;bool rebuilt=false;std::array<double,3> materialScale{1,1,1};
+ std::array<double,6> stageMilliseconds{}; // build, pose, normals, shading, pack, layout
+ std::array<double,4> poseMilliseconds{};
+ bool materialNozzle=false;surface::PresentationPoint nozzle{},nozzleDirection{1,0,0};
  std::shared_ptr<const ModularControlTopology> controlTopology;
  std::vector<surface::PresentationPoint> controlPoints;
  surface::LiveControlFrame controlFrame;
@@ -44,6 +50,7 @@ class ModularRenderer {
  using Vec=surface::modular::Vec;using State=surface::modular::State;
  struct Row {unsigned geometric=0;std::uint32_t bones=0,weights=0;std::array<std::uint16_t,2> uv{};std::uint32_t color=0;std::array<std::uint16_t,2> reflection{};Vec tangent{};double sign=1;};
  struct Part {unsigned resource=0,lod=0,carrierFirst=0,carrierCount=0;std::vector<Row> rows;std::shared_ptr<const std::vector<unsigned>> indices;};
+ std::shared_ptr<TaskArena> arena_=std::make_shared<TaskArena>(4);
  surface::modular::Asset asset_;surface::modular::Plan plan_;
  const RenderContract& contract_;std::array<Part,4> parts_;
  std::vector<unsigned char> fixed_;std::vector<Vec> fixedPoints_,referenceNormals_;
@@ -56,6 +63,9 @@ class ModularRenderer {
  mutable std::shared_ptr<const std::vector<surface::modular::Binding>> materialBindings_;
  mutable std::shared_ptr<const std::vector<double>> crownWeights_;
  mutable surface::PresentationFrames materialFrames_{};
+ mutable State materialState_;
+ mutable Vec nozzleLocal_{},nozzleAxis_{1,0,0};
+ mutable bool compactSource_=false;
  static Vec Normal(Vec v,Vec fallback){const double n=surface::Dot(v,v);return n>1e-24?surface::Scale(v,1/std::sqrt(n)):fallback;}
  static Vec Transport(Vec v,Vec a,Vec b){
   using namespace surface;const auto axis=Cross(a,b);const double cosine=std::clamp(Dot(a,b),-1.,1.);
@@ -70,7 +80,7 @@ class ModularRenderer {
  static unsigned Pack(Vec v,unsigned high){unsigned word=high<<30;v=surface::Unit(v);for(unsigned k=0;k<3;k++)word|=unsigned(std::clamp((v[k]+1)*.5,0.,1.)*1023+.5)<<(10*k);return word;}
  public:
  ModularRenderer(const std::filesystem::path& geometry,const std::filesystem::path& native,const RenderContract& contract,const std::string& geometryHash,const std::string& carrierHash)
- :asset_(geometry),plan_(asset_.MakePlan()),contract_(contract){
+ :asset_(geometry),plan_(asset_.MakePlan(arena_)),contract_(contract){
   if(std::filesystem::file_size(native)>64*1024*1024)throw std::invalid_argument("Oversize modular native contract");
   std::ifstream in(native,std::ios::binary);
   auto bytes=[&](void* p,std::size_t n){if(!in.read(static_cast<char*>(p),n))throw std::invalid_argument("Truncated modular native contract");};
@@ -95,6 +105,7 @@ class ModularRenderer {
   if(in.peek()!=EOF)throw std::invalid_argument("Trailing modular native contract");referenceNormals_=GeometricNormals(asset_.rest);
  }
  State Drive(const surface::Output& source,Vec pivot={},double radians=0,std::shared_ptr<const surface::Output> shape={},double hang=50)const{
+  compactSource_=source.anatomy.positions.empty();
   auto state=surface::modular::DrivenState(asset_.reference,asset_.dimensions,source);
   state.hangControl=hang;
   state.suspensionProfile=true;
@@ -109,7 +120,10 @@ class ModularRenderer {
      // stations. Reposing an initialized surface onto restGuide compressed its
      // final intervals before simulation even started. The zero-motion capture
      // supplies both the material geometry and its matching guide frames.
-     materialFrames_=material.frames;materialScale_=material.scales[1];
+     materialFrames_=material.frames;materialScale_=material.scales[1];materialState_=material;
+     const auto shift=surface::Sub(material.frames[1].origin,surface::MaterialFrames(rest)[1].origin);
+     nozzleLocal_=surface::Unrotate(material.frames[12].basis,surface::Sub(surface::Add(flow.Apply(surface::Precise(shape->nozzlePosition)),shift),material.frames[12].origin));
+     nozzleAxis_=surface::Unrotate(material.frames[12].basis,flow.Vector(surface::Precise(shape->nozzleDirection)));
      auto bindings=std::make_shared<std::vector<surface::modular::Binding>>(surface::modular::BindMaterialStations(*points,asset_.bindings,materialFrames_));
      shapePoints_=points;materialBindings_=bindings;shapeSource_=shape;shapeAngle_=radians;
     }
@@ -117,14 +131,24 @@ class ModularRenderer {
     state.shapeFrames=materialFrames_;state.materialBindings=materialBindings_;state.shaftMaterial=shapePoints_;state.crownWeights=crownWeights_;
     surface::modular::AnchorRootPhysics(state,source.proximalRadius,source.restLength);surface::modular::PreserveMaterialLengths(state);
    }
-   transfer_->Apply(asset_,plan_,state,source,[&](auto p){return flow.Apply(p);},!shape);
+   if(source.anatomy.positions.empty()){
+    if(!shapePoints_||!shape)throw std::invalid_argument("Compact mechanics needs prepared morphology");
+    transfer_->ApplyPrepared(asset_,state,materialState_,*shapePoints_);
+   }else transfer_->Apply(asset_,plan_,state,source,[&](auto p){return flow.Apply(p);},!shape);
   }
   return state;
  }
  void EnableTransfer(const std::filesystem::path& path,const std::string& geometryHash){auto transfer=std::make_unique<surface::modular::SurfaceTransfer>(path);if(transfer->geometryHash!=geometryHash)throw std::invalid_argument("Modular transfer geometry identity differs");transfer_=std::move(transfer);}
  void EnableDynamic(const std::filesystem::path& dynamic,const std::filesystem::path& materials,const std::string& geometryHash,const std::string& dynamicHash,const std::string& nativeHash){dynamic_=std::make_unique<ModularDynamicRenderer>(asset_,plan_,contract_,dynamic,materials,geometryHash,dynamicHash,nativeHash);}
  std::shared_ptr<const ModularFrame> Evaluate(const State& state)const{
-  if(dynamic_){auto frame=dynamic_->Evaluate(state);return frame;}
+  if(dynamic_){auto frame=dynamic_->Evaluate(state);
+   if(compactSource_){
+    frame->materialNozzle=true;const auto& tip=frame->frames[12];
+    frame->nozzle=surface::Add(tip.origin,surface::Scale(surface::Rotate(tip.basis,surface::modular::Components(nozzleLocal_,state.materialScale)),contract_.calibration.targetUnitsPerSourceUnit));
+    frame->nozzleDirection=surface::Unit(surface::Rotate(tip.basis,surface::modular::Components(nozzleAxis_,state.materialScale)));
+   }
+   return frame;
+  }
   const auto start=std::chrono::steady_clock::now();auto p=asset_.Evaluate(plan_,state);auto geometryNormals=GeometricNormals(p);std::vector<Vec> normal(p.size());
   for(unsigned i=0;i<p.size();i++){normal[i]=Normal(Transport(surface::Unit(asset_.normals[i]),referenceNormals_[i],geometryNormals[i]),geometryNormals[i]);p[i]=fixed_[i]?fixedPoints_[i]:contract_.calibration.PointToTarget(p[i]);normal[i]=contract_.calibration.VectorToTarget(normal[i]);}
   auto frame=std::make_shared<ModularFrame>();

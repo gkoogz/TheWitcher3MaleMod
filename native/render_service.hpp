@@ -124,6 +124,9 @@ class RenderService {
   surface::PresentationFrames fa{},fb{},displayFrames{};
   std::unique_ptr<ModularService> geometry;if(modular_)geometry=std::make_unique<ModularService>(modular_);
   std::shared_ptr<const ModularFrame> modularA,modularB,modularShown;
+  std::shared_ptr<const ModularFrame> liveControlInput;
+  surface::Controls liveControlRequested,liveControlAuthored;
+  LiveControlPresentation liveControlCached;
   surface::PrecisePoint nozzleA{},nozzleB{},directionA{},directionB{},shownNozzle{},shownDirection{1,0,0};
   auto began=Clock::now(),arrived=began,nextTick=began;double duration=1./60.;bool active=false;
   std::uint64_t presentationSerial=0;
@@ -151,6 +154,7 @@ class RenderService {
      a=snap?complete:vertices;fa=snap?targetFrames:displayFrames;b=complete;fb=targetFrames;
      auto np=contract_.calibration.PointToTarget(surface::Precise(source->surface->frame.source.nozzlePosition));
      auto nd=contract_.calibration.VectorToTarget(surface::Precise(source->surface->frame.source.nozzleDirection));
+     if(modular_&&prepared->frame->materialNozzle){np=prepared->frame->nozzle;nd=prepared->frame->nozzleDirection;}
      nozzleA=snap?np:shownNozzle;directionA=snap?nd:shownDirection;nozzleB=np;directionB=nd;
      duration=std::clamp(std::chrono::duration<double>(started-arrived).count(),1./60.,.15);arrived=began=started;
      active=!snap;cached=source;cachedEpoch=pose.epoch;
@@ -175,7 +179,12 @@ class RenderService {
     if(modular_){
      modularShown=phase==1?modularB:PresentModular(*modularA,*modularB,phase,contract_);
      const auto controlStart=Clock::now();
-     auto live=PresentBoundedLiveControls(modularShown,source->surface->input.controls,requestedControls,contract_);
+     if(liveControlInput!=modularShown||liveControlRequested.values!=requestedControls.values||
+       liveControlAuthored.values!=source->surface->input.controls.values){
+      liveControlCached=PresentBoundedLiveControls(modularShown,source->surface->input.controls,requestedControls,contract_);
+      liveControlInput=modularShown;liveControlRequested=requestedControls;liveControlAuthored=source->surface->input.controls;
+     }
+     const auto& live=liveControlCached;
      next->modular=live.frame;next->controls=live.applied;next->liveControlFraction=live.fraction;
      next->liveControlDeformed=next->modular!=modularShown;
      next->liveControlMilliseconds=std::chrono::duration<double,std::milli>(Clock::now()-controlStart).count();

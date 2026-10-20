@@ -16,12 +16,14 @@ from run_iteration_world import launch, finish
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--dll", type=Path, required=True)
+    p.add_argument("--worker", type=Path)
     p.add_argument("--artifacts", type=Path, required=True)
     p.add_argument("--materials", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--package", type=Path)
     p.add_argument("--preview", type=Path, help="Reuse an already prepared, verified preview")
-    p.add_argument("--case", default="modular-cadence", choices=("modular-cadence", "modular-review", "shape-review"))
+    p.add_argument("--resume", type=Path, help="Resume monitoring an exact unfinished campaign receipt")
+    p.add_argument("--case", default="modular-cadence", choices=("modular-cadence", "modular-review", "shape-review", "campaign"))
     p.add_argument("--last-stage", type=int, default=1239)
     a = p.parse_args()
     a.output = a.output.resolve()
@@ -33,7 +35,7 @@ def main():
         raise ValueError("Existing session must be reviewed and closed before replacement")
     n = a.artifacts.resolve()
     preview = a.preview or prepare(
-        dll=a.dll, modular_geometry=n / "geralt.modular",
+        dll=a.dll, worker=a.worker, modular_geometry=n / "geralt.modular",
         modular_native=n / "geralt.modular-native",
         modular_dynamic=n / "geralt.modular-dynamic",
         modular_materials=n / "geralt.modular-materials",
@@ -42,11 +44,44 @@ def main():
     )
     case = ROOT / "build/collar-sessions" / a.case
     package = a.package or Path(read_json(ROOT / "local/grey-room-launch.json")["package"])
-    receipt = launch(
-        package, native_preview=preview,
-        driver_source=case / "workspace/scripts/local/malemod/collar_integrity.ws",
-        compile_proof=case / "compile.json",
-    )
+    if a.resume and a.case != "campaign":
+        raise ValueError("Only an existing campaign monitor can be resumed")
+    if a.case == "campaign":
+        from run_sealed_session import run
+        from iteration_save_transaction import begin
+        if a.resume:
+            receipt = a.resume.resolve()
+            if not receipt.is_relative_to((ROOT/"build/probe").resolve()):
+                raise ValueError("Campaign receipt leaves owned sessions")
+            session = read_json(receipt)
+            transaction = a.output/"save-transaction/receipt.json"
+            if (session.get("closed") or session["moduleSHA256"] != digest(a.dll)
+                    or session["nativePreviewSHA256"] != digest(preview)
+                    or Path(session["driver"]).resolve() != (case/"workspace/scripts/local/malemod/collar_integrity.ws").resolve()
+                    or session["driverCompileProofSHA256"] != digest(case/"compile.json")
+                    or read_json(transaction).get("finishedUnixSeconds")):
+                raise ValueError("Campaign identity or original save transaction differs")
+        else:
+            transaction = begin(Path.home()/"Documents/The Witcher 3/gamesaves",
+                                a.output/"save-transaction")
+            session = run(native_preview=preview,
+                          launcher_path=ROOT/"build/iteration-launch/launch_sealed.exe",
+                          game_arguments=("-windowed",),
+                          driver_source=case/"workspace/scripts/local/malemod/collar_integrity.ws",
+                          compile_proof=case/"compile.json")
+            matches = [p for p in (ROOT/"build/probe").glob("sealed-session-*/receipt.json")
+                       if read_json(p)["observations"] == session["observations"]]
+            if len(matches) != 1:
+                raise RuntimeError("Exact campaign receipt is ambiguous")
+            receipt = matches[0]
+        session["campaignSaveTransaction"] = str(transaction)
+        write_json(receipt,session)
+    else:
+        receipt = launch(
+            package, native_preview=preview,
+            driver_source=case / "workspace/scripts/local/malemod/collar_integrity.ws",
+            compile_proof=case / "compile.json",
+        )
     session = read_json(receipt)
     write_json(a.output / "native-session.json", dict(
         receipt=str(receipt), preview=str(preview), dllSHA256=digest(a.dll),
@@ -54,7 +89,7 @@ def main():
     ))
     trace = Path(session["modulePath"]).parent / (
         f'verification-{session["observations"]["processID"]}.jsonl')
-    deadline = time.monotonic() + (900 if a.case == "modular-review" else 600)
+    deadline = time.monotonic() + (900 if a.case in ("modular-review","campaign") else 600)
     rows = []
     shots = []
     try:
@@ -67,7 +102,7 @@ def main():
             if a.last_stage in stages:
                 # The script requests its last screenshot after recording the
                 # checkpoint. Do not close the game before the PNG completes.
-                expected_shots = {"modular-cadence": 7, "modular-review": 97, "shape-review": 19}[a.case]
+                expected_shots = {"modular-cadence": 7, "modular-review": 97, "shape-review": 19, "campaign": 39}[a.case]
                 capture_deadline = time.monotonic() + 30
                 while time.monotonic() < capture_deadline:
                     shots = sorted((p for p in (Path.home() / "Documents/The Witcher 3/screenshots").glob("*.png")
@@ -99,7 +134,15 @@ def main():
     finally:
         (a.output / "native-trace.jsonl").write_text(
             "".join(json.dumps(r) + "\n" for r in rows))
-        finish(receipt)
+        if a.case == "campaign":
+            from close_sealed_session import close
+            from iteration_save_transaction import restore
+            closed = close(receipt)
+            saved = restore(transaction, closed_private_session=closed.get("closed",False))
+            closed["campaignSaveOriginalsVerified"] = saved["originalsVerified"]
+            write_json(receipt,closed)
+        else:
+            finish(receipt)
     if a.case != "modular-cadence":
         write_json(a.output / "native-review.json", dict(
             installed=False, receipt=str(receipt), stages=sorted({r["stage"] for r in rows}),

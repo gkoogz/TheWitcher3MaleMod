@@ -110,6 +110,18 @@ class SurfaceClient {
  malemod::surface::Output Evaluate(const wire::Request& request,DWORD timeout=1000){
   std::lock_guard<std::mutex> lock(mutex_);return Decode(Exchange(Encode(request),1,timeout));
  }
+ malemod::surface::Output EvaluateMechanical(const wire::Request& request,DWORD timeout=1000){
+  std::lock_guard<std::mutex> lock(mutex_);auto output=Decode(Exchange(Encode(request),4,timeout));
+  if(!output.anatomy.positions.empty()||!output.body[0].positions.empty()||!output.body[1].positions.empty())
+   throw std::runtime_error("Mechanical worker returned an unexpected surface");
+  return output;
+ }
+ malemod::surface::Output EvaluateRetainedSkin(const wire::Request& request,DWORD timeout=1000){
+  std::lock_guard<std::mutex> lock(mutex_);auto output=Decode(Exchange(Encode(request),5,timeout));
+  if(output.anatomy.positions.empty()||!output.body[0].positions.empty()||!output.body[1].positions.empty())
+   throw std::runtime_error("Retained-skin worker returned an unexpected surface contract");
+  return output;
+ }
  malemod::surface::Output Initialize(const malemod::surface::Controls& controls,DWORD timeout=10000){
   std::lock_guard<std::mutex> lock(mutex_);wire::Request request;request.controls=controls;
   return Decode(Exchange(Encode(request),3,timeout));

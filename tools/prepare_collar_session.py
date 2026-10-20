@@ -74,7 +74,7 @@ def prepare(root_review=False, angle_sweep=False, side_profile=False, repair_rev
     if text.count(needle)!=1 or text.count('        MaleModIterationWalk();')!=1:raise ValueError('Maintained room bootstrap changed; review composition')
     text=text.replace(needle,needle+'\n    if (maleModIterationStarted) {MaleModCollarCaseStep();return;}')
     text=text.replace('        MaleModIterationWalk();','        // The collar driver owns its later bounded walk.')
-    if distant_review:
+    if distant_review or (modular_review and not (hang_review or skin_review or cadence_review)):
         # A 15 m camera is outside the ordinary walls at +/-14 m. Move only
         # the owned backdrop entities; retain the same floor and native actor.
         for axis in ('X','Y'):

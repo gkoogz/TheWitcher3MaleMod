@@ -25,8 +25,9 @@ class RuntimeController {
  double lastWall_=0,simulationSeconds_=0;
  struct Stamp {std::uint64_t sequence=0;PoseMatrix delta{};double seconds=0;bool contacts=false;};
  // In-flight + queued + last result. No geometry is retained in this ring.
- std::array<Stamp,16> stamps_{};
+ std::array<Stamp,256> stamps_{};
  std::shared_ptr<const RuntimeDelivery> delivery_;
+ std::shared_ptr<const RuntimeDelivery> skinDelivery_;
  std::uint64_t inFlight_=0;
  public:
  RuntimeController(std::wstring worker,std::filesystem::path bindings,std::string revision,
@@ -100,14 +101,19 @@ class RuntimeController {
   }catch(const std::invalid_argument&){return RuntimeTick::Invalid;}
  }
  void Publish(){
-  auto result=service_.Latest();if(!result)return;
-  auto old=Latest();if(old&&old->surface->sequence==result->sequence)return;
+  PublishOne(service_.Latest(),delivery_);
+  PublishOne(service_.LatestSkin(),skinDelivery_);
+ }
+ void PublishOne(std::shared_ptr<const CompletedSurface> result,std::shared_ptr<const RuntimeDelivery>& destination){
+  if(!result)return;
+  auto old=std::atomic_load_explicit(&destination,std::memory_order_acquire);if(old&&old->surface->sequence==result->sequence)return;
   const auto& stamp=stamps_[result->sequence%stamps_.size()];
   if(stamp.sequence!=result->sequence)throw std::runtime_error("Completed geometry lost its exact accepted pose stamp");
   auto next=std::make_shared<RuntimeDelivery>(RuntimeDelivery{std::move(result),stamp.delta,stamp.seconds,stamp.contacts});
-  std::atomic_store_explicit(&delivery_,std::shared_ptr<const RuntimeDelivery>(std::move(next)),std::memory_order_release);
+  std::atomic_store_explicit(&destination,std::shared_ptr<const RuntimeDelivery>(std::move(next)),std::memory_order_release);
  }
  std::shared_ptr<const RuntimeDelivery> Latest()const{return std::atomic_load_explicit(&delivery_,std::memory_order_acquire);}
+ std::shared_ptr<const RuntimeDelivery> LatestSkin()const{return std::atomic_load_explicit(&skinDelivery_,std::memory_order_acquire);}
  std::string Error(){return service_.Error();}
  double SimulationSeconds()const{return simulationSeconds_;}
 };

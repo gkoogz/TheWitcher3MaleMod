@@ -1,8 +1,14 @@
 ## October 20 - storage consolidation
 
-Latest architecture checkpoint: see **October 20 - independent live slider
-presentation** at the end of this file. Final native slider intervals are
-148/146 ms; the candidate remains uninstalled.
+Latest architecture checkpoint: see `docs/ORDERED-RUNTIME-PIPELINE.md`.
+Ordered numerical stepping, retained skin and presentation now run independently.
+Final native mesh preparation measured 39.81 ms versus the preceding candidate's
+64.60 ms; width/angle acknowledgement intervals are 137/148 ms including the
+driver's 100 ms hold. Exact Wolverine performance parity is not established.
+The final DLL completed grey-room, campaign and cadence sessions; consult
+`local/native-installation.json` and the current Work acceptance/installation
+records for deployment identity. Preserve the documented scrotal shading
+limitation separately from the reviewed pelvic root.
 
 Canonical repositories now live under D:/MaleMod; all generated/private working data belongs in D:/MaleMod/Work. Read docs/STORAGE-LAYOUT.md before generating output. Current source is backed up on GitHub branch codex/storage-consolidation-20261020. Historical backup images, preview games and diagnostic banks were explicitly retired by the user; old evidence paths below are historical, not retained files. No new runtime was installed by this storage operation.
 

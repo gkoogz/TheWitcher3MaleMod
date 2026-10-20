@@ -21,16 +21,16 @@ struct SurfaceFrame {
 // Blocking worker-side composition. Invoke from an owned numerical worker,
 // never from a render hook or script callback while holding engine locks.
 class SurfacePipeline {
- SurfaceClient source_;TargetSurface target_;bool parallel_,modular_;
+ SurfaceClient source_;TargetSurface target_;bool parallel_,modular_,mechanicsOnly_;
  std::wstring workerPath_;std::shared_ptr<const surface::Output> shape_;
  std::optional<surface::Controls> shapeControls_;
  std::array<std::vector<surface::PrecisePoint>,2> neutralTarget_;
  public:
- SurfacePipeline(const std::wstring& worker,const std::filesystem::path& bindings,const std::string& revision,bool parallel=true,bool modular=false):source_(worker),target_(bindings,revision),parallel_(parallel),modular_(modular),workerPath_(worker){}
+ SurfacePipeline(const std::wstring& worker,const std::filesystem::path& bindings,const std::string& revision,bool parallel=true,bool modular=false,bool mechanicsOnly=false):source_(worker),target_(bindings,revision),parallel_(parallel),modular_(modular),mechanicsOnly_(mechanicsOnly),workerPath_(worker){}
  void Initialize(const surface::Controls& controls){
   source_.Initialize(surface::Controls{});
   surface::wire::Request q;q.frame.seconds=0;q.frame.collarQueries=target_.CollarQueries();
-  const auto rest=source_.Evaluate(q,10000);target_.SetNeutralCollar(rest);
+  const auto rest=source_.Evaluate(q,10000);if(mechanicsOnly_)return;target_.SetNeutralCollar(rest);
   for(unsigned lod=0;lod<2;lod++)neutralTarget_[lod]=target_.Evaluate(lod,rest);
  }
  SurfaceFrame Evaluate(const surface::wire::Request& request){
@@ -46,7 +46,7 @@ class SurfacePipeline {
 #ifdef MALEMOD_FIXED_COLLAR_ANGLE
   auto morphologyControls=request.controls;morphologyControls.values[7]=FixedCollarReferenceAngle;
   std::future<std::shared_ptr<const surface::Output>> morphology;
-  if(modular_&&(!shapeControls_||shapeControls_->values!=morphologyControls.values)){
+  if(modular_&&!mechanicsOnly_&&(!shapeControls_||shapeControls_->values!=morphologyControls.values)){
    // A zero-motion morphology still needs its own fresh process: reusing a
    // stepped worker changes the rest shape. Its independent work can overlap
    // the ordered live solver instead of adding another serial input stall.
@@ -55,17 +55,28 @@ class SurfacePipeline {
    });
   }
 #endif
-  for(auto query:requests){query.frame.collarQueries=target_.CollarQueries();
+  for(unsigned sample=0;sample<requests.size();sample++){auto query=requests[sample];
+#ifdef MALEMOD_COMPACT_MECHANICS
+  query.frame.collarQueries=modular_?std::vector<surface::Point>{}:target_.CollarQueries();
+#else
+  query.frame.collarQueries=target_.CollarQueries();
+#endif
 #ifdef MALEMOD_FIXED_COLLAR_ANGLE
   query.controls.values[7]=FixedCollarReferenceAngle;
 #endif
+#ifdef MALEMOD_COMPACT_MECHANICS
+  result.source=mechanicsOnly_?source_.EvaluateMechanical(query,10000):!modular_?source_.Evaluate(query,10000):
+   sample+1==requests.size()?source_.EvaluateRetainedSkin(query,10000):source_.EvaluateMechanical(query,10000);
+#else
   result.source=source_.Evaluate(query,10000);
+#endif
   }
   auto solved=std::chrono::steady_clock::now();
   result.workerMilliseconds=source_.LastWorkerTimings();result.geometryMilliseconds=source_.LastGeometryTimings();
   // Each LOD owns its plan/cache; the source and shared reductions are done.
   const float legacyAngle=modular_?50.f:request.controls.values[7];
-  if(modular_)result.targetPositions=neutralTarget_;
+  if(mechanicsOnly_){}
+  else if(modular_)result.targetPositions=neutralTarget_;
   else if(parallel_){auto other=std::async(std::launch::async,[&]{return target_.Evaluate(1,result.source,legacyAngle);});result.targetPositions[0]=target_.Evaluate(0,result.source,legacyAngle);result.targetPositions[1]=other.get();}
   else for(unsigned lod=0;lod<2;lod++)result.targetPositions[lod]=target_.Evaluate(lod,result.source,legacyAngle);
 #ifdef MALEMOD_FIXED_COLLAR_ANGLE

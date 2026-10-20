@@ -86,6 +86,45 @@ class ModularInstallTest(unittest.TestCase):
             self.install()
         self.assertEqual(path.read_bytes(), b'user file')
 
+    def prepare_worker_change(self):
+        before = b'MMRUN001'+b'a'*40+installer.digest(self.native/'surface_worker.exe').encode()+b'b'*64+b'calibration'
+        (self.native/'malemod-runtime.profile').write_bytes(before)
+        (self.candidate/'surface_worker.exe').write_bytes(b'ordered worker')
+        after = before[:48]+installer.digest(self.candidate/'surface_worker.exe').encode()+before[112:]
+        (self.candidate/'malemod-runtime.profile').write_bytes(after)
+        for row in self.old['files']:
+            row['sha256'] = installer.digest(self.game/row['path'])
+        self.receipt.write_text(json.dumps(self.old))
+        self.refresh_manifest()
+        self.proof['workerAdoption'] = dict(path=str(self.root/'worker-proof.json'), sha256='bound')
+
+    def refresh_manifest(self):
+        self.manifest['files'] = [dict(path=installer.PREFIX+p.name,sha256=installer.digest(p))
+                                  for p in self.candidate.iterdir()]
+
+    def test_worker_adoption_replaces_only_profile_worker_digest(self):
+        self.prepare_worker_change()
+        with patch('ordered_worker_adoption.validate') as validate:
+            result = self.install(validate_only=True)
+        self.assertIn(installer.PREFIX+'surface_worker.exe',result['replacements'])
+        self.assertIn(installer.PREFIX+'malemod-runtime.profile',result['replacements'])
+        self.assertEqual(validate.call_args.args[2],(self.native/'surface_worker.exe').resolve())
+
+    def test_worker_adoption_cannot_change_calibration(self):
+        self.prepare_worker_change()
+        path = self.candidate/'malemod-runtime.profile'
+        path.write_bytes(path.read_bytes()+b'changed calibration')
+        self.refresh_manifest()
+        with patch('ordered_worker_adoption.validate'):
+            with self.assertRaisesRegex(ValueError,'calibration'):
+                self.install(validate_only=True)
+
+    def test_worker_change_requires_explicit_adoption(self):
+        self.prepare_worker_change()
+        del self.proof['workerAdoption']
+        with self.assertRaisesRegex(ValueError,'Unreviewed numerical'):
+            self.install(validate_only=True)
+
     def test_copy_failure_restores_old_dll_and_receipt(self):
         copy = shutil.copy2
         before = self.receipt.read_bytes()

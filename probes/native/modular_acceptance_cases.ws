@@ -48,6 +48,13 @@ function MaleModCollarCaseStep()
     else if(caseIndex==31){distance=15.0;}
     if(!maleModCollarCaseSet)
     {
+        // Exercise the second supported native LOD explicitly. Distance alone
+        // can retain LOD0; acceptance still checks completed GPU resource bits.
+        if(caseIndex>=29)
+        {
+            CPPForceActorLOD(true,1);
+            theGame.GetWorld().ForceGraphicalLOD(1);
+        }
         MaleModNativeGarmentControl(0);MaleModNativeClinicalControl(0,0.0);
         MaleModNativeSetControl(0,(float)mechanicalState);MaleModNativeSetControl(1,(float)size);
         MaleModNativeSetControl(2,(float)length);MaleModNativeSetControl(3,(float)width);

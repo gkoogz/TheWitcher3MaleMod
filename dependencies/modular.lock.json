@@ -1,17 +1,17 @@
 {
   "schema": "malemod.shared-module-pin/1",
   "repository": "https://github.com/gkoogz/MaleModBase.git",
-  "commit": "fd976dcce9df0304c9eddc7232bdcdaab61a2b3d",
-  "numericalWorkerRevision": "431e626cae6fb6720b552f8b20206727fe809c80",
+  "commit": "5ae173f45c5ce5687c4c44ad179bcbf15f3e0e13",
+  "numericalWorkerRevision": "5ae173f45c5ce5687c4c44ad179bcbf15f3e0e13",
   "hashNormalization": "LF",
   "files": {
     "include/malemod/surface/attachment_hinge.hpp": "e40968c94fa21d57c7664d606bd9f7bedba5dda314c309bf6ddb7b378e98a582",
     "include/malemod/surface/convex_surface_cut.hpp": "272223e5081edee02d93c59a0e94052f01c8f744259feb638889f74a796822c7",
-    "include/malemod/surface/modular_asset.hpp": "db7c4685d7910bb6d959ef27be609408f2e649623bac78083abf576b0f20ec9a",
-    "include/malemod/surface/modular_dynamic.hpp": "4a15d1d2173b80edbb7bb4fb938c8fd44904acbf2b8a0b0376172b41af953b34",
-    "include/malemod/surface/modular_motion.hpp": "cbf56b9b9c77e17515fd751ed357739337250989a7fa790eb3f80d704f66f289",
+    "include/malemod/surface/modular_asset.hpp": "d354c9b51e257bf0b491c4e1c25d106b02ec11e51303ad7f458ed2297859d513",
+    "include/malemod/surface/modular_dynamic.hpp": "0991fbfe830248bf77c830157653661082dc3c7f70a94efbc60237e196c09729",
+    "include/malemod/surface/modular_motion.hpp": "ff419089c6dcf6d3f265c15fe6a56407b782f44272f7a8c5eb8511fbeba3c83d",
     "include/malemod/surface/modular_mount.hpp": "f73e662401f188702b6c6ae3d3cba9d788b50c1181da68ed590280a39b1bc904",
-    "include/malemod/surface/modular_transfer.hpp": "fedf6dbaed9023d9176f00cd4342ced88f677af81c2fd905d5f92ec7f758389c",
+    "include/malemod/surface/modular_transfer.hpp": "a1600f0a9ef0bc3253c6d56494b76403a7d8c04d70ea60fe1ff9b9db0eeaaf7a",
     "include/malemod/surface/pelvic_aperture.hpp": "db2009a80d19c8200907ca1ca4e1b66568a81b883652c39a73bb92782eef0fa0",
     "include/malemod/surface/root_articulation.hpp": "5dfa0a9d1d7521d08a2a8ddfec270b9553bfe726b3737a393db6790331caf688",
     "include/malemod/surface/root_motion.hpp": "3c28019e65601ed6f68c40034fda100e103ba05833b94d59de2e17a8478c1b65",
@@ -28,13 +28,15 @@
     "tools/build_modular_transfer.py": "68e0443388adf2cc1eebd128a2b00862be658ec3f7ada6130a62b9ae6acee124",
     "include/malemod/surface/raphe_profile.hpp": "a7ab11b0832b544d8369613412ce55cecb948dbba38ea09d33f8099d4999fac6",
     "include/malemod/surface/suspension_hang.hpp": "67a2bf574fae6c4685f2eceb91698d49080bd6026c5e17bae770377ca3931ad0",
-    "include/malemod/surface/skin_relief.hpp": "1c2a8638086a3cf1b66a1a138ca3fa5862ff60f373abe2aedfdb758d04e9dbec",
+    "include/malemod/surface/skin_relief.hpp": "88844108b83cfb4cd0f3f8180a502c102b9b5eefb7d93b23fceaf528fe225df3",
     "malemod_base/loft_material.py": "957485cc843ab8761327a0e600dc378ade2fb239710331124df6d55a7e3c4dad",
     "include/malemod/surface/suspension_profile.hpp": "4e3f822d63d206c478329c9548eb9818ace8ffff5c82d6b1cdb4835bcfb84c3a",
     "malemod_base/join_material.py": "eee5e36bf2cf22d3081a874ceb63d644ee2f99621fa0f8c0a43b77e1342cafe4",
     "include/malemod/surface/triangle_ray_index.hpp": "548cc995d5c2b2a6ceff1dc7b2fbf5366739ff839b1010b4f6aef43a8c078f26",
-    "include/malemod/surface/live_controls.hpp": "33383a323608e3c932bbb7fcbe078183828ab6f1aa6e0788adc6da860b746eb0"
+    "include/malemod/surface/live_controls.hpp": "4c83c0f942c87b65d15658069de0809a3bbdca87d57c5f4dfe5becdebf4025bd",
+    "include/malemod/task_arena.hpp": "1c177f34a7830fda4af7ea784b1e2745e33f57cebe5987d728f1d208117a5b38",
+    "include/malemod/surface/ordered_normals.hpp": "bb15cc019ce94f4131a14167e973aa9faa12e73d1ba91ec13679e38e421fe206"
   },
-  "scope": "Prepared-mesh live control presentation with donor-safe body and loft deformation; measured pelvic root ramp and transient pulse strain; numerical worker unchanged. Native acceptance remains incomplete.",
+  "scope": "Independent ordered numerical and retained-skin streams, deterministic parallel geometry, cached direct controls and temporal presentation; historical character binding revision preserved. Native gate is recorded separately.",
   "authoringRevision": "efb825580ffacf47fc3b66be505c7e54ddcdc228"
 }

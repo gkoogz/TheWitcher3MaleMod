@@ -62,11 +62,11 @@ def run(wait=False, timeout_seconds=VERIFICATION_TIMEOUT_SECONDS, *, driver_sour
     if proof['exitCode'] or proof['ownedSourceHashes']['local/malemod/'+source.name]!=digest(source):raise ValueError('Private driver compilation proof differs')
     addon=game/'Mods/modMaleModContinueTest/content/scripts/local/malemod/autocontinue.ws'
     if addon.exists():raise ValueError('Temporary source exists; preserve it')
-    job=ROOT/'build/probe'/('sealed-session-'+time.strftime('%Y%m%d-%H%M%S'));job.mkdir()
-    addon.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,addon)
     launcher=(Path(launcher_path) if launcher_path else ROOT/'build/native-runtime-controller/Release/launch_sealed.exe').resolve()
     if not launcher.is_relative_to((ROOT/'build').resolve()) or not launcher.is_file():raise ValueError('Expected owned private launcher')
     if any(argument!='-windowed' for argument in game_arguments):raise ValueError('Unreviewed private game startup argument')
+    job=ROOT/'build/probe'/('sealed-session-'+time.strftime('%Y%m%d-%H%M%S'));job.mkdir()
+    addon.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,addon)
     output=open(job/'launcher.txt','w');errors=open(job/'launcher-errors.txt','w')
     launched_seconds=time.time()
     process=subprocess.Popen([str(launcher),str(game/'bin/x64_dx12/witcher3.exe'),*game_arguments],stdout=output,stderr=errors,text=True,

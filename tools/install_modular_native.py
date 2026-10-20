@@ -56,6 +56,16 @@ def validate_gate(proof_path, preview_path):
             or source.get('sharedSourceRevision') != proof['sharedSourceRevision']
             or source.get('coupledArtifacts') != bundle):
         raise ValueError('Build source manifest describes different runtime artifacts')
+    adoption = proof.get('workerAdoption')
+    if adoption:
+        from ordered_worker_adoption import validate
+        path = required_file(Path(adoption['path']))
+        if digest(path) != adoption['sha256']:
+            raise ValueError('Worker adoption proof changed')
+        game, _ = load_preview(preview_path, verify_files=False)
+        validated = validate(path, game/PREFIX/'surface_worker.exe')
+        if validated['revision'] != source.get('numericalWorkerRevision'):
+            raise ValueError('Worker and native build pins differ')
     if not proof.get('evidence') or not proof.get('sessions'):
         raise ValueError('Native acceptance evidence is empty')
     evidence = set()
@@ -120,6 +130,8 @@ def install_modular_native(cfg, preview_path, proof_path, validate_only=False):
     previous = read_json(receipt_path)
     old = {r['path']: r for r in previous['files']}
     names = ['malemod_witcher.dll'] + list(ARTIFACTS)
+    if proof.get('workerAdoption'):
+        names += ['surface_worker.exe', 'malemod-runtime.profile']
     names += [n+'.sha256' for n in ARTIFACTS]
     candidate = {r['path']: r for r in preview['files']}
     replacements = {PREFIX+n: candidate[PREFIX+n] for n in names}
@@ -150,7 +162,20 @@ def install_modular_native(cfg, preview_path, proof_path, validate_only=False):
         raise ValueError('Coupled modular artifact dependencies differ')
     if digest(native/'malemod_witcher.dll') != proof['nativeDLLSHA256']:
         raise ValueError('Reviewed DLL identity differs')
-    for name in ['surface_worker.exe', 'geralt.bindings', 'geralt.render', 'malemod-runtime.profile']:
+    fixed_dependencies = ['geralt.bindings', 'geralt.render']
+    if proof.get('workerAdoption'):
+        from ordered_worker_adoption import validate
+        validate(Path(proof['workerAdoption']['path']), native/'surface_worker.exe',
+                 game/PREFIX/'surface_worker.exe')
+        before = (game/PREFIX/'malemod-runtime.profile').read_bytes()
+        after = (native/'malemod-runtime.profile').read_bytes()
+        if (before[:8] != b'MMRUN001' or after[:48] != before[:48]
+                or after[112:] != before[112:]
+                or after[48:112] != digest(native/'surface_worker.exe').encode()):
+            raise ValueError('Worker adoption changed character calibration or bindings')
+    else:
+        fixed_dependencies += ['surface_worker.exe', 'malemod-runtime.profile']
+    for name in fixed_dependencies:
         if digest(native/name) != digest(game/PREFIX/name):
             raise ValueError('Unreviewed numerical/native dependency changed: '+name)
     verify_native_compatibility(game, native)
@@ -167,7 +192,9 @@ def install_modular_native(cfg, preview_path, proof_path, validate_only=False):
     protected += [p for p in documents.glob('*') if p.suffix in ('.settings', '.xml')]
     protected += list((documents/'gamesaves').glob('*'))
     protected = {p: digest(p) for p in protected if p.is_file()}
-    backup = ROOT/'local'/('native-backup-modular-'+time.strftime('%Y%m%d-%H%M%S'))
+    # One accepted managed runtime, not another dated game/restore-image bank.
+    # Never overwrite it implicitly; source backups belong in GitHub.
+    backup = ROOT/'local/native-rollback-current'
     backup.mkdir()
     for rel, row in old.items():
         target = backup/rel
@@ -185,6 +212,8 @@ def install_modular_native(cfg, preview_path, proof_path, validate_only=False):
         'sharedSourceRevision': proof['sharedSourceRevision'],
         'nativeDLLSHA256': proof['nativeDLLSHA256'], 'fullAttachmentGatePassed': True},
         observedNormalStartup=False)
+    if proof.get('workerAdoption'):
+        updated['numericalWorkerAdoption'] = proof['workerAdoption']
     changed = []
     try:
         for rel, row in replacements.items():

@@ -172,6 +172,7 @@ class ModularDynamicRenderer {
     binding.fixed=useFixed_[id]!=0;
    }
   }
+  controls->normals=std::make_shared<OrderedNormals>(unsigned(mesh.points.size()),controls->faces);
   controlTopology_=controls;
   for(unsigned i=0;i<asset_.lofts.size();i++){
    const auto& l=asset_.lofts[i];auto v=assetToSurface_[l.vertex],a=assetToSurface_[l.start],b=assetToSurface_[l.end];
@@ -199,7 +200,7 @@ class ModularDynamicRenderer {
   }
   assetNormals_.resize(asset.rest.size());for(auto f:asset.faces){auto n=surface::Cross(surface::Sub(asset.rest[f[1]],asset.rest[f[0]]),surface::Sub(asset.rest[f[2]],asset.rest[f[0]]));for(auto id:f)assetNormals_[id]=surface::Add(assetNormals_[id],n);}for(auto& n:assetNormals_)n=Unit(n);
  }
- std::shared_ptr<const ModularFrame> Evaluate(const State& state){
+ std::shared_ptr<ModularFrame> Evaluate(const State& state){
   using namespace surface;const auto start=std::chrono::steady_clock::now();bool rebuild=!cached_;
   auto shape=state;if(state.hasShapeFrames)shape.frames=state.shapeFrames;
   // Pulse strain belongs to reposing. Rebuilding from live pulse dimensions
@@ -210,10 +211,16 @@ class ModularDynamicRenderer {
   // root radius/angle (for example mechanical state or distal shape controls).
   // Cached ownership and temporal presentation must adopt that material too.
   if(cached_)rebuild|=shape.shaftMaterial!=cachedState_.shaftMaterial||shape.hangControl!=cachedState_.hangControl;
-  if(rebuild)Build(shape);std::vector<Vec> beforeRelief,detailNormals;auto points=mount_.Repose(*cached_,asset_,plan_,state,&beforeRelief,&detailNormals);auto geometric=Normals(points,cached_->surface.faces);auto smoothGeometry=Normals(beforeRelief,cached_->surface.faces);std::vector<Vec> normals(points.size());
+  if(rebuild)Build(shape);const auto built=std::chrono::steady_clock::now();
+  std::array<double,4> poseMs{};
+  std::vector<Vec> beforeRelief,detailNormals;auto points=mount_.Repose(*cached_,asset_,plan_,state,&beforeRelief,&detailNormals,&poseMs);
+  const auto posed=std::chrono::steady_clock::now();
+  auto pair=controlTopology_->normals->Pair(points,beforeRelief,plan_.Arena());
+  auto geometric=std::move(pair.first),smoothGeometry=std::move(pair.second);std::vector<Vec> normals(points.size());
+  const auto normaled=std::chrono::steady_clock::now();
   std::vector<Vec> measured(points.size());if(state.surfaceNormals)for(auto c:cached_->moduleVertices){Vec n{};double weight=0;for(unsigned k=0;k<3;k++){auto value=state.surfaceNormals->at(asset_.faces[c.parent][k]);if(Dot(value,value)>1e-12){n=Add(n,Scale(value,c.donor[k]));weight+=c.donor[k];}}if(weight>1-1e-8)measured[c.vertex]=Unit(n);}
   std::vector<Vec> baseline(points.size());
-  for(unsigned i=0;i<points.size();i++){baseline[i]=Unit(Transport(templateNormals_[i],templateGeometry_[i],geometric[i]));normals[i]=Dot(measured[i],measured[i])>1e-12?measured[i]:baseline[i];}
+  plan_.For(unsigned(points.size()),[&](unsigned i){baseline[i]=Unit(Transport(templateNormals_[i],templateGeometry_[i],geometric[i]));normals[i]=Dot(measured[i],measured[i])>1e-12?measured[i]:baseline[i];});
   // Retained source normals describe the pre-relief skin. Carry their detail
   // through the new geometric normal; otherwise real folds remain flat-lit.
   if(asset_.skin)for(auto c:cached_->moduleVertices){bool affected=false;for(unsigned k=0;k<3;k++)affected|=c.donor[k]>0&&asset_.skin->Active(asset_.faces[c.parent][k]);if(affected&&Dot(measured[c.vertex],measured[c.vertex])>1e-12)normals[c.vertex]=Unit(Transport(measured[c.vertex],smoothGeometry[c.vertex],geometric[c.vertex]));}
@@ -223,10 +230,10 @@ class ModularDynamicRenderer {
   // then changed the retained sac below it, reintroducing its horizontal join.
   // Endpoint vertices are not loft interiors, so these final fields are stable
   // throughout this loop and shared by every incident generated strip.
-  for(const auto& loft:asset_.lofts){auto i=assetToSurface_[loft.vertex],a=assetToSurface_[loft.start],b=assetToSurface_[loft.end];if(i==~0u||a==~0u||b==~0u)continue;
+  plan_.For(unsigned(asset_.lofts.size()),[&](unsigned index){const auto& loft=asset_.lofts[index];auto i=assetToSurface_[loft.vertex],a=assetToSurface_[loft.start],b=assetToSurface_[loft.end];if(i==~0u||a==~0u||b==~0u)return;
    auto n=BlendEndpointNormal(normals[i],normals[a],loft.t);
    normals[i]=Unit(BlendEndpointNormal(n,normals[b],1-loft.t));
-  }
+  });
   // Carry retained shading directions through the geometrically conformed
   // entry. Shared endpoint normals alone do not constrain the adjacent strip.
   const auto& rootRings=cached_->surface.rings;
@@ -237,19 +244,22 @@ class ModularDynamicRenderer {
     normals[id]=BlendEndpointNormal(BlendEndpointNormal(normals[id],normals[a],t),normals[b],1-t);
    }
   }
+  const auto shaded=std::chrono::steady_clock::now();
   auto controlPoints=points;
-  for(unsigned i=0;i<points.size();i++){normals[i]=contract_.calibration.VectorToTarget(normals[i]);points[i]=useFixed_[i]?nativeFixed_[i]:contract_.calibration.PointToTarget(points[i]);}
+  plan_.For(unsigned(points.size()),[&](unsigned i){normals[i]=contract_.calibration.VectorToTarget(normals[i]);points[i]=useFixed_[i]?nativeFixed_[i]:contract_.calibration.PointToTarget(points[i]);});
   std::vector<std::uint32_t> packedNormal(points.size()),packedTangent(shading_.size());
-  for(unsigned i=0;i<points.size();i++)packedNormal[i]=Pack(normals[i],1);
-  for(unsigned i=0;i<shading_.size();i++){const auto& row=shading_[i];auto v=row.vertex;auto tangent=contract_.calibration.VectorToTarget(Transport(row.tangent,templateGeometry_[v],geometric[v]));tangent=Unit(Sub(tangent,Scale(normals[v],Dot(normals[v],tangent))));packedTangent[i]=Pack(tangent,row.sign<0?0:3);}
+  plan_.For(unsigned(points.size()),[&](unsigned i){packedNormal[i]=Pack(normals[i],1);});
+  plan_.For(unsigned(shading_.size()),[&](unsigned i){const auto& row=shading_[i];auto v=row.vertex;auto tangent=contract_.calibration.VectorToTarget(Transport(row.tangent,templateGeometry_[v],geometric[v]));tangent=Unit(Sub(tangent,Scale(normals[v],Dot(normals[v],tangent))));packedTangent[i]=Pack(tangent,row.sign<0?0:3);});
+  const auto packed=std::chrono::steady_clock::now();
   auto frame=std::make_shared<ModularFrame>();frame->frames=state.frames;frame->rebuilt=rebuild;frame->materialScale=state.materialScale;
   frame->controlTopology=controlTopology_;frame->controlPoints=std::move(controlPoints);
-  for(auto i:controlTopology_->sourceLofts){
+  frame->controlTangents.resize(controlTopology_->sourceLofts.size());
+  plan_.For(unsigned(controlTopology_->sourceLofts.size()),[&](unsigned index){auto i=controlTopology_->sourceLofts[index];
    const auto& l=asset_.lofts[i];
    auto a=surface::modular::Direction(l.first,l.firstOwner,asset_.reference,state);
    auto b=surface::modular::Direction(l.last,l.lastOwner,asset_.reference,state);
-   frame->controlTangents.push_back({a,b});
-  }
+   frame->controlTangents[index]={a,b};
+  });
   {
    const auto& rings=cached_->surface.rings;const auto& p=frame->controlPoints;
    const double dt=.5*(1-std::cos(3.14159265358979323846/(rings.size()-1)));
@@ -268,8 +278,12 @@ class ModularDynamicRenderer {
   for(unsigned i=1;i<15;i++){frame->frames[i].origin=contract_.calibration.PointToTarget(frame->frames[i].origin);for(auto& v:frame->frames[i].basis)v=contract_.calibration.VectorToTarget(v);}
 
   for(unsigned index=0;index<4;index++){const auto& layout=layouts_[index];auto& part=frame->parts[index];part.resource=layout.resource;part.lod=layout.lod;part.carrierFirst=layout.first;part.carrierCount=layout.count;part.indices=layout.indices;part.presentation=layout.presentation;part.controlVertices=layout.controlVertices;part.vertices.reserve(layout.rows.size());const auto& r=contract_.resources[layout.resource];
-   for(auto row:layout.rows){const auto i=row.vertex;ModularVertex v;for(unsigned k=0;k<3;k++)v.position[k]=float((points[i][k]-r.bias[k])/r.scale[k]);v.bones=row.bones;v.weights=row.weights;v.normal=packedNormal[i];v.tangent=packedTangent[row.shading];v.uv=row.uv;v.color=row.color;v.reflection=row.reflection;part.vertices.push_back(v);}
-  }frame->milliseconds=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();return frame;
+   part.vertices.resize(layout.rows.size());plan_.For(unsigned(layout.rows.size()),[&](unsigned index){const auto& row=layout.rows[index];const auto i=row.vertex;ModularVertex v;for(unsigned k=0;k<3;k++)v.position[k]=float((points[i][k]-r.bias[k])/r.scale[k]);v.bones=row.bones;v.weights=row.weights;v.normal=packedNormal[i];v.tangent=packedTangent[row.shading];v.uv=row.uv;v.color=row.color;v.reflection=row.reflection;part.vertices[index]=v;});
+  }const auto done=std::chrono::steady_clock::now();
+  auto ms=[](auto a,auto b){return std::chrono::duration<double,std::milli>(b-a).count();};
+  frame->stageMilliseconds={ms(start,built),ms(built,posed),ms(posed,normaled),ms(normaled,shaded),ms(shaded,packed),ms(packed,done)};
+  frame->poseMilliseconds=poseMs;
+  frame->milliseconds=ms(start,done);return frame;
  }
 };
 }

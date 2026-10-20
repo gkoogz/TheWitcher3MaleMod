@@ -22,7 +22,7 @@ int wmain(int argc,wchar_t** argv){
     if(p.magic!=witcher::packetMagic||p.version!=surface::wire::version||p.sequence!=lastSequence+1||p.length>surface::wire::maximumBytes)throw std::invalid_argument("Invalid surface request identity");
     lastSequence=p.sequence;
     if(p.operation==2){if(p.length)throw std::invalid_argument("Unexpected shutdown payload");p.length=0;p.status=1;quit=true;}
-    else if(p.operation==1||p.operation==3){
+    else if(p.operation==1||p.operation==3||p.operation==4||p.operation==5){
      surface::wire::Bytes input(p.payload,p.payload+p.length);auto q=surface::wire::DecodeRequest(input);
      if(q.reset&&session)throw std::invalid_argument("Reset requires a new isolated worker process");
      if(p.operation==3&&session)throw std::invalid_argument("Worker initialization is one-shot");
@@ -35,8 +35,12 @@ int wmain(int argc,wchar_t** argv){
       previous=q.controls;
      }
      else if(previous.values!=q.controls.values){session->SetControls(q.controls);previous=q.controls;}
-     auto start=std::chrono::steady_clock::now();if(p.operation==1)session->Step(q.frame);auto stepped=std::chrono::steady_clock::now();
-     auto state=session->Read();auto captured=std::chrono::steady_clock::now();auto output=surface::wire::Encode(state);auto encoded=std::chrono::steady_clock::now();
+     auto start=std::chrono::steady_clock::now();
+     if(p.operation==1)session->Step(q.frame);
+     if(p.operation==4)session->StepMechanical(q.frame);
+     if(p.operation==5)session->StepRetainedSkin(q.frame);
+     auto stepped=std::chrono::steady_clock::now();
+     auto state=p.operation==4?session->ReadMechanical():p.operation==5?session->ReadRetainedSkin():session->Read();auto captured=std::chrono::steady_clock::now();auto output=surface::wire::Encode(state);auto encoded=std::chrono::steady_clock::now();
      p.stepMs=std::chrono::duration<float,std::milli>(stepped-start).count();p.readMs=std::chrono::duration<float,std::milli>(captured-stepped).count();p.encodeMs=std::chrono::duration<float,std::milli>(encoded-captured).count();
      auto diagnostics=session->ReadDiagnostics();for(unsigned i=0;i<16;i++)p.geometryMs[i]=float(diagnostics.geometryMilliseconds[i]);
      std::memcpy(p.payload,output.data(),output.size());p.length=std::uint32_t(output.size());p.status=1;

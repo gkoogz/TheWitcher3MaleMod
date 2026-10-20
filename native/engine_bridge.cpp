@@ -201,7 +201,7 @@ void RuntimeFrame(void*,void* frame,void* result){
   if(status==HostTick::Invalid||status==HostTick::Failed)runtimeFlags.fetch_or(32);
   const auto currentRenderPose=renderPose?(paused?renderPose->LastComplete(unsigned(epoch)):renderPose->Complete(unsigned(epoch),seconds)):std::optional<RenderPose>{};
   std::shared_ptr<const RenderDelivery> currentRenderDelivery;
-  auto source=runtimeHost->Poll(std::uint32_t(epoch));
+  auto source=runtimeHost->Poll(std::uint32_t(epoch),true);
   if(source){runtimeFlags.fetch_or(4);if(renderService&&renderPose){if(currentRenderPose){runtimeFlags.fetch_or(128);renderService->Submit(source,*currentRenderPose,paused,snapshot);}auto output=renderService->Latest();if(output&&output->epoch==unsigned(epoch)){
  currentRenderDelivery=output;LiveRenderFeed(output);
 }if(!renderService->Error().empty()){
@@ -320,6 +320,12 @@ void TestCheckpoint(void*,void* frame,void* result){
 
     for(unsigned i=0;i<18;i++)std::fprintf(log,"%s%.9g",i?",":"",current.values[i]);
     std::fprintf(log,"]");
+    // Measure the independent numerical stream, not the retained-skin batch.
+    if(runtimeHost)if(auto numerical=runtimeHost->Poll(output->epoch)){
+     std::fprintf(log,",\"numericalSequence\":%llu,\"numericalMs\":%.9g,\"numericalSimulationSeconds\":%.12g",
+      static_cast<unsigned long long>(numerical->surface->sequence),
+      numerical->surface->frame.sourceMilliseconds,numerical->simulationSeconds);
+    }
     if(output->modular){
      std::size_t count=0;std::uint64_t modularHash=14695981039346656037ull;
      for(const auto& part:output->modular->parts){count+=part.vertices.size();const auto* p=reinterpret_cast<const unsigned char*>(part.vertices.data());for(std::size_t i=0;i<part.vertices.size()*sizeof(ModularVertex);i++){modularHash^=p[i];modularHash*=1099511628211ull;}}
