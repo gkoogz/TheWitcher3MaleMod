@@ -4,6 +4,7 @@
 #include <malemod/surface/modular_asset.hpp>
 #include <malemod/surface/modular_transfer.hpp>
 #include <malemod/surface/root_articulation.hpp>
+#include <malemod/surface/live_controls.hpp>
 #include <memory>
 #include <chrono>
 
@@ -18,8 +19,23 @@ struct ModularPart {
  std::vector<ModularVertex> vertices;
  std::shared_ptr<const std::vector<unsigned>> indices;
  std::shared_ptr<const std::vector<surface::PresentationBinding>> presentation;
+ std::shared_ptr<const std::vector<unsigned>> controlVertices;
 };
-struct ModularFrame {std::array<ModularPart,4> parts;surface::PresentationFrames frames{};double milliseconds=0;bool rebuilt=false;std::array<double,3> materialScale{1,1,1};};
+struct ModularControlTopology {
+ std::vector<surface::LiveControlBinding> bindings;
+ std::vector<std::array<unsigned,3>> faces;
+ std::vector<surface::LiveControlLoft> lofts;
+ std::vector<unsigned> sourceLofts;
+ std::vector<surface::LiveControlDonor> bodyDonors;
+};
+struct ModularFrame {
+ std::array<ModularPart,4> parts;surface::PresentationFrames frames{};
+ double milliseconds=0;bool rebuilt=false;std::array<double,3> materialScale{1,1,1};
+ std::shared_ptr<const ModularControlTopology> controlTopology;
+ std::vector<surface::PresentationPoint> controlPoints;
+ surface::LiveControlFrame controlFrame;
+ std::vector<surface::LiveControlTangents> controlTangents;
+};
 }
 #include "modular_dynamic_render.hpp"
 namespace malemod::witcher {

@@ -25,6 +25,30 @@ inline std::shared_ptr<const ModularFrame> PresentModular(const ModularFrame& a,
   }
  };
  std::array<std::future<void>,3> tasks;for(unsigned i=0;i<3;i++)tasks[i]=std::async(std::launch::async,compose,i);compose(3);for(auto& task:tasks)task.get();
+ // Carry the displayed geometric state with the displayed native vertices.
+ // Control deformation must not jump to endpoint B while physics interpolates.
+ if(out->controlTopology)for(unsigned index:{0u,2u}){
+  const auto& part=out->parts[index];const auto& r=contract.resources[part.resource];
+  if(!part.controlVertices)throw std::invalid_argument("Missing geometric presentation correspondence");
+  for(unsigned j=0;j<part.vertices.size();j++){
+   surface::PresentationPoint p{};for(unsigned k=0;k<3;k++)p[k]=part.vertices[j].position[k]*double(r.scale[k])+r.bias[k];
+   out->controlPoints.at(part.controlVertices->at(j))=contract.calibration.PointToSource(p);
+  }
+ }
+ if(out->controlTopology&&a.controlTopology==b.controlTopology){
+  auto mix=[&](auto x,auto y){return surface::Add(surface::Scale(x,1-t),surface::Scale(y,t));};
+  out->controlFrame.root=mix(a.controlFrame.root,b.controlFrame.root);
+  out->controlFrame.tip=mix(a.controlFrame.tip,b.controlFrame.tip);
+  out->controlFrame.lobes=mix(a.controlFrame.lobes,b.controlFrame.lobes);
+  out->controlFrame.bodyOrigin=mix(a.controlFrame.bodyOrigin,b.controlFrame.bodyOrigin);
+  out->controlFrame.basis=surface::InterpolateBasis(a.controlFrame.basis,b.controlFrame.basis,t);
+  out->controlFrame.radius=a.controlFrame.radius*(1-t)+b.controlFrame.radius*t;
+  out->controlFrame.bodyRadius=a.controlFrame.bodyRadius*(1-t)+b.controlFrame.bodyRadius*t;
+  for(unsigned i=0;i<out->controlTangents.size();i++){
+   out->controlTangents[i].first=mix(a.controlTangents[i].first,b.controlTangents[i].first);
+   out->controlTangents[i].last=mix(a.controlTangents[i].last,b.controlTangents[i].last);
+  }
+ }
  return out;
 }
 }

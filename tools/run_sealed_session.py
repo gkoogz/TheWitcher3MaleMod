@@ -57,15 +57,15 @@ def run(wait=False, timeout_seconds=VERIFICATION_TIMEOUT_SECONDS, *, driver_sour
     if query.stdout.strip():raise ValueError('Preserve the existing game; private test requires a fresh process')
     source=Path(driver_source).resolve() if driver_source else ROOT/'probes/native/autocontinue.ws'
     proof_path=Path(compile_proof).resolve() if compile_proof else ROOT/'build/probe/native-session-compile.json'
-    if not (source.is_relative_to(ROOT/'probes/native') or source.is_relative_to(ROOT/'build/collar-sessions')) or not proof_path.is_relative_to(ROOT/'build'):raise ValueError('Expected owned driver and compile proof')
+    if not (source.is_relative_to((ROOT/'probes/native').resolve()) or source.is_relative_to((ROOT/'build/collar-sessions').resolve())) or not proof_path.is_relative_to((ROOT/'build').resolve()):raise ValueError('Expected owned driver and compile proof')
     proof=read_json(proof_path)
     if proof['exitCode'] or proof['ownedSourceHashes']['local/malemod/'+source.name]!=digest(source):raise ValueError('Private driver compilation proof differs')
     addon=game/'Mods/modMaleModContinueTest/content/scripts/local/malemod/autocontinue.ws'
     if addon.exists():raise ValueError('Temporary source exists; preserve it')
     job=ROOT/'build/probe'/('sealed-session-'+time.strftime('%Y%m%d-%H%M%S'));job.mkdir()
     addon.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,addon)
-    launcher=Path(launcher_path).absolute() if launcher_path else ROOT/'build/native-runtime-controller/Release/launch_sealed.exe'
-    if not launcher.is_relative_to(ROOT/'build') or not launcher.is_file():raise ValueError('Expected owned private launcher')
+    launcher=(Path(launcher_path) if launcher_path else ROOT/'build/native-runtime-controller/Release/launch_sealed.exe').resolve()
+    if not launcher.is_relative_to((ROOT/'build').resolve()) or not launcher.is_file():raise ValueError('Expected owned private launcher')
     if any(argument!='-windowed' for argument in game_arguments):raise ValueError('Unreviewed private game startup argument')
     output=open(job/'launcher.txt','w');errors=open(job/'launcher-errors.txt','w')
     launched_seconds=time.time()

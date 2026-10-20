@@ -18,7 +18,7 @@ WCC_RVAS = dict(allocate=0x45b7b0, intern=0x293f7c0, construct=0x29d3d90,
 
 def compile_native(workspace, imports=('MaleModNativeReady',)):
     cfg=settings();base_checkout(cfg);workspace=Path(workspace).resolve()
-    if not workspace.is_relative_to(ROOT/'build'):
+    if not workspace.is_relative_to((ROOT/'build').resolve()):
         raise ValueError('Native compiler inputs must stay in an owned build workspace')
     if digest(cfg['wcc'])!=WCC_SHA:
         raise RuntimeError('Unsupported native compiler; reobserve its ABI before use')

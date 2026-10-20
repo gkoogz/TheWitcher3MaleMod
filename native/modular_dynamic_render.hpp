@@ -28,7 +28,7 @@ class ModularDynamicRenderer {
  };
  struct Attribute {Vec normal{},tangent{};std::array<double,2> uv{},reflection{};double sign=1;Weights weights;std::array<double,4> color{};};
  struct Row {unsigned vertex=0,shading=0;std::uint32_t bones=0,weights=0,color=0;std::array<std::uint16_t,2> uv{},reflection{};Vec tangent{};double sign=1;};
- struct Layout {unsigned resource=0,lod=0,first=0,count=0;std::vector<Row> rows;std::shared_ptr<const std::vector<unsigned>> indices;std::shared_ptr<const std::vector<surface::PresentationBinding>> presentation;};
+ struct Layout {unsigned resource=0,lod=0,first=0,count=0;std::vector<Row> rows;std::shared_ptr<const std::vector<unsigned>> indices,controlVertices;std::shared_ptr<const std::vector<surface::PresentationBinding>> presentation;};
  const surface::modular::Asset& asset_;const surface::modular::Plan& plan_;const RenderContract& contract_;
  surface::modular::DynamicMount mount_;std::vector<std::array<Material,3>> bodyMaterial_,moduleMaterial_;
  std::vector<unsigned char> fixed_,resource_;std::vector<Vec> fixedPoints_,assetNormals_;
@@ -38,6 +38,8 @@ class ModularDynamicRenderer {
  struct Shade {unsigned vertex;Vec tangent;double sign;};std::vector<Shade> shading_;
  std::array<std::vector<std::array<std::optional<Row>,3>>,4> bodyRows_,moduleRows_;
  std::vector<Vec> templateNormals_,templateGeometry_,nativeFixed_;std::vector<unsigned char> useFixed_;
+ std::shared_ptr<const ModularControlTopology> controlTopology_;
+ double controlBodyRadius_=1;
  static Vec Unit(Vec x,Vec fallback={1,0,0}){double n=surface::Dot(x,x);return n>1e-24?surface::Scale(x,1/std::sqrt(n)):fallback;}
  static Vec Transport(Vec v,Vec a,Vec b){using namespace surface;auto axis=Cross(a,b);double cosine=std::clamp(Dot(a,b),-1.,1.);if(cosine<-.9999){auto side=Cross(a,Vec{1,0,0});if(Dot(side,side)<1e-6)side=Cross(a,Vec{0,1,0});side=Unit(side);return Sub(Scale(side,2*Dot(side,v)),v);}return Add(Add(v,Cross(axis,v)),Scale(Cross(axis,Cross(axis,v)),1/(1+cosine)));}
  static std::uint16_t Half(float f){
@@ -46,7 +48,9 @@ class ModularDynamicRenderer {
  }
  static std::uint32_t Pack(Vec v,unsigned high){v=Unit(v);unsigned word=high<<30;for(unsigned k=0;k<3;k++)word|=unsigned(std::clamp((v[k]+1)*.5,0.,1.)*1023+.5)<<(10*k);return word;}
  static std::vector<Vec> Normals(const std::vector<Vec>& points,const std::vector<std::array<surface::SurfaceJoinCorner,3>>& faces){
-  using namespace surface;std::vector<Vec> n(points.size());for(auto f:faces){auto a=f[0].vertex,b=f[1].vertex,c=f[2].vertex;auto face=Cross(Sub(points[b],points[a]),Sub(points[c],points[a]));for(auto i:{a,b,c})n[i]=Add(n[i],face);}for(auto& x:n)x=Unit(x);return n;
+  using namespace surface;std::vector<Vec> n(points.size());for(auto f:faces){auto a=f[0].vertex,b=f[1].vertex,c=f[2].vertex;
+   if(a>=points.size()||b>=points.size()||c>=points.size())throw std::runtime_error("Prepared mesh triangle index leaves its vertex buffer: "+std::to_string(a)+","+std::to_string(b)+","+std::to_string(c)+" of "+std::to_string(points.size()));
+   auto face=Cross(Sub(points[b],points[a]),Sub(points[c],points[a]));for(auto i:{a,b,c})n[i]=Add(n[i],face);}for(auto& x:n)x=Unit(x);return n;
  }
  Attribute AttributeFor(surface::SurfaceJoinCorner c)const{
   using namespace surface;const auto& tri=c.domain==0?bodyMaterial_.at(c.parent):moduleMaterial_.at(c.parent);Attribute a;a.sign=0;
@@ -119,6 +123,66 @@ class ModularDynamicRenderer {
   std::vector<PresentationBinding> ownership(mesh.points.size());
   for(auto c:cached_->moduleVertices){std::array<double,15> votes{};double crown=0;for(unsigned k=0;k<3;k++){auto id=asset_.faces[c.parent][k];const auto& binding=cached_->clearedBindings?cached_->clearedBindings->at(id):asset_.bindings[id];for(auto v:binding.influences)votes[v.frame]+=v.weight*c.donor[k];if(state.crownWeights)crown+=state.crownWeights->at(id)*c.donor[k];}unsigned f=unsigned(std::max_element(votes.begin(),votes.end())-votes.begin());if(crown>1-1e-8)f=12;ownership[c.vertex]={f,f?1.:0.};}
   for(auto& layout:layouts_){auto bindings=std::make_shared<std::vector<PresentationBinding>>();bindings->reserve(layout.rows.size());for(auto row:layout.rows)bindings->push_back(ownership[row.vertex]);layout.presentation=bindings;}
+  // Prepare ownership once, alongside the native layout. Display edits reuse
+  // exactly these vertices/aliases while a precise fit runs independently.
+  auto controls=std::make_shared<ModularControlTopology>();
+  controls->bindings.resize(mesh.points.size());
+  controlBodyRadius_=0;
+  for(auto id:rings.front()){auto q=Sub(mesh.points[id],cached_->anchor);controlBodyRadius_=(std::max)(controlBodyRadius_,std::hypot(q[1],q[2]));}
+  for(unsigned i=0;i<mount_.body.size();i++){
+   auto& binding=controls->bindings[i];binding.fixed=fixed_[i]!=0;
+   auto q=Sub(mesh.points[i],cached_->anchor);const double radius=std::hypot(q[1],q[2]);
+   const double front=std::clamp((q[0]+controlBodyRadius_*.5)/(controlBodyRadius_*.5),0.,1.);
+   binding.body=ControlSmooth(front)*(1-ControlSmooth((radius/controlBodyRadius_-1)/1.5));
+  }
+  std::vector<bool> bodySeen(mesh.points.size());
+  for(auto f:mesh.faces){
+   controls->faces.push_back({f[0].vertex,f[1].vertex,f[2].vertex});
+   if(f[0].domain==0)for(auto c:f){
+    auto& binding=controls->bindings[c.vertex];binding.fixed=useFixed_[c.vertex]!=0;
+    auto q=Sub(mesh.points[c.vertex],cached_->anchor);
+    const double radius=std::hypot(q[1],q[2]);
+    const double front=std::clamp((q[0]+controlBodyRadius_*.5)/(controlBodyRadius_*.5),0.,1.);
+    binding.body=ControlSmooth(front)*(1-ControlSmooth((radius/controlBodyRadius_-1)/1.5));
+    if(!bodySeen[c.vertex]){bodySeen[c.vertex]=true;controls->bodyDonors.push_back({c.vertex,mount_.faces[c.parent],c.donor});}
+   }
+  }
+  std::vector<LiveControlBinding> moduleControl(asset_.rest.size());
+  auto own=[](const surface::modular::Binding& b){LiveControlBinding out;for(auto v:b.influences){if(v.frame>=13)out.lobe+=v.weight;else if(v.frame>=1)out.shaft+=v.weight;}return out;};
+  for(unsigned i=0;i<moduleControl.size();i++){moduleControl[i]=own(asset_.bindings[i]);if(state.crownWeights)moduleControl[i].crown=state.crownWeights->at(i);}
+  // Generated neck strips are evaluated from their two endpoint owners by
+  // Plan::Evaluate. Their placeholder asset binding is not their ownership.
+  for(const auto& loft:asset_.lofts){
+   auto a=own(loft.firstOwner),b=own(loft.lastOwner);const double t=ControlSmooth(loft.t);
+   moduleControl[loft.vertex]={a.shaft*(1-t)+b.shaft*t,a.lobe*(1-t)+b.lobe*t,0,0,false};
+  }
+  for(auto c:cached_->moduleVertices){
+   auto& binding=controls->bindings[c.vertex];
+   for(unsigned k=0;k<3;k++){
+    const auto id=asset_.faces[c.parent][k];const double w=c.donor[k];
+    binding.lobe+=w*moduleControl[id].lobe;binding.shaft+=w*moduleControl[id].shaft;
+    binding.crown+=w*moduleControl[id].crown;
+   }
+  }
+  for(unsigned row=0;row<rings.size();row++){
+   const double t=.5*(1-std::cos(3.14159265358979323846*row/(rings.size()-1)));
+   for(auto id:rings[row]){
+    auto& binding=controls->bindings[id];binding.shaft=ControlSmooth(t);
+    binding.body=1-binding.shaft;binding.lobe=binding.crown=0;
+    binding.fixed=useFixed_[id]!=0;
+   }
+  }
+  controlTopology_=controls;
+  for(unsigned i=0;i<asset_.lofts.size();i++){
+   const auto& l=asset_.lofts[i];auto v=assetToSurface_[l.vertex],a=assetToSurface_[l.start],b=assetToSurface_[l.end];
+   if(v==~0u||a==~0u||b==~0u)continue;
+   controls->lofts.push_back({v,a,b,l.t});controls->sourceLofts.push_back(i);
+  }
+  for(unsigned row=1;row+1<rings.size();row++){
+   const double t=.5*(1-std::cos(3.14159265358979323846*row/(rings.size()-1)));
+   for(unsigned column=0;column<rings[0].size();column++)controls->lofts.push_back({rings[row][column],rings.front()[column],rings.back()[column],t});
+  }
+  for(auto& layout:layouts_){auto ids=std::make_shared<std::vector<unsigned>>();ids->reserve(layout.rows.size());for(auto row:layout.rows)ids->push_back(row.vertex);layout.controlVertices=ids;}
   shading_.clear();std::map<std::tuple<unsigned,double,double,double,double>,unsigned> cache;
   for(auto& layout:layouts_)for(auto& row:layout.rows){auto key=std::make_tuple(row.vertex,row.tangent[0],row.tangent[1],row.tangent[2],row.sign);auto pair=cache.emplace(key,unsigned(shading_.size()));row.shading=pair.first->second;if(pair.second)shading_.push_back({row.vertex,row.tangent,row.sign});}
  }
@@ -173,17 +237,37 @@ class ModularDynamicRenderer {
     normals[id]=BlendEndpointNormal(BlendEndpointNormal(normals[id],normals[a],t),normals[b],1-t);
    }
   }
+  auto controlPoints=points;
   for(unsigned i=0;i<points.size();i++){normals[i]=contract_.calibration.VectorToTarget(normals[i]);points[i]=useFixed_[i]?nativeFixed_[i]:contract_.calibration.PointToTarget(points[i]);}
   std::vector<std::uint32_t> packedNormal(points.size()),packedTangent(shading_.size());
   for(unsigned i=0;i<points.size();i++)packedNormal[i]=Pack(normals[i],1);
   for(unsigned i=0;i<shading_.size();i++){const auto& row=shading_[i];auto v=row.vertex;auto tangent=contract_.calibration.VectorToTarget(Transport(row.tangent,templateGeometry_[v],geometric[v]));tangent=Unit(Sub(tangent,Scale(normals[v],Dot(normals[v],tangent))));packedTangent[i]=Pack(tangent,row.sign<0?0:3);}
   auto frame=std::make_shared<ModularFrame>();frame->frames=state.frames;frame->rebuilt=rebuild;frame->materialScale=state.materialScale;
+  frame->controlTopology=controlTopology_;frame->controlPoints=std::move(controlPoints);
+  for(auto i:controlTopology_->sourceLofts){
+   const auto& l=asset_.lofts[i];
+   auto a=surface::modular::Direction(l.first,l.firstOwner,asset_.reference,state);
+   auto b=surface::modular::Direction(l.last,l.lastOwner,asset_.reference,state);
+   frame->controlTangents.push_back({a,b});
+  }
+  {
+   const auto& rings=cached_->surface.rings;const auto& p=frame->controlPoints;
+   const double dt=.5*(1-std::cos(3.14159265358979323846/(rings.size()-1)));
+   for(unsigned row=1;row+1<rings.size();row++)for(unsigned column=0;column<rings[0].size();column++)
+    frame->controlTangents.push_back({Scale(Sub(p[rings[1][column]],p[rings[0][column]]),1/dt),Scale(Sub(p[rings.back()[column]],p[rings[rings.size()-2][column]]),1/dt)});
+  }
+  frame->controlFrame.root=Add(state.frames[1].origin,cached_->fitTranslation);
+  if(state.shaftMaterial)frame->controlFrame.root=Add(surface::modular::SocketMaterialState(state,cached_->materialRoot).shapeFrames[1].origin,cached_->fitTranslation);
+  frame->controlFrame.tip=Add(state.frames[12].origin,cached_->fitTranslation);
+  frame->controlFrame.lobes=Add(Scale(Add(state.frames[13].origin,state.frames[14].origin),.5),Add(cached_->fitTranslation,cached_->suspensionTranslation));
+  frame->controlFrame.bodyOrigin=cached_->anchor;frame->controlFrame.basis=state.shapeFrames[1].basis;
+  frame->controlFrame.radius=state.sectionRadius;frame->controlFrame.bodyRadius=controlBodyRadius_;
   if(state.shaftMaterial){auto material=surface::modular::SocketMaterialState(state,cached_->materialRoot);for(unsigned i=1;i<=12;i++)frame->frames[i]=material.frames[i];}
   for(unsigned i=1;i<15;i++)frame->frames[i].origin=Add(frame->frames[i].origin,cached_->fitTranslation);
   for(unsigned i=13;i<15;i++)frame->frames[i].origin=Add(frame->frames[i].origin,cached_->suspensionTranslation);
   for(unsigned i=1;i<15;i++){frame->frames[i].origin=contract_.calibration.PointToTarget(frame->frames[i].origin);for(auto& v:frame->frames[i].basis)v=contract_.calibration.VectorToTarget(v);}
 
-  for(unsigned index=0;index<4;index++){const auto& layout=layouts_[index];auto& part=frame->parts[index];part.resource=layout.resource;part.lod=layout.lod;part.carrierFirst=layout.first;part.carrierCount=layout.count;part.indices=layout.indices;part.presentation=layout.presentation;part.vertices.reserve(layout.rows.size());const auto& r=contract_.resources[layout.resource];
+  for(unsigned index=0;index<4;index++){const auto& layout=layouts_[index];auto& part=frame->parts[index];part.resource=layout.resource;part.lod=layout.lod;part.carrierFirst=layout.first;part.carrierCount=layout.count;part.indices=layout.indices;part.presentation=layout.presentation;part.controlVertices=layout.controlVertices;part.vertices.reserve(layout.rows.size());const auto& r=contract_.resources[layout.resource];
    for(auto row:layout.rows){const auto i=row.vertex;ModularVertex v;for(unsigned k=0;k<3;k++)v.position[k]=float((points[i][k]-r.bias[k])/r.scale[k]);v.bones=row.bones;v.weights=row.weights;v.normal=packedNormal[i];v.tangent=packedTangent[row.shading];v.uv=row.uv;v.color=row.color;v.reflection=row.reflection;part.vertices.push_back(v);}
   }frame->milliseconds=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();return frame;
  }

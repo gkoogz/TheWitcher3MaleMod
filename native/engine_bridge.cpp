@@ -20,7 +20,7 @@
 #include "overlay_parent.hpp"
 #include "live_renderer.hpp"
 #include "float_draw_renderer.hpp"
-#include "control_store.hpp"
+#include "deferred_control_store.hpp"
 #include "clinical_service.hpp"
 #include "fluid_renderer.hpp"
 #include "garment_renderer.hpp"
@@ -69,7 +69,7 @@ struct CallbackTimer {
  ~CallbackTimer(){if(sealedFlags.load()==3){const double ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count();verificationCallbackTotal+=ms;verificationCallbackMaximum=(std::max)(verificationCallbackMaximum,ms);++verificationCallbackCount;}}
 };
 surface::Controls ReadControls(){std::lock_guard<std::mutex> lock(controlsMutex);return controls;}
-ControlStore* controlStore=nullptr;
+DeferredControlStore* controlStore=nullptr;
 bool IsSealedStation(){
  wchar_t expected[256]{},actual[256]{};DWORD bytes=0;USEROBJECTFLAGS stationFlags{};const auto station=GetProcessWindowStation();
  return GetEnvironmentVariableW(L"MALEMOD_SEALED_SESSION",expected,256)>0&&
@@ -116,7 +116,7 @@ void InitializeRuntime(){
  const auto dir=std::filesystem::path(path).parent_path();const auto packet=dir/L"malemod-runtime.profile";
  if(!std::filesystem::exists(packet))return; // Existing observer-only mode.
  if(!IsSealedStation()){
-  auto store=std::make_unique<ControlStore>(dir/L"malemod-controls.bin");
+  auto store=std::make_unique<DeferredControlStore>(dir/L"malemod-controls.bin");
   try{auto saved=store->Load();if(saved)controls=*saved;controlStore=store.release();}
   catch(const std::exception&){OutputDebugStringW(L"MaleMod: malformed saved controls preserved; defaults active\n");}
  }
@@ -202,7 +202,7 @@ void RuntimeFrame(void*,void* frame,void* result){
   const auto currentRenderPose=renderPose?(paused?renderPose->LastComplete(unsigned(epoch)):renderPose->Complete(unsigned(epoch),seconds)):std::optional<RenderPose>{};
   std::shared_ptr<const RenderDelivery> currentRenderDelivery;
   auto source=runtimeHost->Poll(std::uint32_t(epoch));
-  if(source){runtimeFlags.fetch_or(4);if(renderService&&renderPose){if(currentRenderPose){runtimeFlags.fetch_or(128);renderService->Submit(source,*currentRenderPose,paused);}auto output=renderService->Latest();if(output&&output->epoch==unsigned(epoch)){
+  if(source){runtimeFlags.fetch_or(4);if(renderService&&renderPose){if(currentRenderPose){runtimeFlags.fetch_or(128);renderService->Submit(source,*currentRenderPose,paused,snapshot);}auto output=renderService->Latest();if(output&&output->epoch==unsigned(epoch)){
  currentRenderDelivery=output;LiveRenderFeed(output);
 }if(!renderService->Error().empty()){
  runtimeFlags.fetch_or(256);static bool recorded=false;if(!recorded){recorded=true;wchar_t path[32768]{};HMODULE module=nullptr;
@@ -325,6 +325,9 @@ void TestCheckpoint(void*,void* frame,void* result){
      for(const auto& part:output->modular->parts){count+=part.vertices.size();const auto* p=reinterpret_cast<const unsigned char*>(part.vertices.data());for(std::size_t i=0;i<part.vertices.size()*sizeof(ModularVertex);i++){modularHash^=p[i];modularHash*=1099511628211ull;}}
      std::fprintf(log,",\"modular\":true,\"modularVertices\":%zu,\"modularMs\":%.9g,\"modularCompletedLODMask\":%u,\"modularUploadFNV64\":\"%016llx\"",count,output->modular->milliseconds,ModularDrawCompletedLODMask(),static_cast<unsigned long long>(modularHash));
      std::fprintf(log,",\"wallMilliseconds\":%llu,\"modularRebuilt\":%s,\"modularStrain\":[%.9g,%.9g,%.9g]",static_cast<unsigned long long>(GetTickCount64()),output->modular->rebuilt?"true":"false",output->modular->materialScale[0],output->modular->materialScale[1],output->modular->materialScale[2]);
+     std::fprintf(log,",\"liveControlDeformed\":%s,\"liveControlMs\":%.9g,\"liveControlFraction\":%.9g,\"authoredControls\":[",output->liveControlDeformed?"true":"false",output->liveControlMilliseconds,output->liveControlFraction);
+     for(unsigned i=0;i<18;i++)std::fprintf(log,"%s%.9g",i?",":"",output->authoredControls.values[i]);
+     std::fprintf(log,"]");
      if(stage>=500&&stage<1000){
       wchar_t path[32768]{};HMODULE owner=nullptr;
       if(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&TestCheckpoint),&owner)&&GetModuleFileNameW(owner,path,32768)){

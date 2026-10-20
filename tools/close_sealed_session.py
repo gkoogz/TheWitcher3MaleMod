@@ -7,7 +7,7 @@ from native_preview import session_game
 
 def close(receipt):
     path=Path(receipt).resolve()
-    if not path.is_relative_to(ROOT/'build/probe'):raise ValueError('Expected owned private receipt')
+    if not path.is_relative_to((ROOT/'build/probe').resolve()):raise ValueError('Expected owned private receipt')
     r=read_json(path);identity=r['observations']
     game=session_game(r)
     if not identity['noninteractiveWindowStation'] or identity['physicalInputUsed'] or r['physicalDesktopSwitch']:raise ValueError('Not an isolated child')

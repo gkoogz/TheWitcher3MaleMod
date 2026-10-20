@@ -1,6 +1,7 @@
 #pragma once
 #include "modular_service.hpp"
 #include "modular_presentation.hpp"
+#include "live_modular_controls.hpp"
 #include "render_pose.hpp"
 #include "runtime_controller.hpp"
 #include "skin_output.hpp"
@@ -45,6 +46,10 @@ struct RenderDelivery {
  RenderPose pose;
  std::array<double,3> nozzleWorld{},nozzleDirectionWorld{1,0,0};
  surface::Controls controls;
+ surface::Controls authoredControls;
+ bool liveControlDeformed=false;
+ double liveControlMilliseconds=0;
+ double liveControlFraction=1;
  std::array<std::array<double,3>,2> garmentLobeCenters{},garmentLobeRadii{};
  double sourceMilliseconds=0,targetMilliseconds=0,preparationMilliseconds=0,lightingMilliseconds=0;
  std::array<float,3> workerMilliseconds{};
@@ -106,6 +111,7 @@ class RenderService {
  const RenderContract& contract_;std::mutex mutex_;std::condition_variable changed_;
  std::shared_ptr<const std::vector<RenderDelivery::MorphReference>> morphReference_;
  bool stopping_=false,paused_=false;std::shared_ptr<const RuntimeDelivery> pending_;
+ surface::Controls requestedControls_;
  std::optional<RenderPose> pose_;std::string error_;
  std::shared_ptr<const RenderDelivery> delivery_;
  std::shared_ptr<ModularRenderer> modular_;
@@ -125,8 +131,8 @@ class RenderService {
   std::vector<surface::PresentationBinding> bindings;for(const auto& lod:contract_.lods)for(const auto& v:lod.vertices)bindings.push_back(v.presentation);
   auto frames=[&](const surface::Output& output){auto f=surface::MaterialFrames(output);for(unsigned i=1;i<f.size();i++){f[i].origin=contract_.calibration.PointToTarget(f[i].origin);for(auto& axis:f[i].basis)axis=contract_.calibration.VectorToTarget(axis);}return f;};
   for(;;){std::shared_ptr<const RuntimeDelivery> source;RenderPose pose;
-   bool paused;
-   {std::unique_lock<std::mutex> lock(mutex_);if(!cached||!active)changed_.wait(lock,[&]{return stopping_||pending_;});else changed_.wait_until(lock,nextTick,[&]{return stopping_;});if(stopping_)return;source=pending_?std::move(pending_):cached;pose=*pose_;paused=paused_;}
+   bool paused;surface::Controls requestedControls;
+   {std::unique_lock<std::mutex> lock(mutex_);if(!cached||!active)changed_.wait(lock,[&]{return stopping_||pending_;});else changed_.wait_until(lock,nextTick,[&]{return stopping_;});if(stopping_)return;source=pending_?std::move(pending_):cached;pose=*pose_;paused=paused_;requestedControls=requestedControls_;}
    try{
     std::shared_ptr<const ModularService::Result> prepared;
     if(geometry){geometry->Submit(source,pose.epoch);auto error=geometry->Error();if(!error.empty())throw std::runtime_error(error);prepared=geometry->Latest();if(!prepared||prepared->epoch!=pose.epoch){nextTick=Clock::now()+std::chrono::milliseconds(4);continue;}source=prepared->source;}
@@ -166,13 +172,33 @@ class RenderService {
      for(unsigned i=0;i<displayFrames.size();i++){displayFrames[i].origin=surface::Add(surface::Scale(fa[i].origin,1-phase),surface::Scale(fb[i].origin,phase));displayFrames[i].basis=surface::InterpolateBasis(fa[i].basis,fb[i].basis,phase);}
     }
     auto next=std::make_shared<RenderDelivery>();next->epoch=pose.epoch;next->sequence=source->surface->sequence;next->poseSeconds=pose.seconds;next->vertices=vertices;next->pose=pose;
-    if(modular_){modularShown=phase==1?modularB:PresentModular(*modularA,*modularB,phase,contract_);next->modular=modularShown;}
+    if(modular_){
+     modularShown=phase==1?modularB:PresentModular(*modularA,*modularB,phase,contract_);
+     const auto controlStart=Clock::now();
+     auto live=PresentBoundedLiveControls(modularShown,source->surface->input.controls,requestedControls,contract_);
+     next->modular=live.frame;next->controls=live.applied;next->liveControlFraction=live.fraction;
+     next->liveControlDeformed=next->modular!=modularShown;
+     next->liveControlMilliseconds=std::chrono::duration<double,std::milli>(Clock::now()-controlStart).count();
+    }
     unsigned pelvis=0;while(pelvis<contract_.nativeBones.size()&&contract_.nativeBones[pelvis]!=9)++pelvis;
+    auto presentedNozzle=shownNozzle,presentedDirection=shownDirection;
+    double presentedLobeScale=1;
+    if(next->liveControlDeformed){
+     surface::LiveControlDeformation morph(modularShown->controlFrame,source->surface->input.controls,next->controls);
+     surface::LiveControlBinding tip;tip.shaft=1;tip.crown=1;
+     const auto p=contract_.calibration.PointToSource(shownNozzle);
+     const auto d=contract_.calibration.VectorToSource(shownDirection);
+     presentedNozzle=contract_.calibration.PointToTarget(morph.Point(p,tip));
+     presentedDirection=contract_.calibration.VectorToTarget(surface::LiveControlDeformation::Tangent(d,morph.Differential(p,tip)));
+     presentedLobeScale=morph.LobeScale();
+    }
     auto nozzleTransform=MultiplyPose(pose.actorWorld,pose.skinDeltas.at(pelvis));
-    next->nozzleWorld=TransformPosePoint(nozzleTransform,shownNozzle);
-    auto end=TransformPosePoint(nozzleTransform,surface::Add(shownNozzle,shownDirection));next->nozzleDirectionWorld=surface::Unit(surface::Sub(end,next->nozzleWorld));
-    next->controls=source->surface->input.controls;next->sourceMilliseconds=source->surface->frame.sourceMilliseconds;next->targetMilliseconds=source->surface->frame.targetMilliseconds;
-    for(unsigned i=0;i<2;i++){next->garmentLobeCenters[i]=contract_.calibration.PointToSource((modularShown?modularShown->frames:displayFrames)[13+i].origin);next->garmentLobeRadii[i]=surface::Precise(source->surface->frame.source.lobeRadii[i]);}
+    next->nozzleWorld=TransformPosePoint(nozzleTransform,presentedNozzle);
+    auto end=TransformPosePoint(nozzleTransform,surface::Add(presentedNozzle,presentedDirection));next->nozzleDirectionWorld=surface::Unit(surface::Sub(end,next->nozzleWorld));
+    next->authoredControls=source->surface->input.controls;
+    if(!next->liveControlDeformed)next->controls=next->authoredControls;
+    next->sourceMilliseconds=source->surface->frame.sourceMilliseconds;next->targetMilliseconds=source->surface->frame.targetMilliseconds;
+    for(unsigned i=0;i<2;i++){next->garmentLobeCenters[i]=contract_.calibration.PointToSource((next->modular?next->modular->frames:displayFrames)[13+i].origin);next->garmentLobeRadii[i]=surface::Scale(surface::Precise(source->surface->frame.source.lobeRadii[i]),presentedLobeScale);}
     next->workerMilliseconds=source->surface->frame.workerMilliseconds;next->geometryMilliseconds=source->surface->frame.geometryMilliseconds;
     next->correctiveWeights=source->surface->frame.correctiveWeights;
     next->angleGains=source->surface->frame.angleGains;
@@ -192,10 +218,12 @@ class RenderService {
   }
  }){}
  ~RenderService(){ {std::lock_guard<std::mutex> lock(mutex_);stopping_=true;}changed_.notify_one();if(worker_.joinable())worker_.join();}
- bool Submit(std::shared_ptr<const RuntimeDelivery> source,const RenderPose& pose,bool paused=false){
+ bool Submit(std::shared_ptr<const RuntimeDelivery> source,const RenderPose& pose,bool paused=false,const std::optional<surface::Controls>& controls=std::nullopt){
   if(!source||!pose.epoch)return false;std::unique_lock<std::mutex> lock(mutex_,std::try_to_lock);if(!lock.owns_lock()||stopping_||!error_.empty())return false;
   auto old=Latest();pose_=pose;paused_=paused;
-  if(old&&old->epoch==pose.epoch&&old->sequence==source->surface->sequence)return true;
+  const auto requested=controls.value_or(source->surface->input.controls);
+  const bool controlChanged=requestedControls_.values!=requested.values;requestedControls_=requested;
+  if(old&&old->epoch==pose.epoch&&old->sequence==source->surface->sequence&&!controlChanged)return true;
   pending_=std::move(source);changed_.notify_one();return true;
  }
  std::shared_ptr<const RenderDelivery> Latest()const{return std::atomic_load(&delivery_);}

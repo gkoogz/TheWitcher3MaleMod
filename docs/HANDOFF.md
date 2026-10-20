@@ -1,5 +1,9 @@
 ## October 20 - storage consolidation
 
+Latest architecture checkpoint: see **October 20 - independent live slider
+presentation** at the end of this file. Final native slider intervals are
+148/146 ms; the candidate remains uninstalled.
+
 Canonical repositories now live under D:/MaleMod; all generated/private working data belongs in D:/MaleMod/Work. Read docs/STORAGE-LAYOUT.md before generating output. Current source is backed up on GitHub branch codex/storage-consolidation-20261020. Historical backup images, preview games and diagnostic banks were explicitly retired by the user; old evidence paths below are historical, not retained files. No new runtime was installed by this storage operation.
 
 ## 2026-10-19: live pulse / slider cadence repair, Candidate14 (not installed)
@@ -2679,4 +2683,49 @@ its diagnostic material-mask correction is not a shipped repair. Reject the
 radius, loft/profile and owned-arc15 studies; constrained continuous/spatial
 profile studies stopped short. No worker is running and no candidate installed.
 All37 installed managed hashes matched. Preserve existing runtime/rollback.
+
+## October 20 - independent live slider presentation
+
+Shared design/evidence: `../MaleMod/docs/LIVE-CONTROL-PRESENTATION.md`.
+`RenderService` receives the current controls independently of the in-flight
+physics sequence and deforms prepared native geometry. Original triangle donors
+preserve subdivided pelvic edges; semantic loft ownership preserves connection
+geometry. Native indices, UVs and skin weights stay unchanged. Preferences save
+after 700 ms quiet input outside the input critical section.
+
+Cadence session `sealed-session-20261020-114757` completed all 40 width/angle
+edits. Mean acknowledgement intervals:147.10/146.66 ms with a deliberate100 ms
+test hold; 39/40 completed displays used the direct path before worker catch-up.
+Median deformation work39.27/35.35 ms. Do not claim60 Hz, measured isolated
+input latency, or a faster numerical solver.81 offline edits pass bounded
+triangle checks;21 large jumps require intermediate previews and the exact fit.
+
+Initial measured DLL:b3487f9a57e636f7ae3acf553d06a3985ab8484ba0a38f3f10ca9779864f804f.
+Current private reports/captures: `D:/MaleMod/Work/witcher/live-controls`.
+The broader attachment matrix has its own receipt there. Candidate remains
+uninstalled; full attachment/campaign/LOD and garment-contact gates are not
+claimed. Keep the existing installed runtime. User selected inclusion of the
+latest collar preview; the historical pending scope question below is answered.
+
+The storage move exposed unresolved-path comparisons in native compilation,
+private launch and close helpers; these now compare resolved owned roots.
+The missing transient-room build proof was regenerated from licensed resources,
+not bypassed. The rebuilt package is20261020-114512-021268; this does not change
+the user's manually accepted Steam room entry.
+
+Final DLL:22355b42791b1ba3b1cec157d836cd6f380915cfe46fd668b1707f1f33aa9502.
+Native sessions132622 and133959 completed18 shape checkpoints (19 screenshots)
+and40 cadence edits (seven screenshots), respectively. Final width/angle
+intervals148.49/145.79 ms; median direct work30.58/31.69 ms. All24 original saves
+and normal audio were restored. Selected native views were inspected; existing
+folds/material transitions remain and full visual acceptance is not claimed.
+
+Earlier broad session115547 crashed after78 checkpoints while transitioning
+to combined minimum size. The dump shows an out-of-range face vertex during
+the second geometric-normal calculation. The final build checks indices and
+reports invalid geometry instead of reading beyond the buffer. The corrupting
+writer remains unidentified. One hundred exact offline evaluations,81
+instrumented control edits and18 instrumented native shape checkpoints did
+not reproduce it. Keep this failure in the acceptance record; do not install
+on the strength of focused follow-up success alone.
 

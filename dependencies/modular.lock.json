@@ -1,7 +1,7 @@
 {
   "schema": "malemod.shared-module-pin/1",
   "repository": "https://github.com/gkoogz/MaleModBase.git",
-  "commit": "345afdf7e25d565af96fddd69151fcb82304715f",
+  "commit": "fd976dcce9df0304c9eddc7232bdcdaab61a2b3d",
   "numericalWorkerRevision": "431e626cae6fb6720b552f8b20206727fe809c80",
   "hashNormalization": "LF",
   "files": {
@@ -32,8 +32,9 @@
     "malemod_base/loft_material.py": "957485cc843ab8761327a0e600dc378ade2fb239710331124df6d55a7e3c4dad",
     "include/malemod/surface/suspension_profile.hpp": "4e3f822d63d206c478329c9548eb9818ace8ffff5c82d6b1cdb4835bcfb84c3a",
     "malemod_base/join_material.py": "eee5e36bf2cf22d3081a874ceb63d644ee2f99621fa0f8c0a43b77e1342cafe4",
-    "include/malemod/surface/triangle_ray_index.hpp": "548cc995d5c2b2a6ceff1dc7b2fbf5366739ff839b1010b4f6aef43a8c078f26"
+    "include/malemod/surface/triangle_ray_index.hpp": "548cc995d5c2b2a6ceff1dc7b2fbf5366739ff839b1010b4f6aef43a8c078f26",
+    "include/malemod/surface/live_controls.hpp": "33383a323608e3c932bbb7fcbe078183828ab6f1aa6e0788adc6da860b746eb0"
   },
-  "scope": "Measured pelvic root ramp and transient material pulse strain; conservative aperture hierarchy and unchanged numerical worker.",
+  "scope": "Prepared-mesh live control presentation with donor-safe body and loft deformation; measured pelvic root ramp and transient pulse strain; numerical worker unchanged. Native acceptance remains incomplete.",
   "authoringRevision": "efb825580ffacf47fc3b66be505c7e54ddcdc228"
 }
