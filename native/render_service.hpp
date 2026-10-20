@@ -1,7 +1,10 @@
 #pragma once
+#include "modular_service.hpp"
+#include "modular_presentation.hpp"
 #include "render_pose.hpp"
 #include "runtime_controller.hpp"
 #include "skin_output.hpp"
+#include "modular_render.hpp"
 #include <condition_variable>
 #include <thread>
 
@@ -36,6 +39,7 @@ inline std::vector<PreSkinnedVertex> SkinRenderVertices(const std::vector<Source
  return out;
 }
 struct RenderDelivery {
+ std::shared_ptr<const ModularFrame> modular;
  unsigned epoch=0;std::uint64_t sequence=0;double poseSeconds=0;
  std::shared_ptr<const std::vector<SourceRenderVertex>> vertices;
  RenderPose pose;
@@ -45,6 +49,10 @@ struct RenderDelivery {
  double sourceMilliseconds=0,targetMilliseconds=0,preparationMilliseconds=0,lightingMilliseconds=0;
  std::array<float,3> workerMilliseconds{};
  std::array<float,16> geometryMilliseconds{};
+ std::array<double,2> correctiveWeights{},angleGains{1,1};
+#ifdef MALEMOD_ATTACHMENT_CORRECTIVE
+ std::shared_ptr<const RuntimeDelivery> correctiveSource;
+#endif
  double presentationPhase=1,presentationIntervalMilliseconds=0;
  std::uint64_t presentationSerial=0;
  std::vector<PreSkinnedVertex> actorLocal,world;
@@ -100,29 +108,40 @@ class RenderService {
  bool stopping_=false,paused_=false;std::shared_ptr<const RuntimeDelivery> pending_;
  std::optional<RenderPose> pose_;std::string error_;
  std::shared_ptr<const RenderDelivery> delivery_;
+ std::shared_ptr<ModularRenderer> modular_;
  std::thread worker_;
  public:
- explicit RenderService(const RenderContract& c):contract_(c),morphReference_(PrepareMorphReference(c)),worker_([this]{
+ explicit RenderService(const RenderContract& c,std::shared_ptr<ModularRenderer> modular={}):contract_(c),morphReference_(PrepareMorphReference(c)),modular_(std::move(modular)),worker_([this]{
   using Clock=std::chrono::steady_clock;
   std::shared_ptr<const RuntimeDelivery> cached;unsigned cachedEpoch=0;
   std::shared_ptr<const std::vector<SourceRenderVertex>> a,b,vertices;
   surface::PresentationFrames fa{},fb{},displayFrames{};
+  std::unique_ptr<ModularService> geometry;if(modular_)geometry=std::make_unique<ModularService>(modular_);
+  std::shared_ptr<const ModularFrame> modularA,modularB,modularShown;
   surface::PrecisePoint nozzleA{},nozzleB{},directionA{},directionB{},shownNozzle{},shownDirection{1,0,0};
   auto began=Clock::now(),arrived=began,nextTick=began;double duration=1./60.;bool active=false;
   std::uint64_t presentationSerial=0;
+  std::vector<RenderDelivery::FloatVertex> modularFallback;
   std::vector<surface::PresentationBinding> bindings;for(const auto& lod:contract_.lods)for(const auto& v:lod.vertices)bindings.push_back(v.presentation);
   auto frames=[&](const surface::Output& output){auto f=surface::MaterialFrames(output);for(unsigned i=1;i<f.size();i++){f[i].origin=contract_.calibration.PointToTarget(f[i].origin);for(auto& axis:f[i].basis)axis=contract_.calibration.VectorToTarget(axis);}return f;};
   for(;;){std::shared_ptr<const RuntimeDelivery> source;RenderPose pose;
    bool paused;
    {std::unique_lock<std::mutex> lock(mutex_);if(!cached||!active)changed_.wait(lock,[&]{return stopping_||pending_;});else changed_.wait_until(lock,nextTick,[&]{return stopping_;});if(stopping_)return;source=pending_?std::move(pending_):cached;pose=*pose_;paused=paused_;}
    try{
+    std::shared_ptr<const ModularService::Result> prepared;
+    if(geometry){geometry->Submit(source,pose.epoch);auto error=geometry->Error();if(!error.empty())throw std::runtime_error(error);prepared=geometry->Latest();if(!prepared||prepared->epoch!=pose.epoch){nextTick=Clock::now()+std::chrono::milliseconds(4);continue;}source=prepared->source;}
     auto started=Clock::now();double lightMilliseconds=0;
     const bool changed=!cached||cachedEpoch!=pose.epoch||cached->surface->sequence!=source->surface->sequence;
     if(changed){
-     auto complete=std::make_shared<const std::vector<SourceRenderVertex>>(ComposeRenderVertices(contract_,source->surface->frame.targetPositions));
+     auto complete=(modular_&&b)?b:std::make_shared<const std::vector<SourceRenderVertex>>(ComposeRenderVertices(contract_,source->surface->frame.targetPositions));
      lightMilliseconds=std::chrono::duration<double,std::milli>(Clock::now()-started).count();
      auto targetFrames=frames(source->surface->frame.source);
-     const bool snap=paused||!cached||cachedEpoch!=pose.epoch||cached->surface->input.controls.values!=source->surface->input.controls.values;
+     // An asynchronous aperture rebuild owns a new vertex/index correspondence.
+     // Its arrival need not coincide with the input-control transition. Never
+     // interpolate it against the previous correspondence or poison the worker.
+     const bool topologyChanged=modular_&&modularShown&&!CompatibleModularTopology(*modularShown,*prepared->frame);
+     const bool snap=paused||!cached||cachedEpoch!=pose.epoch||cached->surface->input.controls.values!=source->surface->input.controls.values||topologyChanged;
+     if(modular_){auto target=prepared->frame;modularA=snap?target:modularShown;modularB=target;}
      a=snap?complete:vertices;fa=snap?targetFrames:displayFrames;b=complete;fb=targetFrames;
      auto np=contract_.calibration.PointToTarget(surface::Precise(source->surface->frame.source.nozzlePosition));
      auto nd=contract_.calibration.VectorToTarget(surface::Precise(source->surface->frame.source.nozzleDirection));
@@ -134,8 +153,8 @@ class RenderService {
     const double phase=active?std::clamp(std::chrono::duration<double>(Clock::now()-began).count()/duration,0.,1.):1.;
     if(phase==1){vertices=b;displayFrames=fb;shownNozzle=nozzleB;shownDirection=directionB;active=false;}
     else{
-     surface::PresentationPlan plan(fa,fb,phase);shownNozzle=plan.Point(nozzleA,nozzleB,{12,1});shownDirection=plan.Direction(directionA,directionB,{12,1});auto display=std::make_shared<std::vector<SourceRenderVertex>>(*b);
-     for(unsigned i=0;i<display->size();i++){
+     surface::PresentationPlan plan(fa,fb,phase);shownNozzle=plan.Point(nozzleA,nozzleB,{12,1});shownDirection=plan.Direction(directionA,directionB,{12,1});auto display=modular_?std::shared_ptr<std::vector<SourceRenderVertex>>{}:std::make_shared<std::vector<SourceRenderVertex>>(*b);
+     for(unsigned i=0;!modular_&&i<display->size();i++){
       if((*b)[i].calibration)continue;
       auto point=[](const std::array<float,3>& p){return surface::PresentationPoint{p[0],p[1],p[2]};};
       auto p=plan.Point(point((*a)[i].position),point((*b)[i].position),bindings[i]);
@@ -143,20 +162,26 @@ class RenderService {
       auto t=plan.Direction(point((*a)[i].tangent),point((*b)[i].tangent),bindings[i]);
       for(unsigned axis=0;axis<3;axis++){(*display)[i].position[axis]=float(p[axis]);(*display)[i].normal[axis]=float(n[axis]);(*display)[i].tangent[axis]=float(t[axis]);}
      }
-     vertices=display;
+     vertices=modular_?b:display;
      for(unsigned i=0;i<displayFrames.size();i++){displayFrames[i].origin=surface::Add(surface::Scale(fa[i].origin,1-phase),surface::Scale(fb[i].origin,phase));displayFrames[i].basis=surface::InterpolateBasis(fa[i].basis,fb[i].basis,phase);}
     }
     auto next=std::make_shared<RenderDelivery>();next->epoch=pose.epoch;next->sequence=source->surface->sequence;next->poseSeconds=pose.seconds;next->vertices=vertices;next->pose=pose;
+    if(modular_){modularShown=phase==1?modularB:PresentModular(*modularA,*modularB,phase,contract_);next->modular=modularShown;}
     unsigned pelvis=0;while(pelvis<contract_.nativeBones.size()&&contract_.nativeBones[pelvis]!=9)++pelvis;
     auto nozzleTransform=MultiplyPose(pose.actorWorld,pose.skinDeltas.at(pelvis));
     next->nozzleWorld=TransformPosePoint(nozzleTransform,shownNozzle);
     auto end=TransformPosePoint(nozzleTransform,surface::Add(shownNozzle,shownDirection));next->nozzleDirectionWorld=surface::Unit(surface::Sub(end,next->nozzleWorld));
     next->controls=source->surface->input.controls;next->sourceMilliseconds=source->surface->frame.sourceMilliseconds;next->targetMilliseconds=source->surface->frame.targetMilliseconds;
-    for(unsigned i=0;i<2;i++){next->garmentLobeCenters[i]=contract_.calibration.PointToSource(displayFrames[13+i].origin);next->garmentLobeRadii[i]=surface::Precise(source->surface->frame.source.lobeRadii[i]);}
+    for(unsigned i=0;i<2;i++){next->garmentLobeCenters[i]=contract_.calibration.PointToSource((modularShown?modularShown->frames:displayFrames)[13+i].origin);next->garmentLobeRadii[i]=surface::Precise(source->surface->frame.source.lobeRadii[i]);}
     next->workerMilliseconds=source->surface->frame.workerMilliseconds;next->geometryMilliseconds=source->surface->frame.geometryMilliseconds;
+    next->correctiveWeights=source->surface->frame.correctiveWeights;
+    next->angleGains=source->surface->frame.angleGains;
+#ifdef MALEMOD_ATTACHMENT_CORRECTIVE
+     next->correctiveSource=source;
+#endif
     next->presentationPhase=phase;next->presentationIntervalMilliseconds=duration*1000;
     next->presentationSerial=++presentationSerial;
-    next->floatVertices=PrepareFloatVertices(*vertices,contract_);next->resources=contract_.resources;next->morphReference=morphReference_;
+    if(modular_){if(modularFallback.empty())modularFallback=PrepareFloatVertices(*vertices,contract_);next->floatVertices=modularFallback;}else next->floatVertices=PrepareFloatVertices(*vertices,contract_);next->resources=contract_.resources;next->morphReference=morphReference_;
     next->lightingMilliseconds=lightMilliseconds;
     next->preparationMilliseconds=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-started).count();
     // Lighting runs once per numerical surface. Rigid material presentation

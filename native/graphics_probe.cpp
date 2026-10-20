@@ -24,6 +24,7 @@
 #include "graphics_fingerprints.hpp"
 #include "live_renderer.hpp"
 #include "float_draw_renderer.hpp"
+#include "native_index_view.hpp"
 #include "fluid_renderer.hpp"
 #include "garment_renderer.hpp"
 
@@ -350,9 +351,19 @@ void FirstCall(unsigned bit,const char* event){
 template<std::size_t N> void STDMETHODCALLTYPE IndexedHook(ID3D12GraphicsCommandList* list,UINT indices,UINT instances,UINT first,INT base,UINT firstInstance){
  if(!injectingSurface){
   ObserveOwnedDraw(list,indices,first,base);
-  ListBindings snapshot;bool owned=false,fluid=false,garment=false;unsigned garmentKind=0,fluidKind=0,resource=0,lod=2;ID3D12Resource* nativeResource=nullptr;D3D12_RESOURCE_STATES nativeState{};auto delivery=LiveRenderLatest();
+  ListBindings snapshot;bool owned=false,fluid=false,garment=false;unsigned garmentKind=0,fluidKind=0,resource=0,lod=2,carrierFirst=first,indexResource=2;ID3D12Resource* nativeResource=nullptr;D3D12_RESOURCE_STATES nativeState{};auto delivery=LiveRenderLatest();
   {std::lock_guard<std::mutex> lock(metadataMutex);auto found=bindings.find(list);if(found!=bindings.end()){
    snapshot=found->second;
+   if(delivery&&delivery->modular&&snapshot.indices.Format==DXGI_FORMAT_R16_UINT){
+    for(const auto& range:ownedRanges){
+     if(range.label.size()<8||range.label.compare(range.label.size()-8,8,"_indices")!=0)continue;
+     const unsigned part=range.label.find("upper_")==0?1:0;
+     if(part>=delivery->resources.size()||range.bytes!=delivery->resources[part].indexBytes)continue;
+     auto normalized=NativeIndexFirst(range.begin,range.bytes,snapshot.indices.BufferLocation,snapshot.indices.SizeInBytes,first,indices);
+     if(normalized){indexResource=part;carrierFirst=*normalized;break;}
+    }
+   }
+   const auto ownedIndex=[&](unsigned part){return delivery->modular?indexResource==part:snapshot.indices.SizeInBytes==delivery->resources[part].indexBytes;};
    const auto uv=snapshot.vertices[1].BufferLocation;
    for(const auto& range:ownedRanges){
     const auto position=snapshot.vertices[0].BufferLocation;
@@ -363,9 +374,9 @@ template<std::size_t N> void STDMETHODCALLTYPE IndexedHook(ID3D12GraphicsCommand
    if(delivery&&snapshot.indices.Format==DXGI_FORMAT_R16_UINT&&!fluid&&!garment)for(const auto& range:ownedRanges){
     if(uv<range.begin||uv-range.begin>=range.bytes)continue;
     resource=range.label.find("upper_")==0?1:0;
-    if(resource>=delivery->resources.size()||snapshot.indices.SizeInBytes!=delivery->resources[resource].indexBytes)continue;
+    if(resource>=delivery->resources.size()||!ownedIndex(resource))continue;
     const auto& r=delivery->resources[resource];
-    if(snapshot.vertices[0].StrideInBytes==24){owned=true;break;}
+    if(snapshot.vertices[0].StrideInBytes==24&&!delivery->modular){owned=true;break;}
     // Exact owned upload plus measured UV stream offset selects the static
     // resource LOD. A torso LOD has its own position origin and baseVertex=0.
     for(unsigned candidate=0;candidate<2;candidate++){
@@ -379,7 +390,7 @@ template<std::size_t N> void STDMETHODCALLTYPE IndexedHook(ID3D12GraphicsCommand
    // Position ownership is authoritative for static shadow/depth passes,
    // which may omit UV input or retain a previous mesh's unused UV binding.
    if(delivery&&!fluid&&!garment&&snapshot.vertices[0].StrideInBytes==16&&snapshot.indices.Format==DXGI_FORMAT_R16_UINT){owned=false;lod=2;const auto position=snapshot.vertices[0].BufferLocation;for(const auto& range:ownedRanges){
-    if(position<range.begin||position-range.begin>=range.bytes)continue;const unsigned part=range.label.find("upper_")==0?1:0;if(part>=delivery->resources.size())continue;const auto& r=delivery->resources[part];if(snapshot.indices.SizeInBytes!=r.indexBytes)continue;
+    if(position<range.begin||position-range.begin>=range.bytes)continue;const unsigned part=range.label.find("upper_")==0?1:0;if(part>=delivery->resources.size())continue;const auto& r=delivery->resources[part];if(!ownedIndex(part))continue;
     const bool whole=(range.label.size()>=9&&range.label.compare(range.label.size()-9,9,"_vertices")==0)||(range.label.size()>=4&&range.label.compare(range.label.size()-4,4,"_all")==0);unsigned candidate=whole?StaticFloatDrawLOD(r,position-range.begin):2;
     for(unsigned k=0;k<2&&candidate==2;k++){const auto suffix=std::string("lod")+std::to_string(k)+"_stream0";if(position==range.begin&&range.label.size()>=suffix.size()&&range.label.compare(range.label.size()-suffix.size(),suffix.size(),suffix)==0)candidate=k;}
     if(candidate<2){resource=part;lod=candidate;owned=true;break;}
@@ -396,7 +407,10 @@ template<std::size_t N> void STDMETHODCALLTYPE IndexedHook(ID3D12GraphicsCommand
   }
   if(owned){
    injectingSurface=true;
-   const bool replaced=FloatDraw(list,snapshot.pipeline,snapshot.vertices[0],snapshot.vertices[2],[&]{indexedHooks.originals[N](list,indices,instances,first,base,firstInstance);},resource,lod,nativeResource,unsigned(nativeState),[&]{RestoreCompute(list,snapshot);});
+   const auto delivery=LiveRenderLatest();
+   const bool replaced=delivery&&delivery->modular?
+     ModularDraw(list,snapshot.pipeline,snapshot.vertices,snapshot.indices,resource,lod,carrierFirst,indices,[&](unsigned count){indexedHooks.originals[N](list,count,instances,0,0,firstInstance);}):
+    FloatDraw(list,snapshot.pipeline,snapshot.vertices[0],snapshot.vertices[2],[&]{indexedHooks.originals[N](list,indices,instances,first,base,firstInstance);},resource,lod,nativeResource,unsigned(nativeState),[&]{RestoreCompute(list,snapshot);});
    if(nativeResource)nativeResource->lpVtbl->Release(nativeResource);
    injectingSurface=false;if(replaced){FirstCall(16,"indexedDrawObserved");return;}
   }

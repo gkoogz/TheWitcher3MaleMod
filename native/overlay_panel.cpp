@@ -34,7 +34,7 @@ void OverlayPanel::Paint(HDC dc,const surface::Controls& c,bool expanded,int w,i
  const auto& modes=controls::WideThrobModes;Text(dc,modes[unsigned(clinical[0])%4],220,650,180,25,accent);
  if(selected==19){Box(dc,10,678,402,25,selection);Box(dc,10,678,2,25,accent);}Text(dc,L"Ejaculation",16,678,195,25,selected==19?accent:fg);Text(dc,clinical[1]>0?L"Running / Cancel":L"Start",220,678,180,25,accent);
  if(selected==20){Box(dc,10,706,402,25,selection);Box(dc,10,706,2,25,accent);}Text(dc,L"Clothing",16,706,195,25,selected==20?accent:fg);Text(dc,controls::WideGarments[unsigned(clinical[2])%2],220,706,180,25,accent);
- Box(dc,16,750,126,30,selection);Text(dc,L"Reset defaults",28,750,114,30,fg);Text(dc,L"Live",160,752,245,26,dim);
+ Box(dc,16,750,126,30,selected==21?accent:selection);Text(dc,L"Reset defaults",28,750,114,30,selected==21?bg:fg);Text(dc,L"Live",160,752,245,26,dim);
  RestoreDC(dc,saved);DeleteObject(font);
 }
 OverlayPanel::OverlayPanel(HWND parent,Read read,Write write,ReadClinical clinical,WriteClinical action,bool probeAuthorized):parent_(parent),read_(std::move(read)),write_(std::move(write)),clinical_(std::move(clinical)),action_(std::move(action)),probe_(PanelProbe::FromEnvironment(parent,probeAuthorized)),thread_([this]{
@@ -56,13 +56,14 @@ void OverlayPanel::Click(int x,int y){
 }
 void OverlayPanel::PollKeys(bool foreground){
  if(foreground_&&!foreground)focusLost_=true;
- constexpr int codes[]={VK_F6,VK_UP,VK_DOWN,VK_LEFT,VK_RIGHT};std::array<bool,5> now{},edge{};
+ constexpr int codes[]={VK_F6,VK_UP,VK_DOWN,VK_LEFT,VK_RIGHT,VK_RETURN,VK_SPACE};std::array<bool,7> now{},edge{};
  const auto keyState=[this](int key){return probe_.Private()?probe_.KeyState(key):GetAsyncKeyState(key);};
- for(unsigned i=0;i<5;i++){now[i]=(keyState(codes[i])&0x8000)!=0;edge[i]=foreground&&foreground_&&now[i]&&!keys_[i];}
+ for(unsigned i=0;i<7;i++){now[i]=(keyState(codes[i])&0x8000)!=0;edge[i]=foreground&&foreground_&&now[i]&&!keys_[i];}
  keys_=now;foreground_=foreground;if(!foreground)return;
  if(edge[0]){expanded_=!Open();dragging_=-1;Resize();}
  if(!Open())return;
- if(edge[1])navigation_.Move(-1,action_?21:18);if(edge[2])navigation_.Move(1,action_?21:18);
+ if(edge[1])navigation_.MoveMenu(-1,bool(action_));if(edge[2])navigation_.MoveMenu(1,bool(action_));
+ if(navigation_.selected==21){if(edge[4]||edge[5]||edge[6])Click(30,760);return;}
  const int direction=edge[3]?-1:edge[4]?1:0;
  if(direction){if(navigation_.selected<18)write_(navigation_.selected,navigation_.Adjust(read_(),direction,(keyState(VK_SHIFT)&0x8000)!=0));
  else if(action_){auto c=clinical_();action_(navigation_.selected,navigation_.selected==18?float((int(c[0])+direction+4)%4):navigation_.selected==20?float((int(c[2])+direction+2)%2):(c[1]>0?0.f:1.f));}}

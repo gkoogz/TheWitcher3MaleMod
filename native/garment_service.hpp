@@ -116,7 +116,7 @@ class GarmentService {
  // Last: the worker can run immediately, after every field it reads exists.
  std::thread worker_;
  void Run(){
-  garments::Session session;surface::GarmentImpulseLedger reactionLedger;std::uint64_t reactionEpoch=0;unsigned epoch=0;double activeSeconds=0;
+  garments::Session session;surface::GarmentImpulseLedger reactionLedger;std::uint64_t reactionEpoch=0;unsigned epoch=0;GarmentWorkerClock workerClock;
   GarmentBindings::SamplingCache samplingCache;
   std::shared_ptr<const GarmentPresentation> presentationCache;
   std::uint64_t serial=0,generation=std::uint64_t(-1);bool failureCaptured=false;
@@ -124,12 +124,13 @@ class GarmentService {
    {std::unique_lock<std::mutex> l(mutex_);changed_.wait(l,[&]{return stopping_||pending_.has_value();});if(stopping_)return;request=std::move(*pending_);pending_.reset();style=style_;}
    const auto& render=request.render;
    try{auto begin=std::chrono::steady_clock::now();
-    const bool reset=generation!=request.generation||epoch!=render->epoch||request.activeSeconds<activeSeconds||request.activeSeconds-activeSeconds>1;
-    const double dt=reset?0:request.activeSeconds-activeSeconds;
+    const auto time=workerClock.Advance(render->epoch,request.generation,request.activeSeconds);
+    const bool reset=time.reset;
+    const double dt=time.elapsed;
     if(reset){session.Reset();failureCaptured=false;presentationCache.reset();reactionLedger.Reset(++reactionEpoch);}
-    epoch=render->epoch;generation=request.generation;activeSeconds=request.activeSeconds;
-    auto next=std::make_shared<GarmentDelivery>();next->epoch=epoch;next->serial=++serial;next->generation=generation;next->restRevision=request.restRevision;next->sourceRender=render;next->poseSeconds=render->poseSeconds;next->activeSeconds=activeSeconds;next->clockReset=reset;
-    if(style){auto sampleBegin=std::chrono::steady_clock::now();auto input=bindings_.Input(contract_,*render,dt,&samplingCache);input.restRevision=request.restRevision;input.bodyContacts=std::move(request.capsules);next->samplingMilliseconds=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-sampleBegin).count();auto updateBegin=std::chrono::steady_clock::now();next->output=session.Update(garments::Style::WhiteJockstrap,input);next->updateMilliseconds=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-updateBegin).count();
+    epoch=render->epoch;generation=request.generation;
+    auto next=std::make_shared<GarmentDelivery>();next->epoch=epoch;next->serial=++serial;next->generation=generation;next->restRevision=request.restRevision;next->sourceRender=render;next->poseSeconds=render->poseSeconds;next->activeSeconds=request.activeSeconds;next->clockReset=reset;
+    if(style){auto sampleBegin=std::chrono::steady_clock::now();auto input=bindings_.Input(contract_,*render,dt,&samplingCache);input.restRevision=request.restRevision;input.bodyContacts=std::move(request.capsules);next->samplingMilliseconds=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-sampleBegin).count();auto updateBegin=std::chrono::steady_clock::now();next->output=session.Update(garments::Style::WhiteJockstrap,input,garments::TimeContinuity::Continuous);next->updateMilliseconds=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-updateBegin).count();
      if((!next->output.contactBudgetSatisfied||!next->output.physics.materialBudgetSatisfied)&&!failureCaptured&&!diagnosticDirectory_.empty()){failureCaptured=true;auto captureBegin=std::chrono::steady_clock::now();try{garment_capture::Capture(diagnosticDirectory_,input,next->output,serial,render->poseSeconds);}catch(const std::exception& e){std::lock_guard<std::mutex> l(mutex_);error_=std::string("Garment diagnostic capture: ")+e.what();}next->diagnosticMilliseconds=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-captureBegin).count();}
      unsigned pelvis=0;while(pelvis<contract_.nativeBones.size()&&contract_.nativeBones[pelvis]!=9)++pelvis;
      const auto inverse=InversePose(MultiplyPose(render->pose.actorWorld,render->pose.skinDeltas.at(pelvis)));

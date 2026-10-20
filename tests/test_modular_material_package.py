@@ -1,7 +1,7 @@
 import sys, unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tools'))
-from modular_material_package import PATHS, identities
+from modular_material_package import PATHS, ROOT_PATHS, identities
 from install_modular_native import coupled_identity, PREFIX, ARTIFACTS
 
 
@@ -25,6 +25,12 @@ class MaterialPackageTest(unittest.TestCase):
 
     def test_prior_runtime_without_texture_package_remains_supported(self):
         self.assertEqual(identities(None),{})
+
+    def test_root_buffer_bundle_is_coupled_and_no_other_buffers_allowed(self):
+        rows=[dict(path=p,sha256='a'*64) for p in ROOT_PATHS]
+        self.assertEqual(set(identities(dict(files=rows))),ROOT_PATHS)
+        with self.assertRaises(ValueError):identities(dict(files=rows+[rows[0]]))
+        with self.assertRaises(ValueError):identities(dict(files=rows+[dict(path='Mods/mod00000MaleModNeckMaterial/content/bundles/buffers1.bundle',sha256='b'*64)]))
 
 
 if __name__=='__main__':unittest.main()

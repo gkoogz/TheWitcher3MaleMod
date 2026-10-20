@@ -46,10 +46,13 @@ int wmain(int argc,wchar_t** argv){try{
  command("F6");Check(panel.Open(),"Panel did not expand");command("Down");command("Right");Check(read().values[1]==51,"One-step arrow adjustment failed");
  command("Shift","Hold");command("Right");command("Shift","Release");Check(read().values[1]==56,"Shift five-step adjustment failed");capture();
  command("Up");command("Left");Check(read().values[0]==1,"State navigation differs from Base");
- // Wrap upward from the state row directly to the last clinical/wardrobe row.
- command("Up");command("Right");Check(readClinical()[2]==1,"Wardrobe row was not reached through wrapped selection");capture();
+ // Reset is now a real selectable row between clothing and the state row.
+ command("Up");command("Up");command("Right");Check(readClinical()[2]==1,"Wardrobe row was not reached through wrapped selection");capture();
  command("Up");command("Right");Check(readClinical()[1]==1,"Clinical action did not use existing row path");command("Up");command("Right");Check(readClinical()[0]==1,"Mode row did not use existing row path");
- command("Reset");const auto defaults=malemod::surface::Controls{};Check(read().values==defaults.values&&readClinical()==std::array<float,3>{},"Reset defaults failed");capture();
+ command("Down");command("Down");command("Down");capture();
+ const auto defaults=malemod::surface::Controls{};
+ for(const char* key:{"Enter","Space","Right"}){write(1,75);command(key);Check(read().values==defaults.values&&readClinical()==std::array<float,3>{},"Keyboard Reset defaults failed");}
+ capture();
  command("F6");Check(!panel.Open(),"Panel did not collapse");command("Right");Check(read().values==defaults.values,"Collapsed panel edited controls");capture();
  }
  DestroyWindow(parent);

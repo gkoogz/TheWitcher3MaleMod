@@ -710,6 +710,15 @@ def main():
     commands.add_parser('uninstall')
     commands.add_parser('install-native')
     commands.add_parser('uninstall-native')
+    reviewed_native = commands.add_parser('install-reviewed-native')
+    reviewed_native.add_argument('--preview',type=Path,required=True)
+    reviewed_native.add_argument('--proof',type=Path,required=True)
+    modular_native = commands.add_parser('install-modular-native')
+    modular_native.add_argument('--preview',type=Path,required=True)
+    modular_native.add_argument('--proof',type=Path,required=True)
+    modular_native.add_argument('--validate-only',action='store_true')
+    startup_repair = commands.add_parser('repair-native-startup')
+    startup_repair.add_argument('--proof',type=Path,required=True)
     restore_native = commands.add_parser('restore-native')
     restore_native.add_argument('--backup',type=Path,required=True)
     verifier = commands.add_parser('verify')
@@ -746,6 +755,15 @@ def main():
         elif args.command == 'restore-native':
             from install_native_runtime import restore_native_runtime
             restore_native_runtime(cfg,args.backup)
+        elif args.command == 'install-reviewed-native':
+            from install_reviewed_native import install_reviewed_native
+            install_reviewed_native(cfg,args.preview,args.proof)
+        elif args.command == 'install-modular-native':
+            from install_modular_native import install_modular_native
+            install_modular_native(cfg,args.preview,args.proof,args.validate_only)
+        elif args.command == 'repair-native-startup':
+            from install_native_runtime import install_startup_repair
+            install_startup_repair(cfg,args.proof)
         elif args.command == 'verify':
             directory = args.directory or ROOT / read_json(ROOT / 'publish/latest.json')['directory']
             verify_package(directory)

@@ -50,7 +50,7 @@ BOOL WINAPI DllMain(HINSTANCE self,DWORD reason,LPVOID){
  auto base=reinterpret_cast<unsigned char*>(GetModuleHandleW(nullptr));auto dos=reinterpret_cast<IMAGE_DOS_HEADER*>(base);
  if(dos->e_magic!=IMAGE_DOS_SIGNATURE||dos->e_lfanew<0||dos->e_lfanew>4096)return FALSE;
  auto nt=reinterpret_cast<IMAGE_NT_HEADERS64*>(base+dos->e_lfanew);
- if(nt->Signature!=IMAGE_NT_SIGNATURE||nt->OptionalHeader.SizeOfImage!=malemod::witcher::profile::imageSize||nt->OptionalHeader.AddressOfEntryPoint!=0x1a6a598)return FALSE;
- constexpr std::array<unsigned char,14> expected{0x48,0x83,0xec,0x28,0xe8,0xbf,0x0c,0,0,0x48,0x83,0xc4,0x28,0xe9};
+ if(nt->Signature!=IMAGE_NT_SIGNATURE||nt->OptionalHeader.SizeOfImage!=malemod::witcher::profile::imageSize||nt->OptionalHeader.AddressOfEntryPoint!=malemod::witcher::profile::entryPointRVA)return FALSE;
+ constexpr auto expected=malemod::witcher::profile::entryPointPrefix;
  return gate.Arm(base+nt->OptionalHeader.AddressOfEntryPoint,expected,reinterpret_cast<void*>(&GameEntry));
 }

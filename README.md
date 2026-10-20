@@ -1,5 +1,10 @@
 # The Witcher 3 MaleMod adapter
 
+**October 11 local startup repair:** Steam build 25773555 is observed working
+with the installed native compatibility update and narrow startup-movie helper.
+See [repair identities, verification and rollback](docs/HANDOFF.md).
+The published frozen payload has not been updated by this local repair.
+
 Repository-only development room: [portable grey sandbox delta and setup](dev/sandbox/README.md).
 Use it first for future modeling, clothing and physics iteration. It is excluded
 from anatomy releases; every new machine generates its own cooking/gameplay proof.

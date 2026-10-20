@@ -72,7 +72,7 @@ def play(package, acceptance, *, check_only=False, preview=False):
             raise ValueError('Existing or invalid sandbox target: '+str(target))
         rows.append(dict(path=str(target),source=str(package/item['path']),sha256=item['sha256']))
     if check_only:
-        print('PASS '+('playable preview' if preview else 'manual launch')+' preflight: package, native compile, observed movement, reviewed frame and all 40 installed files')
+        print('PASS '+('playable preview' if preview else 'manual launch')+f' preflight: package, native compile, observed movement, reviewed frame and all {len(installed["files"])} installed files')
         return
     job = ROOT/'build/iteration-storage'/('human-platform-'+str(time.time_ns()))
     transaction = begin(Path.home()/'Documents/The Witcher 3/gamesaves',job)

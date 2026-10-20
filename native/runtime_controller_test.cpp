@@ -65,16 +65,17 @@ int wmain(int argc,wchar_t** argv){try{
     Check(status==RuntimeTick::Loading||status==RuntimeTick::Computing||status==RuntimeTick::Busy,"Slow active frame stopped the solver");
     Check(std::chrono::steady_clock::now()<until,"Slow-frame backlog did not progress");Sleep(1);
    }
-   ++slowFrames;auto current=slow.SimulationSeconds();auto offline=slowSample;offline.seconds=current;
-   malemod::surface::wire::Request q;q.controls=defaults;q.frame=slowMapper.Map(offline).frame;auto exact=slowSerial.Evaluate(q);
+   ++slowFrames;auto current=slow.SimulationSeconds();SurfaceFrame exact;
+   double replay=slowClock;while(replay<current){double left=current-replay;replay+=left>.15?.1:left;auto offline=slowSample;offline.seconds=replay;
+    malemod::surface::wire::Request q;q.controls=defaults;q.frame=slowMapper.Map(offline).frame;exact=slowSerial.Evaluate(q);}
    std::shared_ptr<const RuntimeDelivery> completed;
    do{slow.Publish();completed=slow.Latest();if(completed&&completed->surface->sequence==sequence)break;Check(std::chrono::steady_clock::now()<until,"Slow-frame surface missing");Sleep(1);}while(true);
    Check(completed->surface->frame.targetPositions==exact.targetPositions&&malemod::surface::wire::Encode(completed->surface->frame.source)==malemod::surface::wire::Encode(exact.source),"Slow-frame scheduling changed source numerics");
-   Check(current>slowClock&&current-slowClock<=.150000001,"Wire interval or backlog clock invalid");slowClock=current;
+   Check(current>slowClock&&current-slowClock<=.450000001,"Batch clock invalid");slowClock=current;
    if(!phase||std::abs(current-(1./60.+.45))<1e-9)break;
   }
  }
- Check(std::abs(slowClock-(1./60.+.45))<1e-9&&slowFrames>=4,"Active time was discarded");
+ Check(std::abs(slowClock-(1./60.+.45))<1e-9&&slowFrames==2,"Active interval did not catch up in one batch");
  Check(slow.Tick(slowSample,false,defaults,sequence)==RuntimeTick::Computing&&!sequence,"Duplicate engine time latched a fault");
  std::cout<<"PASS: slow active interval preserves all elapsed time in exact source/target samples; duplicate time stays transient\n";
  // A new character epoch owns a fresh source process and cannot publish the

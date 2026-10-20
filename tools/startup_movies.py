@@ -5,14 +5,28 @@ from pathlib import Path
 import shutil
 import subprocess
 import uuid
+import re
 
 import mod
 
 
 NAME = 'modLocalSkipStartupMovies'
-RESOURCE = Path('game/r4Game.ws')
-ORIGINAL = "\t\tmenus.PushBack( 'StartupMoviesMenu' );"
-REPLACEMENT = '\t\t// Local PC startup: proceed directly to the normal menu queue.'
+SOURCE_RESOURCE = Path('game/r4Game.ws')
+RESOURCE = Path('local/startup_movies.ws')
+PATCH = '''// Replace only the startup movie queue; keep the current stock game class.
+@replaceMethod(CR4Game)
+function PopulateMenuQueueStartupOnce(out menus : array<name>)
+{
+    // Proceed to the normal startup menus without opening StartupMoviesMenu.
+}
+'''
+
+def validate_startup_queue(stock):
+    matches=re.findall(r'public\s+function\s+PopulateMenuQueueStartupOnce\s*'
+        r'\(\s*out\s+menus\s*:\s*array\s*<\s*name\s*>\s*\)\s*\{([^{}]*)\}',stock)
+    if len(matches)!=1 or not re.fullmatch(
+            r"\s*menus\.PushBack\(\s*'StartupMoviesMenu'\s*\);\s*",matches[0]):
+        raise RuntimeError('Startup queue changed; preserve additional stock startup behavior')
 
 
 def files(root):
@@ -37,33 +51,39 @@ def main():
     job = mod.ROOT / 'build/startup-movies' / uuid.uuid4().hex[:12]
     workspace = job / 'workspace'
     workspace.mkdir(parents=True)
-    source = cfg['redkit'] / 'r4data/scripts' / RESOURCE
+    source = cfg['redkit'] / 'r4data/scripts' / SOURCE_RESOURCE
     stock = source.read_text(encoding='utf-8-sig')
-    if stock.count(ORIGINAL) != 1:
-        raise RuntimeError('Startup queue changed; inspect the installed stock script')
-    patched = stock.replace(ORIGINAL, REPLACEMENT, 1)
+    validate_startup_queue(stock)
+    patched = PATCH
     package = job / 'package' / NAME
     target = package / 'content/scripts' / RESOURCE
     target.parent.mkdir(parents=True)
     target.write_text(patched, encoding='utf-8', newline='\n')
     (job / 'startup.diff').write_text(''.join(difflib.unified_diff(
-        stock.splitlines(True), patched.splitlines(True),
-        fromfile='stock/game/r4Game.ws', tofile=NAME + '/game/r4Game.ws')),
+        [], patched.splitlines(True),
+        fromfile='/dev/null', tofile=NAME + '/local/startup_movies.ws')),
         encoding='utf-8')
 
     # Compile the combined currently installed scripts, catching duplicate overrides.
     mods_root = cfg['game'] / 'Mods'
     installed_before = {p.name: files(p) for p in mods_root.iterdir() if p.is_dir()}
     for installed in mods_root.iterdir():
+        if installed.name==NAME: continue
         scripts = installed / 'content/scripts'
         if scripts.is_dir():
-            if (scripts / RESOURCE).exists():
+            if (scripts / SOURCE_RESOURCE).exists():
                 raise RuntimeError('Existing r4Game.ws override requires a merge: ' + str(scripts))
             mod.copy_tree(scripts, workspace / 'scripts')
     mod.copy_tree(package / 'content/scripts', workspace / 'scripts')
-    native = mod.compile_scripts(cfg, workspace)
+    imports=sorted({name for path in (workspace/'scripts').rglob('*.ws')
+        for name in re.findall(r'import\s+function\s+(MaleModNative\w+)\s*\(',path.read_text())})
+    if imports:
+        from compile_native_scripts import compile_native
+        native=compile_native(workspace,imports)
+    else:
+        native = mod.compile_scripts(cfg, workspace)
     record = {'name': NAME, 'source': str(source), 'sourceSHA256': mod.digest(source),
-              'change': 'Remove only StartupMoviesMenu from PopulateMenuQueueStartupOnce',
+              'change': 'Replace only PopulateMenuQueueStartupOnce; never override the stock CR4Game class',
               'native': native, 'package': str(package), 'files': files(package),
               'gameplay': 'Not yet observed', 'installed': False}
     if args.install:

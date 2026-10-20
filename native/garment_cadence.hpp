@@ -25,4 +25,22 @@ class GarmentCadence {
   return {elapsed>0||geometryChanged,false,active_};
  }
 };
+// The producer already identifies engine-clock discontinuities. A worker may
+// receive several seconds of valid active time after a slow initial fit or
+// coalesced requests; that backlog is not a new character or rest shape.
+class GarmentWorkerClock {
+ unsigned epoch_=0;
+ std::uint64_t generation_=0;
+ double active_=0;
+ bool ready_=false;
+ public:
+ struct Sample {bool reset=false;double elapsed=0;};
+ Sample Advance(unsigned epoch,std::uint64_t generation,double active){
+  if(!epoch||!std::isfinite(active)||active<0)throw std::invalid_argument("Invalid garment worker clock");
+  const bool reset=!ready_||epoch_!=epoch||generation_!=generation||active<active_;
+  const double elapsed=reset?0:active-active_;
+  ready_=true;epoch_=epoch;generation_=generation;active_=active;
+  return {reset,elapsed};
+ }
+};
 }

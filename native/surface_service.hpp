@@ -11,11 +11,12 @@ struct CompletedSurface {
 };
 enum class Submission {Accepted,Busy,Full,Stopped,Invalid,Loading};
 // Engine integration owns one service per character lifetime. Each accepted
-// request is evaluated in order with its original controls, dt and contacts.
-// No coalescing, skipped physics steps, interpolation or stale-control mixing.
+// physics sample is evaluated in order with its original controls, dt and
+// contacts. A bounded batch composes only its final character surface; source
+// physics steps are never coalesced or skipped and controls are not mixed.
 // Construction/destruction belong outside engine locks and loader callbacks.
 class SurfaceService {
- struct Pending {std::uint64_t sequence;surface::wire::Request input;};
+ struct Pending {std::uint64_t sequence;std::vector<surface::wire::Request> inputs;};
  static constexpr std::size_t capacity=8;
  std::mutex mutex_;std::condition_variable changed_;std::array<Pending,capacity> queue_;
  std::size_t first_=0,size_=0;
@@ -25,17 +26,17 @@ class SurfaceService {
  std::shared_ptr<const CompletedSurface> completed_;
  std::thread thread_;
  public:
- SurfaceService(std::wstring worker,std::filesystem::path bindings,std::string revision,std::optional<surface::Controls> startup=std::nullopt):
-  preparing_(startup.has_value()),thread_([this,worker=std::move(worker),bindings=std::move(bindings),revision=std::move(revision),startup]{
+ SurfaceService(std::wstring worker,std::filesystem::path bindings,std::string revision,std::optional<surface::Controls> startup=std::nullopt,bool modular=false):
+  preparing_(startup.has_value()),thread_([this,worker=std::move(worker),bindings=std::move(bindings),revision=std::move(revision),startup,modular]{
    try{
-    SurfacePipeline pipeline(worker,bindings,revision);
+    SurfacePipeline pipeline(worker,bindings,revision,true,modular);
     if(startup)pipeline.Initialize(*startup);
     preparing_.store(false,std::memory_order_release);
     for(;;){Pending next;
      {std::unique_lock<std::mutex> lock(mutex_);changed_.wait(lock,[&]{return stopping_||size_!=0;});
       if(stopping_)return;next=queue_[first_];first_=(first_+1)%capacity;--size_;}
-     auto result=std::make_shared<CompletedSurface>();result->sequence=next.sequence;result->input=next.input;
-     result->frame=pipeline.Evaluate(next.input);
+     auto result=std::make_shared<CompletedSurface>();result->sequence=next.sequence;result->input=next.inputs.back();
+     result->frame=pipeline.EvaluateBatch(next.inputs);
      std::atomic_store_explicit(&completed_,std::shared_ptr<const CompletedSurface>(std::move(result)),std::memory_order_release);
     }
    }catch(const std::exception& e){std::lock_guard<std::mutex> lock(mutex_);error_=e.what();failed_.store(true,std::memory_order_release);}
@@ -43,16 +44,19 @@ class SurfaceService {
  ~SurfaceService(){ {std::lock_guard<std::mutex> lock(mutex_);stopping_=true;}changed_.notify_one();if(thread_.joinable())thread_.join(); }
  SurfaceService(const SurfaceService&)=delete;SurfaceService& operator=(const SurfaceService&)=delete;
  Submission Submit(const surface::wire::Request& request,std::uint64_t& acceptedSequence){
+  return SubmitBatch({request},acceptedSequence);
+ }
+ Submission SubmitBatch(const std::vector<surface::wire::Request>& requests,std::uint64_t& acceptedSequence){
   acceptedSequence=0;
-  try{surface::wire::Validate(request.controls);surface::wire::Validate(request.frame);}catch(const std::exception&){return Submission::Invalid;}
+  if(requests.empty()||requests.size()>32)return Submission::Invalid;
+  try{for(const auto& request:requests){surface::wire::Validate(request.controls);surface::wire::Validate(request.frame);if(request.reset)return Submission::Invalid;}}catch(const std::exception&){return Submission::Invalid;}
   // Resetting the process-global source requires a replacement service/worker.
-  if(request.reset)return Submission::Invalid;
   if(preparing_.load(std::memory_order_acquire))return failed_?Submission::Stopped:Submission::Loading;
   std::unique_lock<std::mutex> lock(mutex_,std::try_to_lock);
   if(!lock.owns_lock())return Submission::Busy;
   if(stopping_||failed_.load(std::memory_order_acquire))return Submission::Stopped;
   if(size_==capacity)return Submission::Full;
-  acceptedSequence=++sequence_;queue_[(first_+size_)%capacity]={acceptedSequence,request};++size_;changed_.notify_one();return Submission::Accepted;
+  acceptedSequence=++sequence_;queue_[(first_+size_)%capacity]={acceptedSequence,requests};++size_;changed_.notify_one();return Submission::Accepted;
  }
  // A rejected submission remains the caller's responsibility. Full/Busy must
  // be handled visibly by the eventual engine lifecycle, never silently ignored.

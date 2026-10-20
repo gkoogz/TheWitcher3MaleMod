@@ -3,11 +3,13 @@ import argparse,ctypes as C,json,time
 from ctypes import wintypes as W
 from pathlib import Path
 from mod import ROOT,read_json,write_json,digest,settings
+from native_preview import session_game
 
 def close(receipt):
     path=Path(receipt).resolve()
     if not path.is_relative_to(ROOT/'build/probe'):raise ValueError('Expected owned private receipt')
     r=read_json(path);identity=r['observations']
+    game=session_game(r)
     if not identity['noninteractiveWindowStation'] or identity['physicalInputUsed'] or r['physicalDesktopSwitch']:raise ValueError('Not an isolated child')
     if r.get('closed'):return r
     k=C.WinDLL('kernel32',use_last_error=True)
@@ -26,7 +28,7 @@ def close(receipt):
         # launcher-recorded identity/exit/audio lifecycle before removing files.
         if len(starts)!=1 or starts[0]!=identity or len(exits)!=1 or not any('restoredAudioSessions' in e for e in events):
             raise ValueError('Cannot certify recorded private child exit')
-        if not source.is_relative_to(Path(settings()['game'],'Mods/modMaleModContinueTest')) or digest(source)!=r['temporaryContinueSHA256']:
+        if not source.resolve().is_relative_to(game/'Mods/modMaleModContinueTest') or digest(source)!=r['temporaryContinueSHA256']:
             raise ValueError('Temporary driver identity changed')
         source.unlink()
         r.update(closed=True,audioRestored=True,alreadyExited=True,exitCode=exits[0]['exitCode'],closeVerifiedCreationTime=identity['processCreationTime'])
@@ -46,9 +48,9 @@ def close(receipt):
         if k.WaitForSingleObject(handle,0)==0: return cleanup_exited()
         name=C.create_unicode_buffer(32768);length=W.DWORD(len(name))
         if not k.QueryFullProcessImageNameW(handle,0,name,C.byref(length)):raise OSError(C.get_last_error(),'Cannot identify game executable')
-        if Path(name.value).resolve()!=Path(settings()['game'],'bin/x64_dx12/witcher3.exe').resolve():raise ValueError('Recorded child executable differs')
+        if Path(name.value).resolve()!=(game/'bin/x64_dx12/witcher3.exe').resolve():raise ValueError('Recorded child executable differs')
         source=Path(r['temporaryContinueSource'])
-        if not source.is_relative_to(Path(settings()['game'],'Mods/modMaleModContinueTest')) or digest(source)!=r['temporaryContinueSHA256']:raise ValueError('Temporary driver identity changed')
+        if not source.resolve().is_relative_to(game/'Mods/modMaleModContinueTest') or digest(source)!=r['temporaryContinueSHA256']:raise ValueError('Temporary driver identity changed')
         if not k.TerminateProcess(handle,0):raise OSError(C.get_last_error(),'Cannot close private child')
         if k.WaitForSingleObject(handle,10000)!=0:raise TimeoutError('Private child has not exited')
     finally:k.CloseHandle(handle)

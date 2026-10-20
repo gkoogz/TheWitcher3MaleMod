@@ -1,0 +1,191 @@
+#pragma once
+#include <malemod/surface/modular_dynamic.hpp>
+#include <tuple>
+#include <map>
+#include <optional>
+#include <unordered_map>
+#include <future>
+
+// Included after ModularVertex/Part/Frame: native data lives only in this adapter.
+namespace malemod::witcher {
+class ModularDynamicRenderer {
+ using Vec=surface::PresentationPoint;using State=surface::modular::State;
+ struct Material {std::array<float,2> uv;std::array<float,3> normal,tangent;float sign;std::array<unsigned,4> bones;std::array<float,4> weights,color;std::array<float,2> reflection;};
+ static_assert(sizeof(Material)==92);
+ // Triangle donors contain at most twelve bones; a ramp blends two donors.
+ // Preserve sorted accumulation order without heap nodes for every corner.
+ struct Weights {
+  std::array<std::pair<unsigned,double>,24> entries{};unsigned count=0;
+  auto begin(){return entries.begin();} auto end(){return entries.begin()+count;}
+  auto begin()const{return entries.begin();} auto end()const{return entries.begin()+count;}
+  void clear(){count=0;}
+  double& operator[](unsigned bone){
+   unsigned i=0;while(i<count&&entries[i].first<bone)++i;
+   if(i<count&&entries[i].first==bone)return entries[i].second;
+   if(count==entries.size())throw std::runtime_error("Material donor bone capacity exceeded");
+   for(unsigned j=count;j>i;--j)entries[j]=entries[j-1];entries[i]={bone,0};++count;return entries[i].second;
+  }
+ };
+ struct Attribute {Vec normal{},tangent{};std::array<double,2> uv{},reflection{};double sign=1;Weights weights;std::array<double,4> color{};};
+ struct Row {unsigned vertex=0,shading=0;std::uint32_t bones=0,weights=0,color=0;std::array<std::uint16_t,2> uv{},reflection{};Vec tangent{};double sign=1;};
+ struct Layout {unsigned resource=0,lod=0,first=0,count=0;std::vector<Row> rows;std::shared_ptr<const std::vector<unsigned>> indices;std::shared_ptr<const std::vector<surface::PresentationBinding>> presentation;};
+ const surface::modular::Asset& asset_;const surface::modular::Plan& plan_;const RenderContract& contract_;
+ surface::modular::DynamicMount mount_;std::vector<std::array<Material,3>> bodyMaterial_,moduleMaterial_;
+ std::vector<unsigned char> fixed_,resource_;std::vector<Vec> fixedPoints_,assetNormals_;
+ std::array<unsigned char,4> winding_{};std::array<Layout,4> layouts_;
+ std::optional<surface::modular::DynamicResult> cached_;State cachedState_;
+ std::vector<unsigned> assetToSurface_;
+ struct Shade {unsigned vertex;Vec tangent;double sign;};std::vector<Shade> shading_;
+ std::array<std::vector<std::array<std::optional<Row>,3>>,4> bodyRows_,moduleRows_;
+ std::vector<Vec> templateNormals_,templateGeometry_,nativeFixed_;std::vector<unsigned char> useFixed_;
+ static Vec Unit(Vec x,Vec fallback={1,0,0}){double n=surface::Dot(x,x);return n>1e-24?surface::Scale(x,1/std::sqrt(n)):fallback;}
+ static Vec Transport(Vec v,Vec a,Vec b){using namespace surface;auto axis=Cross(a,b);double cosine=std::clamp(Dot(a,b),-1.,1.);if(cosine<-.9999){auto side=Cross(a,Vec{1,0,0});if(Dot(side,side)<1e-6)side=Cross(a,Vec{0,1,0});side=Unit(side);return Sub(Scale(side,2*Dot(side,v)),v);}return Add(Add(v,Cross(axis,v)),Scale(Cross(axis,Cross(axis,v)),1/(1+cosine)));}
+ static std::uint16_t Half(float f){
+  std::uint32_t b;std::memcpy(&b,&f,4);const unsigned sign=b>>16&0x8000;int e=int((b>>23)&255)-127+15;unsigned m=b&0x7fffff;
+  if(e<=0){if(e< -10)return std::uint16_t(sign);m=(m|0x800000)>>(1-e);return std::uint16_t(sign+((m+0x1000)>>13));}if(e>=31)throw std::runtime_error("Material half overflow");return std::uint16_t(sign+(unsigned(e)<<10)+((m+0x1000)>>13));
+ }
+ static std::uint32_t Pack(Vec v,unsigned high){v=Unit(v);unsigned word=high<<30;for(unsigned k=0;k<3;k++)word|=unsigned(std::clamp((v[k]+1)*.5,0.,1.)*1023+.5)<<(10*k);return word;}
+ static std::vector<Vec> Normals(const std::vector<Vec>& points,const std::vector<std::array<surface::SurfaceJoinCorner,3>>& faces){
+  using namespace surface;std::vector<Vec> n(points.size());for(auto f:faces){auto a=f[0].vertex,b=f[1].vertex,c=f[2].vertex;auto face=Cross(Sub(points[b],points[a]),Sub(points[c],points[a]));for(auto i:{a,b,c})n[i]=Add(n[i],face);}for(auto& x:n)x=Unit(x);return n;
+ }
+ Attribute AttributeFor(surface::SurfaceJoinCorner c)const{
+  using namespace surface;const auto& tri=c.domain==0?bodyMaterial_.at(c.parent):moduleMaterial_.at(c.parent);Attribute a;a.sign=0;
+  for(unsigned k=0;k<3;k++){const double w=c.donor[k];const auto& m=tri[k];for(unsigned j=0;j<2;j++){a.uv[j]+=m.uv[j]*w;a.reflection[j]+=m.reflection[j]*w;}for(unsigned j=0;j<3;j++){a.normal[j]+=m.normal[j]*w;a.tangent[j]+=m.tangent[j]*w;}for(unsigned j=0;j<4;j++){a.color[j]+=m.color[j]*w;a.weights[m.bones[j]]+=m.weights[j]*w;}a.sign+=m.sign*w;}
+  a.normal=Unit(a.normal);a.tangent=Unit(a.tangent);a.sign=a.sign<0?-1:1;return a;
+ }
+ Row MakeRow(unsigned vertex,Attribute a,unsigned resource,unsigned lod)const{
+  const auto& r=contract_.resources[resource];const unsigned begin=r.firstPalette+lod*r.paletteCount/2,end=begin+r.paletteCount/2;
+  std::array<std::pair<double,unsigned>,24> weights{};unsigned weightCount=0;for(auto item:a.weights)if(item.second>1e-12)weights[weightCount++]={item.second,item.first};
+  std::sort(weights.begin(),weights.begin()+weightCount,[](auto a,auto b){return a.first!=b.first?a.first>b.first:a.second<b.second;});weightCount=(std::min)(weightCount,4u);double sum=0;for(unsigned k=0;k<weightCount;k++)sum+=weights[k].first;if(sum<=0)throw std::runtime_error("Dynamic skin has no measured donors");
+  std::array<unsigned,4> skin{},quant{};std::array<double,4> fraction{};unsigned total=0;Row row;row.vertex=vertex;row.tangent=a.tangent;row.sign=a.sign;
+  unsigned fallback=begin;while(fallback<end&&contract_.nativeBones[fallback]!=9)++fallback;if(fallback==end)throw std::runtime_error("Observed palette has no pelvic binding");skin.fill(fallback-r.firstPalette);
+  for(unsigned k=0;k<weightCount;k++){const double value=255*weights[k].first/sum;quant[k]=unsigned(std::floor(value));fraction[k]=value-quant[k];total+=quant[k];}
+  while(total<255){auto best=std::max_element(fraction.begin(),fraction.end());quant[best-fraction.begin()]++;*best=-1;total++;}
+  for(unsigned k=0;k<weightCount;k++)if(quant[k]){unsigned bone=begin;while(bone<end&&contract_.nativeBones[bone]!=weights[k].second)++bone;if(bone==end)throw std::runtime_error("Dynamic skin bone "+std::to_string(weights[k].second)+" byte weight "+std::to_string(quant[k])+" leaves resource "+std::to_string(resource)+" LOD "+std::to_string(lod)+" vertex "+std::to_string(vertex));skin[k]=bone-r.firstPalette;}
+  for(unsigned k=0;k<4;k++){row.bones|=skin[k]<<(8*k);row.weights|=quant[k]<<(8*k);row.color|=unsigned(std::clamp(a.color[k],0.,1.)*255+.5)<<(8*k);}
+  for(unsigned k=0;k<2;k++){row.uv[k]=Half(float(a.uv[k]));row.reflection[k]=Half(float(a.reflection[k]));}return row;
+ }
+ void Build(const State& state){
+  using namespace surface;cached_=mount_.Evaluate(asset_,plan_,state);cachedState_=state;auto& mesh=cached_->surface;templateGeometry_=Normals(mesh.points,mesh.faces);templateNormals_=templateGeometry_;useFixed_.assign(mesh.points.size(),0);nativeFixed_.assign(mesh.points.size(),{});
+  assetToSurface_.assign(asset_.rest.size(),~0u);
+  for(auto c:cached_->moduleVertices)for(unsigned k=0;k<3;k++)if(c.donor[k]>1-1e-10)assetToSurface_[asset_.faces[c.parent][k]]=c.vertex;
+  std::vector<std::optional<SurfaceJoinCorner>> donors(mesh.points.size());
+  for(auto f:mesh.faces)for(auto c:f)if(c.domain<2){
+   donors[c.vertex]=c;auto a=AttributeFor(c);
+   if(c.domain==0){templateNormals_[c.vertex]=a.normal;bool fixed=true;Vec position{};for(unsigned k=0;k<3;k++)if(c.donor[k]>1e-10){auto id=mount_.faces[c.parent][k];fixed&=fixed_[id]!=0;position=Add(position,Scale(fixedPoints_[id],c.donor[k]));}if(fixed){useFixed_[c.vertex]=1;nativeFixed_[c.vertex]=position;}}
+   else{Vec before{};for(unsigned k=0;k<3;k++)before=Add(before,Scale(assetNormals_[asset_.faces[c.parent][k]],c.donor[k]));templateNormals_[c.vertex]=Unit(Transport(a.normal,Unit(before),templateGeometry_[c.vertex]));}
+  }
+  std::vector<Attribute> ramp(mesh.points.size());const auto& rings=mesh.rings;
+  for(unsigned column=0;column<rings[0].size();column++){
+   const auto bodyCorner=*donors[rings.front()[column]],moduleCorner=*donors[rings.back()[column]];auto a=AttributeFor(bodyCorner),b=AttributeFor(moduleCorner);
+   // Continue the proximal anatomy chart through the ramp. Body-chart
+   // extrusion crosses unrelated abdominal texture landmarks.
+   for(unsigned row=0;row<rings.size();row++){
+    const unsigned id=rings[row][column];const double t=.5*(1-std::cos(3.14159265358979323846*row/(rings.size()-1)));auto& value=ramp[id];value=a;
+    value.uv={b.uv[0],.02*(1-t)+b.uv[1]*t};value.weights.clear();for(auto w:a.weights)value.weights[w.first]+=w.second*(1-t);for(auto w:b.weights)value.weights[w.first]+=w.second*t;for(unsigned k=0;k<4;k++)value.color[k]=a.color[k]*(1-t)+b.color[k]*t;value.normal=templateNormals_[id];
+   }
+  }
+  std::vector<Vec> rampTangents(mesh.points.size()),rampBitangents(mesh.points.size());
+  for(auto f:mesh.faces)if(f[0].domain==2){auto a=f[0].vertex,b=f[1].vertex,c=f[2].vertex;auto p=Sub(mesh.points[b],mesh.points[a]),q=Sub(mesh.points[c],mesh.points[a]);auto u=ramp[a].uv,v=ramp[b].uv,w=ramp[c].uv;double du=v[0]-u[0],dv=v[1]-u[1],eu=w[0]-u[0],ev=w[1]-u[1],det=du*ev-dv*eu;if(std::abs(det)<1e-15)continue;double area=std::sqrt(Dot(Cross(p,q),Cross(p,q)));auto tangent=Scale(Sub(Scale(p,ev),Scale(q,dv)),area/det),bitangent=Scale(Sub(Scale(q,du),Scale(p,eu)),area/det);for(auto i:{a,b,c}){rampTangents[i]=Add(rampTangents[i],tangent);rampBitangents[i]=Add(rampBitangents[i],bitangent);}}
+  for(auto ring:rings)for(auto i:ring){auto n=templateNormals_[i];ramp[i].tangent=Unit(Sub(rampTangents[i],Scale(n,Dot(n,rampTangents[i]))),ramp[i].tangent);ramp[i].sign=Dot(Cross(n,ramp[i].tangent),rampBitangents[i])<0?-1:1;}
+  using Key=std::array<unsigned,6>;
+  struct KeyHash {std::size_t operator()(const Key& key)const{std::size_t h=0;for(auto x:key)h^=std::hash<unsigned>{}(x)+0x9e3779b9+(h<<6)+(h>>2);return h;}};
+  std::vector<unsigned> faceResources;faceResources.reserve(mesh.faces.size());std::set<unsigned> lowerPalette;
+  const auto& lower=contract_.resources[0];for(unsigned i=lower.firstPalette;i<lower.firstPalette+lower.paletteCount/2;i++)lowerPalette.insert(contract_.nativeBones[i]);
+  for(auto face:mesh.faces){unsigned resource=face[0].domain==0?resource_[face[0].parent]:0;
+   if(face[0].domain==2)for(auto c:face)for(auto w:ramp[c.vertex].weights)if(w.second>1e-10&&!lowerPalette.count(w.first))resource=1;
+   faceResources.push_back(resource);
+  }
+  std::array<std::future<void>,4> jobs;
+  for(unsigned index=0;index<4;index++)jobs[index]=std::async(std::launch::async,[&,index]{
+   auto& layout=layouts_[index];layout={};layout.resource=index/2;layout.lod=index%2;layout.first=contract_.lods[index].firstIndex;layout.count=contract_.lods[index].indexCount;
+   std::vector<std::optional<Row>> rampRows(mesh.points.size());
+   std::unordered_map<Key,unsigned,KeyHash> aliases;aliases.reserve(mesh.points.size());auto indices=std::make_shared<std::vector<unsigned>>();
+   for(unsigned fi=0;fi<mesh.faces.size();fi++){auto face=mesh.faces[fi];if(faceResources[fi]!=layout.resource)continue;std::array<unsigned,3> tri;
+    for(unsigned k=0;k<3;k++){auto c=face[k];int original=-1;
+     if(c.domain<2)for(unsigned j=0;j<3;j++)if(c.donor[j]==1&&c.donor[(j+1)%3]==0&&c.donor[(j+2)%3]==0)original=int(j);
+     Row row;
+     if(original>=0){auto& saved=(c.domain==0?bodyRows_[index]:moduleRows_[index]).at(c.parent)[original];if(!saved)saved=MakeRow(c.vertex,AttributeFor(c),layout.resource,layout.lod);row=*saved;row.vertex=c.vertex;}
+     else if(c.domain==2){auto& saved=rampRows[c.vertex];if(!saved)saved=MakeRow(c.vertex,ramp[c.vertex],layout.resource,layout.lod);row=*saved;}
+     else row=MakeRow(c.vertex,AttributeFor(c),layout.resource,layout.lod);
+     if(c.domain==1){Vec before{};for(unsigned j=0;j<3;j++)before=Add(before,Scale(assetNormals_[asset_.faces[c.parent][j]],c.donor[j]));row.tangent=Transport(row.tangent,Unit(before),templateGeometry_[c.vertex]);}
+     Key key{c.vertex,row.uv[0],row.uv[1],row.bones,row.weights,row.sign<0?0u:1u};auto found=aliases.find(key);
+     if(found==aliases.end()){unsigned id=unsigned(layout.rows.size());aliases.emplace(key,id);layout.rows.push_back(row);tri[k]=id;}else{tri[k]=found->second;layout.rows[tri[k]].tangent=Add(layout.rows[tri[k]].tangent,row.tangent);}
+    }if(!winding_[index])std::swap(tri[1],tri[2]);indices->insert(indices->end(),tri.begin(),tri.end());
+   }
+   for(auto& row:layout.rows)row.tangent=Unit(row.tangent);layout.indices=std::move(indices);
+  });
+  for(auto& job:jobs)job.get();
+  std::vector<PresentationBinding> ownership(mesh.points.size());
+  for(auto c:cached_->moduleVertices){std::array<double,15> votes{};double crown=0;for(unsigned k=0;k<3;k++){auto id=asset_.faces[c.parent][k];const auto& binding=cached_->clearedBindings?cached_->clearedBindings->at(id):asset_.bindings[id];for(auto v:binding.influences)votes[v.frame]+=v.weight*c.donor[k];if(state.crownWeights)crown+=state.crownWeights->at(id)*c.donor[k];}unsigned f=unsigned(std::max_element(votes.begin(),votes.end())-votes.begin());if(crown>1-1e-8)f=12;ownership[c.vertex]={f,f?1.:0.};}
+  for(auto& layout:layouts_){auto bindings=std::make_shared<std::vector<PresentationBinding>>();bindings->reserve(layout.rows.size());for(auto row:layout.rows)bindings->push_back(ownership[row.vertex]);layout.presentation=bindings;}
+  shading_.clear();std::map<std::tuple<unsigned,double,double,double,double>,unsigned> cache;
+  for(auto& layout:layouts_)for(auto& row:layout.rows){auto key=std::make_tuple(row.vertex,row.tangent[0],row.tangent[1],row.tangent[2],row.sign);auto pair=cache.emplace(key,unsigned(shading_.size()));row.shading=pair.first->second;if(pair.second)shading_.push_back({row.vertex,row.tangent,row.sign});}
+ }
+ public:
+ ModularDynamicRenderer(const surface::modular::Asset& asset,const surface::modular::Plan& plan,const RenderContract& contract,const std::filesystem::path& dynamic,const std::filesystem::path& materials,const std::string& geometryHash,const std::string& dynamicHash,const std::string& nativeHash)
+ :asset_(asset),plan_(plan),contract_(contract),mount_(dynamic){
+  if(mount_.geometryHash!=geometryHash||std::filesystem::file_size(materials)>128*1024*1024)throw std::invalid_argument("Dynamic material/source identity differs");std::ifstream in(materials,std::ios::binary);auto bytes=[&](void* p,std::size_t n){if(!in.read(static_cast<char*>(p),n))throw std::invalid_argument("Truncated dynamic materials");};auto text=[&](unsigned n){std::string s(n,'\0');bytes(s.data(),n);return s;};auto u=[&]{unsigned n;bytes(&n,4);return n;};
+  if(text(8)!="MMMAT001"||text(64)!=geometryHash||text(64)!=dynamicHash||text(64)!=nativeHash)throw std::invalid_argument("Dynamic material hashes differ");auto nv=u(),nf=u(),nm=u();if(nv!=mount_.body.size()||nf!=mount_.faces.size()||nm!=asset_.faces.size())throw std::invalid_argument("Dynamic material counts differ");
+  bytes(winding_.data(),4);fixed_.resize(nv);fixedPoints_.resize(nv);resource_.resize(nf);bytes(fixed_.data(),nv);bytes(fixedPoints_.data(),nv*24);bytes(resource_.data(),nf);bodyMaterial_.resize(nf);moduleMaterial_.resize(nm);bytes(bodyMaterial_.data(),nf*sizeof(bodyMaterial_[0]));bytes(moduleMaterial_.data(),nm*sizeof(moduleMaterial_[0]));if(in.peek()!=EOF)throw std::invalid_argument("Trailing dynamic material bytes");
+  // Lazily prepare only retained source corners. Some excised stock corners
+  // have bones outside the carrier palette and must never enter native rows.
+  for(unsigned index=0;index<4;index++){
+   bodyRows_[index].resize(bodyMaterial_.size());if(index/2==0)moduleRows_[index].resize(moduleMaterial_.size());
+  }
+  assetNormals_.resize(asset.rest.size());for(auto f:asset.faces){auto n=surface::Cross(surface::Sub(asset.rest[f[1]],asset.rest[f[0]]),surface::Sub(asset.rest[f[2]],asset.rest[f[0]]));for(auto id:f)assetNormals_[id]=surface::Add(assetNormals_[id],n);}for(auto& n:assetNormals_)n=Unit(n);
+ }
+ std::shared_ptr<const ModularFrame> Evaluate(const State& state){
+  using namespace surface;const auto start=std::chrono::steady_clock::now();bool rebuild=!cached_;
+  auto shape=state;if(state.hasShapeFrames)shape.frames=state.shapeFrames;
+  // Pulse strain belongs to reposing. Rebuilding from live pulse dimensions
+  // both stalls the display and fits a different socket around frozen material.
+  if(state.shaftMaterial){for(unsigned i=1;i<=12;i++)for(unsigned k=0;k<3;k++)shape.scales[i][k]/=state.materialScale[k];shape.sectionRadius/=state.materialScale[1];shape.materialScale={1,1,1};}
+  if(cached_){for(unsigned k=0;k<3;k++)rebuild|=std::abs(shape.scales[1][k]-cachedState_.scales[1][k])>.002;rebuild|=Dot(shape.frames[1].basis[0],cachedState_.frames[1].basis[0])<.99998;rebuild|=Dot(Sub(shape.frames[1].origin,cachedState_.frames[1].origin),Sub(shape.frames[1].origin,cachedState_.frames[1].origin))>1e-6;}
+  // A new zero-motion morphology can change socket stations without changing
+  // root radius/angle (for example mechanical state or distal shape controls).
+  // Cached ownership and temporal presentation must adopt that material too.
+  if(cached_)rebuild|=shape.shaftMaterial!=cachedState_.shaftMaterial||shape.hangControl!=cachedState_.hangControl;
+  if(rebuild)Build(shape);std::vector<Vec> beforeRelief,detailNormals;auto points=mount_.Repose(*cached_,asset_,plan_,state,&beforeRelief,&detailNormals);auto geometric=Normals(points,cached_->surface.faces);auto smoothGeometry=Normals(beforeRelief,cached_->surface.faces);std::vector<Vec> normals(points.size());
+  std::vector<Vec> measured(points.size());if(state.surfaceNormals)for(auto c:cached_->moduleVertices){Vec n{};double weight=0;for(unsigned k=0;k<3;k++){auto value=state.surfaceNormals->at(asset_.faces[c.parent][k]);if(Dot(value,value)>1e-12){n=Add(n,Scale(value,c.donor[k]));weight+=c.donor[k];}}if(weight>1-1e-8)measured[c.vertex]=Unit(n);}
+  std::vector<Vec> baseline(points.size());
+  for(unsigned i=0;i<points.size();i++){baseline[i]=Unit(Transport(templateNormals_[i],templateGeometry_[i],geometric[i]));normals[i]=Dot(measured[i],measured[i])>1e-12?measured[i]:baseline[i];}
+  // Retained source normals describe the pre-relief skin. Carry their detail
+  // through the new geometric normal; otherwise real folds remain flat-lit.
+  if(asset_.skin)for(auto c:cached_->moduleVertices){bool affected=false;for(unsigned k=0;k<3;k++)affected|=c.donor[k]>0&&asset_.skin->Active(asset_.faces[c.parent][k]);if(affected&&Dot(measured[c.vertex],measured[c.vertex])>1e-12)normals[c.vertex]=Unit(Transport(measured[c.vertex],smoothGeometry[c.vertex],geometric[c.vertex]));}
+  for(unsigned i=0;i<points.size();i++)if(Dot(detailNormals[i],detailNormals[i])>0)normals[i]=Unit(Add(normals[i],detailNormals[i]));
+  // Reconcile AFTER geometric relief transport and fine normal detail. The
+  // earlier ordering constrained the neck against pre-relief endpoint normals,
+  // then changed the retained sac below it, reintroducing its horizontal join.
+  // Endpoint vertices are not loft interiors, so these final fields are stable
+  // throughout this loop and shared by every incident generated strip.
+  for(const auto& loft:asset_.lofts){auto i=assetToSurface_[loft.vertex],a=assetToSurface_[loft.start],b=assetToSurface_[loft.end];if(i==~0u||a==~0u||b==~0u)continue;
+   auto n=BlendEndpointNormal(normals[i],normals[a],loft.t);
+   normals[i]=Unit(BlendEndpointNormal(n,normals[b],1-loft.t));
+  }
+  // Carry retained shading directions through the geometrically conformed
+  // entry. Shared endpoint normals alone do not constrain the adjacent strip.
+  const auto& rootRings=cached_->surface.rings;
+  for(unsigned row=1;row+1<rootRings.size();row++){
+   const double t=.5*(1-std::cos(3.14159265358979323846*row/(rootRings.size()-1)));
+   for(unsigned column=0;column<rootRings[0].size();column++){
+    auto id=rootRings[row][column],a=rootRings.front()[column],b=rootRings.back()[column];
+    normals[id]=BlendEndpointNormal(BlendEndpointNormal(normals[id],normals[a],t),normals[b],1-t);
+   }
+  }
+  for(unsigned i=0;i<points.size();i++){normals[i]=contract_.calibration.VectorToTarget(normals[i]);points[i]=useFixed_[i]?nativeFixed_[i]:contract_.calibration.PointToTarget(points[i]);}
+  std::vector<std::uint32_t> packedNormal(points.size()),packedTangent(shading_.size());
+  for(unsigned i=0;i<points.size();i++)packedNormal[i]=Pack(normals[i],1);
+  for(unsigned i=0;i<shading_.size();i++){const auto& row=shading_[i];auto v=row.vertex;auto tangent=contract_.calibration.VectorToTarget(Transport(row.tangent,templateGeometry_[v],geometric[v]));tangent=Unit(Sub(tangent,Scale(normals[v],Dot(normals[v],tangent))));packedTangent[i]=Pack(tangent,row.sign<0?0:3);}
+  auto frame=std::make_shared<ModularFrame>();frame->frames=state.frames;frame->rebuilt=rebuild;frame->materialScale=state.materialScale;
+  if(state.shaftMaterial){auto material=surface::modular::SocketMaterialState(state,cached_->materialRoot);for(unsigned i=1;i<=12;i++)frame->frames[i]=material.frames[i];}
+  for(unsigned i=1;i<15;i++)frame->frames[i].origin=Add(frame->frames[i].origin,cached_->fitTranslation);
+  for(unsigned i=13;i<15;i++)frame->frames[i].origin=Add(frame->frames[i].origin,cached_->suspensionTranslation);
+  for(unsigned i=1;i<15;i++){frame->frames[i].origin=contract_.calibration.PointToTarget(frame->frames[i].origin);for(auto& v:frame->frames[i].basis)v=contract_.calibration.VectorToTarget(v);}
+
+  for(unsigned index=0;index<4;index++){const auto& layout=layouts_[index];auto& part=frame->parts[index];part.resource=layout.resource;part.lod=layout.lod;part.carrierFirst=layout.first;part.carrierCount=layout.count;part.indices=layout.indices;part.presentation=layout.presentation;part.vertices.reserve(layout.rows.size());const auto& r=contract_.resources[layout.resource];
+   for(auto row:layout.rows){const auto i=row.vertex;ModularVertex v;for(unsigned k=0;k<3;k++)v.position[k]=float((points[i][k]-r.bias[k])/r.scale[k]);v.bones=row.bones;v.weights=row.weights;v.normal=packedNormal[i];v.tangent=packedTangent[row.shading];v.uv=row.uv;v.color=row.color;v.reflection=row.reflection;part.vertices.push_back(v);}
+  }frame->milliseconds=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();return frame;
+ }
+};
+}

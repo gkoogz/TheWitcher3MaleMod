@@ -12,8 +12,13 @@ class TargetSurface {
  public:
   explicit TargetSurface(const std::filesystem::path&,const std::string& expectedBaseCommit);
   ~TargetSurface();
-  std::vector<surface::PrecisePoint> Evaluate(unsigned lod,const surface::Output&);
+  std::vector<surface::PrecisePoint> Evaluate(unsigned lod,const surface::Output&,float angleControl=50,double angleGainCap=1);
+ std::array<double,2> FixedAngleGains()const;
  unsigned LODCount()const;
+ std::array<double,2> CorrectiveWeights()const;
+ std::string CorrectiveError()const;
+ std::array<std::string,2> CorrectiveReports()const;
+ void PresentFixedAngleSource(surface::Output&,float slider)const;
  std::vector<unsigned> BodyCounts()const;
  std::vector<surface::Point> CollarQueries()const;
  void SetNeutralCollar(const surface::Output&);

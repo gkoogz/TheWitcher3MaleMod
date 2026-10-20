@@ -8,6 +8,35 @@ import function MaleModNativePoseSample(seconds : float, paused : bool,
     markerX : Vector, markerY : Vector, markerZ : Vector, position : Vector,
     lifecycle : Vector, menu : Vector, hit : Vector, normal : Vector) : bool;
 
+function MaleModIterationFilterMovies(out menus : array<name>)
+{
+    var filtered : array<name>;
+    var i : int;
+    if (!MaleModNativeSealedSession()) { return; }
+    for (i=0; i<menus.Size(); i+=1)
+    {
+        if (menus[i]!='StartupMoviesMenu' && menus[i]!='RecapMoviesMenu')
+        {
+            filtered.PushBack(menus[i]);
+        }
+    }
+    menus=filtered;
+}
+
+@wrapMethod(CR4Game)
+function PopulateMenuQueueStartupOnce(out menus : array<name>)
+{
+    wrappedMethod(menus);
+    MaleModIterationFilterMovies(menus);
+}
+
+@wrapMethod(CR4Game)
+function PopulateMenuQueueMainOnce(out menus : array<name>)
+{
+    wrappedMethod(menus);
+    MaleModIterationFilterMovies(menus);
+}
+
 @addField(CR4Game)
 private var maleModIterationFloor : CEntity;
 @addField(CR4Game)

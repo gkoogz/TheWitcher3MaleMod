@@ -43,4 +43,41 @@ class NativeRestore(unittest.TestCase):
                 with self.assertRaises(ValueError):native.restore_native_runtime(dict(game=game),backup)
             self.assertEqual((game/rel).read_bytes(),b'changed by user')
 
+    def startup_fixture(self,root,game,backup):
+        old='content/scripts/game/r4Game.ws';new='content/scripts/local/startup_movies.ws'
+        prefix='Mods/modLocalSkipStartupMovies/'
+        target=game/prefix/new;target.parent.mkdir(parents=True);target.write_bytes(b'narrow helper')
+        saved=backup/prefix/old;saved.parent.mkdir(parents=True);saved.write_bytes(b'original override')
+        current=dict(name='modLocalSkipStartupMovies',files={new:digest(target)})
+        previous=dict(name='modLocalSkipStartupMovies',files={old:digest(saved)})
+        write_json(root/'local/startup-movies-install.json',current)
+        write_json(backup/'startup-movies-receipt.json',previous)
+        return target,game/prefix/old,saved,current
+
+    def test_paired_startup_helper_and_native_restore(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d).resolve();game,backup,rel,_,prefs,_=self.fixture(root)
+            helper,old,_,_=self.startup_fixture(root,game,backup)
+            with patch.object(native,'ROOT',root),patch.object(native.subprocess,'run') as query:
+                query.return_value.stdout='';native.restore_native_runtime(dict(game=game),backup)
+            self.assertFalse(helper.exists());self.assertEqual(old.read_bytes(),b'original override')
+            self.assertEqual((game/rel).read_bytes(),b'old');self.assertEqual(prefs.read_bytes(),b'user data')
+
+    def test_failed_helper_copy_recovers_native_and_helper(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d).resolve();game,backup,rel,extra,_,current=self.fixture(root)
+            helper,old,saved,helper_current=self.startup_fixture(root,game,backup)
+            copy=native.shutil.copy2
+            def failing(source,target):
+                if Path(source)==saved and Path(target)==old:
+                    Path(target).write_bytes(b'partial');raise OSError('fixture helper failure')
+                return copy(source,target)
+            with patch.object(native,'ROOT',root),patch.object(native.subprocess,'run') as query,patch.object(native.shutil,'copy2',failing):
+                query.return_value.stdout=''
+                with self.assertRaises(OSError):native.restore_native_runtime(dict(game=game),backup)
+            self.assertFalse(old.exists());self.assertEqual(helper.read_bytes(),b'narrow helper')
+            self.assertEqual((game/rel).read_bytes(),b'new');self.assertTrue((game/extra).exists())
+            self.assertEqual(json.loads((root/'local/native-installation.json').read_text()),current)
+            self.assertEqual(json.loads((root/'local/startup-movies-install.json').read_text()),helper_current)
+
 if __name__=='__main__':unittest.main()

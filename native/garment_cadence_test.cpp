@@ -23,5 +23,17 @@ int main(){try{
  s=c.Advance(2,202.1,false,false);Check(!s.reset,"Accepted one-second active span discarded");Near(s.activeSeconds,1);
  bool rejected=false;try{c.Advance(2,std::numeric_limits<double>::quiet_NaN(),false,false);}catch(const std::invalid_argument&){rejected=true;}Check(rejected,"Nonfinite engine clock accepted");
  c.Reset();s=c.Advance(2,202.1,false,false);Check(s.queue&&s.reset,"Explicit reset retains elapsed cloth time");Near(s.activeSeconds,0);
+ // A slow first fit consumes wall time while the producer continues accepting
+ // ordinary foreground ticks. Coalescing those requests must not refit again.
+ c.Reset();malemod::witcher::GarmentWorkerClock worker;
+ s=c.Advance(3,0,false,true);auto w=worker.Advance(3,7,s.activeSeconds);Check(w.reset,"Initial worker state retained stale fabric");Near(w.elapsed,0);
+ for(unsigned i=1;i<=1200;i++)s=c.Advance(3,i/60.,false,false);
+ w=worker.Advance(3,7,s.activeSeconds);Check(!w.reset,"Slow fitting creates a repeated rest-reset loop");Near(w.elapsed,20);
+ s=c.Advance(3,50,true,false);s=c.Advance(3,100,false,false);
+ w=worker.Advance(3,7,s.activeSeconds);Check(!w.reset,"Pause changes worker generation");Near(w.elapsed,0);
+ w=worker.Advance(3,8,s.activeSeconds);Check(w.reset,"Explicit generation replacement keeps old cloth");Near(w.elapsed,0);
+ w=worker.Advance(4,8,0);Check(w.reset,"Character replacement keeps old worker clock");
+ w=worker.Advance(4,8,.2);Check(!w.reset,"Normal worker span refits fabric");Near(w.elapsed,.2);
+ w=worker.Advance(4,8,.1);Check(w.reset,"Rewound worker clock retains stale fabric");
  std::cout<<"PASS cloth cadence: same-geometry moving poses, overwritten-request elapsed time, pause/resume exclusion, morphology ticks, discontinuity/epoch/reset and finite guards\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

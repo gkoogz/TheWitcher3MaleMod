@@ -1,4 +1,7 @@
 #include "surface_transport.hpp"
+#ifdef MALEMOD_STOCK_ANCHOR_PREVIEW
+#include "stock_attachment_anchor.hpp"
+#endif
 #include <memory>
 #include <cstdio>
 #include <chrono>
@@ -23,7 +26,14 @@ int wmain(int argc,wchar_t** argv){
      surface::wire::Bytes input(p.payload,p.payload+p.length);auto q=surface::wire::DecodeRequest(input);
      if(q.reset&&session)throw std::invalid_argument("Reset requires a new isolated worker process");
      if(p.operation==3&&session)throw std::invalid_argument("Worker initialization is one-shot");
-     if(!session){session=std::make_unique<surface::Session>(q.controls);previous=q.controls;}
+     if(!session){
+#if defined(MALEMOD_STOCK_ANCHOR_PREVIEW) || defined(MALEMOD_DILATING_COLLAR)
+      session=std::make_unique<surface::Session>(q.controls,surface::Point{9.f,0.f,84.3f},true);
+#else
+      session=std::make_unique<surface::Session>(q.controls);
+#endif
+      previous=q.controls;
+     }
      else if(previous.values!=q.controls.values){session->SetControls(q.controls);previous=q.controls;}
      auto start=std::chrono::steady_clock::now();if(p.operation==1)session->Step(q.frame);auto stepped=std::chrono::steady_clock::now();
      auto state=session->Read();auto captured=std::chrono::steady_clock::now();auto output=surface::wire::Encode(state);auto encoded=std::chrono::steady_clock::now();

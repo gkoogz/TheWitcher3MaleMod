@@ -16,7 +16,7 @@ from iteration_layer_ownership import inspect_layers
 import time
 
 
-def launch(package, *, driver_source=None, compile_proof=None):
+def launch(package, *, driver_source=None, compile_proof=None, native_preview=None):
     package = Path(package).resolve()
     if not package.is_relative_to((ROOT/'publish').resolve()):
         raise ValueError('Expected an owned published sandbox package')
@@ -75,6 +75,9 @@ def launch(package, *, driver_source=None, compile_proof=None):
         if occlusion.get('tileSize')!=256 or occlusion.get('tilesPerEdge')!=tiles:
             raise ValueError('Cooked world requires measured nonzero native occlusion tiles')
     game = settings()['game']; rows = []
+    if native_preview is not None:
+        from native_preview import load_preview
+        game,_=load_preview(native_preview)
     for item in manifest['files']:
         relative = Path(item['path'])
         if not relative.is_relative_to('Mods/modMaleModIteration'):
@@ -92,7 +95,7 @@ def launch(package, *, driver_source=None, compile_proof=None):
             if digest(target)!=item['sha256']: raise RuntimeError('Staged sandbox file hash differs')
         receipt=run(driver_source=driver_source or ROOT/'probes/native/iteration_platform.ws',
             compile_proof=compile_proof or ROOT/'build/iteration-platform-script/compile.json',
-            launcher_path=ROOT/'build/iteration-launch/launch_sealed.exe', game_arguments=('-windowed',))
+            launcher_path=ROOT/'build/iteration-launch/launch_sealed.exe', game_arguments=('-windowed',), native_preview=native_preview)
         # run prints the exact private session receipt; record extra ownership.
         receipt['iterationWorldFiles']=rows; receipt['iterationWorldPackage']=str(package)
         receipt['iterationBootstrapMode']=links.get('bootstrapMode','minimal-lifetime')
@@ -114,7 +117,8 @@ def launch(package, *, driver_source=None, compile_proof=None):
 
 def finish(receipt):
     path=Path(receipt).resolve(); data=read_json(path)
-    root=settings()['game']/'Mods/modMaleModIteration'
+    from native_preview import session_game
+    root=session_game(data)/'Mods/modMaleModIteration'
     for item in data.get('iterationWorldFiles',[]):
         target=Path(item['path']).resolve()
         if not target.is_relative_to(root.resolve()) or digest(target)!=item['sha256']:
@@ -136,8 +140,9 @@ if __name__=='__main__':
     group.add_argument('--package',type=Path); group.add_argument('--close',type=Path)
     parser.add_argument('--driver-source',type=Path)
     parser.add_argument('--compile-proof',type=Path)
+    parser.add_argument('--native-preview',type=Path)
     args=parser.parse_args()
     if bool(args.driver_source) != bool(args.compile_proof): parser.error('Driver and proof must be supplied together')
-    if args.close and args.driver_source: parser.error('Close uses its original bound driver identity')
-    if args.package: launch(args.package,driver_source=args.driver_source,compile_proof=args.compile_proof)
+    if args.close and (args.driver_source or args.native_preview): parser.error('Close uses its original bound driver identity')
+    if args.package: launch(args.package,driver_source=args.driver_source,compile_proof=args.compile_proof,native_preview=args.native_preview)
     else: finish(args.close)

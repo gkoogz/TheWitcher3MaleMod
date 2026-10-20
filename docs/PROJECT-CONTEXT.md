@@ -214,3 +214,22 @@ The user rejected 0.4.0 and 0.4.1 in gameplay: deformation and an unresponsive F
 key remained. Preserve that correction. Build, native round-trip and package
 tests do not prove a working teaching tool. See `HANDOFF.md` and provenance for
 the latest repair status; this file should not become another volatile release log.
+
+## October 11 - raised-angle saddle rejection
+
+The user reported a visible upper-root discontinuity and saddle depression at
+raised angles in campaign gameplay. Positional welding does not satisfy the
+required continuous attachment surface. Preserve the neutral exterior, avoid
+an upper shelf or distorted neighboring anatomy, and review matched renders
+before installing a replacement. See ATTACHMENT-SADDLE-20261011.md for the exact
+private reproduction and rejected trials; the geometry repair remains open.
+
+## October 11 - collar circumference and preview requirements
+
+The user requests repair of the raised-angle saddle and discontinuity while
+preserving surrounding anatomy. The collar should have approximately the
+shaft's actual circumference, with extra underside space for the raphe tube.
+Show matched actual-mesh renders before installing a replacement. This is a
+neutral geometry repair in the educational scope documented above; nudity or
+anatomical terminology alone is not a reason to discard that context.
+No geometric candidate from the current root-curvature study is accepted.

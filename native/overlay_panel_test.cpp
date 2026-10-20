@@ -12,6 +12,13 @@ int wmain(int argc,wchar_t** argv){try{
  auto hidden=CreateWindowExW(WS_EX_NOACTIVATE,wc.lpszClassName,L"Owned production-stub guard",WS_POPUP,0,0,1280,720,nullptr,nullptr,wc.hInstance,nullptr);
  Check(hidden&&!IsWindowVisible(hidden)&&!EligibleOverlayParent(hidden,true),"Production stub accepted a hidden probe parent");DestroyWindow(hidden);
  OverlayNavigation navigation;navigation.Move(-1);Check(navigation.selected==17,"Selection does not wrap upward");navigation.Move(1);Check(navigation.selected==0,"Selection does not wrap downward");
+ for(bool clinical:{false,true}){
+  navigation.selected=0;navigation.MoveMenu(-1,clinical);Check(navigation.selected==21,"Reset is not reachable upward");
+  navigation.MoveMenu(1,clinical);Check(navigation.selected==0,"Reset does not wrap to first row");
+  for(unsigned i=0;i<(clinical?21u:18u);i++)navigation.MoveMenu(1,clinical);
+  Check(navigation.selected==21,"Reset is not reachable downward");
+ }
+ navigation.selected=0;
  Check(navigation.Adjust(c,1,true)==0&&navigation.Adjust(c,-1,false)==1,"State does not match Wolverine cycling");
  for(unsigned i=1;i<18;i++){navigation.selected=i;Check(navigation.Adjust(c,1,false)==51&&navigation.Adjust(c,-1,true)==45,"Arrow/Shift step differs from Wolverine");}
  for(unsigned i=1;i<18;i++){

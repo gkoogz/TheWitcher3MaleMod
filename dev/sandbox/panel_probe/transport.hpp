@@ -44,7 +44,7 @@ public:
    while(std::getline(lines,line)){if(!line.empty()&&line.back()=='\r')line.pop_back();auto equal=line.find('=');if(equal==std::string::npos)continue;auto name=line.substr(0,equal),value=line.substr(equal+1);if(name=="Revision")r.revision=std::stoul(value);else if(name=="Token")token=value;else if(name=="ProcessID")process=std::stoul(value);else if(name=="CreationTime")created=std::stoull(value);else if(name=="Key")key=value;else if(name=="Action")action=value;}
    if(!r.revision||r.revision<=revision_||process!=GetCurrentProcessId()||created!=creation_||token!=token_)return false;
    if(key=="Reset"||key=="Capture"){if(action!="Press")return false;r.action=key=="Reset"?PanelProbeRequest::Action::Reset:PanelProbeRequest::Action::Capture;}
-   else{if(key=="F6")r.key=VK_F6;else if(key=="Up")r.key=VK_UP;else if(key=="Down")r.key=VK_DOWN;else if(key=="Left")r.key=VK_LEFT;else if(key=="Right")r.key=VK_RIGHT;else if(key=="Shift")r.key=VK_SHIFT;else return false;
+   else{if(key=="F6")r.key=VK_F6;else if(key=="Up")r.key=VK_UP;else if(key=="Down")r.key=VK_DOWN;else if(key=="Left")r.key=VK_LEFT;else if(key=="Right")r.key=VK_RIGHT;else if(key=="Shift")r.key=VK_SHIFT;else if(key=="Enter")r.key=VK_RETURN;else if(key=="Space")r.key=VK_SPACE;else return false;
     if(action=="Press")r.action=PanelProbeRequest::Action::Press;else if(action=="Hold")r.action=PanelProbeRequest::Action::Hold;else if(action=="Release")r.action=PanelProbeRequest::Action::Release;else return false;held_[r.key]=r.action!=PanelProbeRequest::Action::Release;transient_[r.key]=r.action==PanelProbeRequest::Action::Press;
    }
    revision_=r.revision;request=r;return true;

@@ -44,11 +44,14 @@ def wait_for_verification(receipt, timeout_seconds=VERIFICATION_TIMEOUT_SECONDS)
     if not complete: raise TimeoutError('Private verification incomplete; inspect '+str(receipt_path.parent/'wait-status.json'))
     return result
 
-def run(wait=False, timeout_seconds=VERIFICATION_TIMEOUT_SECONDS, *, driver_source=None, compile_proof=None, launcher_path=None, game_arguments=()):
+def run(wait=False, timeout_seconds=VERIFICATION_TIMEOUT_SECONDS, *, driver_source=None, compile_proof=None, launcher_path=None, game_arguments=(), native_preview=None):
     game=settings()['game'];installed=read_json(ROOT/'local/native-installation.json')
     if installed['game']!=str(game):raise ValueError('Managed game path differs')
     for f in installed['files']:
         if digest(game/f['path'])!=f['sha256']:raise ValueError('Managed installation hash differs: '+f['path'])
+    if native_preview is not None:
+        from native_preview import load_preview
+        game,_=load_preview(native_preview)
     query=subprocess.run(['powershell','-NoProfile','-NonInteractive','-Command',
         'Get-Process witcher3 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id'],capture_output=True,text=True)
     if query.stdout.strip():raise ValueError('Preserve the existing game; private test requires a fresh process')
@@ -85,6 +88,9 @@ def run(wait=False, timeout_seconds=VERIFICATION_TIMEOUT_SECONDS, *, driver_sour
         installationReceiptSHA256=digest(ROOT/'local/native-installation.json'),temporaryContinueSource=str(addon),temporaryContinueSHA256=digest(source),
         launcherPID=process.pid,observations=child,injectorUsed=False,physicalDesktopSwitch=False,launchedUnixSeconds=launched_seconds,
         expectedVerificationStages=VERIFICATION_STAGES,verificationTimeoutSeconds=timeout_seconds)
+    if native_preview is not None:
+        receipt['nativePreview']=str(Path(native_preview).resolve())
+        receipt['nativePreviewSHA256']=digest(native_preview)
     write_json(job/'receipt.json',receipt);print(str(job/'receipt.json'));print(json.dumps(child))
     if wait: wait_for_verification(job/'receipt.json',timeout_seconds)
     return receipt

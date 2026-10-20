@@ -31,9 +31,9 @@ class RuntimeController {
  public:
  RuntimeController(std::wstring worker,std::filesystem::path bindings,std::string revision,
   surface::CoordinateCalibration calibration,PoseMatrix inverseBind,
-  std::optional<surface::CollisionCalibration> contacts,bool diagnosticSourceContacts=false):
+  std::optional<surface::CollisionCalibration> contacts,bool diagnosticSourceContacts=false,bool modular=false):
   calibration_(calibration),inverseBind_(inverseBind),contacts_(contacts),pose_(calibration,inverseBind,contacts),
-  service_(RequireContacts(std::move(worker),contacts,diagnosticSourceContacts),std::move(bindings),std::move(revision),surface::Controls{}){}
+  service_(RequireContacts(std::move(worker),contacts,diagnosticSourceContacts),std::move(bindings),std::move(revision),surface::Controls{},modular){}
  static std::wstring RequireContacts(std::wstring worker,const std::optional<surface::CollisionCalibration>& contacts,bool diagnostic){
   if(!contacts&&!diagnostic)throw std::invalid_argument("Live character contacts must be calibrated; source-default contacts require explicit diagnostic mode");return worker;
  }
@@ -69,29 +69,34 @@ class RuntimeController {
    // wall clock only by the submitted interval, leaving all remaining time for
    // subsequent callbacks. Interpolate observed native poses along that same
    // interval; do not clamp away elapsed simulation time or reset the solver.
-   double dt=resume_?1./60.:sample.seconds-lastWall_;
-   if(dt>.15){
-    if(!lastNative_)return RuntimeTick::Invalid;
-    const double fraction=.1/dt;
-    for(unsigned i=0;i<16;i++)sample.pelvisActorLocal[i]=lastNative_->pelvisActorLocal[i]+fraction*(sample.pelvisActorLocal[i]-lastNative_->pelvisActorLocal[i]);
-    for(unsigned i=0;i<4;i++)for(unsigned a=0;a<3;a++)sample.thighsActorLocal[i][a]=lastNative_->thighsActorLocal[i][a]+fraction*(sample.thighsActorLocal[i][a]-lastNative_->thighsActorLocal[i][a]);
-    dt=.1;sample.seconds=lastWall_+dt;
-   }
-   const auto nativeSample=sample;
+   const double elapsed=resume_?1./60.:sample.seconds-lastWall_;
+   if(elapsed>.15&&!lastNative_)return RuntimeTick::Invalid;
    auto candidate=resume_?PoseInput(calibration_,inverseBind_,contacts_):pose_;
-   const auto wall=sample.seconds;sample.seconds=simulationSeconds_+dt;
-   auto mapped=candidate.Map(sample);surface::wire::Request request;request.controls=controls;request.frame=mapped.frame;request.frame.clinical=clinical;request.frame.garment=garment;
-   const auto status=service_.Submit(request,sequence);
+   std::vector<surface::wire::Request> requests;
+   MappedPose mapped;PoseSample nativeSample;double advanced=0,wall=lastWall_;
+   while(advanced<elapsed&&requests.size()<32){
+    const double left=elapsed-advanced,dt=left>.15?.1:left;advanced+=dt;
+    nativeSample=sample;
+    if(!resume_&&advanced<elapsed){
+     const double fraction=advanced/elapsed;
+     for(unsigned i=0;i<16;i++)nativeSample.pelvisActorLocal[i]=lastNative_->pelvisActorLocal[i]+fraction*(sample.pelvisActorLocal[i]-lastNative_->pelvisActorLocal[i]);
+     for(unsigned i=0;i<4;i++)for(unsigned a=0;a<3;a++)nativeSample.thighsActorLocal[i][a]=lastNative_->thighsActorLocal[i][a]+fraction*(sample.thighsActorLocal[i][a]-lastNative_->thighsActorLocal[i][a]);
+    }
+    wall=resume_?sample.seconds:lastWall_+advanced;nativeSample.seconds=wall;
+    auto step=nativeSample;step.seconds=simulationSeconds_+advanced;mapped=candidate.Map(step);
+    surface::wire::Request request;request.controls=controls;request.frame=mapped.frame;request.frame.clinical=clinical;request.frame.garment=garment;requests.push_back(std::move(request));
+   }
+   const auto status=service_.SubmitBatch(requests,sequence);
    if(status!=Submission::Accepted){
     Publish();switch(status){case Submission::Loading:return RuntimeTick::Loading;case Submission::Busy:return RuntimeTick::Busy;case Submission::Full:return RuntimeTick::Full;case Submission::Stopped:return RuntimeTick::Stopped;default:return RuntimeTick::Invalid;}
    }
    // A rejected submission cannot advance the filter, simulation clock or UI
    // snapshot. Caller must retry this sample before submitting a newer one.
-   pose_=std::move(candidate);lastWall_=wall;simulationSeconds_=sample.seconds;resume_=false;
+   pose_=std::move(candidate);lastWall_=wall;simulationSeconds_+=advanced;resume_=false;
    lastNative_=nativeSample;
    lastMapped_=mapped;lastControls_=controls;
    inFlight_=sequence;
-   stamps_[sequence%stamps_.size()]={sequence,mapped.pelvisSkinDeltaNative,sample.seconds,mapped.characterContactsCalibrated};Publish();return RuntimeTick::Accepted;
+   stamps_[sequence%stamps_.size()]={sequence,mapped.pelvisSkinDeltaNative,simulationSeconds_,mapped.characterContactsCalibrated};Publish();return RuntimeTick::Accepted;
   }catch(const std::invalid_argument&){return RuntimeTick::Invalid;}
  }
  void Publish(){

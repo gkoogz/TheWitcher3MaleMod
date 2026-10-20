@@ -6,11 +6,12 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 using namespace malemod::witcher;
 namespace surface=malemod::surface;
 template<class T>void Write(const std::filesystem::path& path,const std::vector<T>& v){std::ofstream f(path,std::ios::binary);f.write(reinterpret_cast<const char*>(v.data()),v.size()*sizeof(T));if(!f)throw std::runtime_error("Cannot write collar artifact");}
 int wmain(int argc,wchar_t** argv){try{
- if(argc!=7&&argc!=8&&argc!=10)throw std::runtime_error("Usage: collar_integrity_probe worker binding render pin bindingHash output [quick|sN-oN-wN-aN] [runtimeProfile measuredBindEndpoints]");const bool quick=argc>=8&&!std::wcscmp(argv[7],L"quick");
+ if(argc!=7&&argc!=8&&argc!=10)throw std::runtime_error("Usage: collar_integrity_probe worker binding render pin bindingHash output [quick|sN-oN-wN-aN|controls:packet] [runtimeProfile measuredBindEndpoints]");const bool quick=argc>=8&&!std::wcscmp(argv[7],L"quick");
  std::wstring pw=argv[4],hw=argv[5];std::string pin(pw.begin(),pw.end()),hash(hw.begin(),hw.end());RenderContract render(argv[3],pin,hash);
  std::optional<surface::Frame> measured;
  if(argc==10){
@@ -37,7 +38,21 @@ int wmain(int argc,wchar_t** argv){try{
   std::cout<<label<<"\n"<<std::flush;
  };
  surface::wire::Request q;q.reset=true;run("neutral",q);
- if(argc>=8&&!quick){std::wstring wide=argv[7];std::string label(wide.begin(),wide.end());unsigned state=0,overall=0,width=0,angle=0;int end=0;
+ if(argc>=8&&!quick){
+  if(!std::wcsncmp(argv[7],L"controls:",9)){
+   const std::filesystem::path packet=argv[7]+9;std::ifstream input(packet,std::ios::binary);
+   std::array<char,8> magic{};q={};q.reset=true;
+   if(!input.read(magic.data(),8)||std::string(magic.data(),8)!="MMCTRL01"||
+      !input.read(reinterpret_cast<char*>(q.controls.values.data()),sizeof(q.controls.values)))
+    throw std::invalid_argument("Invalid exact control fixture");
+   char extra=0;if(input.read(&extra,1))throw std::invalid_argument("Trailing control fixture bytes");
+   surface::wire::Validate(q.controls);
+   const auto label=packet.stem().string();
+   if(label.empty()||label.size()>128||!std::all_of(label.begin(),label.end(),[](unsigned char c){return (c>='A'&&c<='Z')||(c>='a'&&c<='z')||(c>='0'&&c<='9')||c=='-'||c=='_';}))
+    throw std::invalid_argument("Control fixture needs a simple ASCII label");
+   run(label,q);report<<"]\n";return 0;
+  }
+  std::wstring wide=argv[7];std::string label(wide.begin(),wide.end());unsigned state=0,overall=0,width=0,angle=0;int end=0;
   if(std::sscanf(label.c_str(),"s%u-o%u-w%u-a%u%n",&state,&overall,&width,&angle,&end)!=4||end!=label.size()||state>2||overall<1||overall>100||width<1||width>100||angle<1||angle>100)throw std::invalid_argument("Invalid isolated case");
   q={};q.reset=true;q.controls.values[0]=float(state);q.controls.values[1]=float(overall);q.controls.values[3]=float(width);q.controls.values[7]=float(angle);run(label,q);report<<"]\n";return 0;
  }

@@ -18,12 +18,12 @@ struct Pipeline {ComPtr<ID3D12PipelineState> original,replacement;};
 // Process-lifetime tables have no loader-lock COM teardown. Explicit game
 // shutdown or the OS owns retirement of the native graphics device.
 auto* pipelines=new std::map<void*,Pipeline>;
-struct Upload {ComPtr<ID3D12Resource> resource,reference;std::shared_ptr<const RenderDelivery> input;};
+struct Upload {ComPtr<ID3D12Resource> resource,reference;std::array<ComPtr<ID3D12Resource>,4> modular;std::shared_ptr<const RenderDelivery> input;};
 struct MorphOutput {ComPtr<ID3D12Resource> resource,native;std::shared_ptr<Upload> input;};
 struct MorphPipeline {ComPtr<ID3D12RootSignature> root;ComPtr<ID3D12PipelineState> pipeline;ComPtr<ID3D12Resource> unorm,reference;std::shared_ptr<const std::vector<RenderDelivery::MorphReference>> referenceSource;};
 auto* morphPipelines=new std::map<void*,MorphPipeline>;
 struct Mark {ComPtr<ID3D12Fence> fence;UINT64 value;bool Done()const{auto v=fence->GetCompletedValue();if(v==UINT64_MAX)throw std::runtime_error("Float draw device removed");return v>=value;}};
-struct Recording {std::vector<std::shared_ptr<Upload>> uploads;std::map<std::pair<UINT64,unsigned>,std::shared_ptr<MorphOutput>> morph;std::map<void*,Mark> marks;unsigned epoch=0,resourceMask=0;std::uint64_t sequence=0;};
+struct Recording {std::vector<std::shared_ptr<Upload>> uploads;std::map<std::pair<UINT64,unsigned>,std::shared_ptr<MorphOutput>> morph;std::map<void*,Mark> marks;unsigned epoch=0,resourceMask=0,modularLODMask=0;std::uint64_t sequence=0;};
 struct Queue {ComPtr<ID3D12Fence> fence;UINT64 next=0;};
 auto* recordings=new std::map<void*,Recording>;
 auto* retired=new std::vector<Recording>;
@@ -33,6 +33,7 @@ auto* completedDelivery=new std::shared_ptr<const RenderDelivery>;
 auto* frameDelivery=new std::shared_ptr<const RenderDelivery>;
 std::atomic<unsigned> flags{0},epoch{0},sequence{0};
 std::atomic<unsigned> resourceMask{0},publicationCount{0};
+std::atomic<unsigned> modularLODMask{0};
 std::uint64_t countedSerial=0;
 void HR(HRESULT h){if(FAILED(h))throw std::runtime_error("Float draw HRESULT "+std::to_string(h));}
 ComPtr<ID3D12Resource> MorphBuffer(ID3D12Device* device,UINT64 bytes,D3D12_HEAP_TYPE type,D3D12_RESOURCE_STATES state,const void* data=nullptr){
@@ -66,8 +67,9 @@ bool Eligible(const D3D12_INPUT_LAYOUT_DESC& desc){
 }
 void Complete(const Recording& r){
  const auto current=LiveRenderLatest();if(!current||current->epoch!=r.epoch)return;
- if(epoch.exchange(r.epoch)!=r.epoch){sequence=0;resourceMask=0;}
+ if(epoch.exchange(r.epoch)!=r.epoch){sequence=0;resourceMask=0;modularLODMask=0;}
  resourceMask.fetch_or(r.resourceMask);
+ modularLODMask.fetch_or(r.modularLODMask);
  auto old=sequence.load();const auto completed=unsigned(r.sequence);
  while(old<completed&&!sequence.compare_exchange_weak(old,completed)){}
  if(!r.uploads.empty()){
@@ -109,6 +111,46 @@ void RegisterFloatDrawStream(void* original,const D3D12_PIPELINE_STATE_STREAM_DE
 }
 unsigned StaticFloatDrawLOD(const RenderResource& r,std::uint64_t offset){
  for(unsigned lod=0;lod<2;lod++){const std::uint64_t bytes=std::uint64_t(r.lodVertexCount[lod])*16;if(bytes&&r.lodUVOffset[lod]>=bytes&&offset==r.lodUVOffset[lod]-bytes)return lod;}return 2;
+}
+bool ModularDraw(void* pointer,void* original,const std::array<D3D12_VERTEX_BUFFER_VIEW,32>& views,const D3D12_INDEX_BUFFER_VIEW& indices,unsigned resource,unsigned lod,unsigned first,unsigned count,const std::function<void(unsigned)>& draw){
+ auto input=LiveRenderLatest();if(!input||!input->modular||resource>=2)return false;
+ auto* list=static_cast<ID3D12GraphicsCommandList*>(pointer);bool bound=false;
+ try{
+  std::unique_lock<std::mutex> lock(mutex);auto pipeline=pipelines->find(original);if(pipeline==pipelines->end()||flags.load()&128)return false;
+  if(list->GetType()!=D3D12_COMMAND_LIST_TYPE_DIRECT&&list->GetType()!=D3D12_COMMAND_LIST_TYPE_BUNDLE)return false;
+  Collect();if(retired->size()>64)throw std::runtime_error("Modular upload retirement backlog");
+  if(*frameDelivery&&(*frameDelivery)->epoch==input->epoch)input=*frameDelivery;
+  auto previous=recordings->find(pointer);if(previous!=recordings->end()&&!previous->second.uploads.empty()&&previous->second.epoch==input->epoch)input=previous->second.uploads.back()->input;
+  if(!input->modular)return false;
+  unsigned selected=4;for(unsigned i=resource*2;i<resource*2+2;i++){const auto& p=input->modular->parts[i];if((lod==2||p.lod==lod)&&p.carrierFirst==first&&p.carrierCount==count)selected=i;}
+  if(selected==4)throw std::runtime_error("Modular draw does not match a complete observed carrier LOD");
+  if(!*latest||(*latest)->input!=input){
+   auto next=std::make_shared<Upload>();next->input=input;ComPtr<ID3D12Device> device;HR(list->GetDevice(IID_PPV_ARGS(&device)));
+   for(unsigned i=0;i<4;i++){
+    const auto& part=input->modular->parts[i];const std::size_t n=part.vertices.size(),indexBytes=part.indices->size()*4,total=n*40+indexBytes;
+    D3D12_HEAP_PROPERTIES heap{};heap.Type=D3D12_HEAP_TYPE_UPLOAD;D3D12_RESOURCE_DESC desc{};desc.Dimension=D3D12_RESOURCE_DIMENSION_BUFFER;desc.Width=total;desc.Height=1;desc.DepthOrArraySize=1;desc.MipLevels=1;desc.SampleDesc.Count=1;desc.Layout=D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+    HR(device->CreateCommittedResource(&heap,D3D12_HEAP_FLAG_NONE,&desc,D3D12_RESOURCE_STATE_GENERIC_READ,nullptr,IID_PPV_ARGS(&next->modular[i])));
+    void* mapped=nullptr;D3D12_RANGE none{0,0};HR(next->modular[i]->Map(0,&none,&mapped));auto* bytes=static_cast<unsigned char*>(mapped);
+    for(std::size_t j=0;j<n;j++){const auto& v=part.vertices[j];std::memcpy(bytes+j*20,&v.position,20);std::memcpy(bytes+n*20+j*4,v.uv.data(),4);std::memcpy(bytes+n*24+j*8,&v.normal,8);std::memcpy(bytes+n*32+j*8,&v.color,8);}
+    std::memcpy(bytes+n*40,part.indices->data(),indexBytes);D3D12_RANGE written{0,total};next->modular[i]->Unmap(0,&written);
+   }
+   *latest=std::move(next);
+  }
+  auto& recording=(*recordings)[pointer];if(recording.uploads.size()>128)throw std::runtime_error("Modular recording backlog");
+  if(recording.uploads.empty()||recording.uploads.back()!=*latest)recording.uploads.push_back(*latest);
+  recording.epoch=input->epoch;recording.sequence=input->sequence;recording.resourceMask|=1u<<resource;
+  recording.modularLODMask|=1u<<selected;
+  auto retained=*latest;auto replacement=pipeline->second.replacement;const auto& part=input->modular->parts[selected];const UINT n=UINT(part.vertices.size());auto address=retained->modular[selected]->GetGPUVirtualAddress();
+  const D3D12_VERTEX_BUFFER_VIEW buffers[4]{{address,n*20,20},{address+UINT64(n)*20,n*4,4},{address+UINT64(n)*24,n*8,8},{address+UINT64(n)*32,n*8,8}};
+  const D3D12_INDEX_BUFFER_VIEW index{address+UINT64(n)*40,UINT(part.indices->size()*4),DXGI_FORMAT_R32_UINT};
+  lock.unlock();list->SetPipelineState(replacement.Get());list->IASetVertexBuffers(0,4,buffers);list->IASetIndexBuffer(&index);bound=true;draw(UINT(part.indices->size()));
+  list->IASetVertexBuffers(0,4,views.data());list->IASetIndexBuffer(&indices);list->SetPipelineState(static_cast<ID3D12PipelineState*>(original));bound=false;
+  flags.fetch_or(64|512|4|16);return true;
+ }catch(const std::exception& e){
+  {std::lock_guard<std::mutex> lock(errorMutex);lastError=e.what();}
+  if(bound){list->IASetVertexBuffers(0,4,views.data());list->IASetIndexBuffer(&indices);list->SetPipelineState(static_cast<ID3D12PipelineState*>(original));}
+  flags.fetch_or(128);return false;
+ }
 }
 bool FloatDraw(void* pointer,void* original,const D3D12_VERTEX_BUFFER_VIEW& position,const D3D12_VERTEX_BUFFER_VIEW& lighting,const std::function<void()>& draw,unsigned resource,unsigned lod,void* nativeResource,unsigned nativeState,const std::function<void()>& restoreCompute){
  auto input=LiveRenderLatest();if(!input||resource>=input->resources.size())return false;const auto& r=input->resources[resource];
@@ -186,11 +228,13 @@ void FloatDrawBundle(void* parent,void* bundle){try{
  auto& destination=(*recordings)[parent];destination.uploads.insert(destination.uploads.end(),found->second.uploads.begin(),found->second.uploads.end());
  destination.epoch=found->second.epoch;destination.sequence=found->second.sequence;
  destination.resourceMask|=found->second.resourceMask;
+ destination.modularLODMask|=found->second.modularLODMask;
 }catch(...){flags.fetch_or(128);}}
 unsigned FloatDrawFlags(){try{std::unique_lock<std::mutex> lock(mutex,std::try_to_lock);if(lock.owns_lock())Collect();}catch(...){flags.fetch_or(128);}return flags.load();}
 std::string FloatDrawError(){std::lock_guard<std::mutex> lock(errorMutex);return lastError;}
 unsigned FloatDrawSequence(){FloatDrawFlags();return sequence.load();}
 unsigned FloatDrawResourceMask(){FloatDrawFlags();return resourceMask.load();}
+unsigned ModularDrawCompletedLODMask(){FloatDrawFlags();return modularLODMask.load();}
 unsigned FloatDrawPublicationCount(){FloatDrawFlags();return publicationCount.load();}
 bool FloatDrawActive(unsigned character){const auto current=LiveRenderLatest();FloatDrawFlags();return character&&current&&current->epoch==character&&epoch.load()==character&&!(flags.load()&128);}
 std::shared_ptr<const RenderDelivery> FloatDrawCompleted(){FloatDrawFlags();return std::atomic_load(completedDelivery);}

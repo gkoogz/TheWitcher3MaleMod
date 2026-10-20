@@ -30,7 +30,7 @@ class OverlayPanel {
  PanelProbe probe_;std::atomic<bool> expanded_{false},stop_{false},focusLost_{false};std::thread thread_;
  int dragging_=-1;
  OverlayNavigation navigation_;
- std::array<bool,5> keys_{};bool foreground_=false;
+ std::array<bool,7> keys_{};bool foreground_=false;
  surface::Controls paintedControls_;unsigned paintedSelection_=0;bool paintedExpanded_=false,painted_=false;
  void PollKeys(bool foreground);
  void Click(int x,int y);void Resize();

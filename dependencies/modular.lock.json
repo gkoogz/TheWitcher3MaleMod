@@ -1,21 +1,21 @@
 {
   "schema": "malemod.shared-module-pin/1",
   "repository": "https://github.com/gkoogz/MaleModBase.git",
-  "commit": "fcb98a4e6386aa70606c31f24a1b1046ef10eeae",
+  "commit": "345afdf7e25d565af96fddd69151fcb82304715f",
   "numericalWorkerRevision": "431e626cae6fb6720b552f8b20206727fe809c80",
   "hashNormalization": "LF",
   "files": {
     "include/malemod/surface/attachment_hinge.hpp": "e40968c94fa21d57c7664d606bd9f7bedba5dda314c309bf6ddb7b378e98a582",
-    "include/malemod/surface/convex_surface_cut.hpp": "686e984c25043d59dc0ff0a4a2057e966ba8d1eb85dfd30e5499aa888f51ad5e",
+    "include/malemod/surface/convex_surface_cut.hpp": "272223e5081edee02d93c59a0e94052f01c8f744259feb638889f74a796822c7",
     "include/malemod/surface/modular_asset.hpp": "db7c4685d7910bb6d959ef27be609408f2e649623bac78083abf576b0f20ec9a",
-    "include/malemod/surface/modular_dynamic.hpp": "d36145545255e648500de0dfe473d8f9e9a6bd8a79cb5a52543370009b5604d8",
-    "include/malemod/surface/modular_motion.hpp": "858dc372ccffcfe75c2f1831fefa0684ec2203aaa1008d3a3522b37d25f3fa80",
+    "include/malemod/surface/modular_dynamic.hpp": "4a15d1d2173b80edbb7bb4fb938c8fd44904acbf2b8a0b0376172b41af953b34",
+    "include/malemod/surface/modular_motion.hpp": "cbf56b9b9c77e17515fd751ed357739337250989a7fa790eb3f80d704f66f289",
     "include/malemod/surface/modular_mount.hpp": "f73e662401f188702b6c6ae3d3cba9d788b50c1181da68ed590280a39b1bc904",
     "include/malemod/surface/modular_transfer.hpp": "fedf6dbaed9023d9176f00cd4342ced88f677af81c2fd905d5f92ec7f758389c",
-    "include/malemod/surface/pelvic_aperture.hpp": "e6e4a6ac6309a9ddc052c7508219ca50e6d7867509535982be2b1e14e163a13a",
+    "include/malemod/surface/pelvic_aperture.hpp": "db2009a80d19c8200907ca1ca4e1b66568a81b883652c39a73bb92782eef0fa0",
     "include/malemod/surface/root_articulation.hpp": "5dfa0a9d1d7521d08a2a8ddfec270b9553bfe726b3737a393db6790331caf688",
     "include/malemod/surface/root_motion.hpp": "3c28019e65601ed6f68c40034fda100e103ba05833b94d59de2e17a8478c1b65",
-    "include/malemod/surface/surface_stitch.hpp": "e9116a2acf736f1d6208689999a4eb7a0f3670c6c7b982aa70505595c772b380",
+    "include/malemod/surface/surface_stitch.hpp": "9995290292858f4699ac11f4e91f1e44cfc0c56b9a2780ace9075605e30d0a06",
     "malemod_base/modular_anatomy.py": "3504bd8ca8b7d2ca82fe2c436b818e57d2920da563e443fc8d13d89fea5cb76a",
     "malemod_base/modular_mount.py": "4fa60c14bf7999f68bff3588730e84abdf86b7b738a226b5a7369856b29355e7",
     "malemod_base/modular_pelvis.py": "5a70d5292fdb7ae387c88de12370464dd67ff4b6f63ea22372ce1832ce877657",
@@ -31,8 +31,9 @@
     "include/malemod/surface/skin_relief.hpp": "1c2a8638086a3cf1b66a1a138ca3fa5862ff60f373abe2aedfdb758d04e9dbec",
     "malemod_base/loft_material.py": "957485cc843ab8761327a0e600dc378ade2fb239710331124df6d55a7e3c4dad",
     "include/malemod/surface/suspension_profile.hpp": "4e3f822d63d206c478329c9548eb9818ace8ffff5c82d6b1cdb4835bcfb84c3a",
-    "malemod_base/join_material.py": "eee5e36bf2cf22d3081a874ceb63d644ee2f99621fa0f8c0a43b77e1342cafe4"
+    "malemod_base/join_material.py": "eee5e36bf2cf22d3081a874ceb63d644ee2f99621fa0f8c0a43b77e1342cafe4",
+    "include/malemod/surface/triangle_ray_index.hpp": "548cc995d5c2b2a6ceff1dc7b2fbf5366739ff839b1010b4f6aef43a8c078f26"
   },
-  "scope": "Compact raised radial root ramp; preserved suspension material and independent numerical physics.",
+  "scope": "Measured pelvic root ramp and transient material pulse strain; conservative aperture hierarchy and unchanged numerical worker.",
   "authoringRevision": "efb825580ffacf47fc3b66be505c7e54ddcdc228"
 }

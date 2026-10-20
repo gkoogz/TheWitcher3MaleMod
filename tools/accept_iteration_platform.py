@@ -29,7 +29,12 @@ def accept(receipt,frame, *, visual_review_passed=False, known_floor_artifact=Fa
         raise ValueError('No observed grounded locomotion: '+str(distance))
     if any(r['bodyResourceMask']!=3 or r['vertices']!=49884 or r['runtimeFlags']&8==0 for r in rows):
         raise ValueError('Complete native anatomy output not observed')
-    if b['poseSeconds']-a['poseSeconds']<3 or b['sequence']-a['sequence']<20 or a['uploadFNV64']==b['uploadFNV64']:
+    # The modular renderer deliberately keeps the legacy carrier stationary;
+    # verify the active GPU surface rather than that fallback buffer.
+    if bool(a.get('modular')) != bool(b.get('modular')):
+        raise ValueError('Renderer changed during the room test')
+    upload = 'modularUploadFNV64' if a.get('modular') else 'uploadFNV64'
+    if b['poseSeconds']-a['poseSeconds']<3 or b['sequence']-a['sequence']<20 or not a.get(upload) or not b.get(upload) or a[upload]==b[upload]:
         raise ValueError('Live simulation publication not observed')
     pose=Path(session['modulePath']).parent/f'pose-probe-{pid}.jsonl'
     packets=[json.loads(line) for line in pose.read_text().splitlines()]
@@ -39,6 +44,8 @@ def accept(receipt,frame, *, visual_review_passed=False, known_floor_artifact=Fa
         raise ValueError('Expected current native renderer screenshot')
     package=Path(session['iterationWorldPackage']);manifest=verify_package(package)
     game=settings()['game'];installed=read_json(ROOT/'local/native-installation.json')
+    if session['moduleSHA256'] != digest(game/'bin/x64_dx12/malemod-native/malemod_witcher.dll'):
+        raise ValueError('Observed room runtime differs from the installed module')
     fallback=read_json(ROOT/'local/installation.json')
     for row in installed['files']:
         if digest(game/row['path'])!=row['sha256']:raise ValueError('Installed runtime changed')

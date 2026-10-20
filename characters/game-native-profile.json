@@ -1,37 +1,37 @@
 {
-  "gameSHA256": "9406eccc12b68e08920931442ef6a57340e910d3e01f2082e88232487433fe51",
-  "imageSize": 104824832,
-  "source": "actual executable name-reference and unwind disassembly, not REDkit addresses",
+  "gameSHA256": "2df765398a3d1f165db418271be7200178320a4466817379f2fa0dc0001fb101",
+  "imageSize": 104865792,
+  "source": "Hash-locked old/new retail unwind-function comparison and consistent call-context/RIP references; see provenance/game-update-25773555.json",
   "nativeFunctionBytes": 248,
   "scriptBytecodeOffset": 48,
-  "opcodeTableRVA": 94812800,
+  "opcodeTableRVA": 94853744,
   "functions": {
     "registerGlobals": {
-      "rva": "0x273cf20",
+      "rva": "0x27454e0",
       "prefix": "48895c241048897c241855488bec4883"
     },
     "allocate": {
-      "rva": "0xbcd5d0",
+      "rva": "0xbcb710",
       "prefix": "48895c24104889742418574883ec4048"
     },
     "namePool": {
-      "rva": "0x31d930",
-      "prefix": "4883ec28488b059d0453054885c0755e"
+      "rva": "0x31c440",
+      "prefix": "4883ec28488b058db953054885c0755e"
     },
     "internName": {
-      "rva": "0x26b0e00",
+      "rva": "0x26b90a0",
       "prefix": "48895c242055415641574883ec204c8b"
     },
     "constructFunction": {
-      "rva": "0x26f5810",
+      "rva": "0x26fdda0",
       "prefix": "48895c24084889742410574883ec2033"
     },
     "rtti": {
-      "rva": "0x31fcf0",
-      "prefix": "4883ec28488b050de497054885c00f85"
+      "rva": "0x31e800",
+      "prefix": "4883ec28488b053d9898054885c00f85"
     },
     "registerFunction": {
-      "rva": "0x26c5f30",
+      "rva": "0x26ce2d0",
       "prefix": "48896c24104889742418574883ec2044"
     }
   },
@@ -45,5 +45,7 @@
     "nodeHashOffset": 16,
     "nodeNextOffset": 24,
     "method": "actual RegisterGlobalFunction disassembly and live exact pointer readback"
-  }
+  },
+  "entryPointRVA": 27630512,
+  "entryPointPrefix": "4883ec28e8b70c00004883c428e9"
 }

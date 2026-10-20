@@ -124,13 +124,25 @@ void InitializeRuntime(){
  const auto worker=dir/L"surface_worker.exe",bindings=dir/L"geralt.bindings";
  if(!VerifyFile(worker,p.workerSHA256)||!VerifyFile(bindings,p.bindingsSHA256))throw std::runtime_error("Runtime worker/binding hash differs from profile");
  std::lock_guard<std::mutex> lock(runtimeMutex);
- runtimeHost=new RuntimeHost([p,worker,bindings]{return std::make_unique<RuntimeController>(worker.wstring(),bindings,p.revision,p.calibration,p.inverseBind,p.contacts,p.diagnosticSourceContacts);});
+ const bool modularTopology=std::filesystem::exists(dir/L"geralt.modular-dynamic");
+ runtimeHost=new RuntimeHost([p,worker,bindings,modularTopology]{return std::make_unique<RuntimeController>(worker.wstring(),bindings,p.revision,p.calibration,p.inverseBind,p.contacts,p.diagnosticSourceContacts,modularTopology);});
  overlayRequested=std::filesystem::exists(dir/L"malemod-overlay.enable");
  if(std::filesystem::exists(dir/L"geralt.render")){
   std::ifstream hashFile(dir/L"geralt.render.sha256");std::string hash;hashFile>>hash;
   if(hash.size()!=64||!VerifyFile(dir/L"geralt.render",hash))throw std::runtime_error("Render contract hash differs");
   renderContract=new RenderContract(dir/L"geralt.render",p.revision,p.bindingsSHA256);
-  renderPose=new RenderPoseInput(*renderContract);renderService=new RenderService(*renderContract);std::ifstream fluidHashFile(dir/L"clinical.render.sha256");std::string fluidHash;fluidHashFile>>fluidHash;
+  std::shared_ptr<ModularRenderer> modular;
+  if(std::filesystem::exists(dir/L"geralt.modular")||std::filesystem::exists(dir/L"geralt.modular-native")){
+   auto verified=[&](const wchar_t* name){auto file=dir/name;std::ifstream h(file.wstring()+L".sha256");std::string value;h>>value;if(value.size()!=64||!VerifyFile(file,value))throw std::runtime_error("Modular artifact hash differs");return value;};
+   auto geometryHash=verified(L"geralt.modular");auto nativeHash=verified(L"geralt.modular-native");
+   modular=std::make_shared<ModularRenderer>(dir/L"geralt.modular",dir/L"geralt.modular-native",*renderContract,geometryHash,hash);
+   if(std::filesystem::exists(dir/L"geralt.modular-transfer")){verified(L"geralt.modular-transfer");modular->EnableTransfer(dir/L"geralt.modular-transfer",geometryHash);}
+   if(std::filesystem::exists(dir/L"geralt.modular-dynamic")||std::filesystem::exists(dir/L"geralt.modular-materials")){
+    auto dynamicHash=verified(L"geralt.modular-dynamic");verified(L"geralt.modular-materials");
+    modular->EnableDynamic(dir/L"geralt.modular-dynamic",dir/L"geralt.modular-materials",geometryHash,dynamicHash,nativeHash);
+   }
+  }
+  renderPose=new RenderPoseInput(*renderContract);renderService=new RenderService(*renderContract,std::move(modular));std::ifstream fluidHashFile(dir/L"clinical.render.sha256");std::string fluidHash;fluidHashFile>>fluidHash;
   if(fluidHash.size()!=64||!VerifyFile(dir/L"clinical.render",fluidHash))throw std::runtime_error("Clinical render hash differs");
   FluidRendererConfigure(dir/L"clinical.render");
   if(!VerifyFile(dir/L"splat_bakes.bin","b41046ee1083da7f0921706022893a7aed78b74a9ff931776f12e746ab405fb5"))throw std::runtime_error("Clinical source bake hash differs");
@@ -303,9 +315,27 @@ void TestCheckpoint(void*,void* frame,void* result){
     std::uint64_t hash=14695981039346656037ull;const auto* data=reinterpret_cast<const unsigned char*>(output->floatVertices.data());
     for(std::size_t i=0;i<output->floatVertices.size()*28;i++){hash^=data[i];hash*=1099511628211ull;}
     for(const auto& v:*output->vertices)for(unsigned a=0;a<3;a++){low[a]=(std::min)(low[a],double(v.position[a]));high[a]=(std::max)(high[a],double(v.position[a]));}
-    std::fprintf(log,"{\"stage\":%d,\"epoch\":%u,\"sequence\":%llu,\"completedSequence\":%u,\"renderFlags\":%u,\"runtimeFlags\":%u,\"sourceMs\":%.9g,\"targetMs\":%.9g,\"prepareMs\":%.9g,\"vertices\":%zu,\"uploadFNV64\":\"%016llx\",\"controls\":[",stage,output->epoch,static_cast<unsigned long long>(output->sequence),FloatDrawSequence(),FloatDrawFlags(),runtimeFlags.load(),output->sourceMilliseconds,output->targetMilliseconds,output->preparationMilliseconds,output->floatVertices.size(),static_cast<unsigned long long>(hash));
+    std::fprintf(log,"{\"stage\":%d,\"epoch\":%u,\"sequence\":%llu,\"completedSequence\":%u,\"renderFlags\":%u,\"runtimeFlags\":%u,\"sourceMs\":%.9g,\"targetMs\":%.9g,\"prepareMs\":%.9g,\"vertices\":%zu,\"uploadFNV64\":\"%016llx\",\"attachmentCorrective\":[%.9g,%.9g],\"angleGain\":[%.9g,%.9g],\"controls\":[",stage,output->epoch,static_cast<unsigned long long>(output->sequence),FloatDrawSequence(),FloatDrawFlags(),runtimeFlags.load(),output->sourceMilliseconds,output->targetMilliseconds,output->preparationMilliseconds,output->floatVertices.size(),static_cast<unsigned long long>(hash),output->correctiveWeights[0],output->correctiveWeights[1],output->angleGains[0],output->angleGains[1]);
+    // The angle cap is evidence, not a silent stationary-mesh fallback.
+
     for(unsigned i=0;i<18;i++)std::fprintf(log,"%s%.9g",i?",":"",current.values[i]);
-    std::fprintf(log,"],\"bounds\":[[%.9g,%.9g,%.9g],[%.9g,%.9g,%.9g]],\"actorOrigin\":[%.9g,%.9g,%.9g],\"poseSeconds\":%.9g,\"lightingMs\":%.9g,\"workerMs\":[%.9g,%.9g,%.9g],\"geometryMs\":[",low[0],low[1],low[2],high[0],high[1],high[2],output->pose.actorWorld[3],output->pose.actorWorld[7],output->pose.actorWorld[11],output->poseSeconds,output->lightingMilliseconds,output->workerMilliseconds[0],output->workerMilliseconds[1],output->workerMilliseconds[2]);
+    std::fprintf(log,"]");
+    if(output->modular){
+     std::size_t count=0;std::uint64_t modularHash=14695981039346656037ull;
+     for(const auto& part:output->modular->parts){count+=part.vertices.size();const auto* p=reinterpret_cast<const unsigned char*>(part.vertices.data());for(std::size_t i=0;i<part.vertices.size()*sizeof(ModularVertex);i++){modularHash^=p[i];modularHash*=1099511628211ull;}}
+     std::fprintf(log,",\"modular\":true,\"modularVertices\":%zu,\"modularMs\":%.9g,\"modularCompletedLODMask\":%u,\"modularUploadFNV64\":\"%016llx\"",count,output->modular->milliseconds,ModularDrawCompletedLODMask(),static_cast<unsigned long long>(modularHash));
+     std::fprintf(log,",\"wallMilliseconds\":%llu,\"modularRebuilt\":%s,\"modularStrain\":[%.9g,%.9g,%.9g]",static_cast<unsigned long long>(GetTickCount64()),output->modular->rebuilt?"true":"false",output->modular->materialScale[0],output->modular->materialScale[1],output->modular->materialScale[2]);
+     if(stage>=500&&stage<1000){
+      wchar_t path[32768]{};HMODULE owner=nullptr;
+      if(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&TestCheckpoint),&owner)&&GetModuleFileNameW(owner,path,32768)){
+       auto file=std::filesystem::path(path).parent_path()/(L"modular-frame-"+std::to_wstring(GetCurrentProcessId())+L"-"+std::to_wstring(stage)+L".bin");std::ofstream captured(file,std::ios::binary);
+       auto bytes=[&](const void* p,std::size_t n){captured.write(static_cast<const char*>(p),n);};bytes("MMMCAP01",8);bytes(&output->epoch,4);bytes(&output->sequence,8);bytes(output->pose.actorWorld.data(),128);
+       unsigned paletteCount=unsigned(output->pose.skinDeltas.size());bytes(&paletteCount,4);bytes(output->pose.skinDeltas.data(),paletteCount*128);
+       for(const auto& part:output->modular->parts){unsigned counts[4]{part.resource,part.lod,unsigned(part.vertices.size()),unsigned(part.indices->size())};bytes(counts,16);bytes(part.vertices.data(),part.vertices.size()*sizeof(ModularVertex));bytes(part.indices->data(),part.indices->size()*4);}
+      }
+     }
+    }
+    std::fprintf(log,",\"bounds\":[[%.9g,%.9g,%.9g],[%.9g,%.9g,%.9g]],\"actorOrigin\":[%.9g,%.9g,%.9g],\"poseSeconds\":%.9g,\"lightingMs\":%.9g,\"workerMs\":[%.9g,%.9g,%.9g],\"geometryMs\":[",low[0],low[1],low[2],high[0],high[1],high[2],output->pose.actorWorld[3],output->pose.actorWorld[7],output->pose.actorWorld[11],output->poseSeconds,output->lightingMilliseconds,output->workerMilliseconds[0],output->workerMilliseconds[1],output->workerMilliseconds[2]);
     for(unsigned i=0;i<16;i++)std::fprintf(log,"%s%.9g",i?",":"",output->geometryMilliseconds[i]);
     auto clinical=clinicalService?clinicalService->Latest():nullptr;auto collision=clinicalService?clinicalService->collisions.Counts():std::array<unsigned,3>{};
     std::fprintf(log,"],\"clinicalMode\":%u,\"clinicalActive\":%s,\"clinicalTime\":%.9g,\"emittedVolume\":%.9g,\"liquidIndices\":%zu,\"depositIndices\":%zu,\"clinicalMs\":%.9g,\"clinicalCueMask\":%u,\"fluidRenderFlags\":%u,\"fluidPublications\":%u,\"pendingQueries\":%u,\"sceneQueries\":%u,\"sceneHits\":%u,",clinicalService?clinicalService->Mode():0,clinical&&clinical->active?"true":"false",clinical?clinical->time:0,clinical?clinical->emittedVolume:0,clinical?clinical->mesh.indices.size():0,clinical?clinical->deposits.indices.size():0,clinical?clinical->milliseconds:0,clinical?clinical->cueMask:0,FluidDrawFlags(),FluidDrawPublications(),collision[0],collision[1],collision[2]);
@@ -324,6 +354,13 @@ void TestCheckpoint(void*,void* frame,void* result){
     std::fprintf(log,"\"pouchSideHemSections\":[%u,%u],\"pouchSideBoundaryVertices\":[%zu,%zu],",layout.sideHems[0].sections,layout.sideHems[1].sections,layout.sideBoundary[0].size(),layout.sideBoundary[1].size());
     std::fprintf(log,"\"bandTopAttachments\":%u,\"bandBottomAttachments\":%u,\"bandTopCircumference\":%.9g,\"bandBottomCircumference\":%.9g,\"bandPreferredClearance\":%.9g,\"bandMinimumInnerClearance\":%.9g,\"bandMaximumInnerClearance\":%.9g,",band.topAttachments,band.bottomAttachments,band.topCircumference,band.bottomCircumference,band.preferredClearance,band.minimumInnerClearance,band.maximumInnerClearance);
     std::fprintf(log,"\"clothActive\":%s,\"clothStateReady\":%s,\"clothMaterialBudgetSatisfied\":%s,\"clothResetCount\":%u,\"clothNodes\":%u,\"clothConstraints\":%u,\"clothSubsteps\":%u,\"clothAdvancedSeconds\":%.9g,\"clothAccumulatedSeconds\":%.9g,\"clothStretchRatio\":%.9g,\"clothBendError\":%.9g,\"clothSeamGap\":%.9g,\"clothDisplacement\":%.9g,\"clothRmsSpeed\":%.9g,\"clothMaxSpeed\":%.9g,\"clothSolverMs\":%.9g,",cloth.active?"true":"false",cloth.stateReady?"true":"false",cloth.materialBudgetSatisfied?"true":"false",cloth.resetCount,cloth.nodes,cloth.constraints,cloth.substeps,cloth.advancedSeconds,cloth.accumulatedSeconds,cloth.maxStretchRatio,cloth.maxBendError,cloth.maxSeamGap,cloth.maxDisplacement,cloth.rmsSpeed,cloth.maxSpeed,cloth.solverMilliseconds);
+#ifdef MALEMOD_ATTACHMENT_CORRECTIVE
+    if(output->correctiveSource){
+     const auto& physics=*output->correctiveSource;const auto& source=physics.surface->frame.source;
+     const auto a=source.lobeCenters[0],b=source.lobeCenters[1],tip=source.shaftGuide[11];
+     std::fprintf(log,"\"anatomySimulationSeconds\":%.12g,\"anatomyPitchForce\":%.9g,\"anatomyYawForce\":%.9g,\"anatomyLobeCenters\":[[%.9g,%.9g,%.9g],[%.9g,%.9g,%.9g]],\"anatomyTip\":[%.9g,%.9g,%.9g],",physics.simulationSeconds,physics.surface->input.frame.pitchForce,physics.surface->input.frame.yawForce,a.x,a.y,a.z,b.x,b.y,b.z,tip.x,tip.y,tip.z);
+    }
+#endif
     std::fprintf(log,"\"garmentPresentationMs\":%.9g,\"garmentPoseSeconds\":%.9g,",garment?garment->presentationMilliseconds:0,garment?garment->poseSeconds:0);
     std::fprintf(log,"\"clothFineStretchRatio\":%.9g,\"clothWorstFineA\":%u,\"clothWorstFineB\":%u,",cloth.maxRenderStretchRatio,cloth.worstRenderA,cloth.worstRenderB);
     std::fprintf(log,"\"depositedVolume\":[%.9g,%.9g],\"depositedImpacts\":[%u,%u],\"finalPumpDepositedVolume\":%.9g,\"finalPumpDepositedImpacts\":%u,\"garmentStyle\":%u,\"garmentVertices\":%zu,\"garmentTriangles\":%zu,\"garmentMs\":%.9g,\"garmentFlags\":%u,\"garmentPublications\":%u,\"callbackCount\":",clinical?clinical->depositedVolume[0]:0,clinical?clinical->depositedVolume[1]:0,clinical?clinical->depositedImpacts[0]:0,clinical?clinical->depositedImpacts[1]:0,clinical?clinical->finalPumpDepositedVolume:0,clinical?clinical->finalPumpDepositedImpacts:0,garmentService?garmentService->Style():0,garment?garment->output.mesh.vertices.size():0,garment?garment->output.mesh.triangles.size():0,garment?garment->milliseconds:0,GarmentDrawFlags(),GarmentDrawPublications());
@@ -345,7 +382,24 @@ void TestCheckpoint(void*,void* frame,void* result){
       }
      }
     }
-    if(stage==75||stage==82||stage==83){
+    if(stage==75||stage==82||stage==83||(output->modular&&stage>=600&&stage<696&&(stage-600)%3==0)){
+#ifdef MALEMOD_ATTACHMENT_CORRECTIVE
+     if(output->correctiveSource){
+      auto snapshot=output->correctiveSource;
+      wchar_t modulePath[32768]{};HMODULE owner=nullptr;
+      if(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&TestCheckpoint),&owner)&&GetModuleFileNameW(owner,modulePath,32768)){
+       auto folder=std::filesystem::path(modulePath).parent_path();
+       const auto prefix="attachment-frame-"+std::to_string(GetCurrentProcessId())+"-"+std::to_string(stage);
+       auto bytes=surface::wire::Encode(snapshot->surface->frame.source);
+       std::ofstream sourceFile(folder/(prefix+"-source.bin"),std::ios::binary);sourceFile.write(reinterpret_cast<const char*>(bytes.data()),bytes.size());
+       if(snapshot->surface->frame.modularShape){auto shape=surface::wire::Encode(*snapshot->surface->frame.modularShape);std::ofstream file(folder/(prefix+"-shape.bin"),std::ios::binary);file.write(reinterpret_cast<const char*>(shape.data()),shape.size());}
+       for(unsigned lod=0;lod<2;lod++){
+        const auto& points=snapshot->surface->frame.targetPositions[lod];
+        std::ofstream targetFile(folder/(prefix+"-lod"+std::to_string(lod)+".bin"),std::ios::binary);targetFile.write(reinterpret_cast<const char*>(points.data()),points.size()*sizeof(points[0]));
+       }
+      }
+     }
+#endif
      wchar_t capture[32768]{};HMODULE owner=nullptr;
      if(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,reinterpret_cast<LPCWSTR>(&TestCheckpoint),&owner)&&GetModuleFileNameW(owner,capture,32768)){
       auto* tail=wcsrchr(capture,L'\\');if(tail){swprintf_s(tail+1,32768-std::size_t(tail+1-capture),L"body-frame-%lu-%d.bin",GetCurrentProcessId(),stage);FILE* file=nullptr;

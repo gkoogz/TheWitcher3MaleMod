@@ -1,0 +1,107 @@
+{
+  "schema": "malemod.retail-abi-update/1",
+  "previousGameSHA256": "9406eccc12b68e08920931442ef6a57340e910d3e01f2082e88232487433fe51",
+  "gameSHA256": "2df765398a3d1f165db418271be7200178320a4466817379f2fa0dc0001fb101",
+  "imageSize": 104865792,
+  "entryPointRVA": 27630512,
+  "entryPointPrefix": "4883ec28e8b70c00004883c428e9",
+  "opcodeTableRVA": 94853744,
+  "functions": {
+    "registerGlobals": {
+      "rva": "0x27454e0",
+      "prefix": "48895c241048897c241855488bec4883",
+      "previousRVA": "0x273cf20",
+      "normalizedCompleteFunctionEqual": true,
+      "length": 3320
+    },
+    "allocate": {
+      "rva": "0xbcb710",
+      "prefix": "48895c24104889742418574883ec4048",
+      "previousRVA": "0xbcd5d0",
+      "normalizedCompleteFunctionEqual": true,
+      "length": 205
+    },
+    "namePool": {
+      "rva": "0x31c440",
+      "prefix": "4883ec28488b058db953054885c0755e",
+      "previousRVA": "0x31d930",
+      "normalizedCompleteFunctionEqual": true,
+      "length": 122
+    },
+    "internName": {
+      "rva": "0x26b90a0",
+      "prefix": "48895c242055415641574883ec204c8b",
+      "previousRVA": "0x26b0e00",
+      "normalizedCompleteFunctionEqual": true,
+      "length": 148
+    },
+    "constructFunction": {
+      "rva": "0x26fdda0",
+      "prefix": "48895c24084889742410574883ec2033",
+      "previousRVA": "0x26f5810",
+      "normalizedCompleteFunctionEqual": true,
+      "length": 156
+    },
+    "rtti": {
+      "rva": "0x31e800",
+      "prefix": "4883ec28488b053d9898054885c00f85",
+      "previousRVA": "0x31fcf0",
+      "normalizedCompleteFunctionEqual": true,
+      "length": 336
+    },
+    "registerFunction": {
+      "rva": "0x26ce2d0",
+      "prefix": "48896c24104889742418574883ec2044",
+      "previousRVA": "0x26c5f30",
+      "normalizedCompleteFunctionEqual": true,
+      "length": 90
+    }
+  },
+  "runtimeVerified": true,
+  "steamBuildID": "25773555",
+  "opcodeReferenceCount": 1748,
+  "opcodeReferenceExamples": [
+    {
+      "previousFunction": "0x1cf67f0",
+      "function": "0x1cfd870",
+      "instruction": "0x1cfd87e",
+      "target": "0x5a75a70",
+      "normalizedCompleteFunctionEqual": true
+    },
+    {
+      "previousFunction": "0x1cf6930",
+      "function": "0x1cfd9b0",
+      "instruction": "0x1cfd9be",
+      "target": "0x5a75a70",
+      "normalizedCompleteFunctionEqual": true
+    },
+    {
+      "previousFunction": "0x1cf6c80",
+      "function": "0x1cfdd00",
+      "instruction": "0x1cfdd0e",
+      "target": "0x5a75a70",
+      "normalizedCompleteFunctionEqual": true
+    }
+  ],
+  "completeObservationSHA256": "8908c0a33229a94c94b6b94f6beeb083e31e82449d6910b5b7c69483d45b7028",
+  "completeObservationGeneratedCommand": "python tools/observe_game_update.py --previous <licensed-previous-exe> --current <licensed-current-exe> --profile <previous-profile-json> --output <private-full-observation.json>",
+  "runtimeVerification": {
+    "baseCommit": "431e626cae6fb6720b552f8b20206727fe809c80",
+    "adapterReferenceCommit": "3b13594",
+    "installedNativeSHA256": {
+      "bin/x64_dx12/dinput8.dll": "eb9a3455a2eba48adf4648afc4c924931b9552141c83cf21850df028fff93f6a",
+      "bin/x64_dx12/malemod-native/malemod_witcher.dll": "9089e7342af9484b6f22bcd042de31e687f4e7568ddcd72c75e682da123daace"
+    },
+    "normalStartup": true,
+    "privateRoomCases": 24,
+    "privateCampaignCases": 24,
+    "offlineAttachmentCases": 39,
+    "fullAttachmentCertification": false,
+    "geometryAndSolverChanged": false,
+    "limitations": [
+      "Full attachment certification remains false: inherited extreme upward-angle deformation.",
+      "Native distance/LOD traversal, all independent coupled shape combinations, every animation and every campaign scene are not certified.",
+      "Garment/clinical feature acceptance is not re-established by this ABI/startup repair."
+    ]
+  }
+}

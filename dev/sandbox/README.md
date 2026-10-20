@@ -83,6 +83,28 @@ An interrupted process retains an exact receipt; close it with
 
 ## Verified reference and limits
 
+### Steam development-room entry
+
+`tools/play_grey_room.py` is the stable, windowless Steam entry point. Its local
+`local/grey-room-launch.json` selects this machine's cooked `package` and reviewed
+`acceptance`, with schema `malemod.grey-room-launch/1`. Run
+`python tools/play_grey_room.py --check` after updating either artifact or the
+installed runtime. Stale proofs are rejected before changing saves or files.
+
+With Steam fully exited, register it using
+`python tools/add_steam_grey_room.py --steam "<Steam directory>" --user <numeric user directory>`.
+The authoring helper needs ValvePython `vdf`; the resulting shortcut does not.
+It backs up and round-trips `shortcuts.vdf`, preserves other shortcuts, and adds
+**The Witcher 3 - Development Grey Room**. Restart Steam to load the entry.
+
+The entry launches `witcher3.exe` directly. Its temporary room-only bootstrap
+filters startup and recap movie menus and enters the room through the existing
+engine bootstrap. Normal input/audio remain active; no automated host input is
+used. First-time consent remains user-controlled. Closing the game restores
+original saves and removes unchanged temporary room files. This developer entry
+is excluded from release payloads. Its source recipe is portable; its package,
+acceptance, Steam user directory and private receipts are machine-local.
+
 The October 5 reference passed a complete two-part 49,884-vertex body, owned-floor
 trace, 7.609 metres grounded walking and clean start/middle/end captures. The
 reference native runtime is Base `99ff741ea95f18ed84526c35a6c3f38a37d857b6`, DLL
@@ -97,3 +119,12 @@ Run `python tools/sandbox.py check-delta` after cloning; source text hashes
 normalize CRLF to LF, whereas runtime resources/packages retain exact byte hashes.
 Historical standalone-world and render-control experiments are outside this
 maintained path; see `docs/ITERATION-SANDBOX.md` for their diagnostic history.
+
+## October 8 source inventory check
+
+The grey-room source and reproduction instructions are present in this repo.
+The inventory was refreshed for the committed sealed-launcher extension which
+also permits owned `build/collar-sessions` drivers. It retains exact compilation
+proof checks and the ordinary platform path. Run `python tools/sandbox.py
+check-delta` before rebuilding. This source audit does not repeat native cooking
+or gameplay acceptance, or change the installed room/runtime.
