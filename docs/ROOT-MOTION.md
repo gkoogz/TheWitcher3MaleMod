@@ -26,3 +26,19 @@ Native walking/decay review is available through `review_live_controls.py
 officially compiled driver. Full native attachment review and installation
 are separately recorded in private Work receipts. A passing replay or build
 does not establish those outcomes.
+
+## Observed adoption
+
+Installed October 20 from adapter `ea297b0`, Base `1f0b933`, with the numerical
+worker unchanged at `5ae173f`. The correction passed the eight shared tests,
+live-control and temporal-presentation tests, 240 actual-worker samples,
+36 walking/decay captures, 96 grey-room checkpoints and 39 campaign checkpoints.
+Both body resources and both supported native LODs completed GPU draws without
+reported rendering failures. Reviewed root connections remained closed and
+continuous; the previously documented local scrotal shading limitation remains.
+
+The installed runtime completed a fresh grounded walking test, and the existing
+grey-room shortcut was rebound to its acceptance receipt. Saves/settings/audio
+were restored and installed hashes verified. Current Work receipts bind the
+exact source, executable, captures and cleanup. This does not certify every
+campaign transition or an extended stability soak.

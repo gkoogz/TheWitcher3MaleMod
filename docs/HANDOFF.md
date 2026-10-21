@@ -1,9 +1,22 @@
 ## October 20 - root participation correction
 
-See `docs/ROOT-MOTION.md`. The current source retains simulated root rotation
-through Base's socket mapping and aligns the moving ramp tangent accordingly.
-Numerical worker and installed runtime identities below remain authoritative
-until a fresh native gate and installation receipt replace them.
+See `docs/ROOT-MOTION.md`. Installed source `ea297b0` adopts Base `1f0b933`
+while retaining numerical worker `5ae173f`. DLL SHA-256:
+`16f4e567315cf70761ac6eab4042d76ac64652ff4b18ab797b5b7ab2f6c03f48`.
+All 240 replay samples retain root rotation. Eight shared tests and two focused
+adapter tests pass. Reviewed native evidence covers 36 walking/decay frames,
+96 grey matrix checkpoints and 39 campaign checkpoints, both body resources
+and both supported LODs. No new pelvic gap/fold/pinch was seen; the previously
+recorded localized scrotal attachment shading remains.
+
+Installed-room walking was observed in `sealed-session-20261020-202937` and the
+existing Steam grey-room entry passes preflight against that runtime. All 53
+managed files, 31 protected files and 24 saves verified. The exact preceding
+accepted runtime is `local/native-rollback-current`. Automatic approval review
+blocked deletion of the superseded `local/native-rollback-replacing`; it remains
+as an explicitly recorded storage residual, not a requested new backup bank.
+Current private evidence is under `Work/witcher/root-motion`. Historical
+installed identities below describe the preceding runtime.
 
 ## October 20 - storage consolidation
 
