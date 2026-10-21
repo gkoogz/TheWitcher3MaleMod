@@ -1,3 +1,18 @@
+## October 21 - requested doubled contact, Base candidate not adopted
+
+The user clarified that the attachment must cover twice the actual surface
+area, with the front fixed, and authorized including the root transition and
+pelvic surface. The installed 0.25 extension below does not satisfy that size.
+Base checkpoint `850374b` and its `docs/COMPOUND-CONTACT.md` record the new measured 2x authoring result
+and SDK-free triangle-driven motion evaluator. Current private candidate:
+`Work/witcher/rear-attachment/expanded-support/preview`.
+
+Do not install its offline meshes through the old shaft-only path. The renderer
+still needs a compound support-cut/graft phase after dynamic body/root rebuilding,
+with shared boundary vertices, exact material donors and both body resources.
+Then run native controls, motion, LOD, grey-room and campaign attachment checks.
+The installed files, adoption pins and exact rollback have not changed.
+
 ## October 21 - rear attachment extended, front fixed
 
 Installed the rear-only scrotal attachment extension; see
