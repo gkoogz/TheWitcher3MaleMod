@@ -6,9 +6,9 @@ from scipy import sparse
 from scipy.spatial import cKDTree
 from mod import ROOT,read_json,digest
 from wcc_fbx import Document,triangles
-from prepare_modular_render import carrier,barycentric
+from prepare_modular_render import carrier,barycentric,measured_rig_names
 
-def prepare(base,body,assembly,module,runtime,dynamic,native,source,render,output):
+def prepare(base,body,assembly,module,runtime,dynamic,native,source,render,output,stock_rig=None):
     sys.path.insert(0,str(base))
     from malemod_base.modular_anatomy import Mesh,vertex_normals
     from malemod_base.modular_shading import corner_frames,boundary_uv_field
@@ -16,7 +16,7 @@ def prepare(base,body,assembly,module,runtime,dynamic,native,source,render,outpu
     from tools.build_modular_anatomy import read_source
     if output.exists():raise ValueError('Use a new material binding artifact')
     b=np.load(body);m=np.load(assembly/'body-union.npz');d=sparse.load_npz(assembly/'body-union-donors.npz');bd=sparse.load_npz(body.with_name(body.stem+'-donors.npz'))
-    profile=read_json(ROOT/'characters/geralt-runtime-bindings.json');rig=read_json(ROOT/profile['rig'])['_chunks']['CSkeleton #0']['_vars'];names=[b['_vars']['name']['_value'] for b in rig['bones']['_elements']]
+    profile=read_json(ROOT/'characters/geralt-runtime-bindings.json');names=measured_rig_names(profile,stock_rig)
     pelvis=names.index('pelvis');stock_uv=[];colors=[];reflection=[];weights=[];source_faces=[];offset=0
     for path in [ROOT/'build/probe/geralt_lower.fbx',ROOT/'build/inspection/candidates/t_01_mg__body_hires.fbx']:
         doc=Document(path);mesh=doc.meshes[0];points=mesh.array('Vertices').reshape(-1,3)
@@ -85,4 +85,5 @@ def prepare(base,body,assembly,module,runtime,dynamic,native,source,render,outpu
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for key in ['base','body','assembly','module','runtime','dynamic','native','source','render','output']:p.add_argument('--'+key,type=Path,required=True)
+    p.add_argument('--stock-rig',type=Path)
     a=p.parse_args();prepare(**vars(a))

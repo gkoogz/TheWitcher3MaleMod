@@ -23,7 +23,8 @@
   "omissions": [
     "Licensed source geometry, binary assets, captures and user data are private."
   ],
-  "rearExtension": 0.0,
+  "rearExtension": 0.25,
+  "root": [6.45, 0.0, 84.3],
   "suspensionShift": 1.5,
   "neckStartHandleScale": 1.0,
   "neckEndHandleScale": 0.25,

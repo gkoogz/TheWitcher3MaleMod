@@ -311,7 +311,7 @@ def export_resource(cfg, resource, output, stock=False):
     output = Path(output).resolve()
     if output.suffix.lower() != '.fbx' or relative.suffix.lower() != '.w2mesh':
         raise ValueError('This command exports a .w2mesh into .fbx')
-    if not output.is_relative_to(ROOT / 'build'):
+    if not output.is_relative_to((ROOT / 'build').resolve()):
         raise ValueError('Keep native character exports in this repository\'s ignored build/ directory')
     output.parent.mkdir(parents=True, exist_ok=True)
     if output.exists():

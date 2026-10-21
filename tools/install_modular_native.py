@@ -121,7 +121,29 @@ def validate_gate(proof_path, preview_path):
     return proof
 
 
-def install_modular_native(cfg, preview_path, proof_path, validate_only=False):
+def verified_existing_rollback(preview_path, previous, game, candidate_game):
+    """Reuse an owned, exact accepted preview without copying another runtime."""
+    path = Path(preview_path).resolve()
+    # load_preview validates the manifest's declared owned storage and paths.
+    root, data = load_preview(path, verify_files=False)
+    if root.resolve() in (game.resolve(), candidate_game.resolve()):
+        raise ValueError('Rollback must be separate from installed and candidate files')
+    declared = {r['path']: r['sha256'] for r in data['files']}
+    for row in previous['files']:
+        target = root/row['path']
+        if (declared.get(row['path']) != row['sha256'] or
+                not target.resolve().is_relative_to(root.resolve()) or
+                digest(target) != row['sha256']):
+            raise ValueError('Existing rollback differs from accepted runtime: '+row['path'])
+    receipt = root/'receipt.json'
+    if receipt.resolve() != receipt:
+        raise ValueError('Rollback receipt may not redirect outside its directory')
+    if receipt.exists() and read_json(receipt) != previous:
+        raise ValueError('Existing rollback receipt describes another runtime')
+    return root
+
+
+def install_modular_native(cfg, preview_path, proof_path, validate_only=False, rollback_preview=None):
     preview_path, proof_path = Path(preview_path).resolve(), Path(proof_path).resolve()
     source_game, preview = load_preview(preview_path)
     proof = validate_gate(proof_path, preview_path)
@@ -179,6 +201,7 @@ def install_modular_native(cfg, preview_path, proof_path, validate_only=False):
         if digest(native/name) != digest(game/PREFIX/name):
             raise ValueError('Unreviewed numerical/native dependency changed: '+name)
     verify_native_compatibility(game, native)
+    existing_backup = verified_existing_rollback(rollback_preview, previous, game, source_game) if rollback_preview else None
     if validate_only:
         return {'validated': True, 'replacements': list(replacements)}
     query = subprocess.run(['powershell', '-NoProfile', '-NonInteractive', '-Command',
@@ -194,14 +217,15 @@ def install_modular_native(cfg, preview_path, proof_path, validate_only=False):
     protected = {p: digest(p) for p in protected if p.is_file()}
     # One accepted managed runtime, not another dated game/restore-image bank.
     # Never overwrite it implicitly; source backups belong in GitHub.
-    backup = ROOT/'local/native-rollback-current'
-    backup.mkdir()
-    for rel, row in old.items():
-        target = backup/rel
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(game/rel, target)
-        if digest(target) != row['sha256']:
-            raise RuntimeError('Exact rollback differs: '+rel)
+    backup = existing_backup or ROOT/'local/native-rollback-current'
+    if not existing_backup:
+        backup.mkdir()
+        for rel, row in old.items():
+            target = backup/rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(game/rel, target)
+            if digest(target) != row['sha256']:
+                raise RuntimeError('Exact rollback differs: '+rel)
     shutil.copy2(receipt_path, backup/'receipt.json')
     updated = json.loads(json.dumps(previous))
     updated['materialPackage'] = preview.get('materialPackage')

@@ -49,7 +49,32 @@ def native_winding(inspection):
     return outward>.5
 
 
-def prepare(base,assembly,runtime,lineage,render,inspection,output):
+def measured_rig_names(profile, stock_rig=None):
+    """Read native names; optionally reconstitute only the recorded name table.
+
+    The compact authoring set need not retain a historical generated rig JSON.
+    No transforms or new joints are inferred from the stock fallback.
+    """
+    path = stock_rig or ROOT/profile['rig']
+    rig = read_json(path)['_chunks']['CSkeleton #0']['_vars']
+    names = [b['_vars']['name']['_value'] for b in rig['bones']['_elements']]
+    if stock_rig:
+        contract = profile['skeleton']
+        if len(names) != contract['stockPrefixCount']:
+            raise ValueError('Stock rig prefix differs from recorded character binding')
+        for joint in contract['addedJoints']:
+            if joint['index'] != len(names) or joint['name'] in names:
+                raise ValueError('Recorded extension name order differs')
+            names.append(joint['name'])
+        if len(names) != contract['totalJoints']:
+            raise ValueError('Recorded joint count differs')
+    pelvis = profile['skeleton']['pelvis']
+    if names[pelvis['index']] != pelvis['name']:
+        raise ValueError('Observed pelvis name/index differs')
+    return names
+
+
+def prepare(base,assembly,runtime,lineage,render,inspection,output,stock_rig=None,winding_reference=None):
     sys.path.insert(0,str(base))
     from malemod_base.modular_shading import corner_frames
     from malemod_base.modular_anatomy import Mesh
@@ -60,8 +85,16 @@ def prepare(base,assembly,runtime,lineage,render,inspection,output):
     m=np.load(assembly/'body-union.npz');p=m['points'];f=m['faces'];sf=m['source_faces'];uv=m['corner_uv'].copy()
     donors=sparse.load_npz(assembly/'body-union-donors.npz');line=np.load(lineage)
     native_palette,resources,lods=carrier(render)
-    profile=read_json(ROOT/'characters/geralt-runtime-bindings.json');rig=read_json(ROOT/profile['rig'])['_chunks']['CSkeleton #0']['_vars']
-    names=[b['_vars']['name']['_value'] for b in rig['bones']['_elements']];pelvis=names.index('pelvis')
+    profile=read_json(ROOT/'characters/geralt-runtime-bindings.json')
+    names=measured_rig_names(profile,stock_rig);pelvis=names.index('pelvis')
+    reference=None
+    if winding_reference:
+        reference=read_json(winding_reference/'manifest.json')
+        if (reference['carrierSHA256']!=digest(render) or
+                reference['artifactSHA256']!=digest(winding_reference/'geralt.modular-native')):
+            raise ValueError('Winding reference is not bound to this exact native carrier')
+        if {(r['resource'],r['lod']) for r in reference['parts']}!={(0,0),(0,1),(1,0),(1,1)}:
+            raise ValueError('Winding reference has incomplete resource/LOD coverage')
     paths=[ROOT/'build/probe/geralt_lower.fbx',ROOT/'build/inspection/candidates/t_01_mg__body_hires.fbx']
     original=[];uvs=[];colors=[];reflect=[];weights=[];source_triangles=[];offset=0
     for path in paths:
@@ -129,16 +162,29 @@ def prepare(base,assembly,runtime,lineage,render,inspection,output):
             blob+=struct.pack('<6I',resource,lod,int(old['header'][5]),int(old['header'][6]),len(geometric),indices.size)
             for i,g in enumerate(geometric):
                 blob+=struct.pack('<I',int(g))+skin[i].tobytes()+quant[g].tobytes()+corner_uv[i].astype('<f2').tobytes()+color[g].tobytes()+reflection[g].tobytes()+struct.pack('<4d',*tangent[i],sign[i])
-            evidence=inspection/('inspection-'+['lower','upper'][resource])/f'lod{lod}.npz'
-            outward=native_winding(evidence)
+            if reference:
+                measured=next(r for r in reference['parts'] if (r['resource'],r['lod'])==(resource,lod))
+                outward=measured['nativeOutwardWinding']
+                if type(outward) is not bool:raise ValueError('Invalid measured winding')
+                evidence_hash=measured['windingEvidenceSHA256']
+            else:
+                evidence=inspection/('inspection-'+['lower','upper'][resource])/f'lod{lod}.npz'
+                outward=native_winding(evidence);evidence_hash=digest(evidence)
             native_indices=indices if outward else indices[:,[0,2,1]]
-            blob+=native_indices.astype('<u4').tobytes();reports.append(dict(resource=resource,lod=lod,vertices=len(geometric),triangles=len(indices),nativeOutwardWinding=outward,windingEvidenceSHA256=digest(evidence)))
+            blob+=native_indices.astype('<u4').tobytes();reports.append(dict(resource=resource,lod=lod,vertices=len(geometric),triangles=len(indices),nativeOutwardWinding=outward,windingEvidenceSHA256=evidence_hash))
     path=output/'geralt.modular-native';path.write_bytes(blob);path.with_suffix(path.suffix+'.sha256').write_text(digest(path)+'\n')
     np.savez_compressed(output/'material-preview.npz',corner_uv=uv,skin=bone_ids,weights=quant,color=color,reference=target,fixed_mask=fixed_mask,fixed=fixed)
     report=dict(schema='malemod.witcher-modular-render/1',artifactSHA256=digest(path),sharedSHA256=digest(asset),carrierSHA256=digest(render),parts=reports,stock=[dict(path=str(p),sha256=digest(p)) for p in paths],singularUVFaces=len(lighting['singular_uv_faces']),nativeObserved=False,installed=False)
+    if stock_rig:report['stockRigNames']=dict(path=str(stock_rig.resolve()),sha256=digest(stock_rig),extensionProfileSHA256=digest(ROOT/'characters/geralt-runtime-bindings.json'))
+    if reference:report['windingReference']=dict(path=str(winding_reference.resolve()),manifestSHA256=digest(winding_reference/'manifest.json'),carrierReverified=True)
     (output/'manifest.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
-    for key in ['base','assembly','runtime','lineage','render','inspection','output']:parser.add_argument('--'+key,type=Path,required=True)
-    a=parser.parse_args();prepare(a.base,a.assembly,a.runtime,a.lineage,a.render,a.inspection,a.output)
+    for key in ['base','assembly','runtime','lineage','render','output']:parser.add_argument('--'+key,type=Path,required=True)
+    parser.add_argument('--inspection',type=Path)
+    parser.add_argument('--stock-rig',type=Path)
+    parser.add_argument('--winding-reference',type=Path,help='Previously verified native binding for this exact carrier')
+    a=parser.parse_args()
+    if not a.inspection and not a.winding_reference:parser.error('Provide inspection or exact-carrier winding reference')
+    prepare(**vars(a))

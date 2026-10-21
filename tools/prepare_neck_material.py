@@ -12,6 +12,7 @@ parser.add_argument('--base',type=Path,required=True,help='Shared modular depend
 parser.add_argument('--source',type=Path,required=True,help='Source modular asset job with assembly/runtime/material bindings')
 parser.add_argument('--output',type=Path,required=True,help='Fresh private output directory')
 parser.add_argument('--job',type=Path,required=True,help='Fresh owned build directory for native texture intake')
+parser.add_argument('--source-atlas',type=Path,help='Existing color-matched atlas exports (atlas-diffuse.tga and atlas-normal.tga); avoids historical bake directories')
 args=parser.parse_args();A=ROOT;B=args.base.resolve();N=args.source.resolve();R=args.output.resolve()
 if R.exists() or args.job.exists():raise ValueError('Use fresh output and native job directories')
 job=args.job.absolute()
@@ -79,12 +80,17 @@ results=[]
 for channel,stock,source in [
  ('diffuse',A/'build/probe/geralt_lower.fbm/body_01_mg__geralt_d01.tga',B/'assets/materials/wolverine/R14-skin-natural.dds'),
  ('normal',A/'build/probe/geralt_lower.fbm/body_01_mg__geralt_n01.tga',B/'assets/materials/wolverine/SharedBody-normal.dds')]:
- left=Image.open(stock).convert('RGBA');right=Image.open(source).convert('RGBA')
- if channel=='normal':right=bake_repeat(right,16)
+ if args.source_atlas:
+  atlas=Image.open(args.source_atlas/f'atlas-{channel}.tga').convert('RGBA')
+  if atlas.size!=(8192,4096):raise ValueError('Measured source atlas must contain two 4096-square tiles')
+  left=atlas.crop((0,0,4096,4096));right=atlas.crop((4096,0,8192,4096))
  else:
-  gain=json.loads((A/'build/body-boundary/radial-skin-packed-4/skin-match.json').read_text())['linearRGBGain'];q=np.asarray(right).copy()
-  for start in range(0,len(q),32):q[start:start+32,:,:3]=encoded(linear(q[start:start+32,:,:3])*gain)
-  right=Image.fromarray(q,'RGBA')
+  left=Image.open(stock).convert('RGBA');right=Image.open(source).convert('RGBA')
+  if channel=='normal':right=bake_repeat(right,16)
+  else:
+   gain=json.loads((A/'build/body-boundary/radial-skin-packed-4/skin-match.json').read_text())['linearRGBGain'];q=np.asarray(right).copy()
+   for start in range(0,len(q),32):q[start:start+32,:,:3]=encoded(linear(q[start:start+32,:,:3])*gain)
+   right=Image.fromarray(q,'RGBA')
  assert left.size==right.size
  full=compose_tiles([left,right]);original=np.asarray(full).copy();data=np.asarray(right)
  W,H=right.size;x0,y0,x1,y1=np.rint(np.array(rect)*[W,H,W,H]).astype(int)
