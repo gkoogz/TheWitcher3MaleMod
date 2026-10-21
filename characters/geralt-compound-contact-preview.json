@@ -1,7 +1,7 @@
 {
   "schema": "malemod.compound-contact-preview/1",
   "purpose": "Offline inward side-attachment preview; not a native runtime recipe",
-  "baseGeometryRevision": "d2ea483",
+  "baseGeometryRevision": "1c53ecc",
   "parameters": {
     "maximum_extension": 11.25,
     "ratio": 1.7,
@@ -12,8 +12,9 @@
   "notes": [
     "User clarified that the side attachments should move inward toward the underside.",
     "This preview narrows measured pelvic contact width by 34.44 percent.",
-    "The preview area is 1.7x; it does not satisfy the earlier numerical 2x request.",
+    "User subsequently requested cleanup and installation of this narrower 1.7x preview.",
     "Uses a complete-shaft pelvic support and the existing retained sac source module.",
-    "No native adoption or installation. Resolve global topology flags before runtime acceptance."
-  ]
+    "Closed authoring mesh cleanup passes; native compound integration and validation still precede installation."
+  ],
+  "geometryBindingRevision": 2
 }

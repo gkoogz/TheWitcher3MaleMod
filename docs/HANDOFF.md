@@ -1,3 +1,23 @@
+## October 21 - inward preview cleaned; installation still pending native adoption
+
+The user explicitly requested cleanup and installation of the displayed 45-degree,
+1.7x inward preview. This authorizes that selected geometry; do not repeat the
+area-tradeoff question. Base now removes all 13 tiny-face flags and the extra
+contact touch with ten bounded topology contractions. No surviving sample moves;
+front knots, original body boundaries and UV aliases remain protected. Private
+current output is `Work/witcher/rear-attachment/expanded-support/clean-bound`.
+It has 126,708 triangles, zero degenerates/touches/new crossings, and the same
+77 original distal crossings. Exact support/neck assembly maps and display-only
+cleanup mapping are exported in geometry-binding revision 2.
+
+The SDK-free concave compound cutter passes fixture tests and has been exercised
+on the full support (2.26 seconds, donor error 1.15e-11). Its open-support output
+still has 168 tiny-face flags, so it is development groundwork, not an accepted
+native assembly. The adapter's compound graft/material/control path and grey-room
+plus campaign attachment matrix are not complete. No native build, pin update,
+game test or installation is claimed. All 53 current installed files match.
+See Base `docs/COMPOUND-CONTACT.md` for exact source/offline evidence.
+
 ## October 21 - requested doubled contact, Base candidate not adopted
 
 Latest clarification: pull the side attachments inward, not translate the
