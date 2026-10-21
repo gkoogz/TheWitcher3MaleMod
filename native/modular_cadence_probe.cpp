@@ -40,7 +40,9 @@ int wmain(int argc,wchar_t** argv){try{
    report<<"{\"case\":"<<test<<",\"frame\":"<<frame<<",\"sourceMs\":"<<ms(start,solved)<<",\"driveMs\":"<<ms(solved,driven)<<",\"meshMs\":"<<ms(driven,end)<<",\"rebuilt\":"<<(mesh->rebuilt?"true":"false")<<",\"stages\":[";
    for(unsigned i=0;i<6;i++)report<<(i?",":"")<<mesh->stageMilliseconds[i];
    report<<"],\"poseStages\":[";for(unsigned i=0;i<4;i++)report<<(i?",":"")<<mesh->poseMilliseconds[i];
-   report<<"],\"hash\":\""<<hash<<"\"}\n";
+   const auto rawFrames=surface::MaterialFrames(source);
+   auto rootAngle=[&](const surface::PresentationFrames& f){return std::acos(std::clamp(surface::Dot(f[1].basis[0],state.shapeFrames[1].basis[0]),-1.,1.));};
+   report<<"],\"rawRootRadians\":"<<rootAngle(rawFrames)<<",\"drivenRootRadians\":"<<rootAngle(state.frames)<<",\"hash\":\""<<hash<<"\"}\n";
    if(frame==39){
     std::ofstream geometry(out/("shape-"+std::to_string(test)+".bin"),std::ios::binary);
     for(const auto& part:mesh->parts)geometry.write(reinterpret_cast<const char*>(part.vertices.data()),part.vertices.size()*sizeof(ModularVertex));

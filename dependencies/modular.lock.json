@@ -1,15 +1,15 @@
 {
   "schema": "malemod.shared-module-pin/1",
   "repository": "https://github.com/gkoogz/MaleModBase.git",
-  "commit": "5ae173f45c5ce5687c4c44ad179bcbf15f3e0e13",
+  "commit": "1f0b93367018ff6c8b8db4642a28ea73eeee1e23",
   "numericalWorkerRevision": "5ae173f45c5ce5687c4c44ad179bcbf15f3e0e13",
   "hashNormalization": "LF",
   "files": {
     "include/malemod/surface/attachment_hinge.hpp": "e40968c94fa21d57c7664d606bd9f7bedba5dda314c309bf6ddb7b378e98a582",
     "include/malemod/surface/convex_surface_cut.hpp": "272223e5081edee02d93c59a0e94052f01c8f744259feb638889f74a796822c7",
     "include/malemod/surface/modular_asset.hpp": "d354c9b51e257bf0b491c4e1c25d106b02ec11e51303ad7f458ed2297859d513",
-    "include/malemod/surface/modular_dynamic.hpp": "0991fbfe830248bf77c830157653661082dc3c7f70a94efbc60237e196c09729",
-    "include/malemod/surface/modular_motion.hpp": "ff419089c6dcf6d3f265c15fe6a56407b782f44272f7a8c5eb8511fbeba3c83d",
+    "include/malemod/surface/modular_dynamic.hpp": "53803226902ef162c1853fde6a620bef539b78164a81fe6ef4df1e375a616e41",
+    "include/malemod/surface/modular_motion.hpp": "896107264d99f334fa8a9a8caffef54c1438832296d8a7678f02f4eee5581525",
     "include/malemod/surface/modular_mount.hpp": "f73e662401f188702b6c6ae3d3cba9d788b50c1181da68ed590280a39b1bc904",
     "include/malemod/surface/modular_transfer.hpp": "a1600f0a9ef0bc3253c6d56494b76403a7d8c04d70ea60fe1ff9b9db0eeaaf7a",
     "include/malemod/surface/pelvic_aperture.hpp": "db2009a80d19c8200907ca1ca4e1b66568a81b883652c39a73bb92782eef0fa0",
@@ -37,6 +37,6 @@
     "include/malemod/task_arena.hpp": "1c177f34a7830fda4af7ea784b1e2745e33f57cebe5987d728f1d208117a5b38",
     "include/malemod/surface/ordered_normals.hpp": "bb15cc019ce94f4131a14167e973aa9faa12e73d1ba91ec13679e38e421fe206"
   },
-  "scope": "Independent ordered numerical and retained-skin streams, deterministic parallel geometry, cached direct controls and temporal presentation; historical character binding revision preserved. Native gate is recorded separately.",
+  "scope": "Preserve simulated root orientation through socket mounting and match the moving ramp tangent; retain the independently pinned numerical worker and ordered rendering pipeline.",
   "authoringRevision": "efb825580ffacf47fc3b66be505c7e54ddcdc228"
 }

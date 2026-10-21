@@ -23,7 +23,7 @@ def main():
     p.add_argument("--package", type=Path)
     p.add_argument("--preview", type=Path, help="Reuse an already prepared, verified preview")
     p.add_argument("--resume", type=Path, help="Resume monitoring an exact unfinished campaign receipt")
-    p.add_argument("--case", default="modular-cadence", choices=("modular-cadence", "modular-review", "shape-review", "campaign"))
+    p.add_argument("--case", default="modular-cadence", choices=("modular-cadence", "modular-review", "shape-review", "physics-motion", "campaign"))
     p.add_argument("--last-stage", type=int, default=1239)
     a = p.parse_args()
     a.output = a.output.resolve()
@@ -102,7 +102,7 @@ def main():
             if a.last_stage in stages:
                 # The script requests its last screenshot after recording the
                 # checkpoint. Do not close the game before the PNG completes.
-                expected_shots = {"modular-cadence": 7, "modular-review": 97, "shape-review": 19, "campaign": 39}[a.case]
+                expected_shots = {"modular-cadence": 7, "modular-review": 97, "shape-review": 19, "physics-motion": 37, "campaign": 39}[a.case]
                 capture_deadline = time.monotonic() + 30
                 while time.monotonic() < capture_deadline:
                     shots = sorted((p for p in (Path.home() / "Documents/The Witcher 3/screenshots").glob("*.png")

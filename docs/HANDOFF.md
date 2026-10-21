@@ -1,3 +1,10 @@
+## October 20 - root participation correction
+
+See `docs/ROOT-MOTION.md`. The current source retains simulated root rotation
+through Base's socket mapping and aligns the moving ramp tangent accordingly.
+Numerical worker and installed runtime identities below remain authoritative
+until a fresh native gate and installation receipt replace them.
+
 ## October 20 - storage consolidation
 
 Latest architecture checkpoint: see `docs/ORDERED-RUNTIME-PIPELINE.md`.
