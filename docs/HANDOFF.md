@@ -1,5 +1,18 @@
 ## October 21 - requested doubled contact, Base candidate not adopted
 
+Latest correction: the user forbids the attachment climbing onto the pelvis
+above/beside the shaft. Base `d2ea483` constrains rear recruitment to the lower
+sector before it reaches the body. New authoring preview is
+`Work/witcher/rear-attachment/expanded-support/underside-preview`, replacing
+the rejected high-sided `preview` below. It retains 1.99999364x physical area
+and the exact front edge. All covered pelvic contact is below the root plane;
+100 upper pelvic rim points in the old preview are reduced to zero.
+31 Python and 10 SDK-free tests pass; no new crossings. Eight tiny cut/refinement
+triangles trigger the whole-mesh audit's degeneracy tolerance and still require
+resolution. This source-only checkpoint does not change adapter pins or native
+runtime, and does not pass the native attachment gate. All 53 installed files
+remain exact. Read Base's updated COMPOUND-CONTACT.md before integration.
+
 The user clarified that the attachment must cover twice the actual surface
 area, with the front fixed, and authorized including the root transition and
 pelvic surface. The installed 0.25 extension below does not satisfy that size.
