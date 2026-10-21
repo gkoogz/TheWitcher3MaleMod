@@ -1,3 +1,21 @@
+## October 21 - rear attachment extended, front fixed
+
+Installed the rear-only scrotal attachment extension; see
+`docs/SCROTAL-REAR-EXTENSION-20261021.md`. Recipe `rearExtension=0.25` uses the
+existing Base map at pin `1f0b933`, with the complete shaft, retained sac and
+front attachment samples preserved. Runtime DLL and root-motion correction are
+unchanged. Source implementation: `49b64bf`, exact-preview rollback: `39c4b8b`.
+
+Reviewed 96 grey-room, 36 walking and 39 campaign views across the recorded
+attachment matrix, both resources and both LODs. Installed grey-room startup
+and walking passed in `sealed-session-20261021-105050`; Steam entry preflight
+passes. All 53 managed files, 53 rollback files and 24 original saves verify.
+Private evidence is `Work/witcher/rear-attachment`. Active exact rollback now
+reuses `Work/witcher/previews/preview-1792541051157297300/game`; do not refresh or
+delete it. Existing distal/glans extremes and local underside relief remain;
+normal campaign-menu startup was not separately exercised. Historical installed
+and rollback identities below are superseded by this entry.
+
 ## October 20 - root participation correction
 
 See `docs/ROOT-MOTION.md`. Installed source `ea297b0` adopts Base `1f0b933`

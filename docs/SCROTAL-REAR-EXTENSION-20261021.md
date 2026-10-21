@@ -61,3 +61,30 @@ Twenty Python geometry/shading/transfer tests, eight shared C++ tests, and nine
 adapter authoring/preview tests pass. Native and installed results are recorded
 separately in the final acceptance and installation receipts. Source checks or
 a successful native texture cook do not establish attachment acceptance.
+
+## Native review and installed result
+
+The reviewed candidate passed 96 grey-room checkpoints, 36 walking/decay views
+and 39 campaign views. Front, side and oblique views cover the recorded size,
+angle, mechanical-state and shape combinations, both body resources and both
+supported LODs. No new attachment gap, reversed collar, constricted root or
+detached neck was seen. This finite matrix does not cover every Cartesian
+slider combination or campaign transition. Existing extreme distal/glans shape
+and localized underside relief are unchanged and are not claimed repaired.
+
+Installed using the hash-bound `rear-attachment/acceptance.json` proof. Geometry
+SHA-256 is `ebc42991151335c029b60025df3a745706affb7b4259aa527d92b710e96678cf`;
+native binding SHA-256 is
+`43cd6230a26dc02208fa79eb55eba86466c0338fe35e89de75fb2f0b72bb0ca1`.
+All 53 installed files and 53 exact preceding rollback files verify. The
+installation also preserved 31 protected files. The active rollback reuses
+`Work/witcher/previews/preview-1792541051157297300/game`; do not refresh or delete
+that owned preview while it serves as rollback.
+
+Installed grey-room startup, grounded walking and live simulation publication
+were observed in `sealed-session-20261021-105050`. The existing Steam room entry
+passes preflight against that acceptance. Normal campaign-menu startup was not
+separately tested. All four private sessions closed, restored audio and verified
+the original 24 saves. Captures are consolidated under the current work folder;
+`side-profiles.jpg` contains true side views at angle sliders 15, 50 and 100.
+See `final-verification.json` for installation and cleanup evidence.
