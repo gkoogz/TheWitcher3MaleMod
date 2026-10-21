@@ -1,5 +1,18 @@
 ## October 21 - requested doubled contact, Base candidate not adopted
 
+Latest clarification: pull the side attachments inward, not translate the
+whole sac backward. Current offline preview is `expanded-support/inward-preview`,
+with parameters in `characters/geralt-compound-contact-preview.json`. The rear
+sector narrows from 75 to 45 degrees; actual pelvic contact width drops 34.44%
+with the front fixed and original pelvis untouched. It measures 1.69998664x
+contact area, so does not fulfill the earlier numerical 2x target. Do not
+represent that disclosed preview tradeoff as user approval. The 75-degree
+preview below is superseded. Base's geometry algorithm remains d2ea483;
+rejected hard-width/alternate-chart experiments were removed. Local fold checks
+pass, with no new global crossings; 13 tiny slivers and one tolerance-level
+touch remain in the whole-mesh audit. No native adoption, pin update or install.
+All 53 installed files match. Source/offline/native evidence remain separate.
+
 Latest correction: the user forbids the attachment climbing onto the pelvis
 above/beside the shaft. Base `d2ea483` constrains rear recruitment to the lower
 sector before it reaches the body. New authoring preview is
