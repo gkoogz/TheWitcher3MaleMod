@@ -717,6 +717,7 @@ def main():
     modular_native.add_argument('--preview',type=Path,required=True)
     modular_native.add_argument('--proof',type=Path,required=True)
     modular_native.add_argument('--validate-only',action='store_true')
+    modular_native.add_argument('--rollback-preview',type=Path,help='Reuse an owned preview matching every currently installed managed file')
     startup_repair = commands.add_parser('repair-native-startup')
     startup_repair.add_argument('--proof',type=Path,required=True)
     restore_native = commands.add_parser('restore-native')
@@ -760,7 +761,7 @@ def main():
             install_reviewed_native(cfg,args.preview,args.proof)
         elif args.command == 'install-modular-native':
             from install_modular_native import install_modular_native
-            install_modular_native(cfg,args.preview,args.proof,args.validate_only)
+            install_modular_native(cfg,args.preview,args.proof,args.validate_only,args.rollback_preview)
         elif args.command == 'repair-native-startup':
             from install_native_runtime import install_startup_repair
             install_startup_repair(cfg,args.proof)
