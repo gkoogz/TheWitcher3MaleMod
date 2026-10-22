@@ -169,7 +169,8 @@ def install_modular_native(cfg, preview_path, proof_path, validate_only=False, r
             raise ValueError('Candidate changed: '+rel)
     native = source_game/PREFIX
     for name, magic in ARTIFACTS.items():
-        if (native/name).read_bytes()[:8] != magic:
+        versions=(b'MMMDYN01',b'MMMDYN02') if name=='geralt.modular-dynamic' else (magic,)
+        if (native/name).read_bytes()[:8] not in versions:
             raise ValueError('Unsupported coupled artifact: '+name)
         if (native/(name+'.sha256')).read_text().strip() != digest(native/name):
             raise ValueError('Coupled artifact hash differs: '+name)

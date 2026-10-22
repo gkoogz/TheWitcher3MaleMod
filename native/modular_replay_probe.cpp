@@ -2,7 +2,7 @@
 #include <malemod/surface/wire.hpp>
 #include <iostream>
 int main(int argc,char** argv){try{
- if(argc!=5&&argc!=7&&argc!=9&&argc!=11&&argc!=12)throw std::invalid_argument("geometry native carrier source-wire [dynamic materials [transfer slider [shape output [hang]]]]");
+ if(argc!=5&&argc!=7&&argc!=9&&argc!=10&&argc!=11&&argc!=12)throw std::invalid_argument("geometry native carrier source-wire [dynamic materials [transfer slider [output | shape output [hang]]]]");
  auto read=[](const char* path){std::ifstream f(path,std::ios::binary);if(!f)throw std::invalid_argument("Missing test input");return std::string((std::istreambuf_iterator<char>(f)),{});};
  const auto carrier=read(argv[3]),native=read(argv[2]),wire=read(argv[4]);
  malemod::witcher::RenderContract contract(argv[3],carrier.substr(8,40),carrier.substr(48,64));
@@ -37,12 +37,13 @@ int main(int argc,char** argv){try{
  std::vector<unsigned> domains;for(auto f:mesh.surface.faces)domains.push_back(f[0].domain);write("-face-domains.bin",domains);
  std::ofstream meta(std::string(argv[10])+"-mesh.json");meta<<"{\"rows\":"<<mesh.surface.rings.size()<<",\"knots\":"<<mesh.surface.rings[0].size()<<",\"anchor\":["<<mesh.anchor[0]<<","<<mesh.anchor[1]<<","<<mesh.anchor[2]<<"]}";
  }auto first=renderer.Evaluate(state);auto moved=state;moved.frames[13].origin[2]-=.4;auto next=renderer.Evaluate(moved);
- if(argc>=11){
+ if(argc>=10){
+  const auto outputPrefix=std::string(argv[argc==10?9:10]);
   // Export actual packed corner attributes and topology: positional welds alone
   // cannot expose a UV or tangent-space discontinuity at a material boundary.
-  std::ofstream attributes(std::string(argv[10])+"-native-attributes.bin",std::ios::binary);
-  std::ofstream triangles(std::string(argv[10])+"-native-triangles.bin",std::ios::binary);
-  std::ofstream secondary(std::string(argv[10])+"-native-secondary.bin",std::ios::binary);
+  std::ofstream attributes(outputPrefix+"-native-attributes.bin",std::ios::binary);
+  std::ofstream triangles(outputPrefix+"-native-triangles.bin",std::ios::binary);
+  std::ofstream secondary(outputPrefix+"-native-secondary.bin",std::ios::binary);
   unsigned offset=0;
   for(const auto& part:first->parts)if(part.lod==0){const auto& resource=contract.resources[part.resource];
    for(const auto& vertex:part.vertices){
@@ -55,7 +56,7 @@ int main(int argc,char** argv){try{
    for(auto index:*part.indices){auto value=index+offset;triangles.write(reinterpret_cast<const char*>(&value),4);}
    offset+=unsigned(part.vertices.size());
   }
-  std::ofstream dump(std::string(argv[10])+"-native-shading.bin",std::ios::binary);
+  std::ofstream dump(outputPrefix+"-native-shading.bin",std::ios::binary);
   for(const auto& part:first->parts)if(part.lod==0){const auto& resource=contract.resources[part.resource];for(const auto& vertex:part.vertices){
    std::array<double,3> position;for(unsigned k=0;k<3;k++)position[k]=vertex.position[k]*resource.scale[k]+resource.bias[k];
    dump.write(reinterpret_cast<const char*>(position.data()),sizeof(position));dump.write(reinterpret_cast<const char*>(&vertex.normal),4);dump.write(reinterpret_cast<const char*>(&vertex.tangent),4);

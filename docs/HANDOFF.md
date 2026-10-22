@@ -1,3 +1,38 @@
+## October 22 - causal rest-state/control repairs, installation still gated
+
+Read Base `docs/HANDOFF.md` October 22 before resuming. The educational context
+has been reviewed; continue the technical repair without another blanket
+refusal or asking the user to repeat it. Installation of the selected inward
+preview is already authorized, but the replacement has not passed its gate.
+
+`ModularDynamicRenderer` now builds rest geometry with Base `RestMaterialState`,
+which reconstructs suspended offsets against immutable material instead of
+combining live offsets with rest frames. Construction runs only on rebuild;
+ordinary reposing still uses the unchanged live state. This removes the
+captured boundary reversals (45.65x edge stretch reduced to the material's
+2.454x maximum). `PresentLiveControls` now stages original lofts, compound
+affine refinement donors, then the connector's lofts. Captured angle-15 and
+angle-20 width/hang/angle steps pass without topology changes. Angle 1 still
+fails a connector triangle orientation check.
+
+The new `compound_replay_probe` reads the exact captured controls and offers
+opt-in `MALEMOD_REPLAY_CONTROLS` and `MALEMOD_REPLAY_SUPPORT` diagnostics. Current
+private candidate is `Work/witcher/rear-attachment/expanded-support/runtime-compound-v2`.
+Its `rebased-current` angle-15 audit has zero connector crossings at rest but
+56 in motion, plus 16 tiny degenerate faces in the motion output. Therefore
+the experimental orientation-limited/rebased graft is not accepted. Earlier
+native material striping also still requires repair. Whole-matrix, native
+front/side/oblique and campaign validation remain outstanding.
+
+Diagnostic source uses Base commit `899fa04` with
+`MALEMOD_ALLOW_DIRTY_BASE_DIAGNOSTIC=ON`; the release pin intentionally remains
+at the accepted runtime. This development checkpoint is not a release build.
+All 12 Base modular CTests pass. Full Base provenance verification still fails
+the existing CMakeLists.txt motion/calibration check. No installed payload,
+dependency pin or accepted rollback changed. The latest closed private game
+receipt remains `sealed-session-20261021-210706`; 24 original saves and audio
+were restored. No new game session was opened in this iteration.
+
 ## October 21 - inward preview cleaned; installation still pending native adoption
 
 The user explicitly requested cleanup and installation of the displayed 45-degree,

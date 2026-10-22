@@ -149,7 +149,8 @@ def prepare(dll=None, worker=None, sewn_corrective=None, recruitment=None, modul
     if modular_dynamic is not None:
         for name,source,magic in [('geralt.modular-dynamic',modular_dynamic,b'MMMDYN01'),('geralt.modular-materials',modular_materials,b'MMMAT001')]:
             source=Path(source).resolve()
-            if not source.is_file() or source.read_bytes()[:8]!=magic:raise ValueError('Dynamic artifact version differs: '+name)
+            versions=(b'MMMDYN01',b'MMMDYN02') if name=='geralt.modular-dynamic' else (magic,)
+            if not source.is_file() or source.read_bytes()[:8] not in versions:raise ValueError('Dynamic artifact version differs: '+name)
             additions['bin/x64_dx12/malemod-native/'+name]=source
         data=Path(modular_materials).read_bytes()
         if data[8:200]!=(digest(Path(modular_geometry))+digest(Path(modular_dynamic))+digest(Path(modular_native))).encode():raise ValueError('Dynamic material dependency hashes differ')

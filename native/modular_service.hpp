@@ -34,7 +34,19 @@ class ModularService {
     }
     source=std::move(pending_);epoch=epoch_;inFlight_=source->surface->sequence;inFlightEpoch_=epoch;}
    try{const auto& f=source->surface->frame;auto state=renderer_->Drive(f.source,f.modularPivot,f.modularRadians,f.modularShape,source->surface->input.controls.values[6]);auto next=std::make_shared<Result>(Result{source,renderer_->Evaluate(state),epoch});std::atomic_store(&latest_,std::shared_ptr<const Result>(next));}
-   catch(const std::exception& e){std::lock_guard<std::mutex> lock(mutex_);error_=e.what();}
+   catch(const std::exception& e){
+    // Explicit private-session opt-in: retain one exact failing input, not a
+    // rolling capture bank. Normal game launches have no diagnostic path.
+    if(const char* prefix=std::getenv("MALEMOD_COMPOUND_FAILURE_PREFIX"))try{
+     auto path=std::filesystem::path(std::string(prefix)+"-source.bin");
+     if(!std::filesystem::exists(path)){const auto& f=source->surface->frame;
+      auto write=[](const std::filesystem::path& p,const auto& bytes){std::ofstream out(p,std::ios::binary);out.write(reinterpret_cast<const char*>(bytes.data()),bytes.size());};
+      write(path,surface::wire::Encode(f.source));if(f.modularShape)write(std::string(prefix)+"-shape.bin",surface::wire::Encode(*f.modularShape));
+      std::ofstream info(std::string(prefix)+"-state.txt");info<<e.what()<<'\n'<<f.modularRadians<<'\n';for(auto x:f.modularPivot)info<<x<<' ';info<<'\n';for(auto x:source->surface->input.controls.values)info<<x<<' ';
+     }
+    }catch(...){/* Preserve the original renderer failure. */}
+    std::lock_guard<std::mutex> lock(mutex_);error_=e.what();
+   }
   }
  }){}
  ~ModularService(){{std::lock_guard<std::mutex> lock(mutex_);stop_=true;}changed_.notify_one();worker_.join();}

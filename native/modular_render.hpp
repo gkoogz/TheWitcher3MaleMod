@@ -29,6 +29,10 @@ struct ModularControlTopology {
  std::vector<surface::LiveControlLoft> lofts;
  std::vector<unsigned> sourceLofts;
  std::vector<surface::LiveControlDonor> bodyDonors;
+ // Compound edge splits depend on the completed original lofts. Their new
+ // connector is a second loft stage, after those affine splits are updated.
+ unsigned compoundLoftStart=0;
+ std::vector<surface::LiveControlDonor> compoundDonors;
  std::shared_ptr<const surface::OrderedNormals> normals;
 };
 struct ModularFrame {

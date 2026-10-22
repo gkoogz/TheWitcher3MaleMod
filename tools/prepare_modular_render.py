@@ -132,7 +132,10 @@ def prepare(base,assembly,runtime,lineage,render,inspection,output,stock_rig=Non
     # the original body; the shared waist is one geometric vertex in both parts.
     cal=profile['coordinateCalibration'];basis=np.array(cal['basis']);scale=cal['nativeUnitsPerSourceUnit'];target=(p-cal['sourceRoot'])@basis.T*scale+cal['targetRootNative']
     protected=np.zeros(len(p),dtype=bool)
-    for loop in boundary_loops(f):protected[loop]=True
+    visible=np.asarray(m['visible_faces'],dtype=int) if 'visible_faces' in m else np.arange(len(f))
+    if visible.ndim!=1 or len(np.unique(visible))!=len(visible) or np.any((visible<0)|(visible>=len(f))):
+        raise ValueError('Invalid visible fallback face selection')
+    for loop in boundary_loops(f[visible]):protected[loop]=True
     fixed=np.zeros_like(target);fixed_mask=np.zeros(len(p),dtype=bool)
     candidates=[]
     for lod in lods:
@@ -146,7 +149,7 @@ def prepare(base,assembly,runtime,lineage,render,inspection,output,stock_rig=Non
     blob+=fixed_mask.astype('u1').tobytes()+fixed.astype('<f8').tobytes()
     reports=[]
     for resource in range(2):
-        face_ids=np.flatnonzero(upper if resource else ~upper);geometric=f[face_ids].ravel();corner_uv=uv[face_ids].reshape(-1,2);tangent=lighting['tangent'][face_ids].reshape(-1,3);sign=lighting['sign'][face_ids].ravel()
+        face_ids=visible[(upper if resource else ~upper)[visible]];geometric=f[face_ids].ravel();corner_uv=uv[face_ids].reshape(-1,2);tangent=lighting['tangent'][face_ids].reshape(-1,3);sign=lighting['sign'][face_ids].ravel()
         # Share only equal geometry + UV + tangent-sign aliases; no per-face
         # duplication of smooth vertices and no loss of mirrored UV handedness.
         keys=np.c_[geometric,np.round(corner_uv,12),sign];_,first,inverse=np.unique(keys,axis=0,return_index=True,return_inverse=True)

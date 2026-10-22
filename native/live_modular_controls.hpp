@@ -18,7 +18,9 @@ inline std::shared_ptr<const ModularFrame> PresentLiveControls(
  auto after=before;
  arena.For(unsigned(after.size()),[&](unsigned i){after[i]=morph.Point(before[i],topology.bindings[i]);});
  DeformLiveControlDonors(topology.bodyDonors,before,after);
- DeformLiveControlLofts(morph,topology.bindings,topology.lofts,input->controlTangents,before,after,&arena);
+ DeformLiveControlLofts(morph,topology.bindings,topology.lofts,input->controlTangents,before,after,&arena,0,topology.compoundLoftStart);
+ DeformLiveControlDonors(topology.compoundDonors,before,after);
+ DeformLiveControlLofts(morph,topology.bindings,topology.lofts,input->controlTangents,before,after,&arena,topology.compoundLoftStart);
  if(!topology.normals)throw std::runtime_error("Missing prepared normal adjacency");
  auto normals=topology.normals->Pair(before,after,&arena,true,false);
  const auto& normalsBefore=normals.first;const auto& normalsAfter=normals.second;
