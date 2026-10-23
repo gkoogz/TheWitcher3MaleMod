@@ -20,7 +20,7 @@ def prepare(base,probe,atlas,job,output):
     if job.parent.resolve()!=(ROOT/'build/body-boundary').resolve() or job.exists() or output.exists():
         raise ValueError('Use fresh owned material job/output directories')
     sys.path.insert(0,str(base))
-    from malemod_base.loft_material import sample,bake_patch,retained_skin_tile,surface_uv_gradients
+    from malemod_base.loft_material import sample,bake_patch,retained_skin_tile,sampled_uv_directions
     from malemod_base.skin_match import linear,encoded
     dtype=np.dtype([('p','<f8',(3,)),('normal','<u4'),('tangent','<u4'),('uv','<f2',(2,))])
     attrs=np.fromfile(str(probe)+'-native-attributes.bin',dtype);faces=np.fromfile(str(probe)+'-native-triangles.bin','<u4').reshape(-1,3)
@@ -36,7 +36,9 @@ def prepare(base,probe,atlas,job,output):
         u=np.clip((uv[ids,0]-rect[0])/(rect[2]-rect[0]),0,1);order=np.argsort(u);u=u[order];ids=ids[order];match=match[order]
         _,first=np.unique(u,return_index=True);boundaries.append((u[first],ids[first],match[first]))
     results=[];W,H=8192,4096;x0,y0,x1,y1=np.rint(rect*[W-1,H-1,W-1,H-1]).astype(int)
-    gradients=surface_uv_gradients(p,faces[~patch],uv)
+    normal_source=np.asarray(Image.open(atlas/'atlas-normal.tga').convert('RGB'))
+    center,half,density,skin_faces=retained_skin_tile(p,faces,uv,patch,boundaries[0][2],W,H,normal_source)
+    del normal_source
     width,height=x1-x0+1,y1-y0+1
     queries=np.linspace(0,1,width)
     interpolate=lambda s,v:np.stack([np.interp(queries,s,v[:,k],period=1) for k in range(v.shape[1])],axis=1)
@@ -53,15 +55,20 @@ def prepare(base,probe,atlas,job,output):
         _,unique=np.unique(iu,return_index=True);iu=iu[unique];inner=inner[unique]
         target=np.stack([np.interp(s,iu,p[inner,k],period=1) for k in range(3)],axis=1)
         direction=(target-p[ids])/abs((v1-v0)/(rect[3]-rect[1]))
-        duv=np.einsum('nij,nj->ni',gradients[match],direction)
+        # Packed half-UVs on microscopic cut ears cannot supply a reliable
+        # differential: quantization can imply hundreds of atlas widths per
+        # metre. Fit the retained neighborhood in its resolved tangent plane.
+        duv=sampled_uv_directions(p,uv,retained,match,direction,.001,.03,.03)
+        # Match the measured physical texel density. Cut/UV alias noise must
+        # not send the continuation outside the source skin island.
+        speed=np.linalg.norm(duv*[W-1,H-1],axis=1)
+        target=np.linalg.norm(direction,axis=1)*density
+        duv*=np.minimum(1,target/np.maximum(speed,1e-20))[:,None]
         depth=np.linspace(0,1,height) if endpoint==0 else np.linspace(1,0,height)
         coords=interpolate(s,uv[match])[None]+depth[:,None,None]*interpolate(s,duv)[None]
         frames=[interpolate(s,field[index]) for field,index in
                 ((t,match),(b,match),(n,match),(t,ids),(b,ids),(n,ids))]
         continuation_geometry.append((coords,frames))
-    normal_source=np.asarray(Image.open(atlas/'atlas-normal.tga').convert('RGB'))
-    center,half,density,skin_faces=retained_skin_tile(p,faces,uv,patch,boundaries[0][2],W,H,normal_source)
-    del normal_source
     # Measure actual geometry lengths instead of hardcoding a repeat count.
     boundary_points=[]
     for s,ids,match in boundaries:
