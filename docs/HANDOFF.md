@@ -1,3 +1,22 @@
+## October 23 - Steam grey-room proof refreshed after installation
+
+The installed compound repair is delivered (see the October 23 installation
+entry below). Steam's local/grey-room-launch.json still selected the October 21
+platform acceptance, which bound the previous installation receipt. Its strict
+runtime identity check correctly refused launch; refreshing the shortcut proof
+was missed in the installation workflow.
+
+Ran the unchanged maintained platform against the actual installed DLL in
+sealed-session-20261023-003403 / PID 12552. Stages 200/201 verified both body
+resources, live modular publication, owned-floor grounding and 7.641 m movement.
+Inspected screenshot_03453.png and generated fresh platform-acceptance.json.
+Closed through the maintained transaction, restoring saves/audio and removing
+temporary room files. Updated the local Steam entry to this acceptance;
+tools/play_grey_room.py --check passed all 53 installed files. No runtime,
+geometry, scripts or package bytes changed; no identity checks were bypassed.
+F6 interaction was not directly tested. After future installs, refresh the
+platform acceptance and run this exact stable-entry preflight before delivery.
+
 ## October 22 late - final compound candidate under native review
 
 Base checkpoint d9de5c1 supplies the protected punctured-disk contact chart,

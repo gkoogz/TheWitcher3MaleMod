@@ -91,6 +91,13 @@ An interrupted process retains an exact receipt; close it with
 `python tools/play_grey_room.py --check` after updating either artifact or the
 installed runtime. Stale proofs are rejected before changing saves or files.
 
+After replacing the installed runtime, complete the room verification and
+visual acceptance steps above against that actual installation, then update
+`local/grey-room-launch.json` to the fresh acceptance path and run the stable
+entry's `--check`. Include this in installation delivery: campaign acceptance
+or a private anatomy preview does not refresh the Steam room's identity proof.
+Never rewrite an old proof's installation hash to make it match a new build.
+
 With Steam fully exited, register it using
 `python tools/add_steam_grey_room.py --steam "<Steam directory>" --user <numeric user directory>`.
 The authoring helper needs ValvePython `vdf`; the resulting shortcut does not.
