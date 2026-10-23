@@ -2960,3 +2960,52 @@ instrumented control edits and18 instrumented native shape checkpoints did
 not reproduce it. Keep this failure in the acceptance record; do not install
 on the strength of focused follow-up success alone.
 
+## October 23 - reviewed compound attachment installed
+
+Delivered the authorized inward attachment and continuous material/mesh repair
+to E:/SteamLibrary/steamapps/common/The Witcher 3. Runtime source:
+d75a8af6de176cebf8bb2bf9fa9b9bfee35ac59a; tested Base pin:
+dfa0ab7ee6cb632f75c785571707cc52bd72f9e4. Later documentation commits do not
+alter these build identities. Numerical-worker and character-authoring pins
+remain unchanged. Native DLL SHA256:
+0c185961482b924b6ca06f46e47807d56981b212c3c584944cb3b9f69ac658a8.
+
+The final bounded UV-continuation package is publish/20261022-233747-4f4ca4;
+232130 was rejected, not installed. Preview-1792628600887622300 supplied the
+reviewed artifacts. The maintained installer replaced 15 files and verified 31
+protected user files. Exact rollback is preview-1792592743439847600/game,
+whose 53 files matched the previous installation. Older handoff references to
+preview-1792541051157297300 as the current exact rollback were incorrect.
+The existing rollback was reused; no new full backup was created.
+
+Final grey session 20261022-234622 / PID 11672: stages 600-695, 96 reviewed
+views, resource/LOD mask 15. Final campaign 20261022-233951 / PID 9140:
+stages 300-338, 39 reviewed views. Sizes, widths, angles, mechanical states,
+motion and front/side/oblique views covered the sampled attachment matrix.
+Twelve modular CTests, eleven material tests and six exact failure/control
+replays passed. Clean pinned compilation passed with dirty-Base opt-in OFF.
+
+Private evidence root is D:/MaleMod/Work/witcher/rear-attachment/
+expanded-support/runtime-compound-v2. final-acceptance.json and
+final-visual-review.json bind the exact package and reviewed native captures.
+build-source-resolved.json records 125 compiler inputs. Current screenshots
+were hash-verified and moved into reviewed-captures/{grey,campaign}; they are
+outside Git. final-native-side-preview.jpg was shown before installation.
+
+Post-install session 20261023-000503 / PID 9240 launched the actual installed
+executable without injection or host input in an isolated window station. It
+reached stage 300, drew both body resources, and closed normally. All 53 managed
+files verified; 24 saves and audio restored. See installed-check/result.json.
+This is installed startup evidence, not an interactive-desktop test.
+
+Limits: sampled visual acceptance does not prove all control combinations,
+garments or scenes. Offline retained/support contacts remain; this is not a
+collision-clearance claim. Pose preparation remains roughly 75-150 ms, not
+Wolverine performance parity. Ray tracing and exclusive fullscreen untested.
+Historical full provenance retains the existing calibration CMakeLists.txt
+mismatch; current compiler/module/coupled artifact verification passed.
+
+Cleanup: automatic approval review blocked old diagnostic-frame deletion with
+no specific reason. Those old files remain; do not retry deletion through a
+different tool. Existing previously blocked candidate directories also remain.
+
