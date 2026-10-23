@@ -42,7 +42,7 @@ class ModularService {
      if(!std::filesystem::exists(path)){const auto& f=source->surface->frame;
       auto write=[](const std::filesystem::path& p,const auto& bytes){std::ofstream out(p,std::ios::binary);out.write(reinterpret_cast<const char*>(bytes.data()),bytes.size());};
       write(path,surface::wire::Encode(f.source));if(f.modularShape)write(std::string(prefix)+"-shape.bin",surface::wire::Encode(*f.modularShape));
-      std::ofstream info(std::string(prefix)+"-state.txt");info<<e.what()<<'\n'<<f.modularRadians<<'\n';for(auto x:f.modularPivot)info<<x<<' ';info<<'\n';for(auto x:source->surface->input.controls.values)info<<x<<' ';
+      std::ofstream info(std::string(prefix)+"-state.txt");info.precision(17);info<<e.what()<<'\n'<<f.modularRadians<<'\n';for(auto x:f.modularPivot)info<<x<<' ';info<<'\n';for(auto x:source->surface->input.controls.values)info<<x<<' ';
      }
     }catch(...){/* Preserve the original renderer failure. */}
     std::lock_guard<std::mutex> lock(mutex_);error_=e.what();

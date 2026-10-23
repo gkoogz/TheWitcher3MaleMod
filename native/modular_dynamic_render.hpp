@@ -1,6 +1,7 @@
 #pragma once
 #include <malemod/surface/modular_dynamic.hpp>
 #include <malemod/surface/compound_dynamic.hpp>
+#include <malemod/surface/strip_lighting.hpp>
 #include <tuple>
 #include <map>
 #include <optional>
@@ -28,7 +29,7 @@ class ModularDynamicRenderer {
   }
  };
  struct Attribute {Vec normal{},tangent{};std::array<double,2> uv{},reflection{};double sign=1;Weights weights;std::array<double,4> color{};};
- struct Row {unsigned vertex=0,shading=0;std::uint32_t bones=0,weights=0,color=0;std::array<std::uint16_t,2> uv{},reflection{};Vec tangent{};double sign=1;};
+ struct Row {unsigned vertex=0,shading=0;std::uint32_t bones=0,weights=0,color=0;std::array<std::uint16_t,2> uv{},reflection{};Vec tangent{};double sign=1;bool compoundChart=false;};
  struct Layout {unsigned resource=0,lod=0,first=0,count=0;std::vector<Row> rows;std::shared_ptr<const std::vector<unsigned>> indices,controlVertices;std::shared_ptr<const std::vector<surface::PresentationBinding>> presentation;};
  const surface::modular::Asset& asset_;const surface::modular::Plan& plan_;const RenderContract& contract_;
  surface::modular::DynamicMount mount_;std::vector<std::array<Material,3>> bodyMaterial_,moduleMaterial_;
@@ -73,7 +74,11 @@ class ModularDynamicRenderer {
    for(unsigned k=0;k<3;k++){auto c=face[k];auto& a=attributes[k];
     if(c.domain<2)a=Mix(c.domain==0?supportAttributes.at(c.parent):sourceAttributes.at(c.parent),c.donor);
     else{auto it=std::lower_bound(cache.curveKnots.begin(),cache.curveKnots.end(),c.curve);if(it==cache.curveKnots.end()||std::abs(*it-c.curve)>1e-8)throw std::runtime_error("Missing compound material curve knot");
-     a=patch[cache.rings[c.row][it-cache.curveKnots.begin()]];double u=c.curve/compound_->reference.footprint.size();if(wraps&&u<.5)u+=1;
+     const auto column=it-cache.curveKnots.begin();a=patch[cache.rings[c.row][column]];
+     // Texture density follows measured retained-skin arclength. Original
+     // vertex indices cluster around detailed regions and stretch the map
+     // into visible vertical panels if used as a circumference coordinate.
+     double u=cache.frameCoordinates[column]/cache.framePeriod;if(wraps&&u<.5)u+=1;
      a.uv={.7625+.225*u,.395+.09*compound_->reference.parameters[c.row]};}
     double sum=0;for(auto weight:a.weights)sum+=weight.second;
     if(sum<.99)throw std::runtime_error("Incomplete compound material vertex "+std::to_string(c.vertex)+" domain "+std::to_string(c.domain)+" parent "+std::to_string(c.parent)+" row "+std::to_string(c.row)+" sum "+std::to_string(sum));
@@ -105,7 +110,7 @@ class ModularDynamicRenderer {
   }
   for(unsigned row=1;row+1<cache.rings.size();row++)for(unsigned col=0;col<cache.rings[row].size();col++){double t=compound_->reference.parameters[row];auto a=cache.rings.front()[col],b=cache.rings.back()[col];controls.bindings[cache.rings[row][col]]=blend({controls.bindings[a],controls.bindings[b],{}},{1-t,t,0});}
  }
- struct Shade {unsigned vertex;Vec tangent;double sign;};std::vector<Shade> shading_;
+ struct Shade {unsigned vertex;Vec tangent;double sign;bool compoundChart;};std::vector<Shade> shading_;
  std::array<std::vector<std::array<std::optional<Row>,3>>,4> bodyRows_,moduleRows_;
  std::vector<Vec> templateNormals_,templateGeometry_,nativeFixed_;std::vector<unsigned char> useFixed_;
  std::shared_ptr<const ModularControlTopology> controlTopology_;
@@ -163,7 +168,7 @@ class ModularDynamicRenderer {
   for(auto f:mesh.faces)if(f[0].domain==2){auto a=f[0].vertex,b=f[1].vertex,c=f[2].vertex;auto p=Sub(mesh.points[b],mesh.points[a]),q=Sub(mesh.points[c],mesh.points[a]);auto u=ramp[a].uv,v=ramp[b].uv,w=ramp[c].uv;double du=v[0]-u[0],dv=v[1]-u[1],eu=w[0]-u[0],ev=w[1]-u[1],det=du*ev-dv*eu;if(std::abs(det)<1e-15)continue;double area=std::sqrt(Dot(Cross(p,q),Cross(p,q)));auto tangent=Scale(Sub(Scale(p,ev),Scale(q,dv)),area/det),bitangent=Scale(Sub(Scale(q,du),Scale(p,eu)),area/det);for(auto i:{a,b,c}){rampTangents[i]=Add(rampTangents[i],tangent);rampBitangents[i]=Add(rampBitangents[i],bitangent);}}
   for(auto ring:rings)for(auto i:ring){auto n=templateNormals_[i];ramp[i].tangent=Unit(Sub(rampTangents[i],Scale(n,Dot(n,rampTangents[i]))),ramp[i].tangent);ramp[i].sign=Dot(Cross(n,ramp[i].tangent),rampBitangents[i])<0?-1:1;}
   BuildCompound(state,ramp);
-  using Key=std::array<unsigned,6>;
+  using Key=std::array<unsigned,7>;
   struct KeyHash {std::size_t operator()(const Key& key)const{std::size_t h=0;for(auto x:key)h^=std::hash<unsigned>{}(x)+0x9e3779b9+(h<<6)+(h>>2);return h;}};
   std::vector<unsigned> faceResources;faceResources.reserve(mesh.faces.size());std::set<unsigned> lowerPalette;
   const auto& lower=contract_.resources[0];for(unsigned i=lower.firstPalette;i<lower.firstPalette+lower.paletteCount/2;i++)lowerPalette.insert(contract_.nativeBones[i]);
@@ -185,7 +190,8 @@ class ModularDynamicRenderer {
      else if(c.domain==2){auto& saved=rampRows[c.vertex];if(!saved)saved=MakeRow(c.vertex,ramp[c.vertex],layout.resource,layout.lod);row=*saved;}
      else row=MakeRow(c.vertex,AttributeFor(c),layout.resource,layout.lod);
      if(c.domain==1){Vec before{};for(unsigned j=0;j<3;j++)before=Add(before,Scale(assetNormals_[asset_.faces[c.parent][j]],c.donor[j]));row.tangent=Transport(row.tangent,Unit(before),templateGeometry_[c.vertex]);}
-     Key key{c.vertex,row.uv[0],row.uv[1],row.bones,row.weights,row.sign<0?0u:1u};auto found=aliases.find(key);
+     row.compoundChart=compoundCache_&&compoundCache_->faces[fi][k].domain==2;
+     Key key{c.vertex,row.uv[0],row.uv[1],row.bones,row.weights,row.sign<0?0u:1u,unsigned(row.compoundChart)};auto found=aliases.find(key);
      if(found==aliases.end()){unsigned id=unsigned(layout.rows.size());aliases.emplace(key,id);layout.rows.push_back(row);tri[k]=id;}else{tri[k]=found->second;layout.rows[tri[k]].tangent=Add(layout.rows[tri[k]].tangent,row.tangent);}
     }if(!winding_[index])std::swap(tri[1],tri[2]);indices->insert(indices->end(),tri.begin(),tri.end());
    }
@@ -258,10 +264,11 @@ class ModularDynamicRenderer {
    for(unsigned column=0;column<rings[0].size();column++)controls->lofts.push_back({rings[row][column],rings.front()[column],rings.back()[column],t});
   }
   controls->compoundLoftStart=unsigned(controls->lofts.size());
+  if(compoundCache_){controls->compoundRings=compoundCache_->rings;controls->compoundParameters=compound_->reference.parameters;}
   if(compoundCache_)for(unsigned row=1;row+1<compoundCache_->rings.size();row++)for(unsigned col=0;col<compoundCache_->rings[row].size();col++)controls->lofts.push_back({compoundCache_->rings[row][col],compoundCache_->rings.front()[col],compoundCache_->rings.back()[col],compound_->reference.parameters[row]});
   for(auto& layout:layouts_){auto ids=std::make_shared<std::vector<unsigned>>();ids->reserve(layout.rows.size());for(auto row:layout.rows)ids->push_back(row.vertex);layout.controlVertices=ids;}
-  shading_.clear();std::map<std::tuple<unsigned,double,double,double,double>,unsigned> cache;
-  for(auto& layout:layouts_)for(auto& row:layout.rows){auto key=std::make_tuple(row.vertex,row.tangent[0],row.tangent[1],row.tangent[2],row.sign);auto pair=cache.emplace(key,unsigned(shading_.size()));row.shading=pair.first->second;if(pair.second)shading_.push_back({row.vertex,row.tangent,row.sign});}
+  shading_.clear();std::map<std::tuple<unsigned,double,double,double,double,bool>,unsigned> cache;
+  for(auto& layout:layouts_)for(auto& row:layout.rows){auto key=std::make_tuple(row.vertex,row.tangent[0],row.tangent[1],row.tangent[2],row.sign,row.compoundChart);auto pair=cache.emplace(key,unsigned(shading_.size()));row.shading=pair.first->second;if(pair.second)shading_.push_back({row.vertex,row.tangent,row.sign,row.compoundChart});}
  }
  public:
  ModularDynamicRenderer(const surface::modular::Asset& asset,const surface::modular::Plan& plan,const RenderContract& contract,const std::filesystem::path& dynamic,const std::filesystem::path& materials,const std::string& geometryHash,const std::string& dynamicHash,const std::string& nativeHash)
@@ -325,13 +332,33 @@ class ModularDynamicRenderer {
     normals[id]=BlendEndpointNormal(BlendEndpointNormal(normals[id],normals[a],t),normals[b],1-t);
    }
   }
-  if(compoundCache_)for(unsigned row=1;row+1<compoundCache_->rings.size();row++)for(unsigned col=0;col<compoundCache_->rings[row].size();col++){auto id=compoundCache_->rings[row][col],a=compoundCache_->rings.front()[col],b=compoundCache_->rings.back()[col];double t=compound_->reference.parameters[row];normals[id]=BlendEndpointNormal(BlendEndpointNormal(normals[id],normals[a],t),normals[b],1-t);}
+  if(compoundCache_){
+   const auto& rings=compoundCache_->rings;std::vector<Vec> first,last;double perimeter=0,length=0;
+   for(unsigned col=0;col<rings.front().size();col++){auto a=rings.front()[col],b=rings.back()[col];first.push_back(normals[a]);last.push_back(normals[b]);length+=std::sqrt(Dot(Sub(points[a],points[b]),Sub(points[a],points[b])));auto edge=Sub(points[rings.front()[(col+1)%rings.front().size()]],points[a]);perimeter+=std::sqrt(Dot(edge,edge));}
+   length/=rings.front().size();
+   PeriodicNormalField firstField(first,compoundCache_->frameCoordinates,compoundCache_->framePeriod),lastField(last,compoundCache_->frameCoordinates,compoundCache_->framePeriod);
+   for(unsigned row=1;row+1<rings.size();row++){
+    double t=compound_->reference.parameters[row];if(t>=.25&&t<=.75)continue;
+    auto a=t<.25?firstField.At(t*length/perimeter):first;auto b=t>.75?lastField.At((1-t)*length/perimeter):last;
+    for(unsigned col=0;col<rings[row].size();col++){auto id=rings[row][col];normals[id]=BlendEndpointNormal(BlendEndpointNormal(normals[id],a[col],t),b[col],1-t);}
+   }
+  }
   const auto shaded=std::chrono::steady_clock::now();
+  std::vector<Vec> livePatchTangents(points.size());std::vector<double> livePatchSigns(points.size());
+  if(compoundCache_)for(const auto& d:StripDifferentials(points,compoundCache_->rings,compoundCache_->frameCoordinates,compoundCache_->framePeriod)){
+   auto n=normals[d.vertex];auto t=Unit(Sub(d.tangent,Scale(n,Dot(n,d.tangent))));
+   livePatchTangents[d.vertex]=contract_.calibration.VectorToTarget(t);
+   livePatchSigns[d.vertex]=Dot(Cross(n,t),d.meridian)<0?-1:1;
+  }
   auto controlPoints=points;
   plan_.For(unsigned(points.size()),[&](unsigned i){normals[i]=contract_.calibration.VectorToTarget(normals[i]);points[i]=useFixed_[i]?nativeFixed_[i]:contract_.calibration.PointToTarget(points[i]);});
   std::vector<std::uint32_t> packedNormal(points.size()),packedTangent(shading_.size());
   plan_.For(unsigned(points.size()),[&](unsigned i){packedNormal[i]=Pack(normals[i],1);});
-  plan_.For(unsigned(shading_.size()),[&](unsigned i){const auto& row=shading_[i];auto v=row.vertex;auto tangent=contract_.calibration.VectorToTarget(Transport(row.tangent,templateGeometry_[v],geometric[v]));tangent=Unit(Sub(tangent,Scale(normals[v],Dot(normals[v],tangent))));packedTangent[i]=Pack(tangent,row.sign<0?0:3);});
+  plan_.For(unsigned(shading_.size()),[&](unsigned i){const auto& row=shading_[i];auto v=row.vertex;auto tangent=contract_.calibration.VectorToTarget(Transport(row.tangent,templateGeometry_[v],geometric[v]));double sign=row.sign;
+   // Preserve the retained chart aliases at the rims. Only rows belonging to
+   // the connector's dedicated UV rectangle use its live material direction.
+   if(livePatchSigns[v]&&row.compoundChart){tangent=livePatchTangents[v];sign=livePatchSigns[v];}
+   tangent=Unit(Sub(tangent,Scale(normals[v],Dot(normals[v],tangent))));packedTangent[i]=Pack(tangent,sign<0?0:3);});
   const auto packed=std::chrono::steady_clock::now();
   auto frame=std::make_shared<ModularFrame>();frame->frames=state.frames;frame->rebuilt=rebuild;frame->materialScale=state.materialScale;
   frame->controlTopology=controlTopology_;frame->controlPoints=std::move(controlPoints);

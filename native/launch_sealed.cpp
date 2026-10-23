@@ -20,6 +20,11 @@ std::wstring QuoteArgument(const std::wstring& value){
 }
 }
 int wmain(int argc,wchar_t** argv){
+ if(argc==3&&!_wcsicmp(argv[1],L"--audio-session-count")){
+  if(FAILED(CoInitializeEx(nullptr,COINIT_MULTITHREADED)))return 3;
+  try{auto count=CountProcessAudioSessions(wcstoul(argv[2],nullptr,10));std::cout<<"{\"remainingAudioSessions\":"<<count<<"}\n";CoUninitialize();return 0;}
+  catch(const std::exception& e){std::cerr<<e.what()<<'\n';CoUninitialize();return 4;}
+ }
  if(argc<2)return 2;HWINSTA station=nullptr;HDESK desktop=nullptr;PROCESS_INFORMATION child{};
  auto original=GetProcessWindowStation();
  try{

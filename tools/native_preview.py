@@ -61,11 +61,11 @@ def session_game(receipt):
     return load_preview(receipt['nativePreview'], receipt['nativePreviewSHA256'], False)[0]
 
 
-def refresh_closed(manifest, receipt, dll, worker=None):
-    """Replace only binaries in a verified, closed owned preview."""
+def refresh_closed(manifest, receipt, dll, worker=None, material_package=None):
+    """Refresh binaries and an existing bounded material package in place."""
     manifest, receipt = Path(manifest).resolve(), Path(receipt).resolve()
     session = read_json(receipt)
-    if (not session.get('closed') or not session.get('audioRestored')
+    if (not session.get('closed') or not (session.get('audioRestored') or session.get('audioSessionsGone'))
             or not session.get('iterationWorldFilesRemoved')
             or Path(session.get('nativePreview', '')).resolve() != manifest):
         raise ValueError('Preview refresh needs its verified closed room receipt')
@@ -78,6 +78,14 @@ def refresh_closed(manifest, receipt, dll, worker=None):
     original_manifest = manifest.read_bytes()
     prefix = 'bin/x64_dx12/malemod-native/'
     replacements = {prefix+'malemod_witcher.dll': Path(dll).read_bytes()}
+    material_descriptor = None
+    if material_package is not None:
+        from modular_material_package import describe, identities
+        material_descriptor = describe(material_package)
+        if set(identities(material_descriptor)) != set(identities(data.get('materialPackage'))):
+            raise ValueError('In-place material refresh requires the same owned package paths')
+        for relative in identities(material_descriptor):
+            replacements[relative] = (Path(material_package)/relative).read_bytes()
     if worker:
         replacements[prefix+'surface_worker.exe'] = Path(worker).read_bytes()
         profile = game/(prefix+'malemod-runtime.profile')
@@ -99,8 +107,12 @@ def refresh_closed(manifest, receipt, dll, worker=None):
                 row['source'] = str(Path(dll).resolve())
             elif relative.endswith('surface_worker.exe'):
                 row['source'] = str(Path(worker).resolve())
-            else:
+            elif relative.endswith('malemod-runtime.profile'):
                 row['workerSHA256'] = digest(Path(worker))
+            else:
+                row['source'] = str((Path(material_package)/relative).resolve())
+        if material_descriptor is not None:
+            data['materialPackage'] = material_descriptor
         data['candidateAccepted'] = False
         data['previousClosedSession'] = str(receipt)
         write_json(manifest, data)

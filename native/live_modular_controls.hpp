@@ -1,5 +1,6 @@
 #pragma once
 #include "modular_render.hpp"
+#include <malemod/surface/compound_graft.hpp>
 
 namespace malemod::witcher {
 // Control presentation does not wait for RuntimeController's in-flight physics
@@ -20,7 +21,12 @@ inline std::shared_ptr<const ModularFrame> PresentLiveControls(
  DeformLiveControlDonors(topology.bodyDonors,before,after);
  DeformLiveControlLofts(morph,topology.bindings,topology.lofts,input->controlTangents,before,after,&arena,0,topology.compoundLoftStart);
  DeformLiveControlDonors(topology.compoundDonors,before,after);
- DeformLiveControlLofts(morph,topology.bindings,topology.lofts,input->controlTangents,before,after,&arena,topology.compoundLoftStart);
+ TranslateLiveControlLofts(topology.lofts,before,after,topology.compoundLoftStart,&arena);
+ // The input already contains the fitted, orientation-limited entry fillet.
+ // Transport that material; fitting it again is not an identity operation
+ // and can reverse cleaned triangles even for a one-step slider change.
+ // The prepared-face guard below checks the actual retained topology.
+
  if(!topology.normals)throw std::runtime_error("Missing prepared normal adjacency");
  auto normals=topology.normals->Pair(before,after,&arena,true,false);
  const auto& normalsBefore=normals.first;const auto& normalsAfter=normals.second;

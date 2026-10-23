@@ -33,6 +33,8 @@ struct ModularControlTopology {
  // connector is a second loft stage, after those affine splits are updated.
  unsigned compoundLoftStart=0;
  std::vector<surface::LiveControlDonor> compoundDonors;
+ std::vector<std::vector<unsigned>> compoundRings;
+ std::vector<double> compoundParameters;
  std::shared_ptr<const surface::OrderedNormals> normals;
 };
 struct ModularFrame {

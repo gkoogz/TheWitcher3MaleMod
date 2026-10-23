@@ -23,8 +23,11 @@ int main(int argc,char** argv){try{
   modular::Asset asset(argv[1]);auto plan=asset.MakePlan();modular::DynamicMount mount(argv[5]);CompoundDynamicPlan compound(mount.compoundData,asset,mount);
   auto geometry=modular::RestMaterialState(asset.bindings,state);
   auto support=mount.Evaluate(asset,plan,geometry);auto input=compound.PrepareSupport(support,asset,geometry);
+  std::cerr<<"Support anchor "<<support.anchor[0]<<','<<support.anchor[1]<<','<<support.anchor[2]<<" authored "<<mount.origin[0]<<','<<mount.origin[1]<<','<<mount.origin[2]<<'\n';
   std::ofstream out(std::string(argv[10])+"-cut.bin",std::ios::binary);std::array<unsigned,3> n{unsigned(support.surface.points.size()),unsigned(input.faces.size()),unsigned(compound.reference.footprint.size())};out.write(reinterpret_cast<const char*>(n.data()),12);
   out.write(reinterpret_cast<const char*>(support.surface.points.data()),n[0]*24);out.write(reinterpret_cast<const char*>(input.faces.data()),n[1]*12);out.write(reinterpret_cast<const char*>(input.chart.data()),n[0]*16);for(bool b:input.eligible){unsigned char e=b;out.write(reinterpret_cast<const char*>(&e),1);}out.write(reinterpret_cast<const char*>(compound.reference.footprint.data()),n[2]*16);
+  std::ofstream supportRings(std::string(argv[10])+"-support-rings.bin",std::ios::binary);std::array<unsigned,2> ringDimensions{unsigned(support.surface.rings.size()),unsigned(support.surface.rings.front().size())};supportRings.write(reinterpret_cast<const char*>(ringDimensions.data()),8);for(auto& ring:support.surface.rings)supportRings.write(reinterpret_cast<const char*>(ring.data()),ring.size()*4);
+  std::ofstream supportDomains(std::string(argv[10])+"-support-domains.bin",std::ios::binary);for(auto face:support.surface.faces){unsigned char d=face[0].domain;supportDomains.write(reinterpret_cast<const char*>(&d),1);}
   auto posed=mount.Pose(asset,plan,geometry,support.fitTranslation,support.advances,support.suspensionTranslation,support.clearedBindings,support.materialRoot);
   std::ofstream stages(std::string(argv[10])+"-source-stages.bin",std::ios::binary);
   unsigned sourceCount=unsigned(compound.sourceVertices.size());stages.write(reinterpret_cast<const char*>(&sourceCount),4);
@@ -37,6 +40,12 @@ int main(int argc,char** argv){try{
   std::ofstream ringFile(std::string(argv[10])+"-rings.bin",std::ios::binary);std::array<unsigned,2> dimensions{unsigned(cache.rings.size()),unsigned(cache.rings[0].size())};ringFile.write(reinterpret_cast<const char*>(dimensions.data()),8);for(auto& ring:cache.rings)ringFile.write(reinterpret_cast<const char*>(ring.data()),ring.size()*4);
   std::ofstream domains(std::string(argv[10])+"-domains.bin",std::ios::binary);for(auto f:cache.faces){unsigned char domain=f[0].domain;domains.write(reinterpret_cast<const char*>(&domain),1);}
   std::vector<PresentationPoint> liveAsset;auto liveSupport=mount.Repose(support,asset,plan,state,nullptr,nullptr,nullptr,&liveAsset);
+  auto liveSourceFrames=cache.SourceDifferentialPoints(compound.Source(liveAsset,state)),liveSupportFrames=cache.DifferentialPoints(liveSupport);
+  std::vector<PresentationPoint> firstHandle,lastHandle;
+  cache.graft->Evaluate(liveSourceFrames,liveSupportFrames,nullptr,&firstHandle,&lastHandle);
+  std::ofstream differentialFile(std::string(argv[10])+"-differentials.bin",std::ios::binary);
+  unsigned columns=unsigned(firstHandle.size());differentialFile.write(reinterpret_cast<const char*>(&columns),4);
+  for(const auto* field:{&liveSourceFrames,&liveSupportFrames,&firstHandle,&lastHandle})differentialFile.write(reinterpret_cast<const char*>(field->data()),field->size()*24);
   writeMesh("-posed.obj",cache.Evaluate(compound.Source(liveAsset,state),liveSupport));
   std::cerr<<"Root scale "<<geometry.scales[1][1]/asset.reference.scales[1][1]<<"\n";
  }

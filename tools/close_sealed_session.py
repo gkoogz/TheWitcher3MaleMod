@@ -1,11 +1,11 @@
 """Close only the exact child recorded by an owned private verification receipt."""
-import argparse,ctypes as C,json,time
+import argparse,ctypes as C,json,time,subprocess
 from ctypes import wintypes as W
 from pathlib import Path
 from mod import ROOT,read_json,write_json,digest,settings
 from native_preview import session_game
 
-def close(receipt):
+def close(receipt, recovery_audio_probe=None):
     path=Path(receipt).resolve()
     if not path.is_relative_to((ROOT/'build/probe').resolve()):raise ValueError('Expected owned private receipt')
     r=read_json(path);identity=r['observations']
@@ -26,14 +26,29 @@ def close(receipt):
         source=Path(r['temporaryContinueSource'])
         # An exited child can no longer supply GetProcessTimes. Require its own
         # launcher-recorded identity/exit/audio lifecycle before removing files.
-        if len(starts)!=1 or starts[0]!=identity or len(exits)!=1 or not any('restoredAudioSessions' in e for e in events):
-            raise ValueError('Cannot certify recorded private child exit')
+        complete=len(starts)==1 and starts[0]==identity and len(exits)==1 and any('restoredAudioSessions' in e for e in events)
+        recovery=None
+        if not complete:
+            if recovery_audio_probe is None or len(starts)!=1 or starts[0]!=identity or exits:
+                raise ValueError('Cannot certify recorded private child exit')
+            for pid in (identity['processID'],r['launcherPID']):
+                live=k.OpenProcess(0x100000,False,pid)
+                if live:
+                    k.CloseHandle(live)
+                    raise ValueError('Orphan recovery requires both recorded processes absent')
+                if C.get_last_error()!=87:raise OSError(C.get_last_error(),'Cannot verify absent private process')
+            probe=Path(recovery_audio_probe).resolve()
+            if not probe.is_relative_to((ROOT/'build').resolve()) or not probe.is_file():raise ValueError('Use an owned audio inspection binary')
+            result=json.loads(subprocess.check_output([str(probe),'--audio-session-count',str(identity['processID'])],text=True,creationflags=subprocess.CREATE_NO_WINDOW))
+            if result!={'remainingAudioSessions':0}:raise ValueError('Private audio session remains; preserve its original state')
+            recovery=dict(processesAbsent=[identity['processID'],r['launcherPID']],audioProbeSHA256=digest(probe),**result)
         if not source.resolve().is_relative_to(game/'Mods/modMaleModContinueTest') or digest(source)!=r['temporaryContinueSHA256']:
             raise ValueError('Temporary driver identity changed')
         source.unlink()
-        r.update(closed=True,audioRestored=True,alreadyExited=True,exitCode=exits[0]['exitCode'],closeVerifiedCreationTime=identity['processCreationTime'])
+        r.update(closed=True,audioRestored=complete,alreadyExited=True,exitCode=exits[0]['exitCode'] if exits else None,closeVerifiedCreationTime=identity['processCreationTime'])
+        if recovery:r.update(orphanRecovery=recovery,audioSessionsGone=True,audioRestorationUnobserved=True)
         write_json(path,r)
-        print('Recorded private child had exited; scoped audio restored; temporary driver removed')
+        print('Private child absent; temporary driver removed; '+('scoped audio restored' if complete else 'no remaining private audio sessions; normal restoration unobserved'))
         return r
     handle=k.OpenProcess(0x101001,False,identity['processID'])
     if not handle:

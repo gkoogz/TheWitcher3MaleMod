@@ -115,7 +115,7 @@ def launch(package, *, driver_source=None, compile_proof=None, native_preview=No
         raise
 
 
-def finish(receipt):
+def finish(receipt, recovery_audio_probe=None):
     path=Path(receipt).resolve(); data=read_json(path)
     from native_preview import session_game
     root=session_game(data)/'Mods/modMaleModIteration'
@@ -123,10 +123,10 @@ def finish(receipt):
         target=Path(item['path']).resolve()
         if not target.is_relative_to(root.resolve()) or digest(target)!=item['sha256']:
             raise ValueError('Preserve changed sandbox file')
-    close(path)
+    close(path,recovery_audio_probe=recovery_audio_probe)
     closed=read_json(path)
     if data.get('iterationSaveTransaction'):
-        restored=restore(data['iterationSaveTransaction'],closed_private_session=closed.get('closed') and closed.get('audioRestored'))
+        restored=restore(data['iterationSaveTransaction'],closed_private_session=closed.get('closed') and (closed.get('audioRestored') or closed.get('audioSessionsGone')))
         closed['iterationSaveOriginalsVerified']=restored['originalsVerified']
         write_json(path,closed)
     for item in data.get('iterationWorldFiles',[]): Path(item['path']).unlink()
@@ -141,8 +141,10 @@ if __name__=='__main__':
     parser.add_argument('--driver-source',type=Path)
     parser.add_argument('--compile-proof',type=Path)
     parser.add_argument('--native-preview',type=Path)
+    parser.add_argument('--recovery-audio-probe',type=Path)
     args=parser.parse_args()
+    if args.recovery_audio_probe and not args.close:parser.error('Orphan recovery requires an exact close receipt')
     if bool(args.driver_source) != bool(args.compile_proof): parser.error('Driver and proof must be supplied together')
     if args.close and (args.driver_source or args.native_preview): parser.error('Close uses its original bound driver identity')
     if args.package: launch(args.package,driver_source=args.driver_source,compile_proof=args.compile_proof,native_preview=args.native_preview)
-    else: finish(args.close)
+    else: finish(args.close,recovery_audio_probe=args.recovery_audio_probe)
