@@ -1,8 +1,8 @@
 {
   "schema": "malemod.shared-module-pin/1",
   "repository": "https://github.com/gkoogz/MaleModBase.git",
-  "commit": "0136ca81ece649e0a5ed16ffcb4426d46eedd0c8",
-  "numericalWorkerRevision": "0136ca81ece649e0a5ed16ffcb4426d46eedd0c8",
+  "commit": "342a15264adc37d050a55a6e0d9b36b323f9a519",
+  "numericalWorkerRevision": "342a15264adc37d050a55a6e0d9b36b323f9a519",
   "hashNormalization": "LF",
   "files": {
     "include/malemod/clinical/ambient.hpp": "43fb693bc82fbcd6650f31408129ed1f14041181d8ef69e3720e65162dc1aa34",

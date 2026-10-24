@@ -1,5 +1,7 @@
 #include "modular_render.hpp"
 #include "live_modular_controls.hpp"
+#include "surface_transport.hpp"
+#include "fixed_collar_angle.hpp"
 #include <malemod/surface/wire.hpp>
 #include <iostream>
 
@@ -18,7 +20,21 @@ int main(int argc,char** argv){try{
  Controls authored;authored.values[7]=float(std::stod(argv[8]));
  auto pivot=Precise(shape->shaftGuide[0]);double radians=ControlAngle(std::stod(argv[8])),hang=50;
  if(argc==12){std::ifstream input(argv[11]);std::string error;std::getline(input,error);input>>radians;for(auto& x:pivot)input>>x;for(auto& x:authored.values)input>>x;if(!input)throw std::runtime_error("Invalid captured controls");hang=authored.values[6];}
+ if(const char* worker=std::getenv("MALEMOD_REPLAY_FRESH_WORKER")){
+  witcher::SurfaceClient client(std::filesystem::path(worker).wstring());auto c=authored;c.values[7]=witcher::FixedCollarReferenceAngle;
+  shape=std::make_shared<const Output>(client.Initialize(c));
+  auto bytes=wire::Encode(*shape);std::ofstream out(std::string(argv[10])+"-fresh-shape.bin",std::ios::binary);out.write(reinterpret_cast<const char*>(bytes.data()),bytes.size());
+ }
  auto state=renderer.Drive(source,pivot,radians,shape,hang);
+ if(std::getenv("MALEMOD_REPLAY_MATERIAL")){
+  modular::Asset asset(argv[1]);auto plan=asset.MakePlan();auto rest=state;
+  rest.frames=state.shapeFrames;rest.offsets.reset();rest.shaftMaterial.reset();rest.materialBindings.reset();
+  const auto affine=plan.Evaluate(rest);
+  auto write=[&](const std::string& suffix,const std::vector<PresentationPoint>& points){std::ofstream f(std::string(argv[10])+suffix);f.precision(17);for(auto p:points)f<<"v "<<p[0]<<' '<<p[1]<<' '<<p[2]<<'\n';for(auto t:asset.faces)f<<"f "<<t[0]+1<<' '<<t[1]+1<<' '<<t[2]+1<<'\n';};
+  write("-material.obj",*state.shaftMaterial);write("-affine.obj",affine);
+  std::vector<std::array<unsigned,3>> shaft;for(auto f:asset.faces)if(modular::ShaftBinding(asset.bindings[f[0]])&&modular::ShaftBinding(asset.bindings[f[1]])&&modular::ShaftBinding(asset.bindings[f[2]]))shaft.push_back(f);
+  std::cerr<<"Material orientation-safe fraction "<<modular::RapheCorrectionFraction(affine,*state.shaftMaterial,shaft)<<" on "<<shaft.size()<<" shaft faces\n";
+ }
  if(std::getenv("MALEMOD_REPLAY_SUPPORT")){
   modular::Asset asset(argv[1]);auto plan=asset.MakePlan();modular::DynamicMount mount(argv[5]);CompoundDynamicPlan compound(mount.compoundData,asset,mount);
   auto geometry=modular::RestMaterialState(asset.bindings,state);

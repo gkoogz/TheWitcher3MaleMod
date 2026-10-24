@@ -1,3 +1,19 @@
+## October 24 - short-wide repair pin342a152; final acceptance pending
+
+Full grey96 padding candidate failed short/max-width cases669..674. Base now
+adds a smooth below-default Length correction for material coordinates and full
+local residual transport, plus isotropic authored crown material with an exact
+first ring. Native focused18 session130302 shows the shaft spikes and flattened
+crown removed; default/intermediate/minimum controls also drew and were reviewed.
+All14 Base modular tests pass. Final code factors crown material into a shared,
+independently tested helper; this clean build must repeat final native acceptance.
+
+Rejected initial-material and unscoped rest-frame experiments are preserved as
+private evidence and removed from source. Current private preview is diagnostic;
+source proof, clean worker adoption, coupled grey96/campaign39 and motion remain
+pending. Nothing installed; all53 existing managed files remain exact. Preserve
+managed-only rollback plan and refresh installed Steam proof after eventual install.
+
 ## October 24 - three-issue repair, clean source; native material review pending
 
 User authorized finishing the suspension work, correcting inward shaft overlap
