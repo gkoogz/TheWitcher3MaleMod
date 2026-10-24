@@ -1,3 +1,37 @@
+## October 24 - three requested repairs installed and verified
+
+Installed the accepted coupled candidate after actual grey96/campaign39 and two
+36-frame Full Floppy motion reviews. The sac skin stays outside the shaft in the
+reviewed poses, broad anterior padding discoloration is gone, and the shaft keeps
+smooth flexible motion with less folding. Also repaired the short/max-width shaft
+spikes and flattened head exposed by the full matrix. Extreme proportions retain
+some original sculpted ridges and texture stretching; this is finite sampled
+coverage, not every possible pose/combination or anatomical perfection.
+
+Compiled source: Base342a15264adc37d050a55a6e0d9b36b323f9a519, adapter2db0690.
+DLL c1b072cc4a6c79a08da223e4506a666a4586ade4718c034660cace5e02abe5a2;
+worker23c469d4a4ea57b164e6edd137cab342a80155cac829b619d303a397554a17cd;
+material package publish/20261024-121015-4e6efd. Binding/authoring431e626 unchanged.
+Both diagnostic opt-ins OFF. Source18, modular14, material17, worker-adoption5
+passed; prior adapter preview21/adoption3/installer15 remain applicable.
+
+Evidence: D:/MaleMod/Work/witcher/hang-review/volume-review/acceptance.json,
+visual-review.json and delivery-verification.json. Grey session131433, campaign
+132624, plus motion-default/extreme receipts recorded there. All closed normally
+with saves/audio restored; candidate was not installed before this gate passed.
+Installation replaced17 managed paths and verified31 protected files. All53
+installed files and all53 previous-runtime backup files now hash-verified.
+Exact rollback: D:/MaleMod/Work/witcher/native-rollback-hang-current.
+Use tools/mod.py restore-native --backup <that path> only when explicitly restoring;
+refresh the grey-room acceptance afterward because it binds the installed receipt.
+
+Post-install native session sealed-session-20261024-133839/PID292 observed grounded
+walking, both resources and live modular output. Inspected native renders; platform
+acceptance saved in that session. Closed normally,24 saves/audio restored. Updated
+local/grey-room-launch.json to the new acceptance while retaining its package;
+play_grey_room.py --check passed all53 files. Direct F6 keyboard interaction and
+new performance/garment certification are not claimed. Wolverine remains unchanged.
+
 ## October 24 - short-wide repair pin342a152; final acceptance pending
 
 Full grey96 padding candidate failed short/max-width cases669..674. Base now
