@@ -14,7 +14,9 @@ import install_modular_native as installer
 class ModularInstallTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.root = Path(self.temp.name)
+        # Windows may expose TEMP through an 8.3 account-name alias. The
+        # production backup contract deliberately requires canonical paths.
+        self.root = Path(self.temp.name).resolve()
         self.game, self.preview = self.root/'game', self.root/'preview'
         self.native = self.game/installer.PREFIX
         self.candidate = self.preview/installer.PREFIX
@@ -73,11 +75,55 @@ class ModularInstallTest(unittest.TestCase):
         self.assertTrue(self.install(validate_only=True)['validated'])
         self.assertEqual(before, self.receipt.read_bytes())
         result = self.install()
+        self.assertEqual(Path(result['backup']),self.root/'local/native-rollback-current')
         for row in self.old['files']:
             self.assertEqual(installer.digest(Path(result['backup'])/row['path']), row['sha256'])
         updated = json.loads(self.receipt.read_text())
         for row in updated['files']:
             self.assertEqual(installer.digest(self.game/row['path']), row['sha256'])
+
+    def test_fresh_custom_backup_keeps_exact_53_managed_files_and_old_backup(self):
+        # Real-sized receipt; unrelated licensed content must never be copied.
+        for i in range(48):
+            path=self.game/('managed/file-'+str(i))
+            path.parent.mkdir(exist_ok=True);path.write_bytes(('old-'+str(i)).encode())
+            self.old['files'].append(dict(path=path.relative_to(self.game).as_posix(),sha256=installer.digest(path)))
+        self.receipt.write_text(json.dumps(self.old))
+        (self.game/'licensed-content.bin').write_bytes(b'do not back up')
+        existing=self.root/'local/native-rollback-current';existing.mkdir()
+        (existing/'keep').write_bytes(b'previous accepted backup')
+        target=self.root/'native-rollback-hang-current'
+        before=self.receipt.read_bytes()
+        self.assertTrue(self.install(validate_only=True,backup_directory=target)['validated'])
+        self.assertFalse(target.exists());self.assertEqual(before,self.receipt.read_bytes())
+        result=self.install(backup_directory=target)
+        self.assertEqual(Path(result['backup']),target)
+        self.assertEqual((existing/'keep').read_bytes(),b'previous accepted backup')
+        self.assertEqual((target/'receipt.json').read_bytes(),before)
+        self.assertEqual(len(self.old['files']),53)
+        for row in self.old['files']:
+            self.assertEqual(installer.digest(target/row['path']),row['sha256'])
+        self.assertFalse((target/'licensed-content.bin').exists())
+        self.assertEqual(len([p for p in target.rglob('*') if p.is_file()]),55)
+
+    def test_custom_backup_rejects_existing_relative_escape_and_game_paths(self):
+        existing=self.root/'occupied';existing.mkdir();(existing/'keep').write_text('keep')
+        paths=[existing,Path('relative-backup'),self.root.parent/'outside-backup',self.game/'backup',self.preview/'backup']
+        for path in paths:
+            with self.subTest(path=path),self.assertRaisesRegex(ValueError,'Backup directory'):
+                self.install(validate_only=True,backup_directory=path)
+        with self.assertRaisesRegex(ValueError,'not both'):
+            self.install(validate_only=True,backup_directory=self.root/'new',rollback_preview=self.root/'old.json')
+        self.assertEqual((existing/'keep').read_text(),'keep')
+
+    def test_custom_backup_rejects_redirected_parent(self):
+        link=self.root/'redirect'
+        try:link.symlink_to(self.game,target_is_directory=True)
+        except OSError:
+            import _winapi
+            _winapi.CreateJunction(str(self.game),str(link))
+        with self.assertRaisesRegex(ValueError,'nonredirected|redirected'):
+            self.install(validate_only=True,backup_directory=link/'backup')
 
     def test_unmanaged_artifact_is_preserved(self):
         path = self.native/'geralt.modular'

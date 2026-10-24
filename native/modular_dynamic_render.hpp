@@ -1,6 +1,7 @@
 #pragma once
 #include <malemod/surface/modular_dynamic.hpp>
 #include <malemod/surface/compound_dynamic.hpp>
+#include <malemod/surface/compound_exterior.hpp>
 #include <malemod/surface/strip_lighting.hpp>
 #include <tuple>
 #include <map>
@@ -89,9 +90,11 @@ class ModularDynamicRenderer {
   templateNormals_.resize(mesh.points.size());templateGeometry_=geometry;useFixed_.resize(mesh.points.size(),0);nativeFixed_.resize(mesh.points.size());
   for(unsigned i=old;i<mesh.points.size();i++)templateNormals_[i]=geometry[i];
   for(auto sample:cache.supportSamples){auto f=support.faces.at(sample.parent);Vec n{},p{};bool fixed=true;for(unsigned k=0;k<3;k++){n=Add(n,Scale(templateNormals_[f[k].vertex],sample.donor[k]));p=Add(p,Scale(nativeFixed_[f[k].vertex],sample.donor[k]));if(sample.donor[k]>1e-10)fixed&=useFixed_[f[k].vertex]!=0;}templateNormals_[sample.vertex]=Unit(n);if(fixed){useFixed_[sample.vertex]=1;nativeFixed_[sample.vertex]=p;}}
-  // New patch uses its own geometric tangent, not a tangent inherited from a
-  // rotated source texture island. Keep mirrored source aliases separately.
-  for(unsigned i=0;i<mesh.faces.size();i++)if(cache.faces[i][0].domain==2){auto f=mesh.faces[i];auto& a=compoundAttributes_[i];auto p=Sub(mesh.points[f[1].vertex],mesh.points[f[0].vertex]),q=Sub(mesh.points[f[2].vertex],mesh.points[f[0].vertex]);
+  // Reconstruct the tangent frame from each actual retained/generated UV
+  // triangle. Donor interpolation across mirrored source charts can reverse
+  // the front midline's handedness even though its positions remain welded.
+  // Stock body faces retain their original measured material directions.
+  for(unsigned i=0;i<mesh.faces.size();i++)if(cache.faces[i][0].domain>0){auto f=mesh.faces[i];auto& a=compoundAttributes_[i];auto p=Sub(mesh.points[f[1].vertex],mesh.points[f[0].vertex]),q=Sub(mesh.points[f[2].vertex],mesh.points[f[0].vertex]);
    double u=a[1].uv[0]-a[0].uv[0],v=a[1].uv[1]-a[0].uv[1],x=a[2].uv[0]-a[0].uv[0],y=a[2].uv[1]-a[0].uv[1],det=u*y-v*x;
    if(std::abs(det)>1e-20){auto tangent=Scale(Sub(Scale(p,y),Scale(q,v)),1/det),bitangent=Scale(Sub(Scale(q,u),Scale(p,x)),1/det);for(unsigned k=0;k<3;k++){auto n=geometry[f[k].vertex];a[k].tangent=Unit(Sub(tangent,Scale(n,Dot(n,tangent))));a[k].sign=Dot(Cross(n,a[k].tangent),bitangent)<0?-1:1;}}
   }
@@ -145,7 +148,8 @@ class ModularDynamicRenderer {
   for(unsigned k=0;k<2;k++){row.uv[k]=Half(float(a.uv[k]));row.reflection[k]=Half(float(a.reflection[k]));}return row;
  }
  void Build(const State& state){
-  using namespace surface;cached_=mount_.Evaluate(asset_,plan_,state);cachedState_=state;auto& mesh=cached_->surface;templateGeometry_=Normals(mesh.points,mesh.faces);templateNormals_=templateGeometry_;useFixed_.assign(mesh.points.size(),0);nativeFixed_.assign(mesh.points.size(),{});
+  using namespace surface;cached_=compound_?compound_->EvaluateMount(mount_,asset_,plan_,state):mount_.Evaluate(asset_,plan_,state);
+  cachedState_=state;auto& mesh=cached_->surface;templateGeometry_=Normals(mesh.points,mesh.faces);templateNormals_=templateGeometry_;useFixed_.assign(mesh.points.size(),0);nativeFixed_.assign(mesh.points.size(),{});
   assetToSurface_.assign(asset_.rest.size(),~0u);
   for(auto c:cached_->moduleVertices)for(unsigned k=0;k<3;k++)if(c.donor[k]>1-1e-10)assetToSurface_[asset_.faces[c.parent][k]]=c.vertex;
   std::vector<std::optional<SurfaceJoinCorner>> donors(mesh.points.size());
@@ -301,7 +305,16 @@ class ModularDynamicRenderer {
   }}const auto built=std::chrono::steady_clock::now();
   std::array<double,4> poseMs{};
   std::vector<Vec> beforeRelief,detailNormals,posedAsset;auto points=mount_.Repose(compoundCache_?*supportCache_:*cached_,asset_,plan_,state,&beforeRelief,&detailNormals,&poseMs,compoundCache_?&posedAsset:nullptr);
-  if(compoundCache_){auto source=compound_->Source(posedAsset,state);beforeRelief=compoundCache_->Evaluate(source,beforeRelief);points=compoundCache_->Evaluate(source,points);detailNormals.resize(points.size());}
+  double suspensionProfileFraction=1;Vec suspensionContact{};
+  if(compoundCache_){
+   auto source=compound_->Source(posedAsset,state);auto support=points,smoothSupport=beforeRelief;
+   beforeRelief=compoundCache_->Evaluate(source,beforeRelief,nullptr,state.sectionRadius);points=compoundCache_->Evaluate(source,points,&suspensionProfileFraction,state.sectionRadius,&suspensionContact);
+   const auto material=state.shaftMaterial?surface::modular::SocketMaterialState(state,cached_->materialRoot):state;
+   std::vector<Vec> guide;for(unsigned j=1;j<=12;j++)guide.push_back(Add(material.frames[j].origin,cached_->fitTranslation));
+   ConformCompoundExterior(points,compoundCache_->rings,support,compoundCache_->supportFaces,compoundCache_->supportContactEligible,guide,plan_.Arena());
+   ConformCompoundExterior(beforeRelief,compoundCache_->rings,smoothSupport,compoundCache_->supportFaces,compoundCache_->supportContactEligible,guide,plan_.Arena());
+   detailNormals.resize(points.size());
+  }
   const auto posed=std::chrono::steady_clock::now();
   auto pair=controlTopology_->normals->Pair(points,beforeRelief,plan_.Arena());
   auto geometric=std::move(pair.first),smoothGeometry=std::move(pair.second);std::vector<Vec> normals(points.size());
@@ -379,12 +392,15 @@ class ModularDynamicRenderer {
   frame->controlFrame.root=Add(state.frames[1].origin,cached_->fitTranslation);
   if(state.shaftMaterial)frame->controlFrame.root=Add(surface::modular::SocketMaterialState(state,cached_->materialRoot).shapeFrames[1].origin,cached_->fitTranslation);
   frame->controlFrame.tip=Add(state.frames[12].origin,cached_->fitTranslation);
-  frame->controlFrame.lobes=Add(Scale(Add(state.frames[13].origin,state.frames[14].origin),.5),Add(cached_->fitTranslation,cached_->suspensionTranslation));
+  frame->controlFrame.lobes=Add(Scale(Add(state.frames[13].origin,state.frames[14].origin),.5),Add(cached_->fitTranslation,Add(cached_->suspensionTranslation,suspensionContact)));
   frame->controlFrame.bodyOrigin=cached_->anchor;frame->controlFrame.basis=state.shapeFrames[1].basis;
   frame->controlFrame.radius=state.sectionRadius;frame->controlFrame.bodyRadius=controlBodyRadius_;
+  frame->controlFrame.suspensionLiftCapacity=cached_->suspensionLiftCapacity;
+  frame->suspensionProfileFraction=suspensionProfileFraction;
+  if(compoundCache_)frame->suspensionForward=compoundCache_->suspensionForward;
   if(state.shaftMaterial){auto material=surface::modular::SocketMaterialState(state,cached_->materialRoot);for(unsigned i=1;i<=12;i++)frame->frames[i]=material.frames[i];}
   for(unsigned i=1;i<15;i++)frame->frames[i].origin=Add(frame->frames[i].origin,cached_->fitTranslation);
-  for(unsigned i=13;i<15;i++)frame->frames[i].origin=Add(frame->frames[i].origin,cached_->suspensionTranslation);
+  for(unsigned i=13;i<15;i++)frame->frames[i].origin=Add(frame->frames[i].origin,Add(cached_->suspensionTranslation,suspensionContact));
   for(unsigned i=1;i<15;i++){frame->frames[i].origin=contract_.calibration.PointToTarget(frame->frames[i].origin);for(auto& v:frame->frames[i].basis)v=contract_.calibration.VectorToTarget(v);}
 
   for(unsigned index=0;index<4;index++){const auto& layout=layouts_[index];auto& part=frame->parts[index];part.resource=layout.resource;part.lod=layout.lod;part.carrierFirst=layout.first;part.carrierCount=layout.count;part.indices=layout.indices;part.presentation=layout.presentation;part.controlVertices=layout.controlVertices;part.vertices.reserve(layout.rows.size());const auto& r=contract_.resources[layout.resource];

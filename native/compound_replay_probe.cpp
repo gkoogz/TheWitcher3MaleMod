@@ -22,7 +22,7 @@ int main(int argc,char** argv){try{
  if(std::getenv("MALEMOD_REPLAY_SUPPORT")){
   modular::Asset asset(argv[1]);auto plan=asset.MakePlan();modular::DynamicMount mount(argv[5]);CompoundDynamicPlan compound(mount.compoundData,asset,mount);
   auto geometry=modular::RestMaterialState(asset.bindings,state);
-  auto support=mount.Evaluate(asset,plan,geometry);auto input=compound.PrepareSupport(support,asset,geometry);
+  auto support=compound.EvaluateMount(mount,asset,plan,geometry);auto input=compound.PrepareSupport(support,asset,geometry);
   std::cerr<<"Support anchor "<<support.anchor[0]<<','<<support.anchor[1]<<','<<support.anchor[2]<<" authored "<<mount.origin[0]<<','<<mount.origin[1]<<','<<mount.origin[2]<<'\n';
   std::ofstream out(std::string(argv[10])+"-cut.bin",std::ios::binary);std::array<unsigned,3> n{unsigned(support.surface.points.size()),unsigned(input.faces.size()),unsigned(compound.reference.footprint.size())};out.write(reinterpret_cast<const char*>(n.data()),12);
   out.write(reinterpret_cast<const char*>(support.surface.points.data()),n[0]*24);out.write(reinterpret_cast<const char*>(input.faces.data()),n[1]*12);out.write(reinterpret_cast<const char*>(input.chart.data()),n[0]*16);for(bool b:input.eligible){unsigned char e=b;out.write(reinterpret_cast<const char*>(&e),1);}out.write(reinterpret_cast<const char*>(compound.reference.footprint.data()),n[2]*16);
@@ -46,7 +46,13 @@ int main(int argc,char** argv){try{
   std::ofstream differentialFile(std::string(argv[10])+"-differentials.bin",std::ios::binary);
   unsigned columns=unsigned(firstHandle.size());differentialFile.write(reinterpret_cast<const char*>(&columns),4);
   for(const auto* field:{&liveSourceFrames,&liveSupportFrames,&firstHandle,&lastHandle})differentialFile.write(reinterpret_cast<const char*>(field->data()),field->size()*24);
-  writeMesh("-posed.obj",cache.Evaluate(compound.Source(liveAsset,state),liveSupport));
+  auto connected=cache.Evaluate(compound.Source(liveAsset,state),liveSupport,nullptr,state.sectionRadius);
+  writeMesh("-unconstrained.obj",connected);
+  auto material=state.shaftMaterial?modular::SocketMaterialState(state,support.materialRoot):state;
+  std::vector<PresentationPoint> guide;for(unsigned j=1;j<=12;j++)guide.push_back(Add(material.frames[j].origin,support.fitTranslation));
+  auto contacts=ConformCompoundExterior(connected,cache.rings,liveSupport,cache.supportFaces,cache.supportContactEligible,guide);
+  std::cerr<<"Exterior contact vertices "<<contacts<<'\n';
+  writeMesh("-posed.obj",connected);
   std::cerr<<"Root scale "<<geometry.scales[1][1]/asset.reference.scales[1][1]<<"\n";
  }
  auto first=renderer.Evaluate(state);auto moving=state;moving.frames[13].origin[2]-=.4;auto second=renderer.Evaluate(moving);

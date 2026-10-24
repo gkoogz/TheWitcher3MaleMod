@@ -27,7 +27,9 @@ int wmain(int argc,wchar_t** argv){
      if(q.reset&&session)throw std::invalid_argument("Reset requires a new isolated worker process");
      if(p.operation==3&&session)throw std::invalid_argument("Worker initialization is one-shot");
      if(!session){
-#if defined(MALEMOD_STOCK_ANCHOR_PREVIEW) || defined(MALEMOD_DILATING_COLLAR)
+#if defined(MALEMOD_WORKER_TARGET_OWNS_COLLAR) || defined(MALEMOD_STOCK_ANCHOR_PREVIEW) || defined(MALEMOD_DILATING_COLLAR)
+      // The modular target owns its recruited attachment. Use Base's explicit
+      // ownership contract even when no experimental renderer flag is enabled.
       session=std::make_unique<surface::Session>(q.controls,surface::Point{9.f,0.f,84.3f},true);
 #else
       session=std::make_unique<surface::Session>(q.controls);

@@ -23,7 +23,8 @@ def compile_merged(workspace):
     for source in (workspace/'scripts').rglob('*.ws'):names.update(re.findall(r'import function (MaleMod\w+)\(',source.read_text()))
     return compile_native(workspace,tuple(sorted(names)))
 
-def prepare(root_review=False, angle_sweep=False, side_profile=False, repair_review=False,physics_review=False,physics_motion=False,modular_review=False,lod_review=False,shape_review=False,lod_level=1,distant_review=False,hang_review=False,skin_review=False,cadence_review=False):
+def prepare(root_review=False, angle_sweep=False, side_profile=False, repair_review=False,physics_review=False,physics_motion=False,modular_review=False,lod_review=False,shape_review=False,lod_level=1,distant_review=False,hang_review=False,skin_review=False,cadence_review=False,motion_default=False):
+    if motion_default:physics_motion=repair_review=True
     if distant_review or hang_review or skin_review or cadence_review:modular_review=True
     platform=ROOT/'probes/native/iteration_platform.ws'
     cases=ROOT/'probes/native'/('collar_physics_cases.ws' if physics_review else 'collar_repair_cases.ws' if repair_review else 'collar_profile_cases.ws' if side_profile else 'collar_angle_sweep_cases.ws' if angle_sweep else 'collar_root_cases.ws' if root_review else 'collar_cases.ws')
@@ -42,6 +43,9 @@ def prepare(root_review=False, angle_sweep=False, side_profile=False, repair_rev
         case_text=case_text.replace('maleModCollarStage >= 96','maleModCollarStage >= 9').replace('maleModCollarStage>=96','maleModCollarStage>=9').replace('caseIndex=maleModCollarStage/3','caseIndex=29+maleModCollarStage/3')
     if physics_motion:
         cases=ROOT/'probes/native/physics_motion_cases.ws';case_text=cases.read_text()
+        if motion_default:
+            case_text,count=re.subn(r'MaleModNativeSetControl\((\d+),[\d.]+\)',lambda m:f'MaleModNativeSetControl({m[1]},{"2.0" if m[1]=="0" else "50.0"})',case_text)
+            if count!=18:raise ValueError('Default motion preset must set all 18 controls')
     if lod_review:
         # Official engine API, declared in REDkit engine/world.ws. This changes
         # native LOD selection in the isolated process, not our skin palette.
@@ -95,6 +99,8 @@ def prepare(root_review=False, angle_sweep=False, side_profile=False, repair_rev
         directory=ROOT/'build/collar-sessions/skin-folds';workspace=directory/'workspace';source=workspace/'scripts/local/malemod/collar_integrity.ws'
     if cadence_review:
         directory=ROOT/'build/collar-sessions/modular-cadence';workspace=directory/'workspace';source=workspace/'scripts/local/malemod/collar_integrity.ws'
+    if motion_default:
+        directory=ROOT/'build/collar-sessions/physics-motion-default';workspace=directory/'workspace';source=workspace/'scripts/local/malemod/collar_integrity.ws'
     if lod_review:
         directory=directory.with_name(directory.name+'-engine-lod'+str(lod_level));workspace=directory/'workspace';source=workspace/'scripts/local/malemod/collar_integrity.ws'
     source.parent.mkdir(parents=True,exist_ok=True);source.write_text(text+'\n'+case_text)
@@ -141,4 +147,5 @@ if __name__=='__main__':
     p.add_argument('--lod-level',type=int,choices=(0,1,2),default=1,help='Official engine override value; actual selected LOD must be observed in GPU completion records')
     modes.add_argument('--physics-review',action='store_true',help='Attachment matrix followed by 24 same-control walking frames')
     modes.add_argument('--physics-motion',action='store_true',help='36 same-control native walking/decay frames at the user settings')
-    a=p.parse_args();campaign() if a.campaign else prepare(a.root_review,a.angle_sweep,a.side_profile,a.repair_review or a.physics_review or a.physics_motion,a.physics_review,a.physics_motion,a.modular_review,a.lod_review,a.shape_review,a.lod_level,a.distant_review,a.hang_review,a.skin_review,a.cadence_review)
+    modes.add_argument('--default-motion',action='store_true',help='36 full-floppy walking/decay frames with all shape and response sliders at 50')
+    a=p.parse_args();campaign() if a.campaign else prepare(a.root_review,a.angle_sweep,a.side_profile,a.repair_review or a.physics_review or a.physics_motion,a.physics_review,a.physics_motion,a.modular_review,a.lod_review,a.shape_review,a.lod_level,a.distant_review,a.hang_review,a.skin_review,a.cadence_review,a.default_motion)

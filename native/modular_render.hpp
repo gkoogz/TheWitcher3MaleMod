@@ -1,4 +1,5 @@
 #pragma once
+#include <malemod/surface/suspension_skin_frame.hpp>
 #include "render_contract.hpp"
 #include "skin_output.hpp"
 #include <malemod/surface/modular_asset.hpp>
@@ -46,6 +47,8 @@ struct ModularFrame {
  std::shared_ptr<const ModularControlTopology> controlTopology;
  std::vector<surface::PresentationPoint> controlPoints;
  surface::LiveControlFrame controlFrame;
+ double suspensionProfileFraction=1;
+ surface::PresentationPoint suspensionForward{};
  std::vector<surface::LiveControlTangents> controlTangents;
 };
 }
@@ -137,8 +140,13 @@ class ModularRenderer {
     state.shapeFrames=materialFrames_;state.materialBindings=materialBindings_;state.shaftMaterial=shapePoints_;state.crownWeights=crownWeights_;
     surface::modular::AnchorRootPhysics(state,source.proximalRadius,source.restLength);surface::modular::PreserveMaterialLengths(state);
    }
-   if(source.anatomy.positions.empty()){
+   if(shape){
     if(!shapePoints_||!shape)throw std::invalid_argument("Compact mechanics needs prepared morphology");
+    const auto envelope=surface::SuspensionEnvelopeFrames({materialFrames_[13],materialFrames_[14]},
+      {surface::Precise(shape->lobeAnchors[0]),surface::Precise(shape->lobeAnchors[1])},
+      {state.frames[13].origin,state.frames[14].origin},
+      {surface::Precise(source.lobeAnchors[0]),surface::Precise(source.lobeAnchors[1])});
+    for(unsigned i=0;i<2;i++)state.frames[13+i]=envelope[i];
     transfer_->ApplyPrepared(asset_,state,materialState_,*shapePoints_);
    }else transfer_->Apply(asset_,plan_,state,source,[&](auto p){return flow.Apply(p);},!shape);
   }

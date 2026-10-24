@@ -16,12 +16,16 @@ inline std::shared_ptr<const ModularFrame> PresentLiveControls(
  auto out=std::make_shared<ModularFrame>(*input);
  const auto& before=input->controlPoints;
  LiveControlDeformation morph(input->controlFrame,authored,requested);
- auto after=before;
- arena.For(unsigned(after.size()),[&](unsigned i){after[i]=morph.Point(before[i],topology.bindings[i]);});
+ auto unprofiled=before;
+ const bool reshape=!topology.compoundRings.empty()&&authored.values[6]!=requested.values[6];
+ if(reshape)ShapeSuspensionStrip(unprofiled,topology.compoundRings,topology.compoundParameters,authored.values[6],1,input->suspensionProfileFraction,input->suspensionForward);
+ auto after=unprofiled;
+ arena.For(unsigned(after.size()),[&](unsigned i){after[i]=morph.Point(unprofiled[i],topology.bindings[i]);});
  DeformLiveControlDonors(topology.bodyDonors,before,after);
  DeformLiveControlLofts(morph,topology.bindings,topology.lofts,input->controlTangents,before,after,&arena,0,topology.compoundLoftStart);
  DeformLiveControlDonors(topology.compoundDonors,before,after);
- TranslateLiveControlLofts(topology.lofts,before,after,topology.compoundLoftStart,&arena);
+ TranslateLiveControlLofts(topology.lofts,unprofiled,after,topology.compoundLoftStart,&arena);
+ if(reshape)out->suspensionProfileFraction=ShapeSuspensionStrip(after,topology.compoundRings,topology.compoundParameters,1,requested.values[6],1,input->suspensionForward);
  // The input already contains the fitted, orientation-limited entry fillet.
  // Transport that material; fitting it again is not an identity operation
  // and can reverse cleaned triangles even for a one-step slider change.

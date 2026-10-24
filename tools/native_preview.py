@@ -1,5 +1,6 @@
 """Private native runtime copies; never replace the managed game installation."""
 import argparse
+import json
 import os
 import re
 from pathlib import Path
@@ -61,13 +62,111 @@ def session_game(receipt):
     return load_preview(receipt['nativePreview'], receipt['nativePreviewSHA256'], False)[0]
 
 
+def _rebased_manifest_data(data, manifest, manifest_hash, receipt, installation_hash):
+    return dict(data, installationReceiptSHA256=installation_hash, candidateAccepted=False,
+                previousManifest=str(manifest), previousManifestSHA256=manifest_hash,
+                previousClosedSession=str(receipt), previousClosedSessionSHA256=digest(receipt),
+                rebaseReason='Closed candidate matches every currently managed installed file')
+
+
+def _closed_refresh_binding(manifest, receipt, session):
+    """Accept the original room receipt once for an unchanged rebased manifest."""
+    bound = Path(session.get('nativePreview', '')).resolve()
+    if bound == manifest:
+        return True
+    _, data = load_preview(manifest, verify_files=False)
+    origin = Path(data.get('previousManifest', '')).resolve()
+    if (bound != origin or data.get('previousClosedSession') != str(receipt)
+            or data.get('previousClosedSessionSHA256') != digest(receipt)
+            or data.get('previousManifestSHA256') != session.get('nativePreviewSHA256')):
+        return False
+    _, original = load_preview(origin, session.get('nativePreviewSHA256'), verify_files=False)
+    expected = _rebased_manifest_data(original, origin, session['nativePreviewSHA256'],
+                                      receipt, digest(ROOT/'local/native-installation.json'))
+    # Exact reconstructed equality forbids reusing this inherited receipt after
+    # any candidate refresh or manifest edit. Historical files remain immutable.
+    return data == expected
+
+
+def rebase_installed_preview(manifest, receipt):
+    """Reuse a closed, now-installed preview via a new immutable-history manifest.
+
+    This only advances the installation baseline when every managed installed
+    file is already identical to the private candidate. It copies no game data
+    and never changes the original manifest, its proofs, or either game tree.
+    """
+    manifest, receipt = Path(manifest).resolve(), Path(receipt).resolve()
+    session = read_json(receipt)
+    original_hash = digest(manifest)
+    if (not session.get('closed')
+            or not (session.get('audioRestored') or session.get('audioSessionsGone'))
+            or not session.get('iterationWorldFilesRemoved')
+            or Path(session.get('nativePreview', '')).resolve() != manifest
+            or session.get('nativePreviewSHA256') != original_hash):
+        raise ValueError('Preview rebase needs its exact verified closed room receipt')
+    running = subprocess.check_output(
+        ['tasklist', '/FI', 'IMAGENAME eq witcher3.exe', '/FO', 'CSV', '/NH'],
+        creationflags=subprocess.CREATE_NO_WINDOW, text=True)
+    if 'witcher3.exe' in running.lower():
+        raise ValueError('Close the game before rebasing the private preview')
+    # Retain ownership, manifest/game, source-game and licensed-content checks.
+    # The historical receipt hash is expected to differ after installation.
+    game, data = load_preview(manifest, original_hash, verify_files=False)
+    stock = settings()['game']
+    if game == stock.resolve():
+        raise ValueError('Preview must remain separate from the installed game')
+    installation = ROOT/'local/native-installation.json'
+    installed_hash = digest(installation)
+    installed = read_json(installation)
+    if Path(installed['game']) != stock:
+        raise ValueError('Managed game path differs')
+    preview_rows = {}
+    for item in data['files']:
+        relative = relative_resource(item['path'])
+        key = relative.as_posix().casefold()
+        if key in preview_rows:
+            raise ValueError('Duplicate preview file: '+item['path'])
+        target = game/relative
+        if (target.resolve() != target or not target.is_file()
+                or target.is_symlink() or target.stat().st_nlink != 1):
+            raise ValueError('Preview file is not an owned regular copy: '+item['path'])
+        if digest(target) != item['sha256']:
+            raise ValueError('Preview file changed: '+item['path'])
+        preview_rows[key] = item['sha256']
+    managed = set()
+    for item in installed['files']:
+        relative = relative_resource(item['path'])
+        key = relative.as_posix().casefold()
+        if key in managed:
+            raise ValueError('Duplicate managed file: '+item['path'])
+        managed.add(key)
+        if preview_rows.get(key) != item['sha256']:
+            raise ValueError('Installed runtime differs from preview: '+item['path'])
+        if digest(stock/relative) != item['sha256']:
+            raise ValueError('Managed runtime changed: '+item['path'])
+    if not managed:
+        raise ValueError('Cannot rebase an empty managed installation')
+    executable = 'bin/x64_dx12/witcher3.exe'
+    if executable not in preview_rows or digest(game/executable) != digest(stock/executable):
+        raise ValueError('Preview executable differs from licensed game')
+    if digest(manifest) != original_hash or digest(installation) != installed_hash:
+        raise ValueError('Preview or installation identity changed during rebase')
+    data = _rebased_manifest_data(data, manifest, original_hash, receipt, installed_hash)
+    result = manifest.parent/('preview-'+str(time.time_ns())+'.json')
+    # Exclusive creation also prevents a clock collision from replacing history.
+    with result.open('x', encoding='utf-8', newline='\n') as handle:
+        handle.write(json.dumps(data, indent=2)+'\n')
+    load_preview(result)
+    return result
+
+
 def refresh_closed(manifest, receipt, dll, worker=None, material_package=None):
     """Refresh binaries and an existing bounded material package in place."""
     manifest, receipt = Path(manifest).resolve(), Path(receipt).resolve()
     session = read_json(receipt)
     if (not session.get('closed') or not (session.get('audioRestored') or session.get('audioSessionsGone'))
             or not session.get('iterationWorldFilesRemoved')
-            or Path(session.get('nativePreview', '')).resolve() != manifest):
+            or not _closed_refresh_binding(manifest, receipt, session)):
         raise ValueError('Preview refresh needs its verified closed room receipt')
     running = subprocess.check_output(
         ['tasklist', '/FI', 'IMAGENAME eq witcher3.exe', '/FO', 'CSV', '/NH'],

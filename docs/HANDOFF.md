@@ -1,3 +1,74 @@
+## October 24 - three-issue repair, clean source; native material review pending
+
+User authorized finishing the suspension work, correcting inward shaft overlap
+and front discoloration, and reducing Full Floppy folding while retaining flex.
+Installation is authorized only after actual native acceptance. Nothing from this
+repair has been installed. All 53 current managed files remain exact.
+
+Base 0136ca81ece649e0a5ed16ffcb4426d46eedd0c8 supplies coherent connected outer-sac
+transport, measured unilateral suspension clearance, original shaft-envelope
+contact, parallel-transported shaft sections and target-owned Full Floppy bend
+compliance x0.4. It also repairs flat source normal-map voids and the compressed
+diffuse padding sampled by the retained front midline. Original UVs and other
+texture pixels remain intact. Native retained tangent frames now derive from
+their actual UV triangles. Binding/authoring revision431e626 remains unchanged.
+
+Private clean DLL c1b072cc4a6c79a08da223e4506a666a4586ade4718c034660cace5e02abe5a2
+and current worker are under hang-review/current-preview.json. Material package
+publish/20261024-121015-4e6efd contains the padding correction. Full grey review
+is running under hang-review/padding-review; campaign and complete visual review
+are still pending. A longer wall-clock monitor budget leaves simulation timing
+unchanged. Do not infer acceptance from the package/build or frame count.
+
+Default Full Floppy/all50 side walking and free decay completed 36 captured
+frames in sealed-session-20261024-115443. Visual review observes flexible smooth
+bending without sharp folds. Source paired480-step tests reduce mean turning by
+27.5%, peak25.8%; states0/1 remain byte-identical. Captured walking630 connector
+has zero offline intersections/overlaps/degeneracies with the coherent envelope.
+Base13 modular tests and17 material tests pass. Adapter preview21, adoption3 and
+installer15 tests pass; the latter uses resolved Windows temporary paths.
+
+Rejected candidates and closed receipts remain under hang-review/repair-current,
+repair-contact, repair-exterior, final-review and tangent-review. In particular,
+tangent-review stopped after the native front view confirmed a diffuse stripe;
+its old material cannot authorize installation. The interrupted final-review
+session was recovered with saves verified and no remaining private audio session;
+ordinary audio restoration there was unobserved. Later sessions closed normally.
+
+Clean source proof: Base/build/physical-reaction-source-proof-0136ca8/proof.json.
+Both build diagnostic opt-ins are OFF. Ordered worker adoption is being recorded
+under hang-review/solid-worker-adoption. Freeze source/build manifest and exact
+coupled final grey/campaign evidence before using the maintained installer with
+fresh managed-only rollback path Work/witcher/native-rollback-hang-current.
+Refresh the installed Steam platform proof afterward. Wolverine remains untouched.
+
+## October 23 - Hang candidate: front cuff fixed, posterior motion fold pending
+
+Read Base's current Hang checkpoint. Current private candidate uses Base
+9a85ee83f53228376cec39bb2a0d45d865185cd1, target-owned numerical worker
+c332bf434867070a8ef9335fcc87086bb544216a1e5529878e9b2478367bb669, and material
+package publish/20261023-035534-6e834d. The numerical library stays at verified
+5ae173f. Worker ownership is now explicit in worker.lock.json; schema-2 adoption
+proof in Work/witcher/hang-review/target-owned-worker-adoption-v3 binds five
+regressions, including independent target-mode API and legacy reference tests.
+
+All 36 native Hang cases completed in sealed-session-20261023-055919 / PID7848.
+The source-entry all-strip fallback was the actual front cuff cause, and the
+new local fallback repairs it. Wrong worker ownership caused the minimum-size
+backward shaft folding; that is corrected too. Walking630/633 still exposes a
+posterior triangular skin fold. candidate-v4/candidate-native.json explicitly
+records visualPass=false. No Hang changes installed; final grey96/campaign39
+and full visual acceptance are pending. Preserve current accepted runtime.
+
+Active preview descriptor: D:/MaleMod/Work/witcher/hang-review/current-preview.json.
+Latest closed receipt for refresh is 055919. All work remains under Work.
+Existing local/native-rollback-current is an older runtime, not exact rollback
+for today's installation. Maintained installer now supports a fresh guarded
+--backup-directory for managed files only; planned path is
+D:/MaleMod/Work/witcher/native-rollback-hang-current. Do not overwrite old backups.
+After eventual accepted installation, rerun the installed platform proof and
+refresh local/grey-room-launch.json before play_grey_room.py --check.
+
 ## October 23 - Steam grey-room proof refreshed after installation
 
 The installed compound repair is delivered (see the October 23 installation

@@ -23,9 +23,12 @@ def main():
     p.add_argument("--package", type=Path)
     p.add_argument("--preview", type=Path, help="Reuse an already prepared, verified preview")
     p.add_argument("--resume", type=Path, help="Resume monitoring an exact unfinished campaign receipt")
-    p.add_argument("--case", default="modular-cadence", choices=("modular-cadence", "modular-review", "shape-review", "physics-motion", "campaign"))
+    p.add_argument("--case", default="modular-cadence", choices=("modular-cadence", "modular-review", "shape-review", "physics-motion", "physics-motion-default", "campaign"))
     p.add_argument("--last-stage", type=int, default=1239)
+    p.add_argument("--timeout-seconds", type=float, help="Wall-clock budget for a complete native sequence; does not change simulation timing")
     a = p.parse_args()
+    if a.timeout_seconds is not None and not 0<a.timeout_seconds<=7200:
+        raise ValueError('Native monitor timeout must be positive and at most two hours')
     a.output = a.output.resolve()
     work = (ROOT / "build").resolve().parent
     if not a.output.is_relative_to(work):
@@ -89,7 +92,7 @@ def main():
     ))
     trace = Path(session["modulePath"]).parent / (
         f'verification-{session["observations"]["processID"]}.jsonl')
-    deadline = time.monotonic() + (900 if a.case in ("modular-review","campaign") else 600)
+    deadline = time.monotonic() + (a.timeout_seconds or (900 if a.case in ("modular-review","campaign") else 600))
     rows = []
     shots = []
     try:
@@ -102,7 +105,7 @@ def main():
             if a.last_stage in stages:
                 # The script requests its last screenshot after recording the
                 # checkpoint. Do not close the game before the PNG completes.
-                expected_shots = {"modular-cadence": 7, "modular-review": 97, "shape-review": 19, "physics-motion": 37, "campaign": 39}[a.case]
+                expected_shots = {"modular-cadence": 7, "modular-review": 97, "shape-review": 19, "physics-motion": 37, "physics-motion-default": 37, "campaign": 39}[a.case]
                 capture_deadline = time.monotonic() + 30
                 while time.monotonic() < capture_deadline:
                     shots = sorted((p for p in (Path.home() / "Documents/The Witcher 3/screenshots").glob("*.png")

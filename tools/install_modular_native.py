@@ -1,6 +1,7 @@
 """Install a hash-bound modular candidate only after its recorded native gate."""
 import json
 import shutil
+import stat
 import subprocess
 import time
 from pathlib import Path
@@ -143,7 +144,28 @@ def verified_existing_rollback(preview_path, previous, game, candidate_game):
     return root
 
 
-def install_modular_native(cfg, preview_path, proof_path, validate_only=False, rollback_preview=None):
+def fresh_backup_directory(path, game, candidate_game):
+    """Only accept a new, nonredirected managed-file backup inside consolidated Work."""
+    target = Path(path)
+    owner = (ROOT/'build').resolve().parent
+    if (not target.is_absolute() or target.resolve() != target
+            or not target.is_relative_to(owner) or target == owner
+            or target.exists() or target.is_symlink() or not target.parent.is_dir()):
+        raise ValueError('Backup directory must be fresh, absolute and nonredirected under consolidated Work')
+    for root in (game.resolve(), candidate_game.resolve()):
+        if target.is_relative_to(root) or root.is_relative_to(target):
+            raise ValueError('Backup directory must not overlap either game')
+    for parent in target.parents:
+        if parent == owner:break
+        attributes = getattr(parent.lstat(), 'st_file_attributes', 0)
+        if parent.is_symlink() or attributes & getattr(stat, 'FILE_ATTRIBUTE_REPARSE_POINT', 0x400):
+            raise ValueError('Backup directory may not traverse redirected storage')
+    return target
+
+
+def install_modular_native(cfg, preview_path, proof_path, validate_only=False, rollback_preview=None, backup_directory=None):
+    if rollback_preview is not None and backup_directory is not None:
+        raise ValueError('Choose an existing rollback preview or a fresh backup directory, not both')
     preview_path, proof_path = Path(preview_path).resolve(), Path(proof_path).resolve()
     source_game, preview = load_preview(preview_path)
     proof = validate_gate(proof_path, preview_path)
@@ -203,6 +225,7 @@ def install_modular_native(cfg, preview_path, proof_path, validate_only=False, r
             raise ValueError('Unreviewed numerical/native dependency changed: '+name)
     verify_native_compatibility(game, native)
     existing_backup = verified_existing_rollback(rollback_preview, previous, game, source_game) if rollback_preview else None
+    custom_backup = fresh_backup_directory(backup_directory, game, source_game) if backup_directory is not None else None
     if validate_only:
         return {'validated': True, 'replacements': list(replacements)}
     query = subprocess.run(['powershell', '-NoProfile', '-NonInteractive', '-Command',
@@ -218,8 +241,10 @@ def install_modular_native(cfg, preview_path, proof_path, validate_only=False, r
     protected = {p: digest(p) for p in protected if p.is_file()}
     # One accepted managed runtime, not another dated game/restore-image bank.
     # Never overwrite it implicitly; source backups belong in GitHub.
-    backup = existing_backup or ROOT/'local/native-rollback-current'
+    backup = existing_backup or custom_backup or ROOT/'local/native-rollback-current'
     if not existing_backup:
+        if custom_backup is not None:
+            fresh_backup_directory(custom_backup, game, source_game)
         backup.mkdir()
         for rel, row in old.items():
             target = backup/rel
