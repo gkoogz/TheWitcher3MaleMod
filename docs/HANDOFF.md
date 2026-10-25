@@ -1,3 +1,18 @@
+## Verified v2 starting checkpoint
+
+Four official stock Geralt body exports completed with native skin/LOD manifests.
+The direct canonical reference built and evaluated all three states for120frames
+each:17528anatomy vertices,35000triangles and both coupled body resources.
+Base reference harness commit bf51be28c6ced7f34f63014c1c79379d84a39d4d is
+pinned explicitly. See provenance/v2-start.json for source-level verification.
+
+Portable room inventory and existing native launch preflight pass, including
+all53managed installed files. Ten room save/packaging tests pass. No new game
+session was launched; prior native room acceptance was not relabeled. No v2
+attachment/runtime/garment/performance acceptance is claimed. Active Witcher
+source is committed locally; Base's pre-existing dirty experiments remain
+preserved and are not inputs to the canonical numerical reference.
+
 # October 24 - v1 archived; Wolverine-parity v2 begun
 
 The latest user instruction retires all Witcher v1 work except the grey room.

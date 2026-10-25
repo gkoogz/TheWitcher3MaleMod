@@ -1,0 +1,39 @@
+{
+  "schema": "malemod.witcher-v2-start/1",
+  "userDate": "2026-10-24",
+  "archive": "provenance/v1-archive.json",
+  "geraltProfileSHA256": "1f8ae35ecd14b406a8495bd107eb757c1cc6f805d3b785ead66f763b5a9aab7f",
+  "referenceLockSHA256": "3ee6e599608e1be485305f5d0c3b82011404ea5c39f84751ce25edb19c839473",
+  "nativeStockExports": 4,
+  "referenceCases": [
+    {
+      "state": 0,
+      "frames": 120,
+      "vertices": 17528,
+      "triangles": 35000
+    },
+    {
+      "state": 1,
+      "frames": 120,
+      "vertices": 17528,
+      "triangles": 35000
+    },
+    {
+      "state": 2,
+      "frames": 120,
+      "vertices": 17528,
+      "triangles": 35000
+    }
+  ],
+  "portableRoomSourceInventoryPassed": true,
+  "roomLaunchPreflightPassed": true,
+  "roomManagedFilesVerified": 53,
+  "savePackagingTestsPassed": 10,
+  "geraltGraftImplemented": false,
+  "garmentPortImplemented": false,
+  "observedV2Gameplay": false,
+  "performanceParityPassed": false,
+  "attachmentGatePassed": false,
+  "installedGamesChanged": false,
+  "archivesPushed": false
+}
