@@ -1,0 +1,2757 @@
+{
+  "schema": "malemod.witcher-v2-wolverine-reference/1",
+  "checkouts": {
+    "wolverine": "../XMenOriginsWolverineMaleMod",
+    "wolverineBase": "../Work/dependencies/base-wolverine",
+    "base": "../MaleMod"
+  },
+  "commits": {
+    "wolverine": "f9e19c41ec5412c974c3f3405f14562cc39598a2",
+    "wolverineBase": "47023a7f53d794cff84f2f423ba6a7d1fb98ec0f",
+    "base": "d0941cea47f17e25fce73414219fc45dad8a1be5"
+  },
+  "installedRuntimeSHA256": "25ca1204061a0a7c0bcdc7943031d8ac8263a1d12c9b4c588efb64d3339ba3fa",
+  "installedRuntimeRebuilt": false,
+  "files": [
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/anatomy_basis_data.h",
+      "sha256": "c9c25eea2c765dd9a044e37563e81f84c132ca3bfe11a2e66c09380fc4faed9d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/anatomy_contact_trace.inl",
+      "sha256": "b9046f4d850b353c308a19fcb4b4d3fa672e72178cf93a78db8876754819a0b4"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/anatomy_surface.h",
+      "sha256": "2aae794db2a73099461c70920e4f501b9cfcd20e2f53a00e439f86fb22574910"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/anterior_body_adapter.h",
+      "sha256": "a2625af002365e5f9e693f2ad364b619932cf1c20c2e7ccc725eb198a8a00947"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/anterior_envelope_adapter.h",
+      "sha256": "8c03995578976627dcd3aee75fa61400a8ad1e2504658fc4d3711df098b838f9"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/axial_raphe.h",
+      "sha256": "49ea9fbe2d72d9d9cf0071a11f9d55a2a92f79be8970b103bca91e41df87e043"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/body_attachments.h",
+      "sha256": "7c3ca3e742f70da6573c6b2998d6c8411e8ad9e24435eb8e7d93d89dc90ccf58"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/clear_strand.h",
+      "sha256": "cb431a911f1f18987cd40616db6286d594f05c0db4bb2cc7cbf3ea56cd2f16ce"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/collar_fairing.h",
+      "sha256": "ac3e48fe78158e4967926f629744e1477c94bbca55fb82cad21b4e0bd6af3870"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/compliant_dynamics.h",
+      "sha256": "376d59a6b82a9029703f84a3ae194b0e59544cc433a2efe5725723a23c0eefaa"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/continuous_raphe.h",
+      "sha256": "66a9490e3b20f68264e7a60f28b083b5cd1f027a003f662f85de01b0ed3187bd"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/continuous_raphe_data.h",
+      "sha256": "a75c22763bdba8f8eeee9adea1f4cfde7e402b43e4d6fcb58bee0bc2abae78b0"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/d3d9_proxy.cpp",
+      "sha256": "a9a385328b4698d89afd74a9513b7943d7c901bcd8ac64e9ee565a99b71c5387"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/electrode_bindings_data.h",
+      "sha256": "b916f32164e36825919032c7c2f6995e97e415fe72a428f800cca0282ea05b9e"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/fabric_material.inl",
+      "sha256": "ad31d57aa1169267f1e25c4873e6c012233cec5ddeeb31fb5d3697250a16957f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/firm_lobes.h",
+      "sha256": "2b5d0e868c0185204f8d96c89c786527c2b083de47cff4064704550194019bd0"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/fluid_collision.h",
+      "sha256": "3b60b15010c68b1cdc30d8e771a4819806065324e736dcf4527e5f29c58e3cff"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/fluid_compute.h",
+      "sha256": "609e1407d4051e6f1fb61b703eff0bc83f7d92465240a61e9f6d2e8f39d06510"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/fluid_gameplay_bones.h",
+      "sha256": "b47253c68f6475c87810a59824ecb0fa784653adb10809311af73bf7e50a9f6a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/fluid_space_diagnostics.h",
+      "sha256": "fd837ee835e1fcaa8294c88cd35f2000eb56b18c12db07e89b8add809e232f70"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/fluid_splat_bakes.h",
+      "sha256": "270c5bac0d45cb95e59876660afd14691b23d54f0ff54b2ace4e8d1ac18092eb"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/fluid_splat_model.h",
+      "sha256": "5daa477faaf9c1ee613c1134842a071d3671abdba87446e9d130336bbb35c70d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/fluid_stains.h",
+      "sha256": "ec8b9b4096b33802683261a3179fd2c0d60bb6a86e39f8e1df503a85f08c8c6d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/fluid_surface.h",
+      "sha256": "69d1f5498a9e0a75731b81f18627a643af7665b8dfe5df06f64c04edf0fd35a3"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/fluid_types.h",
+      "sha256": "6c0686aaa7cbf1e55853926f86f6502557d8121c1fb3e93dd0e61412cff9aa2a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/fluid_world_origin.h",
+      "sha256": "6127f134d13031b4c6259fb6b9a962e0f92372af693a0f0b6c9c16a1b2d62a4c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/geometry_binding_data.h",
+      "sha256": "f7c9ddcf3ebdb5f9aeace1d4bf18a517e85be016d2c95c4d61650897f0487a4f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/geometry_pass.h",
+      "sha256": "9034e2e734d37d77cb8f999770fab5b6fd14b138b3d79db966c827b05bbcc2b6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/graft_normals.h",
+      "sha256": "831ce043d071b831c6fdef6775e5216c19a0f59dfbc356aeb96dd49f61560783"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/hourglass_neck.h",
+      "sha256": "bd20156f0257174c17e7dc4518ea6984031a5f2c9521fe4e155b50a985fe9517"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/idle_gesture.h",
+      "sha256": "1400117326f0eb26f8fc6a8f677c0c4bbb1044f7467b56e752ee392e5594cd46"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/idle_gesture_data.h",
+      "sha256": "a84311b91ea0bd3f39a04ce83bfd22dbe13ad247d61d81fbbd4050045046ab65"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/jeans_adapter.h",
+      "sha256": "574b6d414e1d4015581f73c840da28722386ceba7e610940886899b89893c9d4"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/jeans_data.h",
+      "sha256": "a63f5e1c645d17749d237ae800734b9b55494a8948f7a4bd49863b594b7247d7"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/jockstrap_adapter.h",
+      "sha256": "557376d3ace15a4b58dace9b6196ab65f04dc9970d8912cd325b6d7c7963a581"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/jockstrap_measured_data.h",
+      "sha256": "90f481e78fbd3ec1138c300ed4473bf93ac6649cfaa7399898f10d006083b4e1"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/jockstrap_pose.h",
+      "sha256": "f1ecaed2b9b2d4b6f53ca1b70d685c2541c1e99e9ad77d979d1317d42f86ee54"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/jockstrap_reaction_data.h",
+      "sha256": "70b6d7ca4391bb0916cf74d734da5e5adcfb25d211547e05ed39bb42f6176186"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/jockstrap_regions_data.h",
+      "sha256": "7363e0d1b714dd569699bd6cb8965c2d5ffe8c1384b4aee46ee83c7c5c72f7af"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/jockstrap_support_data.h",
+      "sha256": "a8c31043e9f96323e7339246e889ed4ec67c3b13d3019b303d1483743221a2a8"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/jockstrap_worker.h",
+      "sha256": "64fb0effa1a032b00951817d887d7f995fd04b47eac6bf366d52f830024f0f9c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/lighting_direction_fix.h",
+      "sha256": "69173e261365ad3f4b3bd8de04bf51125b8a0f5a4d5cedff0539ea5943bf526a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/lighting_direction_shaders.h",
+      "sha256": "67bfe99906d84b2bce400cad9b35aa74f71360f82b15fe6abffd62477c073aa7"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/matched_fabric_data.h",
+      "sha256": "12d5222a07f179e570ee514343dd8ef5531cee1d577db0461129f9e9a75950bf"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/menu_body_split_data.h",
+      "sha256": "ecce093f84377b9ff315ac1eac5d06ca4ee852ae8cdd2b50dfd02966d0adfca1"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/menu_branding.h",
+      "sha256": "5486ce69f3e49668240ad2c42a751d3a052c934302d14e279c797e0b53c667fb"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/menu_chest_data.h",
+      "sha256": "ae75307bd168c69de849a5ec716b72bbd82ed90eb035f5260c627a60d5a6edfa"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/menu_hud.h",
+      "sha256": "dc3ed2cf3be5c6dcc295f5e4400bfd0977a946f2e0800447018ca8216818ae96"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/menu_input.h",
+      "sha256": "c6b743f84786d396191f9c23e8fc6a5e2a406488dc59295c839c051f20513fc7"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/menu_necklace_contact.h",
+      "sha256": "2b2207167d369e3d3dd1ed524305d0c622fca87034bd2306a50207482372230f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/menu_necklace_palette.h",
+      "sha256": "d031793e054e871aa39183a9d29d1aa645a9c443cecaba3a613b60633b51be98"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/menu_nipple_data.h",
+      "sha256": "4e5388a11f7cf8acb25d334b4fd503be2c5a5945729f5e466b099626069b0954"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/menu_retarget_body_data.h",
+      "sha256": "c4075718353b229faafa3c2a6b558d3a07c74785336b0b0f703f20bbfa818f25"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/menu_shell_eye_data.h",
+      "sha256": "195298e3212c020a1c804b2b3eb26eb79e589f536fcab24fd41fc7a6c999e2a6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/menu_shell_face_data.h",
+      "sha256": "0d38ef31823521162922fe7639ab2b9d828fbe0b3a82a16f88d0d0f49c80dfa5"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/menu_tank.h",
+      "sha256": "75f0f632a2343aacce6120c88f4fef2055b097ba3c89a6c381d9eb60f0a1a5eb"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/meridian_adapter.h",
+      "sha256": "7e34315a72cf603567c212554421012dc722821b4152d849fe56f4e9c7d07d81"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/meridian_attempt.h",
+      "sha256": "42933c09519fc142b85e6d53c7af652f6a7f96a99c85f5e4262b32abb0166a42"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/meridian_material.h",
+      "sha256": "55ff9c003bb821f063ba93d567f9ddcfbd32438794c68948707f3d5b9909ca0a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/meridian_recipe.h",
+      "sha256": "b1f08d1d753147d4dc2152478e3eea16d3fc715938a87ef68d782847c130e6b0"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/meridian_state_audit.h",
+      "sha256": "cfeade8f231c691b6cfec1150f99298475f140a9ae6bf73864fccf59876c5fdf"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/morph_targets.h",
+      "sha256": "84c9f91e3f627fa79df76d303c678527275af756493f896940b52e3117dbd072"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/morph_targets_faired.h",
+      "sha256": "1d5c897539a68445ca10062fb42d39bde039260b76d097b2539bff290f721537"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/neck_render.h",
+      "sha256": "5fcad77831936baa90061d467ee640880b1a31710c9002432197ad3bd8a0954b"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/neck_render_data.h",
+      "sha256": "bc839e91e8a3707670e2be03c06d04b42df31f206d94b240587dfdf09e95ebd4"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/necklace_contact.h",
+      "sha256": "2c170e295330438a97a6191d82834268f040c6b22501812928e97e3fbfb53684"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/necklace_contact_data.h",
+      "sha256": "ebb5b8ce9d94214c1d32ebe846062a309cb0de3942ea062302607be5c57aca76"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/ovoid_skin_shaders.h",
+      "sha256": "e621d7fef72c204af8196f823811864fef0ee0fee0979d8563f1a3329b910652"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/pelvic_attachment.h",
+      "sha256": "8147f91f0ab1fb9104462344c89286abc5dce67d234b397a01641161e3397d98"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/pelvic_attachment_data.h",
+      "sha256": "817a02208f99df38ea296c95c3320435230f3668704a57dfca21d55182c60450"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/pelvic_ramp.h",
+      "sha256": "a9138785af50e62a5ccf138d3abc85b5b3c882304fb02915f0a94457afa5e9af"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/pelvic_root_binding.h",
+      "sha256": "011b9f6d4c108078a234ee048d431a42157031daf015b5d5587c4407a2b5c8d1"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/pelvic_tube_node.h",
+      "sha256": "625e89f6f1949d000992c8654229e50356969084ca5d8fdcc66aabf53cc2faea"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/pelvis_control.h",
+      "sha256": "81d653ad00190a6b1a29d9d12e2b204d0434c29b5054d616fa418bfcc6d96c9d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/performance_metrics.h",
+      "sha256": "cb95ca5b78291a56bad39ee34e9783e3f319e4807beb2593655e3b3ec373e47d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/physics_weights.h",
+      "sha256": "2ad09b90805d185c650871f19e6913001b0857934dd8f22f09b9031c7ce4fa28"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/pouch_contact.h",
+      "sha256": "8272e5e781939a390a8c7b7c3a19915138a0c00a85f67509f0c522b835dce7c1"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/pouch_surface.h",
+      "sha256": "019070b8b2d49065ac8af0cb12b6ef755ca6ee124f6b5dacf39da490339d24cb"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/pouch_surface_data.h",
+      "sha256": "5c8a7f4be282f5e30c95101546c3e413c52681fd2bd1466bd840fe0a53926467"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/prepared_shape.h",
+      "sha256": "c64997b3bf51f03fafcd71159878e39b2234a40061dcc2bb3867f4040981e7bc"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/proxy_harness.cpp",
+      "sha256": "5638fdb7757468dc8518bb17939750059526fa6c6dab7f83e2272c4a68ebba0c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/r14_asset.h",
+      "sha256": "7b62dde4c879c835ee44474fd5b0955cf80dc95d1ab1334e6ee214882ce70957"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/r14_runtime.h",
+      "sha256": "0113ce7d52780b15f32bd5db8fa48717edb1723dde815a127824ca422848d0c6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/raphe_support.h",
+      "sha256": "217d43b14da1eb2fb9242cae2a1bac2db6803a98543eae6de8a7964fab04d788"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/raphe_support_data.h",
+      "sha256": "b257db06764b69f746c807b5e3877c4364e4e747332d8a07c85ebfd13398bdd6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/raphe_tube_profile.h",
+      "sha256": "85f39f16e112498defbfd475c2a58b2015c2e9afd65d66b87600bc68eb327474"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/raphe_tube_surface.h",
+      "sha256": "cc4f7df3d2e8cad488894706b890dca9547a1fdbd582557026f5cc09c7fc1c04"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/render_capture.h",
+      "sha256": "4956384628b292b3cc630af74ae1e04d8063f6b48d3153507b944fc4df047a29"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/root_joint_adapter.h",
+      "sha256": "9ce71be90044d5942853e1efd95b0da0a589d055f1f4594bca7981e1d52b3889"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/rounded_render_data.h",
+      "sha256": "9be05760a90779885f352151d79a3bb362f4c1b1f2b88d2e6f692c905310ca6a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/rounded_shape.h",
+      "sha256": "4ec8f6818a65941fd9927c939a450c5232bacbeb0a3a2006254aeacf79f41b95"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/scrotal_density.h",
+      "sha256": "4c4b725e75d42d5338e7d382c3e1a58f721947f52a7d92a065578aab4a876e05"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/scrotal_density_data.h",
+      "sha256": "54652ab5a5dffa1a2f47e28c9c2a71d6f7a78feb16c90f906155cc5fe081623d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/scrotal_junction.h",
+      "sha256": "d9ac96c213df1f9396d07cb22681268c58a17dad36a69814159730cb9eaff1a3"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/shared_body_surface.h",
+      "sha256": "0ce42d2a3f0f6439d3d8b1e2776f20757407cd3fd6f23fdf7bac71e46590f945"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/shared_skin_material.h",
+      "sha256": "806b613a4325056a5dc4339da38335811d30be7751c885542d76f272e0bb98b2"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/skin_basis_fix.h",
+      "sha256": "dc3d33cbb3bba75633636448d486534e0c5a79e1d73bb4c6c86efdce14e7a553"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/skin_basis_shaders.h",
+      "sha256": "3f8af84d4f4cff8562baa8117b9662c5ec45ae874678bcff8e65d3a0a4540e98"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/stain_shader_bytecode.h",
+      "sha256": "423703e0507bf0eba1c6214d330d0eb81365b8b13db1c3680fc893b172fe1b7b"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/stock_material_maps.inl",
+      "sha256": "c5494b272ea903540f203cb9a97738ed5d529ba7759aaa36cf03341703c990a7"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/surface_limit.h",
+      "sha256": "7fcaff99fc3cb587fb3a50a8f212cf0bfb31eb5f3f73e1a58a0101797477b748"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/suspension_weights.h",
+      "sha256": "475353fba30236e4d593cf10cd248e2341d2fe47ba446430aaf591a5a2f43336"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/tank_set_extension.h",
+      "sha256": "3dcef1caaf16874ad3451d815d47f38ecf701d7ffa75e4b045a406fc7fe8d7b4"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/tank_skin_shaders.h",
+      "sha256": "573ae159071f02ad43e5a80602e5bc5090546c523d6018c2d1187b1a0a5fc190"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/tank_top_adapter.h",
+      "sha256": "6d88379624a760c36dbceadc4bd21de9fb4fce74b96b927c3a793b2327b4c6b5"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/tank_top_data.h",
+      "sha256": "c59f657855f4668b0ae2b43f27821edc142f386f2ccca9b521b15ec142158880"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/teaching_audio.h",
+      "sha256": "51453fe0ed077493b51d2e2b2f7410d4cc6a06302bc355db5b5e34fca1430f5c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/teaching_fluid_render.h",
+      "sha256": "76fdae04413e28184b41eae8cdc94aa6f3de8aa46248ce218e575024778e71a5"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/teaching_sequence.h",
+      "sha256": "ff55423282a73210997ca058b2048e5c0f6d9c7215b871b6b516f6f51e03b524"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/teaching_volume.h",
+      "sha256": "1398069503db0e5832b4e93f8e04dd8fb8ef84801beade1fb81caecbb61686a4"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/thread_mesh.h",
+      "sha256": "d5561b5442b2ab8c64e76605bcabcb1a28a5826e94252c06a3a708b1c1e7a313"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/underside_blend.h",
+      "sha256": "31e6ea2427849f1bc7ea6855a07dd4d9f5a1c642bfe7b69a4382db1ba04f8efa"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/underside_blend_data.h",
+      "sha256": "5aadec1b6b58c3a85e881ed782783a0cedd622b550f41be7ddbbf463198daf5a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/underside_legacy.h",
+      "sha256": "8c279d520e5f7aae6c09dde1742a6b44b65d7a0476180ea446e4626940e5cd50"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/underside_legacy_data.h",
+      "sha256": "6d06e19e009782ea52ff313c53a69ca3abf189c1de31bd8a547e69805f0db88a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/unified_collar_data.h",
+      "sha256": "cabbaa41279878bf259ba51de89b9fb9f5b027fa8eb4a925b78e30205e995b31"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/unified_collar_solver.h",
+      "sha256": "e3f8a7fb96f56067b75164ea920a7d0d11257a012008f6b71835142c1ef59052"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/ventral_tube.h",
+      "sha256": "9716e49e5d4b72f2d56904ffdda0cc792a7f0f2ff97b925a8b8644209b17ca9c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/ventral_tube_data.h",
+      "sha256": "6b92c1fe673808511432263b337bf3d97bd4dcc429dd7b2d6bb3129e2b7721a1"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/viscous_film.h",
+      "sha256": "eeb137f042bb11eb1166962e590f7a9185ebbc85f7a32feb5048f8117b6ac60c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "src/runtime/viscous_thread.h",
+      "sha256": "5f77112c620415a1fa0dc080aa7248558a3140507637e20d625e0bd71693dc61"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/Cholesky",
+      "sha256": "fcaca116d63461e2f48e3b37bc954a978ed07edeabd7d16b3655438f568605d1"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/CholmodSupport",
+      "sha256": "3313faa5bcf2b8ab15364b6c607a8fcd39d9761082e30cf9f42a00095f24e5b6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/Core",
+      "sha256": "69563cd6963e7a121f210cc00702974f17266baac1abb5faba34a8592f4bc7ba"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/Dense",
+      "sha256": "f3dcee295712304b2d65f259e3b32dfbf7836459fb3dc622a37f22fe33ff3d5c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/Eigen",
+      "sha256": "34d2cd84137dee876bf1375596154d58abd3b38ce77097f0c12a01360f6990b5"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/Eigenvalues",
+      "sha256": "566dcdc01806289e4dfb536572a237a751c0c292de46938c6eb18ac53fc277bd"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/Geometry",
+      "sha256": "0b8dc57d09d0ff410508e01d309f3c0dff498815a6a9178ee7c203e30a9184be"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/Householder",
+      "sha256": "9689c4dd5ba97b45f5973b3ceca38d35d38a29cd42da1a0880b021d881d03e9a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/IterativeLinearSolvers",
+      "sha256": "a17a2990db57c9fa44a6722f805893296145cc4249305b6ee8f3553129c46d82"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/Jacobi",
+      "sha256": "0d69416d8c48e6bf421bcbe980ccd4c85618caaeca2f4b7347d39e25ac3a0f36"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/KLUSupport",
+      "sha256": "434f77dba54ae746d76684e0325efb5289a1b6359a2490bb6b7f18b494e2135d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/LU",
+      "sha256": "29ab1bd63200cef92c807823fef6a704d2c3a9b4b941855eff0a566dfdfe96f5"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/MetisSupport",
+      "sha256": "6c1dba6c1317f6de326a6a8020cdc537759b0dce750cd5b4477f5e2bbc3f1bca"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/OrderingMethods",
+      "sha256": "d51b1671a166b1e3974ea51badca3bf3a54e4ee7c1f72594c4f703e4a8b00103"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/PardisoSupport",
+      "sha256": "f919afa3a0cfc28bbc59e5f7d67efdde1f832bff323e4ee5c850dc0b83baaf18"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/PaStiXSupport",
+      "sha256": "f5546fef0e176f400db7ac9e9736843c2fcd52fa3734e66b37587fadc2e03bad"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/QR",
+      "sha256": "260e8abfe8f27150c4fefab8e0b9a129fbe292bd04b52267f59a4bc86fa9ff0e"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/QtAlignedMalloc",
+      "sha256": "fc1d7ce5d3e0f79da2abbc794c4cd306015234158f87853c5453f082d22ebfc2"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/Sparse",
+      "sha256": "ee4f6b74355834ca295249c61adf8f98b070e58c81c7c7166db4741fdf568d54"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/SparseCholesky",
+      "sha256": "48ddf28eda972bfa2b232abd3c5e881c55853681d914cb5c9a7a0cae37da5a4a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/SparseCore",
+      "sha256": "d6b8bcbbc6c4bb76290ed8cddb3f9050a95cb95d55acfad3bbb8639de3371c37"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/SparseLU",
+      "sha256": "fdfeda734fb893819f80251ae068a1b189d7c498d3ad5ae57cf4b1ee98ede7b9"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/SparseQR",
+      "sha256": "4332f3973ca07dd205f7028f3ae563fc0ff59d17fd1a645ba142b8c240b2b498"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/SPQRSupport",
+      "sha256": "2adfb1e4a7ea880148821fdb7f1ea54f8cfe80a01bb77821892e59982c9bf853"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Cholesky/LDLT.h",
+      "sha256": "f2bf9a56560ea9a449505d1a92610cd7fa37b22f0f7f72a4d713d255b985b2f2"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Cholesky/LLT.h",
+      "sha256": "b595df6c680faf0a99aa06f82c547cf2c9adc5dccb0d04e32f44e4c7e6d418fc"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Cholesky/LLT_LAPACKE.h",
+      "sha256": "ec8a00d509e863c93f7cfb01550e35b725801ec8081618484d1b0442cb4e8c1c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/CholmodSupport/CholmodSupport.h",
+      "sha256": "b12e8eeeb26844b4b86022b8a607153e9a334aa706ca8b8c428e5605c33641cd"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AltiVec/Complex.h",
+      "sha256": "6be3f44efb00a8c2f37d07c0053b4759e1917844c7bf657b6d57af9b3c7741de"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AltiVec/MathFunctions.h",
+      "sha256": "b74907ef786d948b5f7bcfc99715ec4ff3a5cf39acfd3a3f62874ef91ca5c4dd"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AltiVec/MatrixProduct.h",
+      "sha256": "8b03ba9b89bc57d1068f03d90d35b75ccdab18a5caa8192f7b6948a6a57d1543"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AltiVec/MatrixProductCommon.h",
+      "sha256": "0f3313ec6263e9ba923b2e1a49c82cfa3afe23bdd9fa93d5ae72e71c6ca97cf5"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AltiVec/MatrixProductMMA.h",
+      "sha256": "c1e7ff12576c86a68599074bf322599fa8bd173e241f00a62dc8b222596a1ddf"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AltiVec/PacketMath.h",
+      "sha256": "059309eb47455bd00b32c2fe1d6b1bd8c936e9594abea7dedaefc4db7d723fb2"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AVX/Complex.h",
+      "sha256": "01ecc7aa8cf16894781ef4a790bf9db8d2d7b54fe33e278fecffac2f289e11f5"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AVX/MathFunctions.h",
+      "sha256": "1e3765ae857a4f92c4f27ad99f7c2b604596e81c4ea1fb51e598af14f2b1e276"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AVX/PacketMath.h",
+      "sha256": "0eff4d3e1c4636c4f1c52c00381f367f0a748e0e62ce3735279f694fad5c57d8"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AVX/TypeCasting.h",
+      "sha256": "9e6ab4751ec8d0634aa54b90772517709048ef88e7ead973f2aa2923d8699a2f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AVX512/Complex.h",
+      "sha256": "0a52a6d841e35a38899dc4dffbe968c03f348282b2e4ef8ad0d5e993ff3dd4d9"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AVX512/MathFunctions.h",
+      "sha256": "8170a947bdf06784ab9ecf3d284d89f286d3a179fe2e7ca6e27e8e7f418a88b5"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AVX512/PacketMath.h",
+      "sha256": "311336137e8bc347d97ae8f5c6d6f839dee88d457447d15c0d5053a0e564e1d8"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/AVX512/TypeCasting.h",
+      "sha256": "2fb17723535ce4f551260cfd1f875683662b23b76a4398d319565f3651e7849b"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/CUDA/Complex.h",
+      "sha256": "6a1b8ee6024e58b511458dcf72385c606001ff5611f7c35cea5c295ba8ff1abf"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/Default/BFloat16.h",
+      "sha256": "4a0fd1c41f4cf4309f7516ad067700e5fe77fe32a89188feaeb8370137c9ca0d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/Default/ConjHelper.h",
+      "sha256": "c5fdd06b044e1f6836008a3dc0cd9888e0cbd18ec015c0f7636cacd755c5b9f0"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/Default/GenericPacketMathFunctions.h",
+      "sha256": "2ef6167396aa88081461b75f8e78228f7c05cde0cafaf5f9ff45648b4d6b2ab5"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/Default/GenericPacketMathFunctionsFwd.h",
+      "sha256": "6458d8c06c65cacec2592ac35950517ca38a8f5681832a55efc454804855705c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/Default/Half.h",
+      "sha256": "94f815529785f5cfe45c0be9dc817f6291d2058f099ba5ca7b8da8ecd3c012eb"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/Default/Settings.h",
+      "sha256": "014ab6849b3fc5bda6390436de20c2566b6cabebfadaf50406edc71a49ff95ef"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/Default/TypeCasting.h",
+      "sha256": "9897cd4c8801e0890e1200d13512c094a21115cd27263facdf598f2aaa797705"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/GPU/MathFunctions.h",
+      "sha256": "3156f9467992610d6c873e2af674b0a130153a63663dde80f2ddbbf513205ba6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/GPU/PacketMath.h",
+      "sha256": "8423a94d260ae9b860c079e982f00eb784eeb8fae2099bcf94ffe793c4b02e21"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/GPU/TypeCasting.h",
+      "sha256": "1a6e60d46dba585a11523c4925e1ba854dcfbdebfe8a17f91fc26244f212c5ec"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/HIP/hcc/math_constants.h",
+      "sha256": "3d4a57b67ee85b4a4f523ca97710054760e6c69077be058ff371155c94d0b43d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/MSA/Complex.h",
+      "sha256": "0f1baaebd01e3df11fdb2895e792c98eba3a730ce051bc59463e2d6abfa52b28"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/MSA/MathFunctions.h",
+      "sha256": "4c511d5304f518a4ba1abe59ad0e0ddc0f5c684dc92174e44967ae9d3eeb68c3"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/MSA/PacketMath.h",
+      "sha256": "ce506e514f9f5780ed9848b57fa938f6851c4781885c6c96e481d525d0777f6a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/NEON/Complex.h",
+      "sha256": "516e6a277a6676e138b70a5336ca27852496afb2e0fc6d3c6323d87f9ebe76b4"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/NEON/GeneralBlockPanelKernel.h",
+      "sha256": "9f7741e9402ff6be20d4efe7781200c2d8a91f1e1a6b78c4164d96c0baaa8161"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/NEON/MathFunctions.h",
+      "sha256": "dc44e6d3a0bad8d41e7d92d2578c9d4e8f178c2c0cbb7a647c8af1f65911daf8"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/NEON/PacketMath.h",
+      "sha256": "5b406f0ada84481800ded814da20d22c437f74eee7cc9187c2127d2b09df46ba"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/NEON/TypeCasting.h",
+      "sha256": "9dd18bb75693ac337442283c6b63131d7391eb912650afe54b0b11fcf5f72ded"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/SSE/Complex.h",
+      "sha256": "a645c118b949f004c44d5096f20d9786c712a98075ab5fe6d378b10dd99b7e60"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/SSE/MathFunctions.h",
+      "sha256": "7722a3cc6a7c3f402b297aeb1e61fe201d86c63c0a2fcf3ca1a5024f0f16b177"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/SSE/PacketMath.h",
+      "sha256": "53f71b5a03ade25c4dceac328f2cd937896022889fe04e0d6de82e8b9c4f4f72"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/SSE/TypeCasting.h",
+      "sha256": "6fcdd746409238598b0c6d34a5545a4e3055448eed7a6846d1a9fbe1e6dd06a6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/SVE/MathFunctions.h",
+      "sha256": "1b813d59dfe11c7e23ddd1de7c979c9af5f5e69b7367ea0278f498059ea30c05"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/SVE/PacketMath.h",
+      "sha256": "473552b3729c6ab1a9ad31be8703fe6912e2adcb4e042a4b7f35ec92dd024dd2"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/SVE/TypeCasting.h",
+      "sha256": "60987a588196c382cc30d90fd22ea4a87201edfc30343a856c3c6aa1514d6036"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/SYCL/InteropHeaders.h",
+      "sha256": "932b895e38fa543f15ab42c918d6193035097179b5207f1571db2d642a203b5d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/SYCL/MathFunctions.h",
+      "sha256": "1a56ac8c94e2f4c71744ca467dde9d8726906054fafdace3fdb3de61ce1395a6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/SYCL/PacketMath.h",
+      "sha256": "8bf900a7057752fea7c32a486e5cb4a1ea9fcf46a7395ef5576d91564dc0473f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/SYCL/SyclMemoryModel.h",
+      "sha256": "210cf974119b5c61dc6cafea5d33110c452e09531e6f2121b493d9e117263828"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/SYCL/TypeCasting.h",
+      "sha256": "f517c435ab29d730ceb9014a15c89f8ccd32d75a6ffe505c5d85540a649a56c2"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/ZVector/Complex.h",
+      "sha256": "6dae84e7f2269528b3316fe09ce724632f27b207d6870092a8487a68872a03e3"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/ZVector/MathFunctions.h",
+      "sha256": "c3247d7a8ef10db52b3b926c2c86457026a4283ac4557e2cbe2bd36c8a865a2b"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/arch/ZVector/PacketMath.h",
+      "sha256": "d3a8d41e1b50db72af17370361601ddd4d50cba5b971371716dbec0e59b81fa0"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/ArithmeticSequence.h",
+      "sha256": "2b21700219b6e9155534bfe5f7767f1427caffd7bd96cf30f3fdf06d88f3a187"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Array.h",
+      "sha256": "6248dfd158ff2d3e3d1803334e4465d4fade57ac826c7bec41c4803b84715300"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/ArrayBase.h",
+      "sha256": "c01edf5ce2e8d95414c9795c6e3cbeb4c03c0bdfd91966da61a76028af8b7fcd"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/ArrayWrapper.h",
+      "sha256": "4fa5925b7524ebff2ee3a991041e98c0628fd4ce2d1083431074ae26dd649064"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Assign.h",
+      "sha256": "5f7fcfa9a4bca9e0ed575189380f5e8f867569fd0f94867c182d7cf5975cbe04"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Assign_MKL.h",
+      "sha256": "8e3b9c9272eea484803112b7588d36e0014018d7e80a357bdfc83c3d53fe74a3"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/AssignEvaluator.h",
+      "sha256": "560a8de1fa39e50a5a20452254920df99dba5206a858a1fc59c902d2312ec13a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/BandMatrix.h",
+      "sha256": "df2480bfd4eda3c7a11c6894e4866ace854f793a0157068c9dfdfb7f82495d89"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Block.h",
+      "sha256": "7e395d21989c8dc773378d173af3e2b6bf87e855ffab1b4c081613572bf6db58"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/BooleanRedux.h",
+      "sha256": "7ec83a50c46149c40d08e345b6f15279f7be7c8f5d5b08fb31cd886ebcae6406"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/CommaInitializer.h",
+      "sha256": "adb1a1ad26ce16cf4643bbd5facb42145cf4a31c6e61c2bd3343319659b57430"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/ConditionEstimator.h",
+      "sha256": "1b3ebfec5bd31b3edfd51823f266e300b601a53ef38b5e242850816c225614df"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/CoreEvaluators.h",
+      "sha256": "05537ce3f23ac85a1cb608095462a74cdb77b4dc5eb7ec5585058054143bce43"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/CoreIterators.h",
+      "sha256": "9afac4b9efc71bba49b72f86e89f76786d7d93c0aba1e72d8c39a8a118527661"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/CwiseBinaryOp.h",
+      "sha256": "19bf5b8aafa653475d25928ca20449e96388b18a3d1a758b4c572487468b92e7"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/CwiseNullaryOp.h",
+      "sha256": "1ebcfb84728e75d44d682d3d1396948d98efcbb55f2c716285ac492dcdb31993"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/CwiseTernaryOp.h",
+      "sha256": "4ba67bee42e696b88cde52e2a8b8ca8d6b76ec713c9354e5cbe390950b27475c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/CwiseUnaryOp.h",
+      "sha256": "50b903d6db82df56c8ab6d58330763364ecba368569020545729c84b778a0dfc"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/CwiseUnaryView.h",
+      "sha256": "2b0be48046217756851fceeac36be5640c30de5a494917e110a0073df35cb5f9"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/DenseBase.h",
+      "sha256": "53a6a12a92daab394c2404dcd48542d30d8f6addb36bc09cdbf3be159aa5adb2"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/DenseCoeffsBase.h",
+      "sha256": "0f29b68e3a2ea4295b9c05a199686b4c8e00cbbdfba1dfe94a6e15f5b85a0886"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/DenseStorage.h",
+      "sha256": "54d70517293e3b8c5c0fa3e4bfb748de429019670a050dbb1b2b0e895ca2fe30"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Diagonal.h",
+      "sha256": "b481089cc45bd462f09ff928bc9771543a30ab86111c1153a81ae687c3ea5eaa"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/DiagonalMatrix.h",
+      "sha256": "960672caaac390bc0298159b730f470518fa8f8bbd00d6358e302af0ab20c6f8"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/DiagonalProduct.h",
+      "sha256": "c60452e66cdd9cad7bf047abc4b877f4009a61a4bb868ff3040b39e33f6e1834"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Dot.h",
+      "sha256": "db46aebdcae6021733929e91051efc7b612fd30906f3404c7ecbe6afe6d79456"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/EigenBase.h",
+      "sha256": "1b1224e588d992382634fb99683783df4b569952c15d13f40d0136286eb575af"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/ForceAlignedAccess.h",
+      "sha256": "e1c1f3a95980fa803351ff1a241a7aaf3fe1dbb1fab193b1597b4cc0936bdc57"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/functors/AssignmentFunctors.h",
+      "sha256": "585b20e6bc83d46045826ced50b6f8e4c2a59039986853a5722e91bb50d2b18d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/functors/BinaryFunctors.h",
+      "sha256": "a02ebbf1e0b06da279d35cc9c2590694154fd28a456b9b842b7ff8d1108d0eec"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/functors/NullaryFunctors.h",
+      "sha256": "2d57592ebc3d61cf8d6ac3a1d073cda6ab8ccd3a6cf5b6b4e0d6188c5652b11f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/functors/StlFunctors.h",
+      "sha256": "fb0ef1d33be321a23fd26d69fa93154bfe637d851c9d88a716d673bee1759c9a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/functors/TernaryFunctors.h",
+      "sha256": "9262e3739c3bb7000d87d3e04b786da9e84cb2790cfdb7cca9e5943f5ee7c305"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/functors/UnaryFunctors.h",
+      "sha256": "b820e0b361739a0d00e69bb75455040425abf1dc7c64bbb497ddbd496cb39664"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Fuzzy.h",
+      "sha256": "e87719bf6be730d0a88ed9bed73d65397e6c6f0eda7b3971ad940b7c587ea89f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/GeneralProduct.h",
+      "sha256": "633d71d7df509984428be56ce9ff27922d517d97587c127872895278b1b16760"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/GenericPacketMath.h",
+      "sha256": "ebdbe196225168a1b24be0503dd4b6cf9ee2f239ab027db55edbaf958e254d18"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/GlobalFunctions.h",
+      "sha256": "51ffda7e2b7c90a901ebd02f47e5f211c1af2690b9f8aa688a29def7aa115985"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/IndexedView.h",
+      "sha256": "f1a10bde8cbee430f47f8b08df9fdffddf369fb25eed053e6a25575bb7c9d9cf"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Inverse.h",
+      "sha256": "65d899aa6401eda9fa7240fade41ac159dc848223f4347796979ae9fd517ef9d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/IO.h",
+      "sha256": "b78158d2d154d0f9e4bb6d670b996c809d952d8067ffeee359425e07e4cce409"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Map.h",
+      "sha256": "7273bf02f1b22432573226c182cd0b1e328b70a39d606d046b443d6f4b1a2476"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/MapBase.h",
+      "sha256": "f5bda7bd40b3ab66c560d868f708193728ca7e08e53f0afbe42ff4273923c5c4"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/MathFunctions.h",
+      "sha256": "8b05b3cb64b158082deb363f451bd35f000abde33397398de8e20a2acae7202e"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/MathFunctionsImpl.h",
+      "sha256": "aaba3e04b8bfd0440fd6ae4fb0e951d2b94d5fb8c816b76fb41613b22db5edc8"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Matrix.h",
+      "sha256": "3683cb3625dc59a481b1094635a2fab3dd88e2f59acdfea0b801bd7f1524f42a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/MatrixBase.h",
+      "sha256": "5e41d6b628b330e805ae253b26c06c367c7bba8b5ad1f6e8beb95d97321e0d69"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/NestByValue.h",
+      "sha256": "e23ee363296c61db0dee530697a4137fd99bf92fa9949587c5be37784c3442a9"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/NoAlias.h",
+      "sha256": "856787789632539540b6340f7562e31bf01cea49bfd307a18d0632441a24f3de"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/NumTraits.h",
+      "sha256": "3f12f3500ab944522488422e4fe65cbdd181a5710ad834732f59b0fc43f1f525"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/PartialReduxEvaluator.h",
+      "sha256": "48a039e6ad2d107eea5d190ad187870e1818140341ad2344c93654857f54ee39"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/PermutationMatrix.h",
+      "sha256": "b3b1a294b79abcef0ea5b876e70898bc883f9a63bae0f1faf98e26f4f147268f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/PlainObjectBase.h",
+      "sha256": "b9403b339b1cbaa7169c0a826423b2d7d49e34ab69bb8b92d8a39b03d211a332"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Product.h",
+      "sha256": "9b3d06212bd37f7ee0236ab84643836b117cf2a87d81045a08080cc7395ddd1c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/ProductEvaluators.h",
+      "sha256": "84e2678530a3f06a695a1e75f820834ea6cc66641172b3c554170194f6de162d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/GeneralBlockPanelKernel.h",
+      "sha256": "aa97bb0c33394e34e76fcd4a5320c56753128e86de3508e94889b431e98670b2"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/GeneralMatrixMatrix.h",
+      "sha256": "3fbd1c65e5968b8125a25f61dde28a2dea50e2e03ae10d54bfaf1a2687dd4a86"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/GeneralMatrixMatrix_BLAS.h",
+      "sha256": "240846d8671252960752dd5a229cb2ae1f31fd26a56574528fb600b6cfc117b9"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h",
+      "sha256": "86a0a2fdea25bb5944497d65c2e9c47e34781b1626a79ae8478962cfca690712"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_BLAS.h",
+      "sha256": "44c48c507af0ab8a0441cbde52220783ec9f2d4e5cb8493b666b2af70800b35b"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/GeneralMatrixVector.h",
+      "sha256": "14d81c91c4b93565ed7aa7452298b397dd77d4c5358748162c0d610ce955ff5f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/GeneralMatrixVector_BLAS.h",
+      "sha256": "a07af9415a3c9ef047e28314a018ae22883b0739d4b2a06d2ce356def940b916"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/Parallelizer.h",
+      "sha256": "8eb307ee912997272e64b0128226f74abc589525752113766e4b4ccd42e96271"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/SelfadjointMatrixMatrix.h",
+      "sha256": "639593870c2f5774200c06ea1f211e267d449378ac93de7b33a86c7968e61958"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/SelfadjointMatrixMatrix_BLAS.h",
+      "sha256": "36a49a82fbe077d8d38b1b8eb5e00c954b5696c7518f9bc48fcb4481ca22c192"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/SelfadjointMatrixVector.h",
+      "sha256": "896e0b7209a826d186a6a59e2cbc5e83e3b24823377e765d2e270421adcd698d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/SelfadjointMatrixVector_BLAS.h",
+      "sha256": "79b20cd68527de3693da693dd35f1b0c7f835eaf23b931c2fa075d592f090e92"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/SelfadjointProduct.h",
+      "sha256": "df5d230b9e8ac35c629ee2754c98810e47e03ff7cd2e7369f71d22c7946b8619"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/SelfadjointRank2Update.h",
+      "sha256": "86d6ef575236ebd894d04a0fde001a6c801b17aebef8fe9c1300c307ec99c274"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/TriangularMatrixMatrix.h",
+      "sha256": "18353c9585cc5b4d2c186368d111337cd1487f560898f376836413b4638692d9"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/TriangularMatrixMatrix_BLAS.h",
+      "sha256": "376d0ce3c8e91248273f9e5b443cf85db20064e5477207be5b2654036373cd63"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/TriangularMatrixVector.h",
+      "sha256": "e82ee6a0ceaf2f9fab5f1ee3065e817b4ce4602357f9df788cb9a400c52dc6b2"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/TriangularMatrixVector_BLAS.h",
+      "sha256": "50806360e1c26e536cac91a50d85e754fad128abd8b485e01c7b90ad8df47c52"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/TriangularSolverMatrix.h",
+      "sha256": "de1d034735229ff4210f0ab73c1c9a1579704a982aff7645888913a74e8cb27b"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/TriangularSolverMatrix_BLAS.h",
+      "sha256": "ce79e06ae024a7ba6d3d3fe72ef7bf0e49f0d8da22f85d93078907072be97073"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/products/TriangularSolverVector.h",
+      "sha256": "eb3ee70346d6e7fc08693855aa6422182b31cbd608a44503af9a89c8b8d85ad4"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Random.h",
+      "sha256": "63750f1e6ab4bf2303c600d0d24aa76888a7dbdd4b4a13647c4d14e7761fe236"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Redux.h",
+      "sha256": "8e0461bf865416bee9a005da67965e4515c9040a640222572c553d4d788c95cc"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Ref.h",
+      "sha256": "22b4ce47b6a0567df7a0e7c589444c43f1b897af09b10c9809f9a4cb9bc53b83"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Replicate.h",
+      "sha256": "6979b77fcda2d13113eadec0cc2ff17c45b67f2d306438cafc7adb53db6adc67"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Reshaped.h",
+      "sha256": "9af55b1f1c6c843f854955406dbf87c56bf685780694155861635483ab986eb5"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/ReturnByValue.h",
+      "sha256": "a4f00b9cb1b1ab492291f92cf7bf09baea4c83b61d737f6eed5fb74f79b3792a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Reverse.h",
+      "sha256": "49aad320fde8ff365283afa0a78a43c4b0ef14519cae4bbf0b21e6085e778376"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Select.h",
+      "sha256": "126d8d9a4e6b191c451a04a213c8d4d35099b6842bf6fe4585513128f00b851c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/SelfAdjointView.h",
+      "sha256": "cbdaeddae1d3e9815a569b83aea9e8ce58553865f4328ece8e0df1ae10712c12"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/SelfCwiseBinaryOp.h",
+      "sha256": "7d0092ce83096c6ea6937380687d8751b9e352e91c994ea86ea375a71677ae0e"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Solve.h",
+      "sha256": "7af75c8c8a8f160e5c34af0ed6840698d287c3767187a7fa52a1749be69423c2"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/SolverBase.h",
+      "sha256": "963f9aac2c91f4537a89d68ce149f41e7c51b1ee839a6dec9396f5cb23d1fb1f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/SolveTriangular.h",
+      "sha256": "87f7a8ba5bb50100cc8a9d84c731689b3e3b4d3949fd16e1e6cdc771ef22a5bf"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/StableNorm.h",
+      "sha256": "4a08c7097020e45958be9aac5bf89aaf940d2dfad9f88d8acd8333e77874f319"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/StlIterators.h",
+      "sha256": "46ff5c9964f22710b32c1a9f0797149c3b9bf85244164bdcfe2af615ea710316"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Stride.h",
+      "sha256": "7657d264b116e5df12caa33a2d50cc4c5292ee42c79c5b82814a42aa5cd21929"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Swap.h",
+      "sha256": "7f22784a5281501c2b257f37120cd2efe3bb9440b584be04e7ac779aa41ba475"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Transpose.h",
+      "sha256": "4cf49d518c670bae88bf88efa0957f5775c13a34d8524f33f238267ecd8a35c6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Transpositions.h",
+      "sha256": "c2a431509428602bda5e577a39bf80678eb844ce86ef3f1bb8896c543645e3b6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/TriangularMatrix.h",
+      "sha256": "445f91b1519f3615412236110e1a644426d7f23d850aeff37614a6a05f46f1ef"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/BlasUtil.h",
+      "sha256": "3169b13cfb4017c3f8eab80b5120dece628baea0fd171d48e9c93d326e311619"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/ConfigureVectorization.h",
+      "sha256": "a56efcc77a42accf3b4fbc5b1349e15e0990bd50fc6ac0703dd7c6cfbfe3833c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/Constants.h",
+      "sha256": "b7ae6442c34e283bda966ca308f109b575cbea73aa40fb1d5816de42fee09c22"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/DisableStupidWarnings.h",
+      "sha256": "490cb4f75cb508d67e150315ca87e0b3841c1e4ebc778d218d487ef55ee063d8"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/ForwardDeclarations.h",
+      "sha256": "0af5d54e146b9fcfd9e8dd64b76b706663d793d64ecf1cd65a81cf7585c1ec61"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/IndexedViewHelper.h",
+      "sha256": "5a1f94212f70b43f741dd2a1b75c960cfbf872301fff76e017331b3d5122d7ad"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/IntegralConstant.h",
+      "sha256": "9525afde222683d1d91e3e3e2b5c2ae11be7f88e911762327f80e0086a4c8220"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/Macros.h",
+      "sha256": "77c71921cee8546da61464e240aec7f38f5dd9fc345ccfa01ae42f1454f64d7e"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/Memory.h",
+      "sha256": "96ef3558f517b477b0c000565797ee46fddd13a233526f8766d1205583916d22"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/Meta.h",
+      "sha256": "3f9bf432d9074829ed9cdf29bbae65331b02c600c7ab8f6565b4a4f4ee79197d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/MKL_support.h",
+      "sha256": "a94221223dc91fa68d076a84205d7f720adcbd716ecb73b174d24e21a41d55e1"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/NonMPL2.h",
+      "sha256": "344dc39baad6a12ca77e19d281c9fc90865c7173f261e884c026efcbdeec1b04"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/ReenableStupidWarnings.h",
+      "sha256": "1ba650bde6c6f518381e0a8904f9d32761dc6acbddaa2fb578426bdf9ebbc063"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/ReshapedHelper.h",
+      "sha256": "c9c91188caa223ff349e8f74055d17d423ce12122c146ade8496be452f148ccf"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/StaticAssert.h",
+      "sha256": "3090b3ccafcb9bc90de82e9c773cd8e4eb26ece7f470e0fda2230948716a7994"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/SymbolicIndex.h",
+      "sha256": "4efc7aecf4d3ecc754884b7422cd265de19777f1f3d737e0873f04bc6c6ce8c9"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/util/XprHelper.h",
+      "sha256": "9a4599dde107a14aefe0288d2b827ab79be2db663335ebfc2473168e7a6e19bd"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/VectorBlock.h",
+      "sha256": "7c2e712150dab75cca7b21005766461aa376e058752f7104829aef2ba2ed9ad6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/VectorwiseOp.h",
+      "sha256": "c61be3bce6b3a0cbd6e53c70a738531931ab91417acba83255234a11c53a56b7"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Core/Visitor.h",
+      "sha256": "a723a8c27c07ca8227dc60ea7fc2afb31f5ea6a311e5599b25a267befd766131"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/ComplexEigenSolver.h",
+      "sha256": "c2d520809a91750f8b71234559ae9f1052202c6ca8760ca953387c3355066450"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/ComplexSchur.h",
+      "sha256": "dbebf30d4d59ccbd0b7b196485d43742876e1be846d35ef12f9c5f147cc0ab2e"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h",
+      "sha256": "14a6c568914c7e0b70106d5f28cffce9f43a4f0940641f881c312d2558f9c1fe"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/EigenSolver.h",
+      "sha256": "1eaa4034cf2c626bb6833db77a9f9cfc2d5a5849aedeba5217db7a5a65428b70"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h",
+      "sha256": "afbd166178d2e00e7334cc4a66f1fc95d32caee94aa1127a0db2f603d2063c55"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h",
+      "sha256": "c0de2c84d06cabe9bdcb681c2a02e61524a5e76e6cb860bd5871bab2b2db49c9"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/HessenbergDecomposition.h",
+      "sha256": "2c89ee8958502861f5f91756540401b2c21be6901d296bd6fe4def7a1cc6959f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h",
+      "sha256": "9fd9b7539d2ff21bbf1430e3b5ccdaabf6fe964f69228a823ce3daad0887e84a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/RealQZ.h",
+      "sha256": "31c6bc9868dc0acd4efec485f2a11d91ecee4279de1a31e9c5ed0d0b52adea74"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/RealSchur.h",
+      "sha256": "5454355c0c6f1dcd8d82d70b17c7609cc1172e1cb0deb47f091d09c70bfacc09"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h",
+      "sha256": "b4cfaf4fd8bd1b98c293ba51289afd1d778fa3c6594031916b27b77239b1916c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h",
+      "sha256": "a26bc81b2591f82afd384c83ef25ce553a7f651f3e9ad8b849942aa0b0b665c9"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h",
+      "sha256": "f3b3b1d25a30aaafae4705e96f7a381e51c0a75655d508a26027951ca952632b"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Eigenvalues/Tridiagonalization.h",
+      "sha256": "258764d323bf55d8ce919087a80f102e0d9108624c598c7b1d15eea1f8141972"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/AlignedBox.h",
+      "sha256": "98117f867aae78891856101d8080ec756ba63090f4d95089e4852007dbafa81e"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/AngleAxis.h",
+      "sha256": "a848d2c642fee3c74c7f40ff6729ec4033398008eddd61aa47e026f4329e2080"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/arch/Geometry_SIMD.h",
+      "sha256": "7112e40f6e9371f55b5819442020ccf840b7ac38f4343e2bfdb78f5ea408ea27"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/EulerAngles.h",
+      "sha256": "8d4a26fbd934fb095b74560ce54b7a14988569d5f56b17e4d37a55b9f396a034"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/Homogeneous.h",
+      "sha256": "79000dc93ea80aa91241c3d335067d04c489f8f66b69a2e31a60f58a780a54a4"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/Hyperplane.h",
+      "sha256": "0f28c90d08b23950dc2719347ffbb7337e527e6779a3ac819c3514028a25601d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/OrthoMethods.h",
+      "sha256": "a1f45d9e73e2fde3044120bd83399a35ab9b45839bac973387d95090dd826eb0"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/ParametrizedLine.h",
+      "sha256": "6063fafa9435af436b9bea720cae37e5fde27efcb9ca774574f872a9e1cee20f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/Quaternion.h",
+      "sha256": "d0ab849e4e3c8515be1e5e3602f6007cad041661cc0616eec49703cc924110f3"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/Rotation2D.h",
+      "sha256": "93fce18237d983b8c3e2118753f1cca327e8fd399f691bb0017159e7962fe615"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/RotationBase.h",
+      "sha256": "22a78eca43a23d00b99b9fd596df9ab641485e8f7c264c9b6fd89521d52c99d0"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/Scaling.h",
+      "sha256": "8a90082093ccdf36f987c3ad35af871dea5548bfc7d0ad17a0469eaa70af5f64"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/Transform.h",
+      "sha256": "82130159097c024527fefa5bf5a7f29a06c37fe47eea565c9f4432b2ad77292c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/Translation.h",
+      "sha256": "7459f3267cd5b41b29a33d54f2e2f1fbbd416c27b0306f9b1768c2e9fb811de9"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Geometry/Umeyama.h",
+      "sha256": "8e52345e40929fe5834f92984c546da3caa875578463b65b14ee49ab7e369c34"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Householder/BlockHouseholder.h",
+      "sha256": "7e2bd6a91f1c14925018c300794dced9aa974a81cfe86cbe7cbd36aabee68549"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Householder/Householder.h",
+      "sha256": "b423656a1cab9b111563695f19f905849ce479a777e03c18d4448528686f0496"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Householder/HouseholderSequence.h",
+      "sha256": "3ad91f5072bad91213def73061f26c57f28fd704a2dc354d8207358ef5b2c243"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/IterativeLinearSolvers/BasicPreconditioners.h",
+      "sha256": "bc5e9718ba73e45d56f92c3f8e6fdc2e480b7d6f20bdae363ddac50b363d6685"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/IterativeLinearSolvers/BiCGSTAB.h",
+      "sha256": "b6f9a88cc8d8ee14c95061babc55c6c11b2e1c023deff171f66972535f0e2494"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/IterativeLinearSolvers/ConjugateGradient.h",
+      "sha256": "ba1c7b63c31f116c0419f254666d6bc38bba434f423ce245da7090bd8d5a196d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h",
+      "sha256": "07f248713cef460b50ee7b5e043117dfcf54dccb6aad29d6058cbc2ecb9ad052"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h",
+      "sha256": "a8119395e3640b00096cc8b9595645b8088f19e08d41f6915f3d59fc75f0ac8f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/IterativeLinearSolvers/IterativeSolverBase.h",
+      "sha256": "841a2b2ac348330165ed6c20bdf7f0a3558fb45b633ca6b8237229d67d81ca71"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/IterativeLinearSolvers/LeastSquareConjugateGradient.h",
+      "sha256": "30ba1148d7315aa948e88944da3cdd6b928315b4b11f3bd479e4c4bda4e9bd42"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/IterativeLinearSolvers/SolveWithGuess.h",
+      "sha256": "c1a4a773929d330aa8ea714a67b53cf64f1d0592a09c17612b8f6d1a51c1a379"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/Jacobi/Jacobi.h",
+      "sha256": "671bd8e9727f64b9362c4c20dccdf284a6113579436591695c86914191deac7b"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/KLUSupport/KLUSupport.h",
+      "sha256": "2254b35a6740d46b6a5329444b069e73ca9978910b817f634e5e5a9f6fc3ea33"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/LU/arch/InverseSize4.h",
+      "sha256": "eac258bb9a25424472be80adf43a533298ed5a3b174925bb3513f1c086e79b58"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/LU/Determinant.h",
+      "sha256": "8060030dc024b059b13061269828d800be8237e4d4cd2f26adae5151c0d498a3"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/LU/FullPivLU.h",
+      "sha256": "c9f42ff6bee193dc9628204743b48fb269676078c65bdecfa6e44071cc26024d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/LU/InverseImpl.h",
+      "sha256": "b82451ccb235d795fc7bfb9d4b36a0c06c16e7e6f6ad705931c3049fef6f6c8a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/LU/PartialPivLU.h",
+      "sha256": "bea21f366a4cb3c24b20d1a0e30272b2ba48ae3b60aa96e7b8a012b32928ffb4"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/LU/PartialPivLU_LAPACKE.h",
+      "sha256": "fa79b140a03d22fca852305e63c376d3dd9c0613affd9ebfcf3fe968f1fa7777"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/MetisSupport/MetisSupport.h",
+      "sha256": "1e3ddb78af30ed0ef415cc601e95d85406d2622e7b82dde66dc24a31763f2cfd"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/misc/blas.h",
+      "sha256": "eccfe71c00549318930d88b2e27b6c3b593c2f9dbeeb0df242808e95ac825e06"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/misc/Image.h",
+      "sha256": "b1c819a6d29fac10eba2ecb84af85733bbaf198b6c360aaf2d70ce6a1c731bb6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/misc/Kernel.h",
+      "sha256": "74dfb9c9c12e520e3e01768c62dab1dc3c2f6ff03a75518d44e0e403cc053a87"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/misc/lapack.h",
+      "sha256": "a8bfcf3a4b3cb40849765b2269fd5a72aa4a410ed710fd53398e7d884a740329"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/misc/lapacke.h",
+      "sha256": "7778e366e67c765c89368c6df35b2d9156debd02330023c400b53da1f9aa4c4c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/misc/lapacke_mangling.h",
+      "sha256": "11ecd4a5be1d36e2e0d6109117ec51046100b81d4bc904665eceee041a21a951"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/misc/RealSvd2x2.h",
+      "sha256": "84b74b4c3add9dbf3e399a49df887ec860eef2e835b9068986e19046bf1793a5"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/OrderingMethods/Amd.h",
+      "sha256": "3b4a4e67745b39d94db7facc600115aa4bafc75796c271180f737bf2ef4fc6fd"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/OrderingMethods/Eigen_Colamd.h",
+      "sha256": "bcc586a751ca48485975f7a65e1f661e0f2446f0ca8aaa1ecc5d5641b101cfdc"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/OrderingMethods/Ordering.h",
+      "sha256": "59245d7a4dfa02b820ce864b0b86029156948b48d3447bad531cf4609b55521b"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/PardisoSupport/PardisoSupport.h",
+      "sha256": "b16cb6897206cc499ab707c8c0513dcdc4a7c70afd5b1d5a09f13ad8bdc24010"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/PaStiXSupport/PaStiXSupport.h",
+      "sha256": "b9a0d3f862614b986acd7d6f5e4f180593df995fdf99869a3d64a494bcbaef18"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/plugins/ArrayCwiseBinaryOps.h",
+      "sha256": "f0a6255b1dbffb08a814a50fff84f4b7dc0c3c91c2833d162ac4cbac45de4173"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/plugins/ArrayCwiseUnaryOps.h",
+      "sha256": "afe8c25aa276ef9e794fee40007857b90df221b4d55279103da90d91c7c44f42"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/plugins/BlockMethods.h",
+      "sha256": "e5460bb2f642aef1c10cd3f672cb32572a54b2025d34302e4ea5990109316c0a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/plugins/CommonCwiseBinaryOps.h",
+      "sha256": "780988cd7fe447721ff9a86367b59fe61089a32248326eba83bcd092951494cb"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/plugins/CommonCwiseUnaryOps.h",
+      "sha256": "7759ff49d88fdd175451cdb8630f4a01301613bb8244d4a8aeab3cb342a46b8d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/plugins/IndexedViewMethods.h",
+      "sha256": "c38f9ab12557ccdae0340014e99f36e1bf75280a8c8935f67ae5f1ed72acae54"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/plugins/MatrixCwiseBinaryOps.h",
+      "sha256": "63c4cb5d56f7bd623574bd82576e8749a7b7f57979df1d6dde782ce0ed16057c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/plugins/MatrixCwiseUnaryOps.h",
+      "sha256": "8ea68506b34889c9a26a01d3c7ce557e4f9f91c14d6c58c547e023eda295b963"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/plugins/ReshapedMethods.h",
+      "sha256": "6c6f54856539301f580245d7979d437b272065c727070bc0a6b0dbd4cdf6ebee"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/QR/ColPivHouseholderQR.h",
+      "sha256": "77454f9b6a6dc88abac9c906849f61131a9e4e9c2b6cad0b1ec29a2fbb228612"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/QR/ColPivHouseholderQR_LAPACKE.h",
+      "sha256": "16c55cd5452e0dce179684c94e6ff6b71be92bd90e263b7c0b191e698ce7d3df"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/QR/CompleteOrthogonalDecomposition.h",
+      "sha256": "b4241c503ec97ff37167e76c26ce1f3fa4baac87d4bb44aa62bb2e641a5dc954"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/QR/FullPivHouseholderQR.h",
+      "sha256": "e70d990319a2be5c4595c51cb03375bf4ecebf40d5dfac54742396a4cb43cbd2"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/QR/HouseholderQR.h",
+      "sha256": "053070814aa9bdb703d66dcaa3c0761daf412c45ed0b9f448fca24a05b1a93ab"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/QR/HouseholderQR_LAPACKE.h",
+      "sha256": "a1b362ba485b32a8fa1c200caf403dff392d9dfd7c946482b50ee878c517e77f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCholesky/SimplicialCholesky.h",
+      "sha256": "a21bc769cdd4de4ab2fa9abb41e342b384d79e5d211d5424e53d18238dc724d8"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCholesky/SimplicialCholesky_impl.h",
+      "sha256": "5678a303438080213136c7c7aa5545dc7f35f0b57652e82c22c80ff9120c75aa"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/AmbiVector.h",
+      "sha256": "bb3e40d8ca92a5afdf9c571188a40ac6fc0d5e805fac26377e39b182e3ca2973"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/CompressedStorage.h",
+      "sha256": "874bbdba8d432e9961a62cffb6ae6deb8bbb62cb510c29c9b8f157e3dbd1b12a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/ConservativeSparseSparseProduct.h",
+      "sha256": "87e5a4e19125b315cf8c6b20d23b122f0dfa800b0fea39f1f3cc5990649a4023"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/MappedSparseMatrix.h",
+      "sha256": "d114a7dc8ac5e8879004a384cf42aefc328c4d21cef0be7abdc15d1bc5c1b43e"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseAssign.h",
+      "sha256": "64fa8e4d7a2cd4c373fc6a3585a41df7dfc3c8bc7917302732769df22f197829"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseBlock.h",
+      "sha256": "c7ba321928ed731ec69ce0b35d0c0e687add96434832eb698324cf417b026f6b"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseColEtree.h",
+      "sha256": "e21cee33cea74d813cbb7ace835a9747b67a8c1255bc4cde2134f4aac83074cd"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseCompressedBase.h",
+      "sha256": "56fb936943623fec15f3f9d5032dfa2dd7745f67764583ddf0ab3e3e325333bb"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseCwiseBinaryOp.h",
+      "sha256": "70cc3a29f16e3fe84c5dc7fe4489a052ad68f12a5dd4d82fe47af29aaedc8838"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseCwiseUnaryOp.h",
+      "sha256": "5696fa27fe37937422654414e782afe2bb2b2716bc05c862a6d4a269c9b45fcf"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseDenseProduct.h",
+      "sha256": "cb4cc6acb704fca4fc6ee02dafa7ef5f31f3d3a609ccf88cf796443e9c07f603"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseDiagonalProduct.h",
+      "sha256": "0146f83c0e0c256250c6cfc5b1ba286349dc2facb196f0c371677a5aa974aa81"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseDot.h",
+      "sha256": "fd99a2ad67df56cc2406a1dc507e9c520398794443e22e22bea93b6291b294c6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseFuzzy.h",
+      "sha256": "dbf4d9402be007692f0fd088a677d345a31b1b920e353659d8a64cfc6b930267"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseMap.h",
+      "sha256": "438775868a23310376873add9ca2b7a165c67d8544a3337f207a6c7699b36109"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseMatrix.h",
+      "sha256": "10b9de7a8c51762feacac7eff1e7a3af46b6871d5d243b0233d06f036059adba"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseMatrixBase.h",
+      "sha256": "2fdcc138ac6865130ccfc23d2b92e4df6ab589e6ff91a30a22cef3c8fa9ff42a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparsePermutation.h",
+      "sha256": "6b731c70e473cf0d2c514882f86aef566dd669f5917a5bbe977d1e3781ec088c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseProduct.h",
+      "sha256": "1a67f5e46ae9c6f3fda98baf65640937ac3a719bdeca57e5d6ad9c3b942216fb"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseRedux.h",
+      "sha256": "30ae39115d906b41fb80e220355c33b94862ae165a9b8bc675f795266dccde18"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseRef.h",
+      "sha256": "b3ec8c50388614ead87915d34e6527e946c9dbfb88ed72be49592d7d0eb05786"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseSelfAdjointView.h",
+      "sha256": "4a1a6848a4771f3680fc187d4c71cad7badf41f7101ff5593aef61386408837f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseSolverBase.h",
+      "sha256": "84965c85d0e6ace561cefa856738533852b7d94a8aac8e10de1737fc4a77c25a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseSparseProductWithPruning.h",
+      "sha256": "f65ce563f3a7f1a0f3ff08b5893eb32b6287fbd3a8f027e61fcecd48fb178a0d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseTranspose.h",
+      "sha256": "d359a1d4cb8dfe970e2550b732b7187611590509d43549d829ab5c50156cbaa8"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseTriangularView.h",
+      "sha256": "5b484fe6e08fb4c803a17481d99e7f93de96882b8ecc19f4f8c174799d1f4a08"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseUtil.h",
+      "sha256": "fd297a213f62b1750e2462639977677ac916b1934a62130204425ffe6307e7b3"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseVector.h",
+      "sha256": "48951c9e10f71c562da9bba7ccf79ef3d286ef4ce2fe0f774a1c1dae938a91df"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/SparseView.h",
+      "sha256": "102ad4e2872eb8d814b82ec6d43d91e3641628743eab7acfaa8c8e80de46af06"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseCore/TriangularSolver.h",
+      "sha256": "8bbbfb015b81af30088faa080b7f23ac585afeb5e4473e72586b791f6517029b"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU.h",
+      "sha256": "7ecc6943d4a00f8c7e3be8e474b4cc20eff0539ceed5234f9e64ed90a7bda02f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_column_bmod.h",
+      "sha256": "d9f43061aacad8843156f5bdee8687426f4a580dd3236735d0f3812c65881fde"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_column_dfs.h",
+      "sha256": "3355b7e8771a7090c8b139249c921d666e74ebe34cf5be556ddfb6248eaca7be"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_copy_to_ucol.h",
+      "sha256": "d13af2600a09b95796384e5a1fb6d99ceda714911c66d21dc99c79c114217923"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_gemm_kernel.h",
+      "sha256": "316126480984106488c7d98886ce20fd1089dc768fa87e0a8f39eb04d3117da8"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_heap_relax_snode.h",
+      "sha256": "31ed0be504ffeae88b9de6ad7bea4c261364274da710eecaca8056029a8818ef"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_kernel_bmod.h",
+      "sha256": "55a43101e450046f622b3b71e9f42c20451df8a883fb8bfa7d48013d967ed644"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_Memory.h",
+      "sha256": "38826e01b15cbc2350fa0a14cb75439d829676662969a222db000130421460f3"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_panel_bmod.h",
+      "sha256": "7c44050b22382be7363c799e6db6c1dc2197305c8689fcaed866e41db9a57dc5"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_panel_dfs.h",
+      "sha256": "e618a0aceae20ce5b5f0b430916b7cdf3ea8ef3e11bea4a28ebb75b7d31842a1"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_pivotL.h",
+      "sha256": "9acdcafcea21fa55a923bb54f052a31c7aeffb9067974dbe72999b124debd4d7"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_pruneL.h",
+      "sha256": "a25218e43107d711c3bc89f39abde07d9076c32b77925acdc9da4f613fd9465d"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_relax_snode.h",
+      "sha256": "c4dcd0d248673d82198264176f53a1400599569e5564a1a89dfded0128dadb20"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_Structs.h",
+      "sha256": "9f3ff63755ddc5f93d6a1e17444b3599412d06ecfe6a1fa725a9df2823c60945"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_SupernodalMatrix.h",
+      "sha256": "6e8fe5a81b8baf43e9ce123301b0339d9ba7b5c0981799c2f826c08dd8e06a8e"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLU_Utils.h",
+      "sha256": "d2073b4bbb52e8a07c3f7d2b9e8c79f50d34ce3f49e7824b668655350974b31c"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseLU/SparseLUImpl.h",
+      "sha256": "a2008cf85de7d839b1c81fdc574e3a37adfea219f1af702dfe44bf160160fe82"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SparseQR/SparseQR.h",
+      "sha256": "ba3744a943c38386fb4961be95382876685368c40ca3d13e72c21eeb41a311d4"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SPQRSupport/SuiteSparseQRSupport.h",
+      "sha256": "2f43b53b8c7b1dac2abdff5363312c625541777eace24e2eaca087aafff80b78"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/StlSupport/details.h",
+      "sha256": "759693c3ca466829a7be806fe333d302021b73e60481820ae1a16526443164a9"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/StlSupport/StdDeque.h",
+      "sha256": "b112db8c9f4e9f440d192b5c6786eab0d7cda40d39f917a64303baafe65b8f89"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/StlSupport/StdList.h",
+      "sha256": "0a018bdbe1fa0f6ec4c60aebe5d950cbd087ddf2d1f92e4d560d4a7ce4e87c65"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/StlSupport/StdVector.h",
+      "sha256": "ba51f7452afb94e850661cc6b799f42e17d067e394e4de4a3de4df35d1a7d016"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SuperLUSupport/SuperLUSupport.h",
+      "sha256": "47e5fcab1ff3848783fbefda436832ddb1ef580f0b3fa6aff9480c94a0cd4cd7"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SVD/BDCSVD.h",
+      "sha256": "ad6f77a4320ee56d095d2b7aa4104deb6ea1dc501bc6bd031183177cf618b2ba"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SVD/JacobiSVD.h",
+      "sha256": "f21489b1fc62d895baf304cbebc3cf75932a2a5651602c41c2df354edfb7753f"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SVD/JacobiSVD_LAPACKE.h",
+      "sha256": "ada319bc98e2a0723c02081ea008405b82e22f8fce164fb815a4f08a487d4245"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SVD/SVDBase.h",
+      "sha256": "d1acf0d6a8bf0c72b4cb9de4fb9a9be153ca43f58e02b33453f0bcfc2dafd211"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/SVD/UpperBidiagonalization.h",
+      "sha256": "a0b4724894e74499288e0710b3eab8538f1656984c126f65502e4ca022db2679"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/src/UmfPackSupport/UmfPackSupport.h",
+      "sha256": "a1ad188124d33b5df92e2120ec8b3e9015be7eac3e813c15589617b269884b9a"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/StdDeque",
+      "sha256": "d3dec408eea21c21cf0914d0e1245398c9fa8364778f9286a580d787ae70330b"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/StdList",
+      "sha256": "b6d4ca41ca47b59c24489875bf4831a0a903b047ea9cefa99eb1a1fdc636f8a1"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/StdVector",
+      "sha256": "2ef1640a922ddbf1bf9bafd4c4b80dad6b310c87321f99c48fbc57bee20a0231"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/SuperLUSupport",
+      "sha256": "e1c4ca3501e30c54b1396859d1d42be09c7becf22a99e41fe05e9dc53d3e44a6"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/SVD",
+      "sha256": "3e8dddd32c2feecab7471521d6c4d874b9b52f0ad1ee9386570b41c67bf4ed94"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/Eigen/UmfPackSupport",
+      "sha256": "5c24f143f56cf2c512f8a8887cedff20da078ef9c45d10d8fc83b174d107b4eb"
+    },
+    {
+      "repository": "wolverine",
+      "path": "third-party/LICENSE.MPL2",
+      "sha256": "cde215e5b42363eb28ca2462c4558ff4807b38f383c537624c31e44657ac58f4"
+    },
+    {
+      "repository": "wolverine",
+      "path": "tools/r14/cpu_buffer.h",
+      "sha256": "c40e300c2ec6696bc0ebf6008dfa351ddfb6e0488a76ec466096a64f9665583d"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/character.hpp",
+      "sha256": "b51e31102d8039a8164e648291055da24a4e87025888f0bb2067fd5b700afdc3"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/clinical/ambient.hpp",
+      "sha256": "43fb693bc82fbcd6650f31408129ed1f14041181d8ef69e3720e65162dc1aa34"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/clinical/clear_strand.h",
+      "sha256": "98199c4d1bd5ac76eaa72169fdf374d1cca34b58313b2526f01268a066af9455"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/clinical/common.hpp",
+      "sha256": "c0740805f6198f0e7880a9f9a2792d2f0dd0e9983138511642a97836a7cdce89"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/clinical/deposit_mesh.hpp",
+      "sha256": "9c6abb627af59d667555ebb9474fb759858a8030b981d10a56944f6403d262fc"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/clinical/fluid_splat_model.h",
+      "sha256": "c7b9acc739e5287d474d6f775aadf7bc349fe04aafcdcb7ec5801e296754f8c9"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/clinical/fluid_types.h",
+      "sha256": "62dfe2c1b688ae5e0ee02e08cb1a17e406705ada800f0544ca2fc38e93d5ff65"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/clinical/session.hpp",
+      "sha256": "752ae7bd61c83da14d0f1006016183e595bd02d84e27e9787b15e563c8b1981c"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/clinical/splat_bakes.hpp",
+      "sha256": "b632f5dfed7c6071f6b1107988897b4bd78678b0de5f8b7d5cc3045603492899"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/clinical/teaching_audio.h",
+      "sha256": "a357e596744d21231c436a936d5e7a4e0bc32c9e88afbd1c4f571bca87bb13cd"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/clinical/teaching_sequence.h",
+      "sha256": "d29f53a340bbab96fdcd33f5efd31c01236b6cef8287ffbc36a2fe1e5259acdc"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/clinical/teaching_volume.h",
+      "sha256": "120e6dcf6658b6e3c09688e5bbea8e3016b2f083df2bd4ef8247ad54f506312c"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/clinical/thread_mesh.h",
+      "sha256": "f2cb65baa4c4b705ff8330ee7b64c956dbe7b1f64b169d88e765b1395d5864ef"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/clinical/viscous_thread.h",
+      "sha256": "8d9c0534a1f70354bfc3005d8e7feaf15cfefed4d9e38243921661a6cc4efc66"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/collision.hpp",
+      "sha256": "079403ddbbf529299ae024a46b3ed32c90786868a5a04b9472420b6ca0d5358d"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/controls/costume.hpp",
+      "sha256": "4f8c3b3b7fb36b335d7a5e8d1d24ef41e5c6fdd17b83c6293b61a41fe9adfb7e"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/controls/menu_theme.hpp",
+      "sha256": "5c16fe913613feea8c03eab5f1f37b499c948a1c91e6305438ca541be323066c"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/controls/presentation.hpp",
+      "sha256": "d68f7b196850f6e6d19375c428de52a2d50d10824d0756faf5bbef5977d1c7c2"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/detail/surface_limit.h",
+      "sha256": "7fcaff99fc3cb587fb3a50a8f212cf0bfb31eb5f3f73e1a58a0101797477b748"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/anchor_transport.hpp",
+      "sha256": "7d9421798155f4f51f5bdd94ad939681f1540934623ed04e3799082b34e034bd"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/band_material.hpp",
+      "sha256": "fae1214ae54029f731b79f2f56c51b717594df885b9fa9b817f2b58324c7a177"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/band_rest.hpp",
+      "sha256": "b235d42fff1a06f78d1eb350b470fc238c337c5f3d72a5346b7e33c2f2fa5e16"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/body_surface.hpp",
+      "sha256": "2f904edf16c4fba5e8b200c766876b6e0d61d17e009f9ff9926437d0b3454c5c"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/cloth_detail.hpp",
+      "sha256": "59669fa04cbcdd15e4476d71e023cd05a2b31c269611ac5845d560a287f2f0e0"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/cloth_reaction.hpp",
+      "sha256": "3b7d38d47df5ac80bf576c9b8e61ef9faf82417e58809e6bf93cdb8cd2263050"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/cloth_stretch.hpp",
+      "sha256": "40fca9a3d45e782360afe4d3cff1c53dbdfe1a41151a56037dddaac7a1fc5e56"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/contact_query.hpp",
+      "sha256": "7208bf8cc20e9f7cbe9c8ff7cf2717db75d9141b1f1d3d2b0c0bee7580880cd7"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/contact_velocity.hpp",
+      "sha256": "0b405f733b9ebce5f5f81dccd32ce6136f3a28c58de16416a55806826ebb2a07"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/cpu_cloth.hpp",
+      "sha256": "095eaaa3eac2aa9779be0559be4a48e6e4c043eba766050aa33258f10d4e75d3"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/drape_chart.hpp",
+      "sha256": "2bec1138ad0cb217dc228e3c869024b2b4ea5c2941bc23663245df33b4637d16"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/drape_hull.hpp",
+      "sha256": "a0b145bed1c411fdc66ceeb701b51990e31492478149882faf040f0b2466499f"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/drape_section.hpp",
+      "sha256": "5c1be4100c42af6fa0b558aa5e0983ffc3d86766259e90d040d50d4d93c11008"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/drape_sheet.hpp",
+      "sha256": "22c0c2b8a4320e7f4ee5964ba01c9ea87de58d9b6ad250a2e5492046fdec28c9"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/geometry_export.hpp",
+      "sha256": "8b214acffbed298b389254f67b3834e12dc6a6274d4131b0c377b2b31e6d229b"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/input_recording.hpp",
+      "sha256": "c9b20db930738fbea5114f8aa4182315dc245e35209107b4d6f33f4b4d1514e8"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/jockstrap.hpp",
+      "sha256": "4005d82c2a3a5702537fad7fae372f5f995d24a726747cafea33dd99537b1970"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/jockstrap_detail.hpp",
+      "sha256": "18adb0a25bdaf495d4a6b945e461a5278abd40a35ece49dbf7f8182450de3bcf"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/material_grid.hpp",
+      "sha256": "359b621e3519ef0fc648c11aa83f17c9451679e305ae58e1ebf894b1510b0ab2"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/measured_capsules.hpp",
+      "sha256": "db697ced29054560cb08e408caefd87f590aa9ce5b3972e22cc34432b303cc75"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/meridian_clearance.hpp",
+      "sha256": "3763f126988930a459c6e741bde52604483a0cc4b55e450a62784c20ce57d2d0"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/meridian_continuity.hpp",
+      "sha256": "74a07166204065a4f1d04ed0088987e9ce73e630176c8b0d7cb8c37e31f62a87"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/meridian_follow.hpp",
+      "sha256": "a21603a672f26ee8fc02599ac1d9e34d69076c5d7405620500e91598540db519"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/meridian_material.hpp",
+      "sha256": "2c1ffaef07b86c11ba7baee32db904c6f4d354d99ae89ba7f0cc281c122829e2"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/meridian_rig.hpp",
+      "sha256": "4bcff62ffb5670212039fac4e1e3651bc4605065b7775ebc068e1ae3b248a41a"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/meridian_runtime.hpp",
+      "sha256": "01c72a1d77c1e6555f70e01079dd38ff81f6ee8ecd3713cdb49d145c75fd7768"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/natural_band.hpp",
+      "sha256": "101a595bb200997ee31bb41ddef568c46b6d46991a1d0fa5478a2a751b94d611"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/numerical_support.hpp",
+      "sha256": "ae38ff5611947e4a87641f44014591d322da662a7f2c3a88ab6de17ec55ad082"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/pouch_budget.hpp",
+      "sha256": "ad21f58f54a48cb72d7e298d59b39359fe96a4f9ca9c20ed5f937a1b4ed1b481"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/pouch_cage.hpp",
+      "sha256": "1218eded258a0039a0e968971ab420667cd3063831d898cd54609f7654a25f43"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/pouch_session.hpp",
+      "sha256": "cb8f145618f580c71b6e4699b59c655b432553a78ba5879480ece80822bd9458"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/proximity_cache.hpp",
+      "sha256": "38c7b55b33530088620d3b4b3102e0639c6806cd01b83300d25604a9e765da60"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/reaction_support.hpp",
+      "sha256": "ea4491fc85b7216b1a0766fac3ba5c232edf964973359205e01b5d3a5648aa3f"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/render_contact.hpp",
+      "sha256": "32e55250faa8b370e1e825ebc0576e4484646df5c3685d2bce86c68a2ced7fd3"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/root_closure.hpp",
+      "sha256": "1c074d57a994f7aefb7e71575ce2b5a07d4184cf83671dff6a7b1499c753d19e"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/sewn_contact.hpp",
+      "sha256": "b0c0431d4695c49f96ee4b0905310496a03ecc084ba1315815ee9c7294709a97"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/sheet_fit.hpp",
+      "sha256": "908015962b8f200726b764d642c2a49545176b42f67935c1ceb884c0a33fc571"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/strap_route.hpp",
+      "sha256": "bc67d7d807897c392883c9b4cb2b4a55b71a4c345b5cbc42ff911c837d69e5e6"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/supported_cloth.hpp",
+      "sha256": "5bdd4301f41ba2be684c3b1a29c9cc22cab3cdb41f3118251e6a728c0ed156ec"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/surface_classification.hpp",
+      "sha256": "c3ab2d903eed1168b6e05a12ebc8ea726808789e7ee6b534c839183bff967b2e"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/taut_contact.hpp",
+      "sha256": "c5c324ea5bdd8731198459d18a47518076128269416f16e78809b1daebc7bdb9"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/trim_support.hpp",
+      "sha256": "a81f81ad75f981aadfc4950563eb1c7cad697875b0632c20d738679884e83d87"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/waist_contours.hpp",
+      "sha256": "e741c81dc6082ac9e817a05daba9e7b877a793fb218b878fdc17b3db99566eaa"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/garments/waist_graft.hpp",
+      "sha256": "eb9936186b2e5a9d127e96dcea4dee870e60e62e7abc17ff95609a423ac00227"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/math.hpp",
+      "sha256": "21c5ffcf814c9e254f7773bc0786dae352a02dd89a0eca20b3003017b4f5a178"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/motion_filter.hpp",
+      "sha256": "e60999a6badcd05f17d59f519ef638849bdca0844ac2edf1bcfb3736a7521da9"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/physics/anterior_capsule.hpp",
+      "sha256": "ec99e686c3bdf270db823a276f4184addbaf652373f1a45b3b3271f559d24e23"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/physics/anterior_envelope.hpp",
+      "sha256": "b745e44ef9d708e5c2dc7190f350d064735065452b72f668ec80301d7e70437b"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/physics/bounded_hinge.hpp",
+      "sha256": "134da6fbe69c9f3f25eb28f5aa3c3b65f905ae462ab9300322be1fcb4a21477d"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/physics/chain.hpp",
+      "sha256": "6c06389a56a544bf2728832a3eb2cbf1e18f34897343fc88d91408a027f17e0c"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/physics/ovoid_support.hpp",
+      "sha256": "c9a1e48807ecbc60e2ec293478f7a178a54e656c1e1b07782217cfc9ae719560"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/physics/rig_kernels.hpp",
+      "sha256": "c20b9dd19da5d81819646f1ddc37bd772a0bb56e33fa287d93132c796bb6e959"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/physics/rigid_cluster.hpp",
+      "sha256": "b515a5e1ca6bb9de53b4f7c7188a343e42444ccc2a72b183cdb851884f524142"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/physics/state.hpp",
+      "sha256": "ffb3095d124f0b79d7ce52f5ba9398143ff42bf1169f4f86dc54097ab6fa84d8"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/physics/xpbd_kernels.hpp",
+      "sha256": "d91eea589f380b48a7dc76174a7c51c5f81785c394dc52767d9a36aedc771747"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/surface/binding.hpp",
+      "sha256": "1d4ba94a14e2f7ffa3ea21334748f9937d31c4a37e449544497c9c2a5749da8d"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/surface/collar_field.hpp",
+      "sha256": "5a74d8320f95cd7abf47d319f4012dd238bc6069f6cae0a301d85450f763f3c6"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/surface/garment_impulse.hpp",
+      "sha256": "f290b2fbeb83469c797a044a2045ae5d4fbfeea353342377d44da6281fa360a6"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/surface/garment_support.hpp",
+      "sha256": "5558ce6dcfbc516d659f686a53b854699b815d219fdd3f1aab24809847c1518c"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/surface/graft_runtime.hpp",
+      "sha256": "4916d01d4c203d18fb65042e3321852c005307d7c82eb1290594102adaa4c599"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/surface/lighting.hpp",
+      "sha256": "4d31dbac8ba7dbd6f5f5e726fb911f8c198ca39f8d37696fb273dad1971c5107"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/surface/pelvic_frame.hpp",
+      "sha256": "d69ed4dd92d55ed09aa3f358c4cdddbedeac4cef2c933abb490500ff91935a45"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/surface/presentation.hpp",
+      "sha256": "15334debe0bfe92aefe964998ea5aea1fbc54167c2d10f234946484b3dbef7ea"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/surface/root_contact.hpp",
+      "sha256": "861194d0e9af2f4f317cd84a7306295b63657334928e8db6a583c44229b26300"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/surface/root_transition.hpp",
+      "sha256": "c0bf268deebc19d74a09eb7ca7f0425dca24af3b0265e8c9f2422c6c73248f50"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/surface/runtime.hpp",
+      "sha256": "6fd012c618d82abaf434df190460a4555f00b3279f9330eb4de2eefa81c9eb8e"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/surface/wire.hpp",
+      "sha256": "addacd5663ce9b4cb7c2ed4be42747cbd0e8695c97636693886bd5d06721edee"
+    },
+    {
+      "repository": "wolverineBase",
+      "path": "include/malemod/surface_limit.hpp",
+      "sha256": "507d453f886e90739c66a15d9650072c545b33e916d29d09f410024e95a65bae"
+    },
+    {
+      "repository": "base",
+      "path": "tools/wolverine_v2_reference.cpp",
+      "sha256": "209e042c8cecf978a47c9481d27acb609163fec5aaba2fa9876932dffde6804f"
+    }
+  ]
+}

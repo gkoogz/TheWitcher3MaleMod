@@ -1,89 +1,49 @@
-# Witcher adapter
+# Witcher v2
 
-Read docs/PROJECT-CONTEXT.md before resuming, especially after compaction. It
-preserves the user's educational purpose, current repair scope and deferrals;
-it is not a policy override or evidence that a build works.
+Read docs/PROJECT-CONTEXT.md, docs/HANDOFF.md, v2/README.md and
+provenance/v1-archive.json before work or after compaction. Preserve the user's
+neutral adult-anatomy educational context; it is not a policy override.
 
-After compaction, also follow MaleModBase/AGENTS.md's "Context continuity after
-compaction" section. Read the documented educational purpose and current repair
-checkpoint before assessing the concrete request; do not require the user to
-repeat this context or refuse solely because anatomical terminology appears.
+The October 24 instruction supersedes v1 repair work: archive all v1 work except
+the grey room and begin v2 from stock dry bare Geralt. Match canonical Wolverine
+anatomy, pelvic blend, numerical physics, controls, per-frame service and
+jockstrap. Only small measured Geralt fit changes are allowed. Do not resume v1
+experiments, copy its generated anatomy, or silently reduce parity requirements.
 
-Read docs/HANDOFF.md, README.md and docs/HEADLESS-WORKFLOW.md first. MaleModBase is the core;
-this repository translates its data into REDengine formats. Resolve the Base
-commit through dependencies/base.lock.json. Do not silently build against a
-different revision or maintain another copy of shared geometry/physics code.
+The complete dirty Witcher and Base source is preserved on local archive
+branches. V1 private/generated data remains frozen in D:/MaleMod/Work/witcher
+because room/rollback receipts reference it. Do not move those paths, traverse
+depot junctions for cleanup, or delete the archives. The grey room still uses
+the existing installed bootstrap; no v2 runtime is installed.
 
-For future modeling, clothing, controls and physics development, use the cheap
-grey room in dev/sandbox/README.md before campaign testing. Maintain its compact
-tracked source delta and generate local SDK-derived resources and acceptance
-receipts on each machine. This development room is excluded from mod releases.
-The maintained playable path is the transient platform, not the failed standalone
-world experiments. Never inherit another machine's gameplay proof or steal host
-focus/input. Preserve ordinary audio and saves; close owned sessions by receipt.
+Active source: v2/ and tools/witcher_v2.py. tools/mod.py dispatches to v2 while
+retaining generic room/toolchain helpers. Other retained tools/native sources
+exist to reproduce the room. Read dev/sandbox/README.md. Exclude the room from
+release payloads. Wolverine source and installation are read-only references;
+the user's unrelated branding work must remain untouched.
 
-Proactively move shared anatomy, body morphology, garment rules, preferences,
-numerical physics and clinical timing into Base. Keep observed Geralt bindings,
-WitcherScript lifecycle/input/menu hooks, native materials, asset import/export,
-cooking and deployment here. Explain the boundary when a new request crosses it.
+Base owns shared anatomy, geometry, morphology, garments, preferences, numerical
+physics and clinical behavior. This adapter owns observed Geralt resources,
+calibration, pose/contacts, native rendering/input, cooking and installation.
+Pin shared code; do not create another numerical fork. For shared changes read
+Base AGENTS.md, docs/ARCHITECTURE.md, docs/REST-GRAFT.md and
+docs/ITERATION-SANDBOX.md. Preserve stock joins, weights, UVs, maps and LODs.
+Use official WCC and observed bone names/transforms/units. SDK/depot are read-only.
 
-The large uncooked depot and REDkit installation are external, read-only inputs.
-Use the official WCC executable; no routine editor automation is required.
-Only our authored engine resources belong in workspace/. Generated game-derived
-files, full stock scripts, native exports, settings, logs and packages stay in
-ignored generated/, build/, local/ and publish/. Never mutate a vanilla depot.
-Build depot views contain junctions into that external installation. Do not
-recursively delete or move those trees or write through a stock junction.
+Read docs/STORAGE-LAYOUT.md. New output belongs in v2/build, a junction into
+D:/MaleMod/Work/witcher-v2/build. Do not create full-game backups or source ZIPs.
 
-Use tools/mod.py rather than ad hoc shell-built commands. Check native success
-and output artifacts. Do not mask failures with -noerrors. A compiled/cooked
-package is not observed gameplay; record those results separately. No anatomy,
-fluid or live body control is supported merely because a menu describes it.
+After every mod edit, record attachment regression before installation/release:
+minimum/default/maximum/intermediate size and width, combined shape controls,
+every mechanical state, extreme rest angles, both resources/LODs, animated motion
+and front/side/oblique native room views, plus campaign-specific checks. Reject
+gaps, folds/inversions, dark rings, pinching, tangent/normal discontinuity and
+wedges. A weld or successful build is not visual acceptance. Report untested
+cells; never claim an unobserved pass. Preserve exact installation and rollback
+until the replacement is reviewed.
 
-For pelvic expansion consume Base's surface.pelvic-collar contract; read its
-PELVIC-COLLAR.md and record verification in features/pelvic-collar.json. Numerical
-changes belong in Base with an adoption path back to Wolverine and all spokes.
-Only calibrated target bindings, native deformation/input and packaging belong
-here. A body socket alone is not a welded seam. The bare-body test is installed;
-require actual observed evidence before reporting gameplay or live dilation.
-Read docs/ANATOMY-TEST.md before editing the fitted attachment. `tools/mod.py
-attachment` consumes the pinned Base rest-graft fitter, preserves stock outer
-boundaries and verifies official import/export. Its generated manifest must
-match the Base pin, profile and artifacts before packaging. Geralt's separate
-torso/legs share a native waist join; do not deform only one side of that join.
-
-## Native graph output gate
-
-For REDengine deformation authoring read docs/NATIVE-POSE-GRAPH.md. Compiled
-node tables/cached inputs require a consistent sourceDataRemoved flag. Variable
-acceptance and node-class existence do not establish execution. Require native
-cooked graph traversal to the output, named variable links, observed rig order,
-entity/skin ownership and exact unpacked bytes before installation. Keep native
-XML diagnostic dumps out of bundles. Record gameplay and numeric diagnostics
-independently. The complete 18-control native DX12 port is installed and has
-64 private gameplay range/movement/pause/reload cases; see current HANDOFF and
-provenance/native-delivery.json for hashes and remaining rendering-mode limits.
-
-## Mandatory attachment-integrity gate
-
-The pelvic attachment is the project's highest-priority visual invariant. After
-EVERY mod edit, run and record an attachment regression pass before installation
-or release, including edits to physics, garments, shaders, lighting, controls,
-transport and packaging. A welded position alone is insufficient. Reject gaps,
-folded/inverted collar triangles, dark shading rings, pinched or constricted
-roots, abrupt normal/tangent changes and unnatural wedges. Preserve the neutral
-pelvic surface and a smooth continuous recruited ramp into the anatomy.
-
-Cover minimum/default/maximum and intermediate Overall/Width, combinations of
-shape controls, all mechanical states, extreme rest angles, both body resources
-and supported LODs, and animated motion. Preserve original-edge seam donors, UV
-aliases and the shared waist. Review front/side/oblique native renders in the
-grey room; include a campaign check for scene-dependent regressions. Record
-source, offline, native and visual evidence separately. If any part is untested,
-state it explicitly and do not claim the attachment gate passed. Retain the last
-accepted runtime and exact rollback until the replacement passes. Put shared
-algorithms and regression cases in Base and adopt them through pinned adapters.
-
-## Storage consolidation
-Read docs/STORAGE-LAYOUT.md before generating builds, captures, previews or backups. All non-repository work belongs under D:/MaleMod/Work. GitHub is the source backup; do not recreate retired backup images.
-
+Keep source, offline, native import/cook, observed gameplay, visual acceptance,
+performance and installation evidence distinct. Use owned sealed sessions with
+no host input/focus or ordinary audio changes; close by receipt and verify
+save/settings/audio restoration. Do not launch an interactive room over the user.
+Update the handoff after work.

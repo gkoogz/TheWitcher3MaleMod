@@ -1,20 +1,12 @@
 {
-  "format": "malemod-witcher-cli-1",
-  "name": "modMaleMod",
-  "version": "0.3.0-anatomy-skin-test",
-  "workspace": "workspace",
-  "generatedWorkspace": "generated/workspace",
-  "platform": "pc",
-  "cacheBuilders": [
-    "textures",
-    "physics"
-  ],
-  "generatedResources": [
-    "items/bodyparts/geralt_items/legs/bare/l_01_mg__body_underwear.w2ent",
-    "characters/models/geralt/body/model/l_01_mg__body.w2mesh"
-  ],
-  "attachmentManifest": "generated/attachment.json",
-  "overrideRecipe": "recipes/bare-body.json",
-  "scope": "Fitted shared anatomy on native skinned bare lower body; static reference shape, no live dilation or secondary motion",
-  "status": "native fit and installation verified; appearance confirmed in user screenshot; movement and independent physics pending"
+  "format": "malemod-witcher-v2-1",
+  "name": "modMaleModV2",
+  "version": "2.0.0-development",
+  "entryPoint": "tools/witcher_v2.py",
+  "status": "stock Geralt and canonical Wolverine reference preparation",
+  "runtimeImplemented": false,
+  "installable": false,
+  "requirements": "v2/README.md",
+  "archive": "provenance/v1-archive.json",
+  "developmentRoom": "dev/sandbox/README.md"
 }

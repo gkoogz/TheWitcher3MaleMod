@@ -33,8 +33,8 @@
   "sourceFiles": [
     {
       "path": "dev/sandbox/README.md",
-      "sha256": "0695c95dd4356658a1fd0f1219b7c68bb7897a06d041de1d2018601a90fb1745",
-      "bytes": 7536
+      "sha256": "f6b3f0e17f82c156bbb7a72af7b375a5fc9a910baa31dbf854675fe607fdd268",
+      "bytes": 7999
     },
     {
       "path": "dev/sandbox/CMakeLists.txt",
@@ -83,8 +83,8 @@
     },
     {
       "path": "tools/run_iteration_world.py",
-      "sha256": "782a2377e0125fc91455e0bf883e0352b9c0c67119ad7df0b23ad7d7becfd739",
-      "bytes": 9232
+      "sha256": "a8e67b7920b3b455a6111ba8124eeba6f26a7daf5d09b6e32b9686ec770f40dc",
+      "bytes": 9561
     },
     {
       "path": "tools/iteration_save_transaction.py",
@@ -98,18 +98,18 @@
     },
     {
       "path": "tools/close_sealed_session.py",
-      "sha256": "ad82f6c8a1d4967724e4aac7dd5f8ede877e51d40002b797cd2998b7ef93d7bb",
-      "bytes": 4897
+      "sha256": "76822ab84e01b9203999ce3f61f35045e4d124e26416361fe7c639b198391c06",
+      "bytes": 6319
     },
     {
       "path": "native/launch_sealed.cpp",
-      "sha256": "90b9479f5960819ee6ac53b873eff46c4b2f2389ae32bc506646b88e844b6655",
-      "bytes": 4614
+      "sha256": "bc77a8d7be47fde2a12e351c0801f37ab0bd829c1418b85ae349a6d7f979619b",
+      "bytes": 4987
     },
     {
       "path": "native/session_audio.hpp",
-      "sha256": "15c28ebe6274b841866940c18a7888131fba97f89d0a30eddb7ee0ee7954de93",
-      "bytes": 2967
+      "sha256": "417d021266c497304307bb1b56902c59bb4dbf912d2d4cbe04a432f0d0458bd2",
+      "bytes": 4343
     },
     {
       "path": "tools/build_native_converter.py",

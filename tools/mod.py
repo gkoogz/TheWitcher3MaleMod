@@ -690,89 +690,10 @@ def uninstall_package(cfg):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    commands = parser.add_subparsers(dest='command', required=True)
-    commands.add_parser('doctor')
-    base = commands.add_parser('base')
-    base.add_argument('--preferences', type=Path)
-    export = commands.add_parser('export')
-    export.add_argument('resource')
-    export.add_argument('output', type=Path)
-    export.add_argument('--stock',action='store_true')
-    importer = commands.add_parser('import-mesh')
-    importer.add_argument('source', type=Path)
-    importer.add_argument('resource')
-    commands.add_parser('compile')
-    commands.add_parser('build')
-    commands.add_parser('attachment')
-    installer = commands.add_parser('install')
-    installer.add_argument('--directory', type=Path)
-    commands.add_parser('uninstall')
-    commands.add_parser('install-native')
-    commands.add_parser('uninstall-native')
-    reviewed_native = commands.add_parser('install-reviewed-native')
-    reviewed_native.add_argument('--preview',type=Path,required=True)
-    reviewed_native.add_argument('--proof',type=Path,required=True)
-    modular_native = commands.add_parser('install-modular-native')
-    modular_native.add_argument('--preview',type=Path,required=True)
-    modular_native.add_argument('--proof',type=Path,required=True)
-    modular_native.add_argument('--validate-only',action='store_true')
-    modular_native.add_argument('--rollback-preview',type=Path,help='Reuse an owned preview matching every currently installed managed file')
-    modular_native.add_argument('--backup-directory',type=Path,help='Fresh absolute managed-file rollback directory under consolidated Work')
-    startup_repair = commands.add_parser('repair-native-startup')
-    startup_repair.add_argument('--proof',type=Path,required=True)
-    restore_native = commands.add_parser('restore-native')
-    restore_native.add_argument('--backup',type=Path,required=True)
-    verifier = commands.add_parser('verify')
-    verifier.add_argument('--directory', type=Path)
-    args = parser.parse_args()
-    cfg = settings()
-    try:
-        if args.command == 'doctor':
-            doctor(cfg)
-        elif args.command == 'base':
-            lock = base_checkout(cfg)
-            profile = args.preferences or cfg['base'] / lock['preferenceProfile']
-            subprocess.run([sys.executable, str(cfg['base'] / 'tools/build_generic.py'),
-                            '--preferences', str(profile), '--output', str(ROOT / 'build/shared/generic-male')], check=True)
-        elif args.command == 'export':
-            export_resource(cfg, args.resource, args.output,stock=args.stock)
-        elif args.command == 'attachment':
-            from build_attachment import build_attachment
-            build_attachment()
-        elif args.command == 'import-mesh':
-            import_mesh(cfg, args.source, args.resource)
-        elif args.command == 'compile':
-            compile_scripts(cfg)
-        elif args.command == 'build':
-            build(cfg)
-        elif args.command == 'install':
-            directory = args.directory or ROOT / read_json(ROOT / 'publish/latest.json')['directory']
-            install_package(cfg, directory)
-        elif args.command == 'uninstall':
-            uninstall_package(cfg)
-        elif args.command in ('install-native','uninstall-native'):
-            from install_native_runtime import install_native_runtime
-            install_native_runtime(cfg,remove=args.command=='uninstall-native')
-        elif args.command == 'restore-native':
-            from install_native_runtime import restore_native_runtime
-            restore_native_runtime(cfg,args.backup)
-        elif args.command == 'install-reviewed-native':
-            from install_reviewed_native import install_reviewed_native
-            install_reviewed_native(cfg,args.preview,args.proof)
-        elif args.command == 'install-modular-native':
-            from install_modular_native import install_modular_native
-            install_modular_native(cfg,args.preview,args.proof,args.validate_only,args.rollback_preview,args.backup_directory)
-        elif args.command == 'repair-native-startup':
-            from install_native_runtime import install_startup_repair
-            install_startup_repair(cfg,args.proof)
-        elif args.command == 'verify':
-            directory = args.directory or ROOT / read_json(ROOT / 'publish/latest.json')['directory']
-            verify_package(directory)
-    except (ValueError, RuntimeError, OSError, subprocess.CalledProcessError) as error:
-        print('ERROR:', error, file=sys.stderr)
-        return 1
-    return 0
+    # V1 remains recoverable on the archive branch. Room infrastructure above
+    # stays at its original paths so existing reviewed shortcuts still work.
+    from witcher_v2 import main as v2_main
+    return v2_main()
 
 
 if __name__ == '__main__':

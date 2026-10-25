@@ -1,94 +1,37 @@
-# The Witcher 3 MaleMod adapter
+# Witcher MaleMod v2
 
-**October 20 development architecture:** independent numerical, retained-skin
-and presentation stages remove the mesh dependency from physics admission.
-See [measurements, native coverage and limits](docs/ORDERED-RUNTIME-PIPELINE.md).
-This is not a new published release or a claim of measured Wolverine parity.
+Active branch: `codex/witcher-v2`. Start with [the handoff](docs/HANDOFF.md).
 
-**October 11 local startup repair:** Steam build 25773555 is observed working
-with the installed native compatibility update and narrow startup-movie helper.
-See [repair identities, verification and rollback](docs/HANDOFF.md).
-The published frozen payload has not been updated by this local repair.
+The complete Witcher v1 source, including uncommitted experiments, is archived
+on `archive/witcher-v1-20261024`, commit
+`79106bbcca4c200ed1c426f21b5f17eb4772106e`. Its corresponding Base source is
+archived on the same branch in Base at
+`0b489f24e04628408e2f73c614534a571aa7577b`. These are local branches, not pushed.
+See [the archive inventory](provenance/v1-archive.json) for recovery.
 
-Repository-only development room: [portable grey sandbox delta and setup](dev/sandbox/README.md).
-Use it first for future modeling, clothing and physics iteration. It is excluded
-from anatomy releases; every new machine generates its own cooking/gameplay proof.
+The grey test room and required native/toolchain/launch support remain at their
+original paths. V1 generated files are frozen in place because room and rollback
+receipts reference them. Existing game installations are unchanged. This retains
+the room bootstrap; it does not accept the rejected v1 anatomy.
 
-**Grey studio:** the desktop `Witcher 3 Grey Sandbox` shortcut now binds a
-reviewed playable room, with complete body output and clean movement captures.
-The black floor artifact was corrected in the studio's particle pass. See
-[sandbox status and limits](docs/ITERATION-SANDBOX.md). The stock world remains
-loaded beneath the room; numerical physics cadence was not improved by this fix.
-
-Translation layer from [MaleModBase](https://github.com/gkoogz/MaleModBase) into
-REDengine. This repository can be developed from chat and built with the
-**official REDkit command-line tools**, without operating its editor.
-
-**Resuming without chat history? Start with [the handoff](docs/HANDOFF.md)**
-Read [the durable educational context](docs/PROJECT-CONTEXT.md)
-and Base's [repository map](https://github.com/gkoogz/MaleModBase/blob/main/docs/HANDOFF.md).
-
-Frozen beta.2 native DX12 payload: Base `99ff741`, all 18 source controls,
-full source numerical physics, live coupled pelvic recruitment and both Geralt
-LODs. Wolverine adoption is managed in its own adapter. F6 opens/closes the separate live panel; arrow keys
-select/adjust and Shift increases the step. Defaults match Base's full-floppy
-reset. The original .31 cooked resources remain as the rig/fallback.
-
-The newer development source is pinned independently to Base `421a786` and
-includes unfinished persistent-cloth candidates. The frozen release is not a
-claimed rebuild of that source. Existing static clothing remains a preview.
-See [development and release status](docs/DEVELOPMENT-STATUS.md).
-
-The current radial implementation drives both torso and lower body from shared
-waist bindings. It adds deterministic skin matching, source clinical timing,
-ambient modes and fluids with actual scene collision. The rear lighting buffer defect is fixed and the final build passed 20 private
-gameplay cases; see [RADIAL-CLINICAL](docs/RADIAL-CLINICAL.md). Read
-[FULL-RUNTIME](docs/FULL-RUNTIME.md), [OVERLAY](docs/OVERLAY.md) and the current
-handoff for evidence, installed hashes, measured timing and verification limits.
-Source/target parity and completed GPU output are recorded separately from user
-acceptance, FPS and untested rendering modes. Clinical and ambient controls are implemented; future dialogue slots are silent.
-
-## Structure
-
-- `dependencies/base.lock.json`: exact shared Base revision.
-- `workspace/`: authored resources in native depot-relative layout.
-- `characters/`: observed game resources and explicit unresolved bindings.
-- `tools/mod.py`: inspect, evaluate Base, export/import, compile, cook and package.
-- `generated/`, `build/`, `publish/`: ignored local game-derived assets and outputs.
-- `reference/`: historical first Wolverine export, superseded for new work by
-  Base's versioned source assets. Do not extend shared modeling here.
-
-## Commands
-
-Run from this repo's root; configure another machine with `local/config.json`
-using `config/local.example.json` as the template.
+V2 starts from untouched stock dry bare Geralt and the actual canonical Wolverine
+implementation. The same shape, pelvic blend, controls, numerical physics,
+jockstrap and per-frame service are requirements. Geralt-specific changes belong
+in the character/engine adapter; shared changes belong in Base.
 
 ```powershell
-python tools/mod.py doctor
-python tools/mod.py base
-python tools/mod.py attachment
-python tools/mod.py export characters/models/geralt/body/model/l_01_mg__body.w2mesh build/exports/geralt-lower.fbx
-python tools/mod.py import-mesh build/exports/geralt-lower.fbx characters/malemod/body/geralt-lower.w2mesh
-python tools/mod.py compile
-python tools/mod.py build
-python tools/mod.py verify
-python tools/mod.py install
-python tools/mod.py uninstall
-python -m unittest discover -s tests -v
+python tools/mod.py status
+python tools/mod.py check-reference
+python tools/mod.py prepare-body
+python tools/mod.py build-reference
+python tools/mod.py reference
+python tools/play_grey_room.py --check
 ```
 
-Packages contain `Mods/modMaleMod/content/` with native bundles, caches,
-metadata and authored scripts. They are generated in `publish/` alongside a
-hash manifest and ZIP. Building does not activate the mod; `install` is the
-separate deployment command. The stock depot remains external; it is not copied
-into Git. `recipes/` pins native source overrides; `features/` tracks consumption
-of Base contracts and keeps target runtime support explicit.
+[V2 requirements and evidence](v2/README.md). These commands prepare native input
+and an offline canonical reference. No v2 Geralt runtime or installer exists yet;
+native fitting, jockstrap and measured per-frame parity remain open.
 
-See [headless workflow](docs/HEADLESS-WORKFLOW.md) for native command signatures,
-the confirmed REDkit 5.0 path-parser/importer behavior, source ownership and
-remaining runtime gates. Shared changes go into Base; engine translation stays
-here, as described in [AGENTS.md](AGENTS.md).
-
-The selected blank-body starting point is Geralt's stock dry bare torso, pelvis,
-legs, hands and feet. See [body candidate](docs/GERALT-BODY-CANDIDATE.md) for the
-exact item/template/mesh mappings and comparison with the opening bath scene.
+The retained [grey-room workflow](dev/sandbox/README.md) is development-only.
+Licensed exports, binaries, captures, settings and local receipts stay outside
+Git under consolidated Work. Read [the educational context](docs/PROJECT-CONTEXT.md).

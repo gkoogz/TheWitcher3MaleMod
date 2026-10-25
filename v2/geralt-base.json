@@ -1,0 +1,46 @@
+{
+  "schema": "malemod.witcher-v2-geralt-stock-input/1",
+  "character": "geralt",
+  "startingBody": "stock dry bare Barbie body",
+  "resources": [
+    {
+      "role": "pelvis-legs",
+      "layer": "depot",
+      "resource": "characters/models/geralt/body/model/l_01_mg__body.w2mesh",
+      "sha256": "67e6e7485bd4eac0eae83d9119b19d8a0894ce1d8809c0928e618508f9dc42db"
+    },
+    {
+      "role": "torso",
+      "layer": "depot",
+      "resource": "characters/models/geralt/body/model/t_01_mg__body_hires.w2mesh",
+      "sha256": "1ce4ccd0e07f7729e7e2d78755ab791892e18d48d1678c7b1f4b0b2a7f96dbd6"
+    },
+    {
+      "role": "hands",
+      "layer": "depot",
+      "resource": "characters/models/geralt/body/model/g_01_mg__body.w2mesh",
+      "sha256": "596c8528fb397e1b4e73f9e550d463c5f2665c6c30f6b1d5aec3aa7c37850993"
+    },
+    {
+      "role": "feet",
+      "layer": "depot",
+      "resource": "characters/models/geralt/body/model/s_01_mg__body_hires.w2mesh",
+      "sha256": "d9c464289ab21c96571b6f6c477e17ab4f4548b2130a654dc1d337dbc974c33a"
+    },
+    {
+      "role": "bare-entity",
+      "layer": "redkit",
+      "resource": "r4data/items/bodyparts/geralt_items/legs/bare/l_01_mg__body.w2ent",
+      "sha256": "318064fb9825cff7fadb65d228649a49a14f88a086d5ddb00bd9f38e9d7002c0"
+    }
+  ],
+  "preserve": [
+    "stock topology",
+    "skin weights and bind transforms",
+    "UVs and materials",
+    "waist and ankle joins",
+    "native body-resource separation",
+    "all stock LODs"
+  ],
+  "previousWitcherAnatomyInputsAllowed": false
+}

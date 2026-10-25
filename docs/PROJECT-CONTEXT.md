@@ -1,3 +1,14 @@
+## October 24 - v2 supersedes all Witcher v1 repair directions
+
+The user requests archiving the entire Witcher implementation except the grey
+test room. Begin v2 from the original stock dry bare Geralt Barbie body. Match
+canonical Wolverine anatomy, pelvic blend, numerical physics, controls,
+per-frame behavior and jockstrap, with only small measured Geralt fit changes.
+The same-everything requirement supersedes older Witcher-only feature deferrals.
+Do not resume the rejected v1 repairs. See the Witcher v2/README.md and current
+HANDOFF.md for archive identities, actual implementation state and open gates.
+This instruction does not declare a new runtime accepted or installed.
+
 ## October 9 - resumed parity and minimal shared menus
 
 The user explicitly resumed Witcher development through a delegated agent for

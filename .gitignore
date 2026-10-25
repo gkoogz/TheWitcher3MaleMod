@@ -6,6 +6,7 @@ __pycache__/
 /local/
 /publish/
 /generated/
+/v2/build/
 /.deps/
 *.pyc
 workspace/*.db
