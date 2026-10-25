@@ -31,7 +31,7 @@ class ModularDynamicRenderer {
  };
  struct Attribute {Vec normal{},tangent{};std::array<double,2> uv{},reflection{};double sign=1;Weights weights;std::array<double,4> color{};};
  struct Row {unsigned vertex=0,shading=0;std::uint32_t bones=0,weights=0,color=0;std::array<std::uint16_t,2> uv{},reflection{};Vec tangent{};double sign=1;bool compoundChart=false;};
- struct Layout {unsigned resource=0,lod=0,first=0,count=0;std::vector<Row> rows;std::shared_ptr<const std::vector<unsigned>> indices,controlVertices;std::shared_ptr<const std::vector<surface::PresentationBinding>> presentation;};
+ struct Layout {unsigned resource=0,lod=0,first=0,count=0;std::vector<Row> rows;std::shared_ptr<const std::vector<unsigned>> indices,controlVertices,shadingVertices;std::shared_ptr<const std::vector<surface::PresentationBinding>> presentation;};
  const surface::modular::Asset& asset_;const surface::modular::Plan& plan_;const RenderContract& contract_;
  surface::modular::DynamicMount mount_;std::vector<std::array<Material,3>> bodyMaterial_,moduleMaterial_;
  std::vector<unsigned char> fixed_,resource_;std::vector<Vec> fixedPoints_,assetNormals_;
@@ -41,6 +41,8 @@ class ModularDynamicRenderer {
  std::unique_ptr<surface::CompoundDynamicPlan> compound_;
  std::optional<surface::CompoundContactCache> compoundCache_;
  std::optional<surface::modular::DynamicResult> supportCache_;
+ std::vector<double> suspensionFreedom_;
+ std::vector<double> suspensionRimFreedom_;
  std::vector<std::array<Attribute,3>> compoundAttributes_;
  static Attribute Mix(const std::array<Attribute,3>& values,Vec weights){
   Attribute out;out.sign=0;
@@ -209,6 +211,24 @@ class ModularDynamicRenderer {
   // Prepare ownership once, alongside the native layout. Display edits reuse
   // exactly these vertices/aliases while a precise fit runs independently.
   auto controls=std::make_shared<ModularControlTopology>();
+  // Retain every mechanical owner. Dominant-frame presentation cannot carry
+  // fresh physics across a blended rod section, shared rim or sewn connector.
+  auto ownMotion=[&](const surface::modular::Binding& binding,unsigned vertex){PreparedMotionWeights w{};
+   for(auto v:binding.influences)if(v.frame){double free=v.frame>=13&&!suspensionFreedom_.empty()?suspensionFreedom_.at(vertex):1;w[v.frame]+=v.weight*free;if(v.frame>=13){double rim=suspensionRimFreedom_.empty()?1:suspensionRimFreedom_.at(vertex);w[15]+=v.weight*(rim-free);w[16]+=v.weight*(1-rim);}}return w;};
+  std::vector<PreparedMotionWeights> moduleMotion(asset_.rest.size());
+  for(unsigned i=0;i<moduleMotion.size();i++)moduleMotion[i]=ownMotion(cached_->clearedBindings?cached_->clearedBindings->at(i):asset_.bindings[i],i);
+  for(auto loft:asset_.lofts){moduleMotion[loft.vertex]={};AddMotionWeights(moduleMotion[loft.vertex],moduleMotion[loft.start],1-ControlSmooth(loft.t));AddMotionWeights(moduleMotion[loft.vertex],moduleMotion[loft.end],ControlSmooth(loft.t));}
+  controls->motion.resize(mesh.points.size());
+  for(auto c:cached_->moduleVertices)for(unsigned k=0;k<3;k++)AddMotionWeights(controls->motion[c.vertex],moduleMotion[asset_.faces[c.parent][k]],c.donor[k]);
+  for(unsigned row=0;row<rings.size();row++)for(unsigned col=0;col<rings[row].size();col++){
+   if(row+1==rings.size())continue;const double t=.5*(1-std::cos(3.14159265358979323846*row/(rings.size()-1)));auto& w=controls->motion[rings[row][col]];w={};AddMotionWeights(w,controls->motion[rings.back()[col]],ControlSmooth(t));
+  }
+  if(compoundCache_){
+   for(auto s:compoundCache_->supportSamples){auto& w=controls->motion[s.vertex];w={};for(unsigned k=0;k<3;k++)AddMotionWeights(w,controls->motion[compoundCache_->supportFaces[s.parent][k]],s.donor[k]);}
+   for(auto s:compoundCache_->sourceSamples){auto& w=controls->motion[s.vertex];w={};for(unsigned k=0;k<3;k++)AddMotionWeights(w,moduleMotion[compound_->sourceVertices[compoundCache_->sourceFaces[s.parent][k]]],s.donor[k]);}
+   const auto& cr=compoundCache_->rings;
+   for(unsigned row=1;row+1<cr.size();row++)for(unsigned col=0;col<cr[row].size();col++){auto& w=controls->motion[cr[row][col]];w={};const double t=ControlSmooth(compound_->reference.parameters[row]);AddMotionWeights(w,controls->motion[cr.front()[col]],1-t);AddMotionWeights(w,controls->motion[cr.back()[col]],t);}
+  }
   controls->bindings.resize(mesh.points.size());
   controlBodyRadius_=0;
   for(auto id:rings.front()){auto q=Sub(mesh.points[id],cached_->anchor);controlBodyRadius_=(std::max)(controlBodyRadius_,std::hypot(q[1],q[2]));}
@@ -257,15 +277,24 @@ class ModularDynamicRenderer {
   }
   CompoundControls(*controls,moduleControl);
   controls->normals=std::make_shared<OrderedNormals>(unsigned(mesh.points.size()),controls->faces);
+  controls->motionAdjacency=std::make_shared<PreparedMotionAdjacency>(unsigned(mesh.points.size()),controls->faces);
   controlTopology_=controls;
   for(unsigned i=0;i<asset_.lofts.size();i++){
    const auto& l=asset_.lofts[i];auto v=assetToSurface_[l.vertex],a=assetToSurface_[l.start],b=assetToSurface_[l.end];
    if(v==~0u||a==~0u||b==~0u)continue;
    controls->lofts.push_back({v,a,b,l.t});controls->sourceLofts.push_back(i);
   }
+  controls->rootLoftStart=unsigned(controls->lofts.size());
+  controls->rootRings=rings;controls->rootFirstTangents=cached_->surface.firstTangents;
+  controls->rootAnchor=cached_->anchor;controls->rootAxis=mount_.basis[0];
   for(unsigned row=1;row+1<rings.size();row++){
    const double t=.5*(1-std::cos(3.14159265358979323846*row/(rings.size()-1)));
    for(unsigned column=0;column<rings[0].size();column++)controls->lofts.push_back({rings[row][column],rings.front()[column],rings.back()[column],t});
+  }
+  for(unsigned i=controls->rootLoftStart;i<controls->lofts.size();i++){
+   const auto id=controls->lofts[i].vertex;
+   controls->rootEntryPoints.push_back(cached_->surface.entryPoints.at(id));
+   controls->rootEntryNormals.push_back(cached_->surface.entryNormals.at(id));
   }
   controls->compoundLoftStart=unsigned(controls->lofts.size());
   if(compoundCache_){controls->compoundRings=compoundCache_->rings;controls->compoundParameters=compound_->reference.parameters;}
@@ -273,6 +302,9 @@ class ModularDynamicRenderer {
   for(auto& layout:layouts_){auto ids=std::make_shared<std::vector<unsigned>>();ids->reserve(layout.rows.size());for(auto row:layout.rows)ids->push_back(row.vertex);layout.controlVertices=ids;}
   shading_.clear();std::map<std::tuple<unsigned,double,double,double,double,bool>,unsigned> cache;
   for(auto& layout:layouts_)for(auto& row:layout.rows){auto key=std::make_tuple(row.vertex,row.tangent[0],row.tangent[1],row.tangent[2],row.sign,row.compoundChart);auto pair=cache.emplace(key,unsigned(shading_.size()));row.shading=pair.first->second;if(pair.second)shading_.push_back({row.vertex,row.tangent,row.sign,row.compoundChart});}
+  for(const auto& shade:shading_)controls->shadingPoints.push_back(shade.vertex);
+  {std::vector<unsigned char> visible(mesh.points.size());for(const auto& layout:layouts_)for(const auto& row:layout.rows)visible[row.vertex]=1;for(unsigned i=0;i<visible.size();i++)if(visible[i])controls->visiblePoints.push_back(i);}
+  for(auto& layout:layouts_){auto ids=std::make_shared<std::vector<unsigned>>();for(const auto& row:layout.rows)ids->push_back(row.shading);layout.shadingVertices=ids;}
  }
  public:
  ModularDynamicRenderer(const surface::modular::Asset& asset,const surface::modular::Plan& plan,const RenderContract& contract,const std::filesystem::path& dynamic,const std::filesystem::path& materials,const std::string& geometryHash,const std::string& dynamicHash,const std::string& nativeHash)
@@ -288,6 +320,10 @@ class ModularDynamicRenderer {
   }
   assetNormals_.resize(asset.rest.size());for(auto f:asset.faces){auto n=surface::Cross(surface::Sub(asset.rest[f[1]],asset.rest[f[0]]),surface::Sub(asset.rest[f[2]],asset.rest[f[0]]));for(auto id:f)assetNormals_[id]=surface::Add(assetNormals_[id],n);}for(auto& n:assetNormals_)n=Unit(n);
  }
+ std::vector<unsigned> SuspensionRim()const{
+  std::vector<unsigned> out;if(compound_)for(auto id:compound_->reference.sourceLoop)out.push_back(compound_->sourceVertices.at(id));return out;
+ }
+ void SetSuspensionFreedom(const std::vector<double>& values,const std::vector<double>& rim){suspensionFreedom_=values;suspensionRimFreedom_=rim;}
  std::shared_ptr<ModularFrame> Evaluate(const State& state){
   using namespace surface;const auto start=std::chrono::steady_clock::now();bool rebuild=!cached_;
   // Pulse strain belongs to reposing. Rebuilding from live pulse dimensions
@@ -306,13 +342,16 @@ class ModularDynamicRenderer {
   std::array<double,4> poseMs{};
   std::vector<Vec> beforeRelief,detailNormals,posedAsset;auto points=mount_.Repose(compoundCache_?*supportCache_:*cached_,asset_,plan_,state,&beforeRelief,&detailNormals,&poseMs,compoundCache_?&posedAsset:nullptr);
   double suspensionProfileFraction=1;Vec suspensionContact{};
+  std::array<double,5> compoundMs{};auto compoundMark=std::chrono::steady_clock::now();auto compoundTime=[&](unsigned i){auto now=std::chrono::steady_clock::now();compoundMs[i]=std::chrono::duration<double,std::milli>(now-compoundMark).count();compoundMark=now;};
   if(compoundCache_){
    auto source=compound_->Source(posedAsset,state);auto support=points,smoothSupport=beforeRelief;
-   beforeRelief=compoundCache_->Evaluate(source,beforeRelief,nullptr,state.sectionRadius);points=compoundCache_->Evaluate(source,points,&suspensionProfileFraction,state.sectionRadius,&suspensionContact);
+   compoundTime(0);beforeRelief=compoundCache_->Evaluate(source,beforeRelief,nullptr,state.sectionRadius);compoundTime(1);points=compoundCache_->Evaluate(source,points,&suspensionProfileFraction,state.sectionRadius,&suspensionContact);compoundTime(2);
    const auto material=state.shaftMaterial?surface::modular::SocketMaterialState(state,cached_->materialRoot):state;
    std::vector<Vec> guide;for(unsigned j=1;j<=12;j++)guide.push_back(Add(material.frames[j].origin,cached_->fitTranslation));
    ConformCompoundExterior(points,compoundCache_->rings,support,compoundCache_->supportFaces,compoundCache_->supportContactEligible,guide,plan_.Arena());
+   compoundTime(3);
    ConformCompoundExterior(beforeRelief,compoundCache_->rings,smoothSupport,compoundCache_->supportFaces,compoundCache_->supportContactEligible,guide,plan_.Arena());
+   compoundTime(4);
    detailNormals.resize(points.size());
   }
   const auto posed=std::chrono::steady_clock::now();
@@ -374,7 +413,10 @@ class ModularDynamicRenderer {
    tangent=Unit(Sub(tangent,Scale(normals[v],Dot(normals[v],tangent))));packedTangent[i]=Pack(tangent,sign<0?0:3);});
   const auto packed=std::chrono::steady_clock::now();
   auto frame=std::make_shared<ModularFrame>();frame->frames=state.frames;frame->rebuilt=rebuild;frame->materialScale=state.materialScale;
+  frame->fitTranslation=cached_->fitTranslation;frame->lobeTranslation=Add(cached_->suspensionTranslation,suspensionContact);frame->materialRoot=cached_->materialRoot;
   frame->controlTopology=controlTopology_;frame->controlPoints=std::move(controlPoints);
+  frame->motionNormals=std::make_shared<const std::vector<Vec>>(geometric);
+  frame->motionFaceNormals=std::make_shared<const std::vector<Vec>>(controlTopology_->normals->FaceNormals(frame->controlPoints,plan_.Arena()));
   frame->controlTangents.resize(controlTopology_->sourceLofts.size());
   plan_.For(unsigned(controlTopology_->sourceLofts.size()),[&](unsigned index){auto i=controlTopology_->sourceLofts[index];
    const auto& l=asset_.lofts[i];
@@ -403,12 +445,14 @@ class ModularDynamicRenderer {
   for(unsigned i=13;i<15;i++)frame->frames[i].origin=Add(frame->frames[i].origin,Add(cached_->suspensionTranslation,suspensionContact));
   for(unsigned i=1;i<15;i++){frame->frames[i].origin=contract_.calibration.PointToTarget(frame->frames[i].origin);for(auto& v:frame->frames[i].basis)v=contract_.calibration.VectorToTarget(v);}
 
-  for(unsigned index=0;index<4;index++){const auto& layout=layouts_[index];auto& part=frame->parts[index];part.resource=layout.resource;part.lod=layout.lod;part.carrierFirst=layout.first;part.carrierCount=layout.count;part.indices=layout.indices;part.presentation=layout.presentation;part.controlVertices=layout.controlVertices;part.vertices.reserve(layout.rows.size());const auto& r=contract_.resources[layout.resource];
+  for(unsigned index=0;index<4;index++){const auto& layout=layouts_[index];auto& part=frame->parts[index];part.resource=layout.resource;part.lod=layout.lod;part.carrierFirst=layout.first;part.carrierCount=layout.count;part.indices=layout.indices;part.presentation=layout.presentation;part.controlVertices=layout.controlVertices;part.shadingVertices=layout.shadingVertices;part.vertices.reserve(layout.rows.size());const auto& r=contract_.resources[layout.resource];
    part.vertices.resize(layout.rows.size());plan_.For(unsigned(layout.rows.size()),[&](unsigned index){const auto& row=layout.rows[index];const auto i=row.vertex;ModularVertex v;for(unsigned k=0;k<3;k++)v.position[k]=float((points[i][k]-r.bias[k])/r.scale[k]);v.bones=row.bones;v.weights=row.weights;v.normal=packedNormal[i];v.tangent=packedTangent[row.shading];v.uv=row.uv;v.color=row.color;v.reflection=row.reflection;part.vertices[index]=v;});
-  }const auto done=std::chrono::steady_clock::now();
+  }frame->motionPackedNormals=std::make_shared<const std::vector<std::uint32_t>>(std::move(packedNormal));frame->motionPackedTangents=std::make_shared<const std::vector<std::uint32_t>>(std::move(packedTangent));
+  const auto done=std::chrono::steady_clock::now();
   auto ms=[](auto a,auto b){return std::chrono::duration<double,std::milli>(b-a).count();};
   frame->stageMilliseconds={ms(start,built),ms(built,posed),ms(posed,normaled),ms(normaled,shaded),ms(shaded,packed),ms(packed,done)};
   frame->poseMilliseconds=poseMs;
+  frame->compoundMilliseconds=compoundMs;
   frame->milliseconds=ms(start,done);return frame;
  }
 };

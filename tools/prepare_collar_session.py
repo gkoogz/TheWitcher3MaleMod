@@ -23,7 +23,7 @@ def compile_merged(workspace):
     for source in (workspace/'scripts').rglob('*.ws'):names.update(re.findall(r'import function (MaleMod\w+)\(',source.read_text()))
     return compile_native(workspace,tuple(sorted(names)))
 
-def prepare(root_review=False, angle_sweep=False, side_profile=False, repair_review=False,physics_review=False,physics_motion=False,modular_review=False,lod_review=False,shape_review=False,lod_level=1,distant_review=False,hang_review=False,skin_review=False,cadence_review=False,motion_default=False):
+def prepare(root_review=False, angle_sweep=False, side_profile=False, repair_review=False,physics_review=False,physics_motion=False,modular_review=False,lod_review=False,shape_review=False,lod_level=1,distant_review=False,hang_review=False,skin_review=False,cadence_review=False,motion_default=False,motion_view="side"):
     if motion_default:physics_motion=repair_review=True
     if distant_review or hang_review or skin_review or cadence_review:modular_review=True
     platform=ROOT/'probes/native/iteration_platform.ws'
@@ -46,6 +46,11 @@ def prepare(root_review=False, angle_sweep=False, side_profile=False, repair_rev
         if motion_default:
             case_text,count=re.subn(r'MaleModNativeSetControl\((\d+),[\d.]+\)',lambda m:f'MaleModNativeSetControl({m[1]},{"2.0" if m[1]=="0" else "50.0"})',case_text)
             if count!=18:raise ValueError('Default motion preset must set all 18 controls')
+    if physics_motion and motion_view != 'side':
+        direction='RotForward(thePlayer.GetWorldRotation())' if motion_view=='front' else 'VecNormalize(side+RotForward(thePlayer.GetWorldRotation()))'
+        needle='cameraPosition=aim+side*1.25;'
+        if case_text.count(needle)!=1:raise ValueError('Motion camera entry changed')
+        case_text=case_text.replace(needle,f'cameraPosition=aim+{direction}*1.25;')
     if lod_review:
         # Official engine API, declared in REDkit engine/world.ws. This changes
         # native LOD selection in the isolated process, not our skin palette.
@@ -101,6 +106,8 @@ def prepare(root_review=False, angle_sweep=False, side_profile=False, repair_rev
         directory=ROOT/'build/collar-sessions/modular-cadence';workspace=directory/'workspace';source=workspace/'scripts/local/malemod/collar_integrity.ws'
     if motion_default:
         directory=ROOT/'build/collar-sessions/physics-motion-default';workspace=directory/'workspace';source=workspace/'scripts/local/malemod/collar_integrity.ws'
+    if physics_motion and motion_view != 'side':
+        directory=directory.with_name(directory.name+'-'+motion_view);workspace=directory/'workspace';source=workspace/'scripts/local/malemod/collar_integrity.ws'
     if lod_review:
         directory=directory.with_name(directory.name+'-engine-lod'+str(lod_level));workspace=directory/'workspace';source=workspace/'scripts/local/malemod/collar_integrity.ws'
     source.parent.mkdir(parents=True,exist_ok=True);source.write_text(text+'\n'+case_text)
@@ -148,4 +155,5 @@ if __name__=='__main__':
     modes.add_argument('--physics-review',action='store_true',help='Attachment matrix followed by 24 same-control walking frames')
     modes.add_argument('--physics-motion',action='store_true',help='36 same-control native walking/decay frames at the user settings')
     modes.add_argument('--default-motion',action='store_true',help='36 full-floppy walking/decay frames with all shape and response sliders at 50')
-    a=p.parse_args();campaign() if a.campaign else prepare(a.root_review,a.angle_sweep,a.side_profile,a.repair_review or a.physics_review or a.physics_motion,a.physics_review,a.physics_motion,a.modular_review,a.lod_review,a.shape_review,a.lod_level,a.distant_review,a.hang_review,a.skin_review,a.cadence_review,a.default_motion)
+    p.add_argument('--motion-view',choices=('side','front','oblique'),default='side',help='Measured private motion camera view')
+    a=p.parse_args();campaign() if a.campaign else prepare(a.root_review,a.angle_sweep,a.side_profile,a.repair_review or a.physics_review or a.physics_motion,a.physics_review,a.physics_motion,a.modular_review,a.lod_review,a.shape_review,a.lod_level,a.distant_review,a.hang_review,a.skin_review,a.cadence_review,a.default_motion,a.motion_view)

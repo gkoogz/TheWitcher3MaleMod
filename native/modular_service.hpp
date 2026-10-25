@@ -4,6 +4,18 @@
 #include <condition_variable>
 #include <thread>
 namespace malemod::witcher {
+inline std::shared_ptr<const RuntimeDelivery> MechanicalWithPreparedMaterial(
+ std::shared_ptr<const RuntimeDelivery> material,std::shared_ptr<const RuntimeDelivery> mechanics){
+ if(!mechanics||!material->surface->frame.modularShape||mechanics->surface->sequence<material->surface->sequence||
+   mechanics->surface->input.controls.values!=material->surface->input.controls.values)return material;
+ // Shape authoring supplies the immutable material and native fallback. The
+ // expensive mesh worker must use the same newest compact mechanics as display,
+ // rather than beginning every fit one retained-skin publication behind it.
+ auto surface=std::make_shared<CompletedSurface>(*mechanics->surface);
+ surface->frame.modularShape=material->surface->frame.modularShape;
+ surface->frame.targetPositions=material->surface->frame.targetPositions;
+ auto joined=std::make_shared<RuntimeDelivery>(*mechanics);joined->surface=surface;return joined;
+}
 // Expensive geometry runs independently from numerical stepping and display.
 // Only display endpoints coalesce; the ordered physics worker is unchanged.
 class ModularService {

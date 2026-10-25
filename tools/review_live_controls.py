@@ -97,6 +97,10 @@ def main():
     shots = []
     try:
         while time.monotonic() < deadline:
+            failure = Path(session["modulePath"]).parent / (
+                f'render-error-{session["observations"]["processID"]}.txt')
+            if failure.exists():
+                raise RuntimeError(f"Native geometry failed: {failure.read_text()}")
             if trace.exists():
                 # A writer can be partway through its last line.
                 rows = [json.loads(line) for line in

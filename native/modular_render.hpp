@@ -7,6 +7,7 @@
 #include <malemod/surface/root_articulation.hpp>
 #include <malemod/surface/live_controls.hpp>
 #include <malemod/surface/ordered_normals.hpp>
+#include <malemod/surface/prepared_motion.hpp>
 #include <memory>
 #include <chrono>
 
@@ -23,8 +24,12 @@ struct ModularPart {
  std::shared_ptr<const std::vector<unsigned>> indices;
  std::shared_ptr<const std::vector<surface::PresentationBinding>> presentation;
  std::shared_ptr<const std::vector<unsigned>> controlVertices;
+ std::shared_ptr<const std::vector<unsigned>> shadingVertices;
 };
 struct ModularControlTopology {
+ std::vector<surface::PreparedMotionWeights> motion;
+ std::vector<unsigned> shadingPoints;
+ std::vector<unsigned> visiblePoints;
  std::vector<surface::LiveControlBinding> bindings;
  std::vector<std::array<unsigned,3>> faces;
  std::vector<surface::LiveControlLoft> lofts;
@@ -33,16 +38,33 @@ struct ModularControlTopology {
  // Compound edge splits depend on the completed original lofts. Their new
  // connector is a second loft stage, after those affine splits are updated.
  unsigned compoundLoftStart=0;
+ unsigned rootLoftStart=0;
+ std::vector<std::vector<unsigned>> rootRings;
+ std::vector<surface::PresentationPoint> rootFirstTangents,rootEntryPoints,rootEntryNormals;
+ surface::PresentationPoint rootAnchor{},rootAxis{};
  std::vector<surface::LiveControlDonor> compoundDonors;
  std::vector<std::vector<unsigned>> compoundRings;
  std::vector<double> compoundParameters;
  std::shared_ptr<const surface::OrderedNormals> normals;
+ std::shared_ptr<const surface::PreparedMotionAdjacency> motionAdjacency;
 };
 struct ModularFrame {
+ surface::modular::State driveState;
+ surface::PreparedMotionFrames motionFrames{};
+ std::array<surface::PresentationPoint,2> restLobeAnchors{};
+ std::array<surface::PresentationFrame,2> rimFrames{};
+ std::array<surface::PresentationFrame,2> envelopeFrames{};
+ surface::PresentationPoint fitTranslation{},lobeTranslation{};
+ double materialRoot=0;
+ surface::PreparedMotionCorrection mechanicalCorrection;
+ std::array<double,6> mechanicalMilliseconds{};
+ std::shared_ptr<const std::vector<surface::PresentationPoint>> motionNormals,motionFaceNormals;
+ std::shared_ptr<const std::vector<std::uint32_t>> motionPackedNormals,motionPackedTangents;
  std::array<ModularPart,4> parts;surface::PresentationFrames frames{};
  double milliseconds=0;bool rebuilt=false;std::array<double,3> materialScale{1,1,1};
  std::array<double,6> stageMilliseconds{}; // build, pose, normals, shading, pack, layout
  std::array<double,4> poseMilliseconds{};
+ std::array<double,5> compoundMilliseconds{};
  bool materialNozzle=false;surface::PresentationPoint nozzle{},nozzleDirection{1,0,0};
  std::shared_ptr<const ModularControlTopology> controlTopology;
  std::vector<surface::PresentationPoint> controlPoints;
@@ -71,6 +93,10 @@ class ModularRenderer {
  mutable Vec materialScale_{1,1,1};
  mutable std::shared_ptr<const std::vector<surface::modular::Binding>> materialBindings_;
  mutable std::shared_ptr<const std::vector<double>> crownWeights_;
+ mutable std::vector<double> suspensionFreedom_;
+ mutable std::vector<double> suspensionRimFreedom_;
+ mutable std::array<surface::PresentationFrame,2> lastRimFrames_{};
+ mutable std::array<surface::PresentationFrame,2> lastEnvelopeFrames_{};
  mutable surface::PresentationFrames materialFrames_{};
  mutable State materialState_;
  mutable Vec nozzleLocal_{},nozzleAxis_{1,0,0};
@@ -134,6 +160,11 @@ class ModularRenderer {
      nozzleLocal_=surface::Unrotate(material.frames[12].basis,surface::Sub(surface::Add(flow.Apply(surface::Precise(shape->nozzlePosition)),shift),material.frames[12].origin));
      nozzleAxis_=surface::Unrotate(material.frames[12].basis,flow.Vector(surface::Precise(shape->nozzleDirection)));
      auto bindings=std::make_shared<std::vector<surface::modular::Binding>>(surface::modular::BindMaterialStations(*points,asset_.bindings,materialFrames_));
+     if(dynamic_){auto rim=dynamic_->SuspensionRim();if(!rim.empty()){
+      auto radius=std::sqrt(surface::Dot(surface::Precise(shape->lobeRadii[0]),surface::Precise(shape->lobeRadii[0]))/3);
+      suspensionFreedom_=surface::modular::PreparedSuspensionFreedom(asset_,*points,rim,radius);
+      suspensionRimFreedom_.assign(points->size(),1);dynamic_->SetSuspensionFreedom(suspensionFreedom_,suspensionRimFreedom_);
+     }}
      shapePoints_=points;materialBindings_=bindings;shapeSource_=shape;shapeAngle_=radians;
     }
     for(unsigned k=0;k<3;k++)state.materialScale[k]=state.scales[1][k]/materialScale_[k];
@@ -142,21 +173,47 @@ class ModularRenderer {
    }
    if(shape){
     if(!shapePoints_||!shape)throw std::invalid_argument("Compact mechanics needs prepared morphology");
-    const auto envelope=surface::SuspensionEnvelopeFrames({materialFrames_[13],materialFrames_[14]},
+    const auto envelope=surface::SuspensionAttachmentFrames({materialFrames_[13],materialFrames_[14]},
+      {surface::Precise(shape->lobeAnchors[0]),surface::Precise(shape->lobeAnchors[1])},
+      {surface::Precise(source.lobeAnchors[0]),surface::Precise(source.lobeAnchors[1])});
+    lastRimFrames_=envelope;
+    const auto shared=surface::SuspensionEnvelopeFrames({materialFrames_[13],materialFrames_[14]},
       {surface::Precise(shape->lobeAnchors[0]),surface::Precise(shape->lobeAnchors[1])},
       {state.frames[13].origin,state.frames[14].origin},
-      {surface::Precise(source.lobeAnchors[0]),surface::Precise(source.lobeAnchors[1])});
-    for(unsigned i=0;i<2;i++)state.frames[13+i]=envelope[i];
-    transfer_->ApplyPrepared(asset_,state,materialState_,*shapePoints_);
+      {surface::Precise(source.lobeAnchors[0]),surface::Precise(source.lobeAnchors[1])});lastEnvelopeFrames_=shared;
+    for(unsigned i=0;i<2;i++)state.frames[13+i]=surface::SuspensionSkinFrame(materialFrames_[13+i],surface::Precise(shape->lobeAnchors[i]),state.frames[13+i].origin,surface::Precise(source.lobeAnchors[i]));
+    transfer_->ApplyPrepared(asset_,state,materialState_,*shapePoints_,suspensionFreedom_.empty()?nullptr:&shared,suspensionFreedom_.empty()?nullptr:&suspensionFreedom_,suspensionFreedom_.empty()?nullptr:&envelope,suspensionFreedom_.empty()?nullptr:&suspensionRimFreedom_);
    }else transfer_->Apply(asset_,plan_,state,source,[&](auto p){return flow.Apply(p);},!shape);
   }
   return state;
  }
  void EnableTransfer(const std::filesystem::path& path,const std::string& geometryHash){auto transfer=std::make_unique<surface::modular::SurfaceTransfer>(path);if(transfer->geometryHash!=geometryHash)throw std::invalid_argument("Modular transfer geometry identity differs");transfer_=std::move(transfer);}
+ // Reads only immutable asset data and the completed frame's own material.
+ // Safe alongside the geometry thread; never touches its mutable shape cache.
+ State DriveMotion(const surface::Output& source,const ModularFrame& base)const{
+  auto state=surface::modular::DrivenState(asset_.reference,asset_.dimensions,source);
+  const auto& prepared=base.driveState;
+  state.shapeFrames=prepared.shapeFrames;state.hasShapeFrames=prepared.hasShapeFrames;
+  state.shaftMaterial=prepared.shaftMaterial;state.materialBindings=prepared.materialBindings;state.crownWeights=prepared.crownWeights;
+  for(unsigned k=0;k<3;k++)state.materialScale[k]=prepared.materialScale[k]*state.scales[1][k]/prepared.scales[1][k];
+  if(state.shaftMaterial){surface::modular::AnchorRootPhysics(state,source.proximalRadius,source.restLength);surface::modular::PreserveMaterialLengths(state);}
+  for(unsigned i=0;i<2;i++)state.frames[13+i]=surface::SuspensionSkinFrame(prepared.shapeFrames[13+i],base.restLobeAnchors[i],state.frames[13+i].origin,surface::Precise(source.lobeAnchors[i]));
+  return state;
+ }
  void EnableDynamic(const std::filesystem::path& dynamic,const std::filesystem::path& materials,const std::string& geometryHash,const std::string& dynamicHash,const std::string& nativeHash){dynamic_=std::make_unique<ModularDynamicRenderer>(asset_,plan_,contract_,dynamic,materials,geometryHash,dynamicHash,nativeHash);}
  std::shared_ptr<const ModularFrame> Evaluate(const State& state)const{
-  if(dynamic_){auto frame=dynamic_->Evaluate(state);
-   if(compactSource_){
+  if(dynamic_){auto frame=dynamic_->Evaluate(state);frame->driveState=state;
+   if(shapeSource_){
+    for(unsigned i=0;i<2;i++)frame->restLobeAnchors[i]=surface::Precise(shapeSource_->lobeAnchors[i]);
+    // Reconstruct the same common rim from the measured live anchors saved
+    // by Drive, including cases where the suspension anchors themselves move.
+    frame->rimFrames=lastRimFrames_;
+    frame->envelopeFrames=lastEnvelopeFrames_;
+   }
+   for(unsigned i=0;i<15;i++){frame->motionFrames[i]=frame->frames[i];if(i){frame->motionFrames[i].origin=contract_.calibration.PointToSource(frame->frames[i].origin);for(auto& axis:frame->motionFrames[i].basis)axis=contract_.calibration.VectorToSource(axis);}}
+   frame->motionFrames[15]=frame->envelopeFrames[0];frame->motionFrames[16]=frame->rimFrames[0];
+   for(unsigned i=15;i<17;i++)frame->motionFrames[i].origin=surface::Add(frame->motionFrames[i].origin,surface::Add(frame->fitTranslation,frame->lobeTranslation));
+   if(shapeSource_){
     frame->materialNozzle=true;const auto& tip=frame->frames[12];
     frame->nozzle=surface::Add(tip.origin,surface::Scale(surface::Rotate(tip.basis,surface::modular::Components(nozzleLocal_,state.materialScale)),contract_.calibration.targetUnitsPerSourceUnit));
     frame->nozzleDirection=surface::Unit(surface::Rotate(tip.basis,surface::modular::Components(nozzleAxis_,state.materialScale)));

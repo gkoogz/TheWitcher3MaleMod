@@ -1,6 +1,7 @@
 #pragma once
 #include "modular_service.hpp"
 #include "modular_presentation.hpp"
+#include "modular_mechanical_presentation.hpp"
 #include "live_modular_controls.hpp"
 #include "render_pose.hpp"
 #include "runtime_controller.hpp"
@@ -42,6 +43,7 @@ inline std::vector<PreSkinnedVertex> SkinRenderVertices(const std::vector<Source
 struct RenderDelivery {
  std::shared_ptr<const ModularFrame> modular;
  unsigned epoch=0;std::uint64_t sequence=0;double poseSeconds=0;
+ std::uint64_t preparedSequence=0;bool freshMechanics=false;
  std::shared_ptr<const std::vector<SourceRenderVertex>> vertices;
  RenderPose pose;
  std::array<double,3> nozzleWorld{},nozzleDirectionWorld{1,0,0};
@@ -111,6 +113,7 @@ class RenderService {
  const RenderContract& contract_;std::mutex mutex_;std::condition_variable changed_;
  std::shared_ptr<const std::vector<RenderDelivery::MorphReference>> morphReference_;
  bool stopping_=false,paused_=false;std::shared_ptr<const RuntimeDelivery> pending_;
+ std::shared_ptr<const RuntimeDelivery> mechanics_;
  surface::Controls requestedControls_;
  std::optional<RenderPose> pose_;std::string error_;
  std::shared_ptr<const RenderDelivery> delivery_;
@@ -133,12 +136,12 @@ class RenderService {
   std::vector<RenderDelivery::FloatVertex> modularFallback;
   std::vector<surface::PresentationBinding> bindings;for(const auto& lod:contract_.lods)for(const auto& v:lod.vertices)bindings.push_back(v.presentation);
   auto frames=[&](const surface::Output& output){auto f=surface::MaterialFrames(output);for(unsigned i=1;i<f.size();i++){f[i].origin=contract_.calibration.PointToTarget(f[i].origin);for(auto& axis:f[i].basis)axis=contract_.calibration.VectorToTarget(axis);}return f;};
-  for(;;){std::shared_ptr<const RuntimeDelivery> source;RenderPose pose;
+  for(;;){std::shared_ptr<const RuntimeDelivery> source,mechanics;RenderPose pose;
    bool paused;surface::Controls requestedControls;
-   {std::unique_lock<std::mutex> lock(mutex_);if(!cached||!active)changed_.wait(lock,[&]{return stopping_||pending_;});else changed_.wait_until(lock,nextTick,[&]{return stopping_;});if(stopping_)return;source=pending_?std::move(pending_):cached;pose=*pose_;paused=paused_;requestedControls=requestedControls_;}
+   {std::unique_lock<std::mutex> lock(mutex_);if(!cached||!active)changed_.wait(lock,[&]{return stopping_||pending_;});else changed_.wait_until(lock,nextTick,[&]{return stopping_||pending_;});if(stopping_)return;source=pending_?std::move(pending_):cached;mechanics=mechanics_;pose=*pose_;paused=paused_;requestedControls=requestedControls_;}
    try{
     std::shared_ptr<const ModularService::Result> prepared;
-    if(geometry){geometry->Submit(source,pose.epoch);auto error=geometry->Error();if(!error.empty())throw std::runtime_error(error);prepared=geometry->Latest();if(!prepared||prepared->epoch!=pose.epoch){nextTick=Clock::now()+std::chrono::milliseconds(4);continue;}source=prepared->source;}
+    if(geometry){geometry->Submit(MechanicalWithPreparedMaterial(source,mechanics),pose.epoch);auto error=geometry->Error();if(!error.empty())throw std::runtime_error(error);prepared=geometry->Latest();if(!prepared||prepared->epoch!=pose.epoch){nextTick=Clock::now()+std::chrono::milliseconds(4);continue;}source=prepared->source;}
     auto started=Clock::now();double lightMilliseconds=0;
     const bool changed=!cached||cachedEpoch!=pose.epoch||cached->surface->sequence!=source->surface->sequence;
     if(changed){
@@ -177,7 +180,10 @@ class RenderService {
     }
     auto next=std::make_shared<RenderDelivery>();next->epoch=pose.epoch;next->sequence=source->surface->sequence;next->poseSeconds=pose.seconds;next->vertices=vertices;next->pose=pose;
     if(modular_){
-     modularShown=phase==1?modularB:PresentModular(*modularA,*modularB,phase,contract_);
+     const bool fresh=mechanics&&mechanics->surface->sequence>=source->surface->sequence&&mechanics->surface->input.controls.values==source->surface->input.controls.values;
+     modularShown=fresh?PresentMechanical(*prepared->frame,mechanics->surface->frame.source,*modular_,contract_):phase==1?modularB:PresentModular(*modularA,*modularB,phase,contract_);
+     next->preparedSequence=source->surface->sequence;next->freshMechanics=fresh;
+     if(fresh){next->sequence=mechanics->surface->sequence;active=false;shownNozzle=modularShown->nozzle;shownDirection=modularShown->nozzleDirection;}
      const auto controlStart=Clock::now();
      if(liveControlInput!=modularShown||liveControlRequested.values!=requestedControls.values||
        liveControlAuthored.values!=source->surface->input.controls.values){
@@ -214,7 +220,7 @@ class RenderService {
 #ifdef MALEMOD_ATTACHMENT_CORRECTIVE
      next->correctiveSource=source;
 #endif
-    next->presentationPhase=phase;next->presentationIntervalMilliseconds=duration*1000;
+    next->presentationPhase=next->freshMechanics?1:phase;next->presentationIntervalMilliseconds=next->freshMechanics?0:duration*1000;
     next->presentationSerial=++presentationSerial;
     if(modular_){if(modularFallback.empty())modularFallback=PrepareFloatVertices(*vertices,contract_);next->floatVertices=modularFallback;}else next->floatVertices=PrepareFloatVertices(*vertices,contract_);next->resources=contract_.resources;next->morphReference=morphReference_;
     next->lightingMilliseconds=lightMilliseconds;
@@ -227,12 +233,12 @@ class RenderService {
   }
  }){}
  ~RenderService(){ {std::lock_guard<std::mutex> lock(mutex_);stopping_=true;}changed_.notify_one();if(worker_.joinable())worker_.join();}
- bool Submit(std::shared_ptr<const RuntimeDelivery> source,const RenderPose& pose,bool paused=false,const std::optional<surface::Controls>& controls=std::nullopt){
+ bool Submit(std::shared_ptr<const RuntimeDelivery> source,const RenderPose& pose,bool paused=false,const std::optional<surface::Controls>& controls=std::nullopt,std::shared_ptr<const RuntimeDelivery> mechanics={}){
   if(!source||!pose.epoch)return false;std::unique_lock<std::mutex> lock(mutex_,std::try_to_lock);if(!lock.owns_lock()||stopping_||!error_.empty())return false;
-  auto old=Latest();pose_=pose;paused_=paused;
+  auto old=Latest();pose_=pose;paused_=paused;mechanics_=std::move(mechanics);
   const auto requested=controls.value_or(source->surface->input.controls);
   const bool controlChanged=requestedControls_.values!=requested.values;requestedControls_=requested;
-  if(old&&old->epoch==pose.epoch&&old->sequence==source->surface->sequence&&!controlChanged)return true;
+  if(old&&old->epoch==pose.epoch&&old->sequence==(mechanics_?mechanics_->surface->sequence:source->surface->sequence)&&!controlChanged)return true;
   pending_=std::move(source);changed_.notify_one();return true;
  }
  std::shared_ptr<const RenderDelivery> Latest()const{return std::atomic_load(&delivery_);}

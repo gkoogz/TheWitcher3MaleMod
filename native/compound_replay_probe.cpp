@@ -1,4 +1,5 @@
 #include "modular_render.hpp"
+#include "modular_mechanical_presentation.hpp"
 #include "live_modular_controls.hpp"
 #include "surface_transport.hpp"
 #include "fixed_collar_angle.hpp"
@@ -71,7 +72,14 @@ int main(int argc,char** argv){try{
   writeMesh("-posed.obj",connected);
   std::cerr<<"Root scale "<<geometry.scales[1][1]/asset.reference.scales[1][1]<<"\n";
  }
- auto first=renderer.Evaluate(state);auto moving=state;moving.frames[13].origin[2]-=.4;auto second=renderer.Evaluate(moving);
+ auto first=renderer.Evaluate(state);
+ if(std::getenv("MALEMOD_REPLAY_GEOMETRY")){
+  auto dump=[&](const std::string& suffix,const witcher::ModularFrame& mesh){std::ofstream f(std::string(argv[10])+suffix);f.precision(17);for(auto p:mesh.controlPoints)f<<"v "<<p[0]<<' '<<p[1]<<' '<<p[2]<<'\n';for(auto t:mesh.controlTopology->faces)f<<"f "<<t[0]+1<<' '<<t[1]+1<<' '<<t[2]+1<<'\n';};
+  dump("-control.obj",*first);
+  std::ofstream rings(std::string(argv[10])+"-root-rings.bin",std::ios::binary);const auto& root=first->controlTopology->rootRings;std::array<unsigned,2> size{unsigned(root.size()),unsigned(root.front().size())};rings.write(reinterpret_cast<const char*>(size.data()),8);for(const auto& row:root)rings.write(reinterpret_cast<const char*>(row.data()),row.size()*4);
+  if(const char* current=std::getenv("MALEMOD_REPLAY_MECHANICS")){auto bytes=read(current);auto latest=wire::DecodeOutput({bytes.begin(),bytes.end()});auto fast=witcher::PresentMechanical(*first,latest,renderer,contract);dump("-fast.obj",*fast);auto full=renderer.Evaluate(renderer.Drive(latest,pivot,radians,shape,hang));dump("-fresh.obj",*full);}
+ }
+ auto moving=state;moving.frames[13].origin[2]-=.4;auto second=renderer.Evaluate(moving);
  unsigned changed=0,fixed=0;
  for(unsigned i=0;i<4;i++){auto& a=first->parts[i];auto& b=second->parts[i];if(a.vertices.empty()||a.indices!=b.indices)throw std::runtime_error("Physics rebuilt or lost native topology");
   for(unsigned j=0;j<a.vertices.size();j++){for(auto x:a.vertices[j].position)if(!std::isfinite(x))throw std::runtime_error("Nonfinite native position");if(a.vertices[j].position!=b.vertices[j].position)changed++;else fixed++;}}

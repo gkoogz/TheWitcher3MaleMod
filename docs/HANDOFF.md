@@ -1,3 +1,326 @@
+## October24 18:38 - rejected20/finite aperture; restored19 source, repair INCOMPLETE
+
+Native20 two-phase frenulum (DLL4123e78cceb46e99057e7d3494b2b990f1609928c32bfc8d0dc17d552e860883)
+completed37 captures and CLOSED receipt sealed-session-20261024-182346/receipt.json,
+PID5264;53 installed files unchanged,24 saves/audio restored. Reviewed610/625:
+rounded subcoronal shoulder returned, with a visible step. REJECTED. Source saved
+Work/witcher/regression-repair/rejected-two-phase-source. Restored short-taper19
+raphe_profile.hpp from short-taper-source, explicitly touched and rebuilt so
+MSBuild did not reuse the rejected newer object. New restored DLLc2bd4b7e2b66c535
+d994c4a0bed00d42d9d042f64917cb8a273e1c3cec4e0b4c (concatenate) is now in the CLOSED
+private preview. Same source as19, rebuilt binary itself not observed in game.
+Original worker unchanged. CandidateAccepted=false.15 Base modular tests passed
+after restoration, adapter probe rebuilt, diff checks clean.
+
+Finite aperture experiment: remove infinite tilted-cylinder footprint rays and
+use measured neutral circumference plus the existing local root advance. Plane
+fixture and six offline presets completed, but exact assembly intersections
+rose57->414 (zero degenerate faces), added crossings near root x8.9..10.5,
+y-4.5..6.7,z97.1..99.9cm. REJECTED, pelvic_aperture.hpp and added fixture fully
+reverted. Preserved outputs/probe in finite-aperture-exact and finite-aperture-
+presets. No native run of this experiment. Do not retry a smaller footprint
+without redesigning coupled root/compound clearance.
+
+Density measurement only: retaining exact first two/last two rows, 0.25mm
+reference chord tolerance could remove22104 compound +13120 root interior
+points in root-replay12; NOT implemented, not dynamic/performance proof.
+Source trace: legacy r14_runtime.h uses r14LowerDelta and multiple raphe supports;
+raphe_tube_surface.h ends tube at measured row24 fold. Immutable legacy snapshot
+was only read, not edited. No new source-level crown correction implemented.
+
+All native sessions CLOSED, no work pending in a running process. Current best
+partial candidate removes observed underside spike and tapers/dips the crest,
+but frenulum bulge/shoulder is NOT accepted;57 inherited shaft/crown intersections
+remain. Pelvic transition, independent constrained lobe motion, skin integrity/
+color and frame-rate cadence remain unresolved across the required gate. No
+candidate installed, no commit/push/Wolverine changes. Installed c1b072cc is the
+USER-REJECTED prior release, not proof these repairs work. Keep exact rollback.
+The cwd outputs/witcher-repair-status.txt historical success is superseded by
+this repair status. Entire authorized task remains incomplete, not paused or
+awaiting permission. Resume from existing evidence, not from a fresh install.
+## October24 18:22 - native19/full grey matrix closed; two-phase frenulum trial building
+
+Native19 short-taper DLL05dd770bb18f58ca30f38deeb935caf3b0eecd534556ffa81f5097f83c7561fd
+completed37 motion captures, receipt sealed-session-20261024-180033/receipt.json,
+PID6680. Observed610/625/635: spike absent, fuller head than rejected18; still
+provisional. The SAME DLL then completed all96 grey matrix checkpoints plus
+startup, both resources/LODs mask15. Receipt sealed-session-20261024-180549/
+receipt.json, PID12628, CLOSED,53 installed files unchanged,24 saves/audio
+restored. Evidence Work/witcher/regression-repair/short-taper-matrix/grey.
+Only selected close/default views reviewed so far; detailed findings in sibling
+visual-review.json. No attachment acceptance. Exact short-taper LOD0 shaft audit
+57 self-intersections,0 degenerates; inherited crown folds remain, not a pass.
+
+Current SOURCE is an unaccepted two-phase frenulum experiment:80 iterations of
+known spike-only localized fairing, followed by80 inward profile fitting steps
+with no further Laplacian shrink. The prior concurrent smooth/profile approach
+shrinks the central ridge below its target. Bidirectional crest-attraction .12
+and .3 prototypes were REJECTED (119/321 crossings). Two-phase .05 prototype77
+crossings, .12 rejected179. Current .05 C++ test passes; DLL/probe build active
+(two-phase-native-build.log), no native run yet. Candidate19 source saved under
+Work/witcher/regression-repair/short-taper-source; original17 spike-only and18
+rejected broad taper remain saved. Preview still contains closed19, not current
+source. Original repair-short-wide worker remains unchanged.
+
+Performance investigation only: root25x820 and compound25x1842 connecting rows
+account for about two-thirds of the sampled control mesh. No density change
+implemented. No aperture-footprint changes. All original pelvis/skin/color/
+independent physics/cadence/Full Floppy requirements remain open. No game active,
+no installation, commit, push or Wolverine edit. Never call these tests a full
+attachment or anatomical acceptance.
+## October24 18:00 - user rejects frenulum bulb; native18 broad taper rejected
+
+User correction: frenulum still looks like a weird bulge; raphe must continue
+all the way, dipping gently as it approaches. Native17 spike removal is only
+a partial result, not anatomical acceptance. Broader experimental fair/profile
+support(.65..99), with measured .70/.96 crest endpoints, ran as native18.
+Native18 completed37 captures,53 files unchanged,24 saves/audio restored,
+receipt sealed-session-20261024-175443/receipt.json; PID18508; DLL0c92dcf4d6a0e
+3220437bb332d5062be3d230f8bcd43c79e1753ba10724623f0. It reduced the bulb but
+visibly hollowed/pulled in the glans underside in stages610/625/635. REJECTED.
+Preview still contains that closed rejected native18 DLL until next refresh.
+
+Current SOURCE shortens that experiment to support .69..94 and measures the
+end of the gentle dip at .91 rather than .96. Dorsal surface and distal crown
+beyond .94 remain unchanged.100 guarded local smoothing iterations plus .05
+inward ridge-profile attraction; ridge width .40->.12radius; maximum movement
+.6radius. Latest short-taper test passes; DLL/probe build running/log short-
+taper-native-build.log. It has NOT been tested in game. Rejected broad source
+saved under Work/regression-repair/rejected-broad-taper; known spike-only17
+source in spike-only-source. No new worker: original repair-short-wide remains.
+
+Held prepared-mesh performance experiment COMPLETED but is NOT in runtime.
+held-motion vs refreshed-motion: median presentation19.56 vs18.75ms; mean
+mesh cost30.32 vs46.65ms across720samples. Extra pose intersections exist:
+default held frames89/179/269/359=92/71/84/71 vs refreshed92/71/71/71.
+Large held85/85/85/93 vs refreshed85/85/85/99;9-10 degenerate faces in both.
+Do NOT claim held template safe or frame-rate parity. All15 Base modular tests
+passed before the broader taper; current short-taper-specific test passes.
+
+No active game after native18, only current build may run. No installation,
+commit,push,Wolverine edits. Entire original repair remains active, with pelvic
+projection and large-motion integrity still unresolved. Planned investigation
+of angle-enlarged aperture footprint has NOT changed pelvic_aperture.hpp.
+No full attachment matrix/campaign acceptance. Never install this candidate.
+## October24 17:46 - native17 removes the underside spike; broader repair pending
+
+Supersedes17:35: replaced the failed broad radial FrenulumProfileCorrection
+with a localized axial/radial fairing of the final material join. Exact native
+controls exposed the spike at source R14 retained vertices1709/1710/1718 and
+new first-ring1790/1791; final material6278/6279/6328/6396/6397. Source join
+DOUBLES BACK axially, so radial-only clamping flattened it into overlaps and
+a global original-normal backoff retained the point. Current method preserves
+lateral coordinates, unifies coincident LOD aliases, confines support to
+material extent .69..885 and tapered ventral width, and bounds every incremental
+step with the existing25-percent oriented-area rule. It allows gradual overall
+normal rotation while repairing the fold.80 iterations, .6radius displacement
+bound. Synthetic spur, lateral/boundary, alias and transform/scale tests pass.
+Private prototype shaft intersections82->77; still77 inherited crown problems.
+
+Native17 completed37 captures and closed exact receipt sealed-session-
+20261024-173926/receipt.json, PID5720, DLL8d5aff0fff4b2b33f6e18d6825fce1d59
+ d7c477268b4c991bb43edd1e54a79d1 (concatenate lines/no whitespace). Observed
+stages610,625,635: underside spike is absent and contour is continuous. This
+is limited visual evidence, NOT complete anatomical/attachment acceptance.
+Stage200 is rear/far and does not inspect the default frenulum.53 installed
+files unchanged;24 saves/audio restored. No game active. Original worker still
+used, rejected crown-worker remains diagnostic only. CandidateAccepted=false.
+
+All original repairs remain active. Enlarged pelvic projection still wrong;
+scrotal integrity/color, independent motion, frame-rate performance and full
+size/state/view/LOD/campaign gate not complete. No install/commit/push/Wolverine
+edits. Added exact-control override and presentation-held-walk diagnostic mode
+to modular_cadence_probe, with90-frame geometry snapshots, to compare keeping
+one prepared mesh against repeated full fitting. This is a probe only; runtime
+service cadence has not been changed for that experiment. Latest Base/probe
+builds may still be running; inspect current sessions/logs before native work.
+## October24 17:35 - crown experiments rejected; native16 still shows spike
+
+Supersedes the17:04 checkpoint below. Native15 completed but the experimental
+crown worker changed the crown unfavorably and retained the spike. Restored
+crown_material.hpp, crown_material_test.cpp and extract_surface_runtime.py to
+HEAD. Rejected versions are preserved only under Work/regression-repair/
+rejected-crown-experiment. Preview now uses the ORIGINAL repair-short-wide
+worker again; do not redeploy crown-worker.
+
+New final-material FrenulumProfileCorrection in raphe_profile.hpp has passing
+synthetic covariance/boundary tests and moves0.5cm at default,1.15cm enlarged.
+Nevertheless native16 STILL has the sharp underside point. This is a FAILED
+visual check. Its exact captured geometry reproduces the local protrusion.
+Native16 receipt sealed-session-20261024-171822 closed;53 files unchanged,
+24 saves/audio restored. No game active. DLL fd80199871aba6375fea14e19b88b924
+ce98b348ae7a3dedfad169d1c64f6947. All candidates remain unaccepted/uninstalled.
+
+Diagnostic correction: native extreme controls are [2,100,100,97,35,100,95,15,
+100,50,50,50,50,50,50,50,50,51], unlike the generic offline audit's glans50.
+Native16 decoded point is near target(-4.6,58.2,126.7)cm. Preparing an exact
+control override in modular_cadence_probe to trace this spike to source.
+Current final material audit cases0..5 crossings99/57/71/124/85/85; inherited
+crown crossings remain. Full attachment gate has NOT passed. All original
+physics,scrotal color/integrity,pelvic ramp and frenulum work remains in scope.
+No installation,commit,push or Wolverine edits this turn.
+## October24 17:04 - user adds frenulum spike; private native15 underway
+
+The user explicitly asks to continue every other repair AND remove the underside
+spike near the glans, with the raphe tube gently tapering into the frenulum.
+Native14 oblique maximum motion confirmed the protruding ventral spike and an
+excessively projecting enlarged pelvic attachment. It closed normally,53 files
+unchanged,24 saves/audio restored. Receipt sealed-session-20261024-164257.
+
+Current Base crown_material.hpp adds TaperVentralTransition: measured shoulder
+profile, decreasing midline height/width, inward-only displacement; exact first
+and crown boundary rows. Applied opt-in in extracted UpdateR14 before normal
+calculation. Unit test verifies spur removal, unchanged dorsal/boundaries,
+rotation/translation/scale covariance. Python prototype altered150-159 points,
+up to1.625cm at default,3.625cm enlarged, with no additional R14 intersections.
+Native observation of this exact new worker is pending in native-motion15.
+
+FairCrownColumns now applies after small-glans lower-delta composition. Crown
+restoration preserves the original short-shaft behavior, then restores only the
+distal crown (starts at crownRing,8-row seam release). Whole-crown restoration
+at all states was rejected: it increased erect-case crossings134/211. Current
+prepared audit cases0..4:58/24/38/75/52 crossings;case5 report still pending.
+Raw R14 crown has24 remaining crossings rows67..73 across states0/2. Thus neither
+crown geometry nor complete attachment integrity is accepted. Both native worker
+API tests(default/minimum,48frames each) pass; source morphology is not proven.
+
+OrderedNormals::FieldSubset and moving-visible iteration passed test and all240
+mesh hashes match the prior probe exactly. Median presentation20.165->19.346ms
+in sampled offline runs; not frame-rate parity. No GPU/runtime parity claim.
+
+The sublinear ramp-width/clearance experiment failed large case4 in compound
+cleanup (face42093). It has been REVERTED in source. Do not reapply blindly or
+relax guards. Evidence: sublinear-root-audit. Root remains original width plus
+quarter-span projection release and shared exact reposing helper.
+
+Native15 uses current DLL plus private crown-worker, through refresh_closed.
+It is a diagnostic build with dirty/unverified-library opt-ins, NOT deployable.
+CandidateAccepted=false. Newest session/receipt in native-motion15 files once
+available. No installation,commit,push,Wolverine edits this turn. Full remaining
+work includes all original physics,scrotal integrity/color,pelvic transition,
+frenulum and size/state/motion/view/LOD/campaign validation before installation.
+
+## October 24 16:46 - controlled replay correction; larger native case still fails
+
+No candidate is accepted or installed. Wolverine is untouched. Native trials12
+and13 completed and closed with53 installed files unchanged,24 saves verified
+and audio restored. Latest closed receipt is Witcher build/probe/sealed-session-
+20261024-162633/receipt.json; DLL935254c29db7a39b387a6c1f691b7bddfa97f279c9912a2961173e4159ab7916.
+Trial14 currently runs the same maximum-size motion from an oblique camera.
+
+Corrected diagnosis: high face indices alone do NOT identify a pelvic-ramp
+failure. Exact source-domain mapping assigns trial12 extra crossings mainly to
+retained scrotal skin and a smaller number to its connector. Anchoring its rim
+while the mean suspension moves stretches this skin incorrectly. Current code
+uses shared mean-envelope motion on the upper sac/raphe, with independent distal
+lobes via geodesic release. Replaying the SAME captured618/621 pair changes
+full/fast/fresh crossings136/132/123 to71/71/71. Those71 inherited shaft/crown
+crossings still fail integrity; they are not stock-body intersections.
+
+The shared ReposeRootRamp helper now keeps full fitting and compact presentation
+on exactly the same root boundary construction. Artificial raised shoulder is
+removed; measured-body projection releases over the first quarter. Width-cap
+experiment was reverted because it broke compound-cut construction.
+
+Native13 maximum-size front motion still has128-187 crossings in sampled frames,
+and the front view occludes much of the pelvic join. No acceptance. Current
+private crown-worker applies bounded axial isotonic fairing to the immutable
+R14 base cache; both default/minimum48-frame API transport checks pass. Six-case
+prepared audits still75/34/48/110/72/72 crossings, so the source repair is NOT
+complete. Earlier live-pose fairing failed and was superseded by rest-cache work.
+This worker is built with dirty/unverified diagnostic opt-ins, never deploy it.
+
+Current new unbuilt optimization adds ordered-normal subset evaluation and
+processes only changed visible normals. Must compare exact output hashes against
+pre-optimization probe and measure performance before keeping it. Full fit is
+still~150-180ms and fast presentation~20ms offline; frame-rate parity unverified.
+Full front/side/oblique size/state/LOD/campaign gate remains outstanding.
+
+## October 24 15:54 - native movement completed, visual rejection remains
+
+Trial11 completed stages200 and600..635 without render errors. DLL
+84c41ea0c1f7ae84fdf18e657ad509deeee4106855be1b0abeead43e2a6ff240;
+receipt build/probe/sealed-session-20261024-154920/receipt.json closed normally,
+53 installed files unchanged,24 saves verified and scoped audio restored.
+Candidate remains UNACCEPTED and UNINSTALLED. Stage610 front review shows
+independent bilateral motion, but raised pelvic lip and shaft surface crease.
+Full size/view/LOD/campaign gate and frame-rate parity remain outstanding.
+
+Correction to older audit interpretation: the71 inherited crossings are mainly
+retained SHAFT/CROWN geometry, not stock body. Matching the baseline crossing
+count is NOT integrity acceptance. Native10 captured602 had73 crossings including
+two additional pairs. The current prepared baseline itself needs repair.
+
+Three-region skin source passed720 offline walk samples. Trial9 false-blocked
+on approximate transported-normal orientation; actual proposed geometry had71
+baseline crossings. Runtime now checks noncollapsed area and nonsingular local
+material transforms, with self-contact audited separately. Trial10 exposed a
+180-degree shading rotation failure; trial11 fixes that rotation. Removing the
+invalid orientation test does not establish a clean surface. Latest current work
+is in Work/witcher/regression-repair; installed c1b072cc remains user-rejected.
+
+## October 24 15:37 update
+
+Trial8 front-view anchored-rim-only candidate failed at the first walking sample
+with retained-skin folding/correction budget breach. Receipt sealed-session-
+20261024-153004/receipt.json is closed;53 managed files and24 saves restored;
+DLL abcb35ca0f8dc8f0ec9e585036e62bbecfd55cec208f48c5dcf92a9b4ba75c9c.
+The front screenshot stage600 was inspected; not acceptance.
+
+Latest source splits skin into THREE owners: slot13/14 independent lobes,
+slot15 common mean-envelope motion, slot16 measured attachment motion. Two
+geodesic fields define independent release (rim+raphe seeds) and overall skin
+release (rim-only seeds). Whole-envelope averaging and rigidly anchored raphe
+are both rejected. Base ApplyPrepared and native motion use the same ownership.
+Unit transfer test now verifies all three. Build regions-build.log completed;
+strong offline probe motion-regions is in progress. Not yet launched natively.
+Current modified source is still experimental/unaccepted. No new install.
+
+## October 24 15:30 - active regression repair, not accepted or installed
+
+Native motion trials 1-7 all failed private validation and were closed by exact
+receipt. Each verified 53 installed files unchanged, restored 24 saves and scoped
+audio. Latest closed receipt: Witcher build/probe/sealed-session-20261024-151459/receipt.json.
+Installed c1b072cc remains user-rejected. Wolverine is untouched.
+
+The compact-mechanics fast presentation is NOT validated. Transported normal
+checking and a local correction queue fixed convergence, but orientation alone
+missed self-intersections. Captured motion6 initially had 424 intersections vs75
+before; span-scaled handles and quadratic compression of connector relief reduced
+this to71, inherited pairs (later identified as shaft/crown defects). Later motion7 still had2125 crossings
+and exceeded the local correction budget. Mild and stronger offline tests pass,
+but those tests are not native acceptance. No installation or final matrix pass.
+
+Latest compiled hypothesis: SuspensionAttachmentFrames anchors the sewn rim to
+measured suspension anchors rather than average content centers. Independent
+distal motion retains geodesic release. Native test pending. Full fitting remains
+slow: compound evaluations20+17ms, exterior projection36+36ms. Compact display is
+still26-28ms offline, not frame-rate parity. Shading-alias and visible-point
+optimization is also unproven. The pelvic quarter-span ramp remains unreviewed at
+large sizes. Full front/side/oblique/LOD/motion/campaign acceptance is outstanding.
+
+Exact replay inputs: regression-repair/native-motion6 and native-motion7, binary
+captures include points, expected normals, weights, lofts, frames and donors.
+Base tools/replay_prepared_motion.cpp replays them without the game. The official
+physics-motion-default-front driver has compiled for independent bilateral review.
+Current dirty source and generated private evidence are experiments only.
+
+
+## October 24 - user rejection supersedes the previous acceptance
+
+The user rejects the installed c1b072cc runtime for visible physics lag, paired
+lobe motion and a bolted-on pelvic transition with a broad flat ring at large
+sizes. The prior sampled visual acceptance below is superseded for these issues;
+it is not proof of the requested appearance or motion. Do not reuse it to approve
+a replacement. Current repair is private/uninstalled and must pass focused native
+motion and front/side/oblique attachment review before replacement installation.
+
+Confirmed causes: whole-envelope averaging discards relative lobe movement;
+render publication follows the slow retained-skin/mesh stream rather than fresh
+compact mechanics; the entry projection remains active across the whole ramp.
+Source experiments and current diagnostics: Work/witcher/regression-repair.
+No new install, rollback, or Wolverine modification has occurred in this repair.
+
 ## October 24 - three requested repairs installed and verified
 
 Installed the accepted coupled candidate after actual grey96/campaign39 and two
