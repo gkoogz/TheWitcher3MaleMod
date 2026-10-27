@@ -13,8 +13,9 @@ experiments, copy its generated anatomy, or silently reduce parity requirements.
 The complete dirty Witcher and Base source is preserved on local archive
 branches. V1 private/generated data remains frozen in D:/MaleMod/Work/witcher
 because room/rollback receipts reference it. Do not move those paths, traverse
-depot junctions for cleanup, or delete the archives. The grey room still uses
-the existing installed bootstrap; no v2 runtime is installed.
+depot junctions for cleanup, or delete the archives. The grey room retains
+the existing bootstrap and now launches the accepted installed v2 runtime.
+Future replacements require fresh native gates; preserve the current rollback.
 
 Active source: v2/ and tools/witcher_v2.py. tools/mod.py dispatches to v2 while
 retaining generic room/toolchain helpers. Other retained tools/native sources

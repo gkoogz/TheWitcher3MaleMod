@@ -20,6 +20,9 @@ def preview_owners():
         if data.get('repository') != str(ROOT.resolve()) or not external.is_absolute() or external.resolve() != external:
             raise ValueError('Preview storage must be an explicit nonredirected repository-owned directory')
         owners.append(external)
+    # V2 has its own working set; archived v1 preview owners stay recoverable.
+    if (ROOT/'v2').is_dir():
+        owners.append((ROOT/'v2/build/native-preview').resolve())
     return owners
 
 

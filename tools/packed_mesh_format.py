@@ -7,7 +7,7 @@ an independent diagnostic reader, not an authoring converter or engine writer.
 import math,struct,zlib
 from player_rig_redirect import header_crc
 
-def decode_render_chunks(payload):
+def decode_render_chunks(payload,section_groups=None):
     """Read the observed native two-LOD packed records, opaque or forward.
 
     The official opaque rigid cook has six records (two full lighting records
@@ -17,16 +17,30 @@ def decode_render_chunks(payload):
     """
     if len(payload)<5:raise ValueError('Truncated packed render chunk prefix')
     length=struct.unpack_from('<I',payload)[0];count=payload[4]
-    if count not in (2,6) or length!=1+37*count or len(payload)!=4+length:
+    if length!=1+37*count or len(payload)!=4+length:
         raise ValueError('Unobserved packed render chunk record layout')
     records=[payload[5+37*i:5+37*(i+1)] for i in range(count)]
-    if [r[36] for r in records[:2]]!=[1,2]:raise ValueError('Full packed records do not identify the two native LODs')
+    if section_groups is None:
+        if count not in (2,6):raise ValueError('Unobserved packed render chunk record count')
+        if [r[36] for r in records[:2]]!=[1,2]:raise ValueError('Full packed records do not identify the two native LODs')
+    else:
+        # Group membership comes from this same CRC-checked CMesh tail. This
+        # is a bounded reader; callers still verify the official cook's actual
+        # material IDs, streams, index ranges and geometry before adoption.
+        if len(section_groups)!=2 or not all(section_groups):raise ValueError('Both native section groups are required')
+        ids=tuple(i for group in section_groups for i in group)
+        if ids!=tuple(range(len(ids)))or len(ids)>count:raise ValueError('Native section IDs are not a complete ordered prefix')
+        if count not in (len(ids),len(ids)*3):raise ValueError('Unobserved section shadow record count')
+        for lod,group in enumerate(section_groups):
+            if any(records[i][36]!=(1<<lod)for i in group):raise ValueError('Native section LOD flag disagrees with its group')
     return records
 
 
 class CookedMesh:
-    def __init__(self,raw,allow_rigid=False):
+    def __init__(self,raw,allow_rigid=False,allow_stock_torso_mapping=False,allow_multi_section=False):
         self.allow_rigid=allow_rigid
+        self.allow_stock_torso_mapping=allow_stock_torso_mapping
+        self.allow_multi_section=allow_multi_section
         self.raw=raw
         if len(raw)<160 or raw[:4]!=b'CR2W' or struct.unpack_from('<I',raw,4)[0]!=164:
             raise ValueError('Expected observed cooked mesh 164')
@@ -51,7 +65,9 @@ class CookedMesh:
         found=[]
         for entry in entries:
             kind,flags,parent,size,position,template,crc=entry
-            if kind>=len(self.names) or self.names[kind] not in ['CMesh','CMaterialInstance'] or size>len(raw)-position:raise ValueError('Unobserved native mesh child export')
+            # Untouched stock Geralt torso also carries SMeshSoundInfo. It is
+            # independent of skin/render data; retain its bounded CRC check.
+            if kind>=len(self.names) or self.names[kind] not in ['CMesh','CMaterialInstance','SMeshSoundInfo'] or size>len(raw)-position:raise ValueError('Unobserved native mesh child export')
             if zlib.crc32(raw[position:position+size])!=crc:raise ValueError('Child mesh export CRC differs')
             if self.names[kind]=='CMesh':found.append(entry)
         if len(found)!=1:raise ValueError('Expected one CMesh export')
@@ -64,6 +80,8 @@ class CookedMesh:
         self.cooked,_=self.object(self.get(self.properties,'cookedData','SMeshCookedData'))
         self.scale=self.vector('quantizationScale');self.offset=self.vector('quantizationOffset')
         self.palette,self.inverse_binds,self.bone_mapping=self.tail(tail)
+        if allow_multi_section:
+            decode_render_chunks(self.get(self.cooked,'renderChunks','array:47,0,Uint8'),self.chunk_groups)
 
     def object(self,data):
         if not data or data[0]!=0:raise ValueError('Unexpected serialized object flags')
@@ -93,6 +111,65 @@ class CookedMesh:
         if not all(math.isfinite(x) for x in result):raise ValueError('Non-finite quantization')
         return result
 
+    def skin_sections(self,buffer):
+        """Cross-check typed CPU chunks against their packed GPU records.
+
+        Returned row origins are resource-local. No chunk is inferred from a
+        filename, material ordering, equal vertex position, or stale IA slot.
+        """
+        payload=self.get(self.properties,'chunks','array:2,0,SMeshChunkPacked')
+        if len(payload)<4:raise ValueError('Truncated native skin section table')
+        count=struct.unpack_from('<I',payload)[0];tail=payload[4:]
+        ids=tuple(i for group in self.chunk_groups for i in group)
+        if count!=len(ids):raise ValueError('CPU and LOD section counts differ')
+        packed=decode_render_chunks(self.get(self.cooked,'renderChunks','array:47,0,Uint8'),self.chunk_groups)
+        vertex_bytes=struct.unpack('<I',self.get(self.cooked,'vertexBufferSize','Uint32'))[0]
+        index_bytes=struct.unpack('<I',self.get(self.cooked,'indexBufferSize','Uint32'))[0]
+        index_offset=struct.unpack('<I',self.get(self.cooked,'indexBufferOffset','Uint32'))[0]
+        if vertex_bytes>len(buffer)or index_offset<vertex_bytes or index_offset>len(buffer)or index_bytes>len(buffer)-index_offset:
+            raise ValueError('Native skin allocation leaves buffer')
+        result=[];next_vertex=next_index=0
+        for index in range(count):
+            properties,tail=self.object(tail);record=packed[index]
+            allowed={'materialID','vertexType','numBonesPerVertex','numVertices','numIndices','firstVertex','firstIndex','useForShadowmesh'}
+            if set(properties)-allowed:raise ValueError('Unobserved typed skin section property')
+            def integer(name,kind='Uint32',default=0):
+                if name not in properties:return default
+                return struct.unpack({'Uint8':'<B','Uint16':'<H','Uint32':'<I'}[kind],self.get(properties,name,kind))[0]
+            vertex_type=struct.unpack('<H',self.get(properties,'vertexType','EMeshVertexType'))[0]
+            bones=integer('numBonesPerVertex','Uint8',4 if self.allow_stock_torso_mapping else 0)
+            if 'useForShadowmesh'in properties and self.get(properties,'useForShadowmesh','Bool')not in (b'\0',b'\1'):
+                raise ValueError('Invalid native shadow section flag')
+            if vertex_type>=len(self.names)or self.names[vertex_type]!='MVT_SkinnedMesh'or bones!=4 or record[0]!=3:
+                raise ValueError('Native section is not observed four-bone skin')
+            vertices=integer('numVertices');indices=integer('numIndices');first_vertex=integer('firstVertex');first_index=integer('firstIndex')
+            if not vertices or vertices!=struct.unpack_from('<H',record,27)[0]or not indices or indices%3 or indices!=struct.unpack_from('<I',record,29)[0]:
+                raise ValueError('CPU/GPU native skin dimensions differ')
+            if first_vertex!=next_vertex or first_index!=next_index:
+                raise ValueError('Native skin row/index origin differs')
+            gpu_index_bytes=struct.unpack_from('<I',record,22)[0]
+            if gpu_index_bytes%2:raise ValueError('Unaligned native GPU index origin')
+            gpu_first=gpu_index_bytes//2
+            offsets=[struct.unpack_from('<I',record,1+4*slot)[0]for slot in range(4)]
+            if any(offset>vertex_bytes or vertices*stride>vertex_bytes-offset for offset,stride in zip(offsets,[16,4,8,8])):
+                raise ValueError('Native skin stream leaves allocation')
+            if gpu_index_bytes>index_bytes or indices*2>index_bytes-gpu_index_bytes:
+                raise ValueError('Native section indices leave allocation')
+            values=struct.unpack_from('<'+str(indices)+'H',buffer,index_offset+gpu_index_bytes)
+            if max(values)>=vertices:raise ValueError('Unobserved nonlocal native section indices')
+            material=integer('materialID','Uint32')
+            lod=next(lod for lod,group in enumerate(self.chunk_groups)if index in group)
+            result.append(dict(lod=lod,material=material,firstVertex=first_vertex,vertexCount=vertices,
+                positionOffset=offsets[0],uvOffset=offsets[1],lightingOffset=offsets[2],extraOffset=offsets[3],
+                indexFirst=gpu_first,indexCount=indices,cpuIndexFirst=first_index))
+            next_vertex+=vertices;next_index+=indices
+        covered=0
+        for first,end in sorted((s['indexFirst'],s['indexFirst']+s['indexCount'])for s in result):
+            if first>covered:raise ValueError('Unobserved gap in native GPU indices')
+            covered=max(covered,end)
+        if tail or covered*2!=index_bytes:raise ValueError('Unconsumed native skin section data')
+        return result
+
     def tail(self,data):
         at=0
         def read(fmt):
@@ -109,9 +186,14 @@ class CookedMesh:
             return value
         groups=count()
         if groups!=2:raise ValueError('Expected both native mesh chunk groups')
+        self.chunk_groups=[];self.chunk_distances=[]
         for i in range(groups):
             ids=read('<'+str(count())+'H');padding=read('<f')[0]
-            if ids!=(i,) or not math.isfinite(padding):raise ValueError('Unexpected native chunk group')
+            if not math.isfinite(padding)or not ids or (not self.allow_multi_section and ids!=(i,)):
+                raise ValueError('Unexpected native chunk group')
+            self.chunk_groups.append(ids);self.chunk_distances.append(padding)
+        all_ids=tuple(i for group in self.chunk_groups for i in group)
+        if all_ids!=tuple(range(len(all_ids)))or len(all_ids)>16:raise ValueError('Invalid native material section IDs')
         palette=[]
         for _ in range(count()):
             index=read('<H')[0]
@@ -120,7 +202,8 @@ class CookedMesh:
         matrices=[read('<16f') for _ in range(count())]
         radii=[read('<f')[0] for _ in range(count())]
         mapping=[read('<I')[0] for _ in range(count())]
-        if at!=len(data) or (not palette and not self.allow_rigid) or len(matrices)!=len(palette) or len(radii)!=len(palette) or len(mapping)!=len(palette):
+        mapping_matches=len(mapping)==len(palette) or (self.allow_stock_torso_mapping and len(palette)==81 and len(mapping)==32)
+        if at!=len(data) or (not palette and not self.allow_rigid) or len(matrices)!=len(palette) or len(radii)!=len(palette) or not mapping_matches:
             raise ValueError('Unexpected native skin tail dimensions')
         if not all(math.isfinite(x) for m in matrices for x in m) or not all(math.isfinite(x) for x in radii):
             raise ValueError('Non-finite native skin tail')

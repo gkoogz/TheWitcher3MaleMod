@@ -165,7 +165,13 @@ def status():
     print('Active work: Wolverine-parity v2; original grey room retained')
     print('Geralt stock base: '+('prepared' if (V2/'build/geralt-base/manifest.json').is_file() else 'not yet exported'))
     print('Canonical source reference: '+('evaluated' if (V2/'build/wolverine-reference/manifest.json').is_file() else 'not yet evaluated'))
-    print('Geralt attachment, per-frame runtime and jockstrap: pending; no v2 installed')
+    print('Geralt graft: '+('authored; native review required' if (V2/'build/fitted-geralt/manifest.json').is_file() else 'pending'))
+    trace=V2/'build/canonical-trace/proof.json'
+    if trace.is_file():
+        proof=read(trace)
+        print('Canonical changing trace: '+('PASS' if proof.get('passed') else 'FAIL')+'; native performance is a separate gate')
+    print('Per-frame runtime and canonical jockstrap: development preview; see docs/HANDOFF.md')
+    print('Full attachment/performance acceptance pending; no v2 installed')
 
 
 def main():

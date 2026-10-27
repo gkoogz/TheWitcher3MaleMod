@@ -11,6 +11,7 @@ from mod import ROOT, settings, digest, verify_package, write_json, read_json
 from run_sealed_session import run
 from close_sealed_session import close
 from iteration_save_transaction import begin, restore
+import screenshot_transaction as screenshot_storage
 from prepare_iteration_world import validate_world_dimensions
 from iteration_layer_ownership import inspect_layers
 import time
@@ -85,8 +86,13 @@ def launch(package, *, driver_source=None, compile_proof=None, native_preview=No
         target = game/relative
         if target.exists(): raise ValueError('Preserve existing sandbox installation: '+str(target))
         rows.append(dict(path=str(target), source=str(package/relative), sha256=item['sha256']))
-    save_transaction=begin(Path.home()/'Documents/The Witcher 3/gamesaves',
-        ROOT/'build/iteration-storage'/('save-transaction-'+str(time.time_ns())))
+    screenshot_transaction=screenshot_storage.begin(Path.home()/'Documents/The Witcher 3/screenshots',
+        ROOT/'v2/build/screenshot-transactions'/('private-'+str(time.time_ns())))
+    try:
+        save_transaction=begin(Path.home()/'Documents/The Witcher 3/gamesaves',
+            ROOT/'build/iteration-storage'/('save-transaction-'+str(time.time_ns())))
+    except BaseException:
+        screenshot_storage.restore(screenshot_transaction);raise
     staged=[]
     try:
         for item in rows:
@@ -100,11 +106,12 @@ def launch(package, *, driver_source=None, compile_proof=None, native_preview=No
         receipt['iterationWorldFiles']=rows; receipt['iterationWorldPackage']=str(package)
         receipt['iterationBootstrapMode']=links.get('bootstrapMode','minimal-lifetime')
         receipt['iterationSaveTransaction']=str(save_transaction)
+        receipt['iterationScreenshotTransaction']=str(screenshot_transaction)
         # Select by this exact process identity, not an unrelated newest game.
         matches=[p for p in (ROOT/'build/probe').glob('sealed-session-*/receipt.json')
             if read_json(p)['observations']==receipt['observations']]
         if len(matches)!=1: raise RuntimeError('Private receipt identity is ambiguous')
-        write_json(matches[0],receipt); print(matches[0])
+        write_json(matches[0],receipt);screenshot_storage.bind(screenshot_transaction,matches[0]);print(matches[0])
         return matches[0]
     except Exception:
         # Before a successful private launch only, restore our own staged files.
@@ -112,11 +119,19 @@ def launch(package, *, driver_source=None, compile_proof=None, native_preview=No
             for item in staged:
                 path=Path(item['path'])
                 if path.is_file() and digest(path)==item['sha256']: path.unlink()
+            screenshot_storage.restore(screenshot_transaction)
         raise
 
 
 def finish(receipt, recovery_audio_probe=None):
     path=Path(receipt).resolve(); data=read_json(path)
+    if data.get('iterationWorldFilesRemoved'):
+        if data.get('iterationScreenshotTransaction'):
+            screenshot_storage.bind(data['iterationScreenshotTransaction'],path)
+            photos=screenshot_storage.restore(data['iterationScreenshotTransaction'])
+            data.update(iterationScreenshotFilesRestored=photos['restored'],iterationScreenshotOriginalsVerified=photos['originalsVerified'],iterationScreenshotArchive=photos.get('archive',[]))
+            write_json(path,data)
+        return
     from native_preview import session_game
     root=session_game(data)/'Mods/modMaleModIteration'
     for item in data.get('iterationWorldFiles',[]):
@@ -131,6 +146,12 @@ def finish(receipt, recovery_audio_probe=None):
         write_json(path,closed)
     for item in data.get('iterationWorldFiles',[]): Path(item['path']).unlink()
     data=read_json(path); data['iterationWorldFilesRemoved']=True; write_json(path,data)
+    if data.get('iterationScreenshotTransaction'):
+        screenshot_storage.bind(data['iterationScreenshotTransaction'],path)
+        photos=screenshot_storage.restore(data['iterationScreenshotTransaction'])
+        data.update(iterationScreenshotFilesRestored=photos['restored'],iterationScreenshotOriginalsVerified=photos['originalsVerified'],
+            iterationScreenshotArchive=photos.get('archive',[]))
+        write_json(path,data)
     print('Sandbox files removed; installed anatomy runtime preserved')
 
 

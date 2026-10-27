@@ -1,0 +1,33 @@
+{
+  "schema": "malemod.witcher-v2-payload/1",
+  "localAssetManifest": "local/v2-private-assets.json",
+  "requiredFiles": [
+    "bin/x64_dx12/dinput8.dll",
+    "bin/x64_dx12/malemod-native/malemod_witcher.dll",
+    "bin/x64_dx12/malemod-native/canonical_worker.exe",
+    "bin/x64_dx12/malemod-native/geralt-source-binding.bin",
+    "bin/x64_dx12/malemod-native/graphics-owned-fingerprints.bin",
+    "bin/x64_dx12/malemod-native/geralt-meridian-binding.bin",
+    "bin/x64_dx12/malemod-native/garment.render",
+    "bin/x64_dx12/malemod-native/geralt-meridian-coverage.bin",
+    "bin/x64_dx12/malemod-native/geralt-clinical-topology.bin",
+    "bin/x64_dx12/malemod-native/clinical-splat-bakes.bin",
+    "bin/x64_dx12/malemod-native/clinical.render",
+    "Mods/modMaleModNative/content/scripts/local/malemod/runtime.ws",
+    "Mods/modMaleModNative/content/scripts/local/malemod/garment.ws",
+    "Mods/modMaleModNative/content/scripts/local/malemod/clinical.ws",
+    "Mods/modMaleModNative/content/scripts/local/malemod/idle.ws",
+    "Mods/modMaleModNative/content/scripts/local/malemod/render_bones.ws",
+    "Mods/mod000000WitcherV2/content/bundles/blob0.bundle",
+    "Mods/mod000000WitcherV2/content/bundles/buffers0.bundle",
+    "Mods/mod000000WitcherV2/content/dep.cache",
+    "Mods/mod000000WitcherV2/content/metadata.store",
+    "Mods/mod000000WitcherV2/content/texture.cache",
+    "Mods/mod000000WitcherV2/content/shaderDx12_0.cache",
+    "Mods/modMaleModClinical/content/bundles/blob0.bundle",
+    "Mods/modMaleModClinical/content/bundles/buffers0.bundle",
+    "Mods/modMaleModClinical/content/dep.cache",
+    "Mods/modMaleModClinical/content/metadata.store",
+    "Mods/modMaleModClinical/content/texture.cache"
+  ]
+}

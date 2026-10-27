@@ -10,11 +10,11 @@ namespace malemod::witcher {
 class PanelProbe {
  std::filesystem::path directory_;std::string token_;std::wstring station_;
  std::array<bool,256> held_{},transient_{};std::uint32_t revision_=0;
- std::uint64_t creation_=0;bool enabled_=false,private_=false;
+ std::uint64_t creation_=0;bool enabled_=false,private_=false;HWND parent_=nullptr;std::uint32_t windowMessageRevision_=0;
  static std::wstring Env(const wchar_t* name){wchar_t value[32768]{};auto n=GetEnvironmentVariableW(name,value,32768);return n&&n<32768?value:L"";}
  static std::string UTF8(const std::wstring& text){int n=WideCharToMultiByte(CP_UTF8,0,text.data(),int(text.size()),nullptr,0,nullptr,nullptr);std::string s(n,'\0');if(n)WideCharToMultiByte(CP_UTF8,0,text.data(),int(text.size()),s.data(),n,nullptr,nullptr);return s;}
  static std::string JSON(const std::string& text){std::string s="\"";for(unsigned char c:text){if(c=='\\'||c=='\"')s+='\\';if(c>=32)s+=char(c);}return s+'\"';}
- void Write(const char* name,const std::string& text){auto path=directory_/name,temp=path;temp+=L".pending";{std::ofstream f(temp,std::ios::binary);f<<text;f.close();if(!f)throw std::runtime_error("Cannot write owned panel receipt");}if(!MoveFileExW(temp.c_str(),path.c_str(),MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot acknowledge owned panel command");}
+ void Write(const char* name,const std::string& text){auto path=directory_/name,temp=path;temp+=L".pending";{std::ofstream f(temp,std::ios::binary);f<<text;f.close();if(!f)throw std::runtime_error("Cannot write owned panel receipt");}const auto deadline=GetTickCount64()+1000;while(!MoveFileExW(temp.c_str(),path.c_str(),MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH)){const auto error=GetLastError();if((error!=ERROR_SHARING_VIOLATION&&error!=ERROR_ACCESS_DENIED)||GetTickCount64()>=deadline)throw std::runtime_error("Cannot acknowledge owned panel command");Sleep(1);}}
 public:
  static PanelProbe FromEnvironment(HWND parent,bool authorized){
   PanelProbe p;if(!authorized||Env(L"MALEMOD_PANEL_PROBE")!=L"1")return p;
@@ -27,7 +27,7 @@ public:
   // Reject junction-backed output; evidence belongs to the owned local probe.
   for(auto ancestor=directory;!ancestor.empty();ancestor=ancestor.parent_path()){auto attributes=GetFileAttributesW(ancestor.c_str());if(attributes==INVALID_FILE_ATTRIBUTES||(attributes&FILE_ATTRIBUTE_REPARSE_POINT))return p;if(ancestor==ancestor.parent_path())break;}
   FILETIME created{},exit{},kernel{},user{};if(!GetProcessTimes(GetCurrentProcess(),&created,&exit,&kernel,&user))return p;
-  p.creation_=(std::uint64_t(created.dwHighDateTime)<<32)|created.dwLowDateTime;p.directory_=directory;p.token_=UTF8(token);p.station_=name;p.enabled_=true;p.private_=true;return p;
+  p.parent_=parent;p.creation_=(std::uint64_t(created.dwHighDateTime)<<32)|created.dwLowDateTime;p.directory_=directory;p.token_=UTF8(token);p.station_=name;p.enabled_=true;p.private_=true;return p;
  }
  bool Enabled()const{return enabled_;}
  bool Private()const{return private_;}
@@ -43,8 +43,13 @@ public:
    std::istringstream lines(contents);std::string line,token,key,action;std::uint64_t created=0;unsigned process=0;PanelProbeRequest r;
    while(std::getline(lines,line)){if(!line.empty()&&line.back()=='\r')line.pop_back();auto equal=line.find('=');if(equal==std::string::npos)continue;auto name=line.substr(0,equal),value=line.substr(equal+1);if(name=="Revision")r.revision=std::stoul(value);else if(name=="Token")token=value;else if(name=="ProcessID")process=std::stoul(value);else if(name=="CreationTime")created=std::stoull(value);else if(name=="Key")key=value;else if(name=="Action")action=value;}
    if(!r.revision||r.revision<=revision_||process!=GetCurrentProcessId()||created!=creation_||token!=token_)return false;
-   if(key=="Reset"||key=="Capture"){if(action!="Press")return false;r.action=key=="Reset"?PanelProbeRequest::Action::Reset:PanelProbeRequest::Action::Capture;}
-   else{if(key=="F6")r.key=VK_F6;else if(key=="Up")r.key=VK_UP;else if(key=="Down")r.key=VK_DOWN;else if(key=="Left")r.key=VK_LEFT;else if(key=="Right")r.key=VK_RIGHT;else if(key=="Shift")r.key=VK_SHIFT;else if(key=="Enter")r.key=VK_RETURN;else if(key=="Space")r.key=VK_SPACE;else return false;
+   if(key=="WindowJ"){
+    DWORD owner=0;USEROBJECTFLAGS flags{};DWORD size=0;GetWindowThreadProcessId(parent_,&owner);if(action!="Press"||!private_||owner!=GetCurrentProcessId()||!GetUserObjectInformationW(GetProcessWindowStation(),UOI_FLAGS,&flags,sizeof(flags),&size)||(flags.dwFlags&WSF_VISIBLE))return false;
+    if(!PostMessageW(parent_,WM_KEYDOWN,'J',LPARAM(1u|(0x24u<<16)))||!PostMessageW(parent_,WM_KEYUP,'J',LPARAM(1u|(0x24u<<16)|(1u<<30)|(1u<<31))))return false;
+    r.action=PanelProbeRequest::Action::Capture;windowMessageRevision_=r.revision;
+   }
+   else if(key=="Reset"||key=="Capture"){if(action!="Press")return false;r.action=key=="Reset"?PanelProbeRequest::Action::Reset:PanelProbeRequest::Action::Capture;}
+   else{if(key=="F6")r.key=VK_F6;else if(key=="F8")r.key=VK_F8;else if(key=="F9")r.key=VK_F9;else if(key=="J")r.key='J';else if(key=="Up")r.key=VK_UP;else if(key=="Down")r.key=VK_DOWN;else if(key=="Left")r.key=VK_LEFT;else if(key=="Right")r.key=VK_RIGHT;else if(key=="Shift")r.key=VK_SHIFT;else if(key=="Enter")r.key=VK_RETURN;else if(key=="Space")r.key=VK_SPACE;else return false;
     if(action=="Press")r.action=PanelProbeRequest::Action::Press;else if(action=="Hold")r.action=PanelProbeRequest::Action::Hold;else if(action=="Release")r.action=PanelProbeRequest::Action::Release;else return false;held_[r.key]=r.action!=PanelProbeRequest::Action::Release;transient_[r.key]=r.action==PanelProbeRequest::Action::Press;
    }
    revision_=r.revision;request=r;return true;
@@ -57,9 +62,9 @@ public:
   auto old=SelectObject(dc,bitmap);SendMessageW(window,WM_PRINTCLIENT,reinterpret_cast<WPARAM>(dc),PRF_CLIENT);GdiFlush();BITMAPFILEHEADER header{};header.bfType=0x4d42;header.bfOffBits=sizeof(header)+sizeof(BITMAPINFOHEADER);header.bfSize=header.bfOffBits+client.right*client.bottom*4;
   std::ofstream file(directory_/(L"panel-"+std::to_wstring(revision)+L".bmp"),std::ios::binary);file.write(reinterpret_cast<char*>(&header),sizeof(header));file.write(reinterpret_cast<char*>(&info.bmiHeader),sizeof(info.bmiHeader));file.write(static_cast<char*>(pixels),client.right*client.bottom*4);file.close();const bool success=bool(file);SelectObject(dc,old);DeleteObject(bitmap);DeleteDC(dc);return success;
  }
- void Record(HWND parent,HWND window,const PanelProbeRequest& r,const std::array<float,18>& values,const std::array<float,3>& clinical,unsigned selected,bool open,bool captured){
+ void Record(HWND parent,HWND window,const PanelProbeRequest& r,const std::array<float,18>& values,const std::array<float,3>& clinical,unsigned selected,bool open,bool captured,bool eligible=false,bool anatomy=false,bool foreground=false){
   RECT client{},parentClient{},position{},parentPosition{};GetClientRect(window,&client);GetClientRect(parent,&parentClient);GetWindowRect(window,&position);GetWindowRect(parent,&parentPosition);std::ostringstream s;
-  s<<"{\"schema\":1,\"revision\":"<<r.revision<<",\"processID\":"<<GetCurrentProcessId()<<",\"processCreationTime\":\""<<creation_<<"\",\"token\":"<<JSON(token_)<<",\"expanded\":"<<(open?"true":"false")<<",\"selected\":"<<selected<<",\"client\":["<<client.right<<','<<client.bottom<<"],\"parentClient\":["<<parentClient.right<<','<<parentClient.bottom<<"],\"position\":["<<position.left-parentPosition.left<<','<<position.top-parentPosition.top<<"],\"controls\":[";for(unsigned i=0;i<18;i++)s<<(i?",":"")<<values[i];s<<"],\"clinical\":["<<clinical[0]<<','<<clinical[1]<<','<<clinical[2]<<"],\"captured\":"<<(captured?"true":"false")<<",\"physicalInputUsed\":false,\"hostFocusUsed\":false}\n";
+  s<<"{\"schema\":1,\"privateProbe\":"<<(private_?"true":"false")<<",\"logicalEligible\":"<<(eligible?"true":"false")<<",\"anatomyVisible\":"<<(anatomy?"true":"false")<<",\"logicalForeground\":"<<(foreground?"true":"false")<<",\"parentVisible\":"<<(IsWindowVisible(parent)?"true":"false")<<",\"parentStyleVisible\":"<<((GetWindowLongPtrW(parent,GWL_STYLE)&WS_VISIBLE)?"true":"false")<<",\"overlayStyleVisible\":"<<((GetWindowLongPtrW(window,GWL_STYLE)&WS_VISIBLE)?"true":"false")<<",\"parentStyle\":"<<std::uint32_t(GetWindowLongPtrW(parent,GWL_STYLE))<<",\"overlayStyle\":"<<std::uint32_t(GetWindowLongPtrW(window,GWL_STYLE))<<",\"ownerHWND\":\""<<std::uint64_t(reinterpret_cast<std::uintptr_t>(GetWindow(window,GW_OWNER)))<<"\",\"overlayVisible\":"<<(IsWindowVisible(window)?"true":"false")<<",\"windowMessagePosted\":"<<(windowMessageRevision_==r.revision?"true":"false")<<",\"revision\":"<<r.revision<<",\"processID\":"<<GetCurrentProcessId()<<",\"processCreationTime\":\""<<creation_<<"\",\"token\":"<<JSON(token_)<<",\"expanded\":"<<(open?"true":"false")<<",\"selected\":"<<selected<<",\"client\":["<<client.right<<','<<client.bottom<<"],\"parentClient\":["<<parentClient.right<<','<<parentClient.bottom<<"],\"position\":["<<position.left-parentPosition.left<<','<<position.top-parentPosition.top<<"],\"controls\":[";for(unsigned i=0;i<18;i++)s<<(i?",":"")<<values[i];s<<"],\"clinical\":["<<clinical[0]<<','<<clinical[1]<<','<<clinical[2]<<"],\"captured\":"<<(captured?"true":"false")<<",\"physicalInputUsed\":false,\"hostFocusUsed\":false}\n";
   Write(("panel-receipt-"+std::to_string(r.revision)+".json").c_str(),s.str());Write("panel-receipt.json",s.str());
  }
 };

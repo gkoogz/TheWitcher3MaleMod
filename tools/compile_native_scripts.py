@@ -18,7 +18,8 @@ WCC_RVAS = dict(allocate=0x45b7b0, intern=0x293f7c0, construct=0x29d3d90,
 
 def compile_native(workspace, imports=('MaleModNativeReady',)):
     cfg=settings();base_checkout(cfg);workspace=Path(workspace).resolve()
-    if not workspace.is_relative_to((ROOT/'build').resolve()):
+    output_root=ROOT/'v2' if workspace.is_relative_to((ROOT/'v2/build').resolve()) else ROOT
+    if not workspace.is_relative_to((output_root/'build').resolve()):
         raise ValueError('Native compiler inputs must stay in an owned build workspace')
     if digest(cfg['wcc'])!=WCC_SHA:
         raise RuntimeError('Unsupported native compiler; reobserve its ABI before use')
@@ -37,14 +38,14 @@ def compile_native(workspace, imports=('MaleModNativeReady',)):
     pe.close()
     if not imports or len(set(imports))!=len(imports) or any(not n.startswith('MaleMod') or not n.isidentifier() for n in imports):
         raise ValueError('Expected unique owned native import names')
-    combined=ROOT/'build/jobs'/('native-scripts-'+uuid.uuid4().hex[:12]);combined.mkdir(parents=True)
+    combined=output_root/'build/jobs'/('native-scripts-'+uuid.uuid4().hex[:12]);combined.mkdir(parents=True)
     copy_tree(cfg['redkit']/'r4data/scripts',combined);copy_tree(workspace/'scripts',combined)
     signature=hashlib.sha256()
     for p in sorted(combined.rglob('*.ws')):
         signature.update(p.relative_to(combined).as_posix().encode());signature.update(p.read_bytes())
     out=combined.with_name(combined.name+'-compiled');out.mkdir()
     args=native_args(cfg,'compilescripts',[str(combined),'-out='+str(out)],workspace,readthrough_depot(cfg['depot'],workspace))
-    log=ROOT/'build/logs'/(time.strftime('%Y%m%d-%H%M%S')+'-native-scripts-'+uuid.uuid4().hex[:6]+'.log')
+    log=output_root/'build/logs'/(time.strftime('%Y%m%d-%H%M%S')+'-native-scripts-'+uuid.uuid4().hex[:6]+'.log')
     log.parent.mkdir(parents=True,exist_ok=True)
     print('Official native-aware script compiler | log:',log,flush=True)
     s=Session(args,cfg['wcc'].parent,log,ABI_PROFILES[WCC_SHA]);started=time.monotonic()

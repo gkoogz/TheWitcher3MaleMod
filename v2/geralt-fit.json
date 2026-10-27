@@ -1,0 +1,18 @@
+{
+  "schema": "malemod.witcher-v2-reference-fit/1",
+  "sourceCase": "state-2",
+  "sourceControls": [2,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50],
+  "basis": [[0,-1,0],[1,0,0],[0,0,1]],
+  "sourceRoot": "bounding center of exact canonical reference boundary",
+  "targetRoot": [0,5.154865791000245,95.38573457275717],
+  "pitchDegrees": -16.018255994957066,
+  "uniformScale": 1,
+  "maximumBodyAdjustmentNativeUnits": 0.5,
+  "projection": [[1,0,0],[0,0,1]],
+  "forward": [0,1,0],
+  "pelvisBone": "pelvis",
+  "skinSupportNativeUnits": 3,
+  "stockSkinUVScale": 0.1,
+  "calibration": "Rigid boundary placement optimized jointly against both untouched Geralt LODs; source shape and dimensions unchanged",
+  "nativeObserved": false
+}

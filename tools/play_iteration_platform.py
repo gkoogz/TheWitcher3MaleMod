@@ -17,15 +17,16 @@ from iteration_save_transaction import begin, restore
 def play(package, acceptance, *, check_only=False, preview=False):
     package = Path(package).resolve()
     acceptance = Path(acceptance).resolve()
-    if not package.is_relative_to((ROOT/'publish').resolve()) or not acceptance.is_relative_to((ROOT/'build').resolve()):
+    if not package.is_relative_to((ROOT/'publish').resolve()) or not any(acceptance.is_relative_to(p.resolve()) for p in [ROOT/'build',ROOT/'v2/build']):
         raise ValueError('Expected owned sandbox package and gameplay acceptance')
     manifest = verify_package(package)
     accepted = read_json(acceptance)
-    source = ROOT/'probes/native/iteration_platform_human.ws'
-    proof = read_json(ROOT/'build/iteration-human-script/compile.json')
-    if manifest['project'] != 'modMaleModIteration' or accepted.get('schema') != 'malemod.iteration-platform-acceptance/1':
+    v2 = accepted.get('schema') == 'malemod.witcher-v2-room-acceptance/1'
+    source = ROOT/('probes/native/v2_human_room.ws' if v2 else 'probes/native/iteration_platform_human.ws')
+    proof = read_json(ROOT/('v2/build/human-room/compile.json' if v2 else 'build/iteration-human-script/compile.json'))
+    if manifest['project'] != 'modMaleModIteration' or accepted.get('schema') not in ['malemod.iteration-platform-acceptance/1','malemod.witcher-v2-room-acceptance/1']:
         raise ValueError('This launcher only accepts the tested platform')
-    if accepted.get('packageManifestSHA256') != digest(package/'build-manifest.json') or accepted.get('driverSHA256') != digest(ROOT/'probes/native/iteration_platform.ws'):
+    if accepted.get('packageManifestSHA256') != digest(package/'build-manifest.json') or accepted.get('driverSHA256') != digest(ROOT/('probes/native/v2_showroom.ws' if v2 else 'probes/native/iteration_platform.ws')):
         raise ValueError('Platform changed since its gameplay test')
     if not all(accepted.get(k) for k in ('groundedPlayer','movementObserved','nativeModObserved','f6IntegrationUnchanged')):
         raise ValueError('Platform gameplay verification remains incomplete')
@@ -46,13 +47,20 @@ def play(package, acceptance, *, check_only=False, preview=False):
     if accepted.get('fallbackReceiptSHA256') != digest(ROOT/'local/installation.json'):
         raise ValueError('Installed rig fallback differs from the platform gameplay test')
     image = Path(accepted['renderedFrame']).resolve()
-    if not image.is_relative_to((ROOT/'build').resolve()) or digest(image) != accepted['renderedFrameSHA256']:
+    if not any(image.is_relative_to(p.resolve()) for p in [ROOT/'build',ROOT/'v2/build']) or digest(image) != accepted['renderedFrameSHA256']:
         raise ValueError('Accepted native frame is missing or changed')
     for row in installed['files']:
         if digest(game/row['path']) != row['sha256']:
             raise ValueError('Installed mod changed: '+row['path'])
+    if v2:
+        for relative,sha in proof['ownedSourceHashes'].items():
+            if relative=='local/malemod/'+source.name:continue
+            script=game/'Mods/modMaleModNative/content/scripts'/relative
+            if not script.is_file()or digest(script)!=sha:
+                raise ValueError('Manual compile differs from installed v2 script: '+relative)
     fallback_root=Path(fallback['target']).resolve()
-    if fallback_root != (game/'Mods/modMaleMod').resolve():
+    expected_fallback = game/('Mods/mod000000WitcherV2' if v2 else 'Mods/modMaleMod')
+    if bool(installed.get('v2')) != v2 or fallback_root != expected_fallback.resolve():
         raise ValueError('Fallback installation path changed')
     for row in fallback['files']:
         if digest(fallback_root/row['path']) != row['sha256']:

@@ -1,0 +1,28 @@
+{
+  "schema": "malemod.witcher-v2-preview-status/1",
+  "candidate": "installed-waist-final-44ef",
+  "nativeReview": "v2/build/acceptance/waist-final-aggregate.json",
+  "runtimeSHA256": "44ef0e073920b0fc6ab9c4d1fb99a38ef1854290a729ac5152f603a6ea6b676c",
+  "workerSHA256": "723865a6b294ded67146531f7056b0657da80332c40f7c321250597d1971715a",
+  "sourceAnatomyUnchanged": true,
+  "perVisibleSDKTickServiceObserved": true,
+  "fullNativeMenuPassed": true,
+  "anatomyVisibleInNativeViews": true,
+  "garmentVisibleInCapturedDefaultPoses": true,
+  "fullAttachmentGatePassed": true,
+  "performanceParityPassed": false,
+  "materialAccepted": true,
+  "installed": true,
+  "closed": true,
+  "originalSavesVerified": 24,
+  "openIssues": [],
+  "performanceComparisonReviewed": true,
+  "nativeFPSParityClaimed": false,
+  "installedRoomAcceptance": "build/probe/sealed-session-20261027-052801/v2-room-acceptance.json",
+  "defaultGreyRoomActive": true,
+  "knownLimitations": [
+    "Absolute frame-rate equivalence across engines is not established; measured frame costs differ.",
+    "Geralt retains native idle motion; Wolverine head/neck overlays and UE3 FaceFX are not retargeted.",
+    "Witcher outfit fitting is deferred by user request."
+  ]
+}

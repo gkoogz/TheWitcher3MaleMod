@@ -1,0 +1,115 @@
+{
+  "schema": "malemod.witcher-v2-base-extensions/1",
+  "referenceBaseCommit": "bf51be28c6ced7f34f63014c1c79379d84a39d4d",
+  "canonicalNumericalIncludeCommit": "47023a7f53d794cff84f2f423ba6a7d1fb98ec0f",
+  "developmentSourceUncommitted": true,
+  "files": [
+    {
+      "path": "malemod_base/reference_graft.py",
+      "sha256": "1009cd8d800607af98886e7767834c56ef2f0b78076bd666f18c229f246215b5"
+    },
+    {
+      "path": "malemod_base/garment_fit.py",
+      "sha256": "51fe27a53b6ff3fc0e40396ff210ae70d04fdc0ee971176394e794e393972898"
+    },
+    {
+      "path": "include/malemod/surface/canonical_packet.hpp",
+      "sha256": "be82c272e1b1eb1d747d7cecca001505f81b3f0291a1c6ce78aa5b8d41247ed6"
+    },
+    {
+      "path": "include/malemod/surface/normal_frame.hpp",
+      "sha256": "fcdfe428d388779bf0becaae53bc7e889884c9179162b8cf7b64684359c8ec5d"
+    },
+    {
+      "path": "include/malemod/garments/target_frame.hpp",
+      "sha256": "a80d7f7608013d1fa59722c7e1a0c615f003dcf80531fbded137d2012480506d"
+    },
+    {
+      "path": "tools/extract_canonical_surface.py",
+      "sha256": "8f5a45b8557f009565218cfea1c62c99833cd8b025f8d2711e8251808c0ea2f8"
+    },
+    {
+      "path": "tools/canonical_surface_prelude.inc",
+      "sha256": "623d093b39fd83ecf1218f47ec1629939565d43a427c83f5608c6c9d834dcf51"
+    },
+    {
+      "path": "tools/canonical_surface_probe.cpp",
+      "sha256": "1a94fe96c9d83f8825e10c8b3dc23aeea51c49729b78ce2bdb16c6a2d30da6f5"
+    },
+    {
+      "path": "tools/extract_canonical_meridian.py",
+      "sha256": "7394286711fc7ebb648bb72de689d5a5038f248bd22f71fd044367f3b530a06f"
+    },
+    {
+      "path": "tools/wolverine_v2_trace_reference.cpp",
+      "sha256": "b771d37efc5fc1d9ae204e774a45a00892e68650a96cb2cf96efe9cd59fb3bf7"
+    },
+    {
+      "path": "include/malemod/controls/canonical_order.hpp",
+      "sha256": "9cfac88fd3e07b8ba1f0eee3d55bbed1ad0e248bc2e688735e00be0331bb4f33"
+    },
+    {
+      "path": "include/malemod/controls/menu_preferences.hpp",
+      "sha256": "fd9bd40b99830a3dceb76f9ef441133a165afd48e95f1cc31d5b73e273fb6156"
+    },
+    {
+      "path": "malemod_base/garment_coverage.py",
+      "sha256": "768adf943754f219ebfe81b9c9b85aa0b58add3db5ed44a390a09d8bd50902ec"
+    },
+    {
+      "path": "tests/test_garment_coverage.py",
+      "sha256": "b13a869697367357aaea0865a76d1c45a5a530d35a4cff971c43e30452167978"
+    },
+    {
+      "path": "include/malemod/controls/canonical_menu.hpp",
+      "sha256": "56aa0cb76f9731bcc64745df9bdcc896d28d0728d22d7f3022ac8cca32f7cc6c"
+    },
+    {
+      "path": "include/malemod/surface/canonical_features.hpp",
+      "sha256": "e8c461a82863fa600f507387623fb6c0e375f9b18b787b590a5369efb443bc2b"
+    },
+    {
+      "path": "include/malemod/clinical/canonical_runtime.hpp",
+      "sha256": "a481f22e427d2e9d53b841af392a87853a2ce750b6bec3b3cc459ba7b89d6267"
+    },
+    {
+      "path": "include/malemod/clinical/canonical_settings.hpp",
+      "sha256": "7fb2532d5a70317668ef14776c02f642dd76c23ea7b3fd8917803e063256ce99"
+    },
+    {
+      "path": "include/malemod/clinical/canonical_body_collision.hpp",
+      "sha256": "306be82890577080771b45f05cc30e3b24164d884392026f0075811d1c9d7301"
+    },
+    {
+      "path": "tests/canonical_menu_test.cpp",
+      "sha256": "cff3eda4a6d33e7398f945a18b1a78a4a49abd7edf14fa960af5852f8f2aa4b5"
+    },
+    {
+      "path": "tests/canonical_clinical_runtime_test.cpp",
+      "sha256": "954970d9e8f59737475d6bf83e5b8afb11696081b4bebba051dc73bfab4ca1e0"
+    },
+    {
+      "path": "tests/canonical_body_collision_test.cpp",
+      "sha256": "68e89ed53cdffc2c4a52dde13f6708a057f1287c9e584a7667a807ad12f32910"
+    },
+    {
+      "path": "tools/extract_canonical_body_collision.py",
+      "sha256": "a06cd119e96f27b970f830a4fbcc7275c42ad68757fa76d4c94d206e5f78075d"
+    },
+    {
+      "path": "tools/canonical_feature_case.hpp",
+      "sha256": "5a6fbaa350022c7f1998f79ad90b0f2ad85a8492885c4a951ef043b4c25d714a"
+    },
+    {
+      "path": "tools/wolverine_v2_feature_reference.cpp",
+      "sha256": "c8e1a5e42be982a3593f4a7b1965511daf8d3de6058cf7049d9f511afa05f084"
+    },
+    {
+      "path": "tests/normal_frame_test.cpp",
+      "sha256": "c88ab7ef92ffb89ba87f07adbfba85a2f08fd148a91fdddaa4bc5efd651e2bc0"
+    }
+  ],
+  "sourceSnapshotCommit": "0a5457a945d7e65f86efad9741b0aa57e9e521f3",
+  "sourceSnapshotBranch": "codex/witcher-v2-extensions-20261027",
+  "sourceSnapshotRepository": "https://github.com/gkoogz/MaleModBase.git"
+}
