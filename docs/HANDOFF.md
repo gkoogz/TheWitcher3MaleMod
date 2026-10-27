@@ -1,3 +1,156 @@
+## October 27 - Running waistband correction INSTALLED and accepted; room default active
+
+Final installed DLL:4c85016d157e84307599e20be284323299d4baec093484b9c1146cb0e48587d8.
+Only that DLL changed among74 installed files. All source anatomy, Geralt fit,
+meshes, maps, shaders, bindings, numerical worker, production scripts and audio
+remain byte-exact. Current installed runtime is accepted; no further game or
+GPU process remains active. No interactive room was launched over the user.
+
+Pre-fix checkpoint was published BEFORE any fix as GitHub latest v0.6.0, tag8b82b90,
+source/native-code assets verified against server SHA-256. Full private74-file
+payload remains protected at prepared-1793093168045713100/payload. Public release
+excludes private game-derived assets/audio and is not a standalone installer.
+V1 archives and rollback remain intact. Do not retag/replace this checkpoint.
+
+Final strict aggregate: v2/build/acceptance/run-frame-final-aggregate.json
+SHA50111288cdc999eef701533c3323499d2884acb88159a9231ae39b9c80775d4b.
+Includes verified1967-frame features/all21rows/31CP, independent90production+
+90LOD1 views, quiet6cases and LAST campaign movement/armor/pause/save/load.
+All visible SDK ticks serviced; no runtime faults. No absolute FPS parity claim.
+Feature pairing provenance was completed from exact existing checkpoint JSON;
+all original pair assignments, raw photos/checkpoints/frames/numeric report and
+closed receipt remained unchanged. Original derived metadata revisions preserved.
+Current feature independent review SHA0df937a8c4705e9468ded20d028a9bbb3fb7613fc6183fa01840803a3332ed64.
+
+Transactional install: prepared-1793116386719695200/manifest.json;74 files,
+29 protected files verified. Its rollback folder preserves44ef/v0.6.0 with both
+ownership receipts. To restore the old room entry as well, use the unchanged
+v2/build/installation/grey-room-launch-before-v2-1793117929563550200.json.
+
+ACTUAL INSTALLED moving test (no preview):
+- build/probe/sealed-session-20261027-115851/receipt.json, PID10360,953sourceframes,
+  complete20 native photos across walk/run/sprint/turn/stop; all20 decoded,
+  hashed and independently reviewed full+pelvic. Carrier float is gone.
+- v2/build/installed-run-frame/motion/independent-visual-review/review.json
+  SHA44b68f107d65a4782a22bb0678a596004ceb5417e3a5d692917cba3589f29ed8.
+- Original angular pouch creases and scalloped unstriped edge remain; acceptance
+  is for the reported tracking defect, not a claim of perfect cloth aesthetics.
+
+ACTUAL INSTALLED ordinary showroom (no preview):
+- build/probe/sealed-session-20261027-120406/receipt.json, PID7756,268sourceframes,
+  six checkpoints0/1/2/69/70/71;142active surface frames;7.584m grounded motion
+  over8.511s. Root reviewed all9 actual PNGs; bare and jock remain continuous.
+- v2-room-acceptance.json and accepted-v2-render.png are in that session folder.
+  local/grey-room-launch.json now selects this accepted4c result;
+  tools/play_grey_room.py --check PASS all74 installed hashes and launch gates.
+- Validation helper now distinguishes two stable OWNED floor geometry traces
+  (first before player placement, second ready) from grounded player samples.
+  Only ready+grounded positions count; lifecycle movement begins after readiness.
+  One-floor/missing ownership/moving or tilted floor/airborne/no-ready-player
+  still reject.12 meaningful tests pass; no native trace or driver was edited.
+All native sessions closed normally and restored24ordinary saves/current922
+photos plus settings/audio. Historical unidentified photo changes are not claimed
+restored. Current transactions independently rehash all originals.
+
+Development preview baseline rebased without asset copies to
+preview-1793118038893201000.json; historical feature/matrix/campaign manifests
+remain immutable. Source is backed up on codex/witcher-v2; final documentation
+commit is discoverable from its remote ref. Earlier entries below are history.
+
+## October 27 - Fixed4c native gates closed; strict aggregate provenance completion
+
+Frozen4c DLL remains private/uninstalled; actual44ef/v0.6.0 untouched. All native
+runs closed and settings/audio/24saves/current922photos restored. Final fresh
+motion bank111209 has19 valid reviewed actual images (not20); all7 native GPU/
+CPU selected-pose checks pass, front run/side sprint/rear run/stop stay attached.
+Review9d47720a... . Old dense110239 has1 corrupt native PNG; that visual bank is
+not accepted. Its12 exact-pose CPU samples show zero outer-band crossings,
+minimum1.536918mm clearance; CP120 mutable-diagnostic-pose mismatch is excluded,
+not a13-case pass. Qualified report37798dec... preserves that distinction.
+
+Features/native-20261027-110603:1967frames,31CP,all21rows/keys/idle/every visible
+SDK tick, zero errors; Menu reviewed all33full+pelvic+9floor crops. Review1e5d9161...
+Production+LOD1 matrices run-frame-final:90+90 pass, metadata restored,LODmask15;
+independent90+90 reviews c8095d90... and991db50e... . Root viewed all21close jock
+cases plus distant group and fresh actual front/side/rear movement originals.
+Quiet6 performance run-frame-final PASS, >=441frames/case, original surface
+cadence1/.5, every visible SDK tick serviced. Native mean times remain different
+from Wolverine; no absolute FPS parity claim. Target frame means vs oldv0.6.0
+are40.85/39.05/40.83ms bare and26.83/26.83/26.42ms jock (different runs, no
+causal overhead claim). Source worker/math unchanged.
+Campaign LAST:ordinary-save-holding-1793115368455442100/native/review.json PASS,
+receiptbuild/probe/sealed-session-20261027-113619/receipt.json;1410frames,5.903m,
+armor/pause30ticks/save callback/load/postload all observed. Root viewed all6
+actual PNGs: jock rear/front band attached where unoccluded; stock NPC/wall
+occludes portions, no universal campaign fit claim. Closed/restored completely.
+
+Strict aggregate refused incomplete DERIVED feature pairing metadata (missing
+checkpoint field); Menu is preserving the original pairing/review revisions and
+binding exact existing checkpoint JSON without changing image assignments or
+raw captures. Do not weaken the aggregate. Then aggregate->prepare->install,
+ACTUALinstalled grey-room acceptance/default launcher, optional actualinstalled
+running witness, rebase closed preview, final docs/source backup/PNG. No runtime
+code/assets should change. v0.6.0 GitHub release/tag remains immutable/latest.
+
+## October 27 - Running waistband fix frozen in private preview; full gates active
+
+DO NOT CHANGE runtime code/assets during these gates. Installed44ef/v0.6.0 stays
+unchanged, with exact74-file restore payload protected below. Current private
+candidate DLL:4c85016d157e84307599e20be284323299d4baec093484b9c1146cb0e48587d8.
+Pointer:v2/build/grey-fit/preview-path.json -> preview-1793113118211333400.json
+(SHA9a3b08b65ec2f4af5ea6b0b5e4f213c8c8bf80d996d702e570ff7433b76d108a).
+Entire74-file inventory compared: ONLY malemod_witcher.dll differs from installed.
+Worker, all bindings/meshes/maps/shaders/scripts/private audio are byte-exact.
+
+Cause PROVED in actual running GPU capture:
+v2/build/materials/native-position-20261027-104432. All7 current/coherent source
+serials still passed identity, but body GPU matched CPU LatePose atP99<10um and
+ALL4 garment materials were translated286.6775mm. UniformGPU-minusCPU vector
+(-.2811469998,-.0560388612,+.0000000139)m; residualP99=3.449um. This was the
+independently delayed rigid carrier's INSTANCE_TRANSFORM, not fit/physics/bones.
+
+Renderer-only fix: rigid_world_frame.hpp rewrites ONLY three instance matrix
+inputs to an unused IA slot. Immutable identity+packet.origin rows undo the same
+origin already subtracted from WORLD garment positions; native carrier remains
+for bounds and all other instance attributes are untouched. 48B rows share the
+existing vertex upload tail atvertexBytes+32, stride0, total80B padding. Original
+AMD24B vertex guard remains; no extra resource allocation. Same upload/bundle/
+fence lifetime retains rows; exact old IA slot+PSO restored normal/exception.
+All uploads contain rows, including fake/noninstanced→instanced cache transitions.
+No source geometry, fitting, offsets, topology, canonical solver/cadence changed.
+
+Tests:16 CPU checks +tailbounds pass(v2/build/rigid-world-frame-01). Actual AMD
+rigid nativeVS and scoped WARP synthetic offscreen fixtures pass zero-stride,
+nonzero firstInstance0/2/5,multiple instances3, wrong native T/rotation,16 exact
+MRT/world/UV/N/T/other-instance comparisons. GPUproof:
+v2/build/materials/rigid-world-frame-01/proof.json
+SHA466adf8c5907d43487a090cec4cdfc93946cd9f342e2697050b84a66ef7f97e5.
+
+IntermediateB26 actual running bank105540 passed all7 GPU/CPU selected-pose
+checks (clothP99<=3.491um; old~286mm), root actualphoto9 shows attached band.
+Final4c full walk/run/sprint/turn/stop bank:
+v2/build/materials/native-position-20261027-110239;
+receiptbuild/probe/sealed-session-20261027-110249/receipt.json(PID14896), CLOSED,
+all7 current/coherent atCP75, endCP124 observed;65 native photos. Menu owns
+selected-pose analysis and independent image review; Clinical owns preserving
+selected60..124 checkpoint samples/outer-band CPU contact/movement/restoration.
+Both agents CPU/image only during root native sessions. Native run helper:
+task work/run_running_motion_capture.py, driverpublicprobes/native/v2_run_motion.ws
+(exact compiled bytes also build/collar-sessions/run-band-root/v2_run_motion.ws),
+proofv2/build/run-band-motion/compile.json. No physical input/focus used.
+
+Earlierprivate second-controller probe crashed in script interpreter before
+running; do not treat it as runtime acceptance. Closed/restored24saves/922photos/
+audio. The final driver uses proven SINGLE initial locomotion controller.
+
+Root full features run ACTIVE(tool exec87569), then require same4c full180
+production+LOD1 matrices, independent reviews, quiet6performance(no agent jobs),
+campaign LAST, strict aggregate, prepare/install, ACTUALinstalled-room movement/
+views/acceptance, rebase preview, default launcher, source backup and final PNG.
+Use unique labels run-frame-final. Existing task helper scripts contain proven
+full feature/matrix/campaign workflow. Do not overwrite prior evidence/release.
+Current defectfix code is NOT YET installed. Source releasev0.6.0 stays frozen.
+
 ## October 27 - User checkpoint published before running-waistband fix
 
 User reports the jockstrap waistband lags/clips into Geralt while RUNNING.

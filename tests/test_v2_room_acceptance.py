@@ -77,6 +77,25 @@ class RoomAcceptanceTests(unittest.TestCase):
         self.assertEqual(value['floorReadbacks'],2)
         self.assertEqual(value['groundedLifecycleReadbacks'],1)
 
+    def test_preplacement_owned_trace_can_establish_stable_geometry_only(self):
+        rows=self.lifecycle_rows();rows[-3]['vectors'][4][3]=0
+        rows[-3]['vectors'][3][2]=-29 # not a grounded player observation
+        value=observations(rows)
+        self.assertEqual(value['floorReadbacks'],2)
+        self.assertEqual(value['readyFloorReadbacks'],1)
+        self.assertEqual(value['groundedReadbacks'],2)
+        self.assertEqual(value['movementDistance'],2)
+
+    def test_preplacement_trace_cannot_supply_missing_ownership_or_stability(self):
+        for change in ('not_owned','moved','wrong_height','tilted','no_ready_player'):
+            rows=self.lifecycle_rows();rows[-3]['vectors'][4][3]=0
+            if change=='not_owned':rows[-3]['vectors'][4][2]=0
+            elif change=='moved':rows[-3]['vectors'][5][0]=1
+            elif change=='wrong_height':rows[-3]['vectors'][6][2]=2
+            elif change=='tilted':rows[-3]['vectors'][7][0]=1
+            elif change=='no_ready_player':rows[-2]['vectors'][4][3]=0
+            with self.subTest(change=change),self.assertRaises(ValueError):observations(rows)
+
     def test_lifecycle_cannot_invent_floor_or_grounding(self):
         for change in ('no_floor','one_floor','moving_floor','tilted_floor','airborne','before_floor','wrong_marker','no_player'):
             rows=self.lifecycle_rows()

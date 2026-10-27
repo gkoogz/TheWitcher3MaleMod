@@ -44,19 +44,23 @@ def room_closure(session,receipt):
 
 
 def observations(rows):
-    floor=[r for r in rows if r.get('iterationReadback')and len(r.get('vectors',[]))==8
+    geometry=[r for r in rows if r.get('iterationReadback')and len(r.get('vectors',[]))==8
         and [r['vectors'][i][3]for i in range(3)]==[-251,-252,-253]
-        and r['vectors'][4]==[1,1,1,1]]
+        and r['vectors'][4][:3]==[1,1,1]and r['vectors'][4][3]in(0,1)]
+    floor=[r for r in geometry if r['vectors'][4][3]==1]
     grounded=[r for r in floor if abs(r['vectors'][3][2]-r['vectors'][6][2])<=.3]
     # The showroom stops its floor-creation branch once the room starts, while
     # its independent lifecycle readbacks keep sampling the real player. Use
     # those positions only after a verified, stable horizontal owned floor.
     lifecycle=[]
-    if len(floor)>=2:
+    # A successful owned-floor trace before player placement is valid geometry
+    # evidence, but never a grounded player sample. Require two stable owned
+    # traces and at least one player-ready trace before lifecycle movement.
+    if len(geometry)>=2 and floor:
         reference=floor[0];height=reference['vectors'][6][2]
         stable=all(math.dist(r['vectors'][5][:3],reference['vectors'][5][:3])<1e-5
             and abs(r['vectors'][6][2]-height)<1e-5
-            and math.dist(r['vectors'][7][:3],[0,0,1])<1e-5 for r in floor)
+            and math.dist(r['vectors'][7][:3],[0,0,1])<1e-5 for r in geometry)
         if stable:
             lifecycle=[r for r in rows if r.get('iterationReadback')and len(r.get('vectors',[]))==8
                 and [r['vectors'][i][3]for i in range(3)]==[-201,-202,-203]
@@ -82,7 +86,7 @@ def observations(rows):
     if len(active)<100 or active[-1]['completed']-active[0]['completed']<20:
         raise ValueError('Complete live native surface publication was not observed')
     return dict(movementDistance=distance,movementStart=a['vectors'][3][:3],movementEnd=b['vectors'][3][:3],
-        movementSeconds=b['seconds']-a['seconds'],groundedReadbacks=len(grounded),floorReadbacks=len(floor),
+        movementSeconds=b['seconds']-a['seconds'],groundedReadbacks=len(grounded),floorReadbacks=len(geometry),readyFloorReadbacks=len(floor),
         groundedLifecycleReadbacks=len(lifecycle),sourceFrames=len(frames),activeSurfaceFrames=len(active),everyVisibleSDKTickServiced=True)
 
 

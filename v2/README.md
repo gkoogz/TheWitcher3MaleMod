@@ -23,6 +23,14 @@ original Wolverine cadence (every update bare; alternate updates in jockstrap).
 Absolute FPS equivalence across the two engines is not established. Geralt's
 native idle motion is retained; Wolverine FaceFX/head overlays are not retargeted.
 
+The running waistband correction is now installed and verified in the actual
+game. It changes only rigid garment rendering: the original model, pelvic fit,
+physics, controls and other 73 installed files remain exact. Actual installed
+walking/running/sprinting/turning/stopping views passed, followed by the normal
+grey-room launch check. See `docs/RIGID-CARRIER-FRAME.md` for the measured cause.
+The pre-fix version is preserved as GitHub release `v0.6.0` and as a complete
+private 74-file local restore point; the release excludes private assets/audio.
+
 ## Accepted source integration
 
 The installed source integrates the canonical anatomy/physics worker,
@@ -58,7 +66,7 @@ quaternion overlays and UE3 FaceFX are not retargeted; this is an explicit engin
 adaptation, not identical facial animation. Actual autonomous in-game playback passed the closed combined feature run.
 
 Final runtime SHA-256:
-`44ef0e073920b0fc6ab9c4d1fb99a38ef1854290a729ac5152f603a6ea6b676c`.
+`4c85016d157e84307599e20be284323299d4baec093484b9c1146cb0e48587d8`.
 Installed inventory contains 74 exact files; rollback preserves the previous
 installation. Installation, native acceptance, and performance evidence remain
 separate records rather than an assertion of identical engine frame rates.

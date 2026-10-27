@@ -39,7 +39,10 @@ minimum/default/maximum/intermediate size and width, combined shape controls,
 every mechanical state, extreme rest angles, both resources/LODs, animated motion
 and front/side/oblique native room views, plus campaign-specific checks. Reject
 gaps, folds/inversions, dark rings, pinching, tangent/normal discontinuity and
-wedges. A weld or successful build is not visual acceptance. Report untested
+wedges. A weld or successful build is not visual acceptance. A walking-only test does
+not establish garment tracking during running. Changes to garment rendering
+require actual running, sprinting, turning and stopping views; check the body
+and garment against the same native GPU draw pose, not only source serials. Report untested
 cells; never claim an unobserved pass. Preserve exact installation and rollback
 until the replacement is reviewed.
 

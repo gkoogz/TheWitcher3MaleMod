@@ -3,6 +3,7 @@
 #include "garment_delivery.hpp"
 #include "position_capture.hpp"
 #include "draw_frame_selection.hpp"
+#include "rigid_world_frame.hpp"
 #include <wrl/client.h>
 #include <fstream>
 #include <map>
@@ -17,6 +18,7 @@ using Microsoft::WRL::ComPtr;
 std::mutex mutex;std::atomic<unsigned> flags{0},publications{0};thread_local bool creating=false;
 struct Layout {
  std::vector<std::string> names;std::vector<D3D12_INPUT_ELEMENT_DESC> elements;
+ unsigned instanceSlot=~0u;
  explicit Layout(const D3D12_INPUT_LAYOUT_DESC& d){
   if(!d.pInputElementDescs||!d.NumElements||d.NumElements>32)throw std::invalid_argument("Invalid garment input layout");
   for(unsigned i=0;i<d.NumElements;i++){auto e=d.pInputElementDescs[i];if(!e.SemanticName)throw std::invalid_argument("Missing garment semantic");names.push_back(e.SemanticName);elements.push_back(e);}
@@ -29,7 +31,9 @@ struct Layout {
    else if(!_stricmp(e.SemanticName,"COLOR")){if(e.InputSlot!=3||e.AlignedByteOffset||e.Format!=DXGI_FORMAT_R8G8B8A8_UNORM)throw std::invalid_argument("Unobserved garment color");}
    else throw std::invalid_argument("Unobserved garment attribute");
   }
-  if(!position)throw std::invalid_argument("No garment POSITION");for(unsigned i=0;i<elements.size();i++)elements[i].SemanticName=names[i].c_str();
+  if(!position)throw std::invalid_argument("No garment POSITION");
+  instanceSlot=rigid_world::Rewrite(elements);
+  for(unsigned i=0;i<elements.size();i++)elements[i].SemanticName=names[i].c_str();
  }
  D3D12_INPUT_LAYOUT_DESC View()const{return {elements.data(),UINT(elements.size())};}
 };
@@ -62,6 +66,7 @@ std::size_t StreamObjectSize(D3D12_PIPELINE_STATE_SUBOBJECT_TYPE type){
 
 struct Pipeline {
  ComPtr<ID3D12PipelineState> original,replacement;ComPtr<ID3D12RootSignature> root;
+ unsigned instanceSlot=~0u;
  D3D12_GRAPHICS_PIPELINE_STATE_DESC desc{};std::vector<unsigned char> stream;
  std::array<std::vector<unsigned char>,5> shaders;
  std::vector<std::string> names;std::vector<D3D12_INPUT_ELEMENT_DESC> elements;
@@ -74,7 +79,7 @@ using Feed=GarmentRenderFeed;
 auto* feed=new std::shared_ptr<const Feed>;
 struct Vertex {std::array<float,3> p;unsigned normal,tangent,uv=0x38003800,color=0xffffffff,uv2=0;};
 static_assert(sizeof(Vertex)==32);
-struct Upload {ComPtr<ID3D12Resource> vertices,indices;std::shared_ptr<const Feed> packet;unsigned opaque=0,count=0;std::array<D3D12_VERTEX_BUFFER_VIEW,4> views;D3D12_INDEX_BUFFER_VIEW index;};
+struct Upload {ComPtr<ID3D12Resource> vertices,indices;D3D12_VERTEX_BUFFER_VIEW instanceView{};std::shared_ptr<const Feed> packet;unsigned opaque=0,count=0;std::array<D3D12_VERTEX_BUFFER_VIEW,4> views;D3D12_INDEX_BUFFER_VIEW index;};
 struct Mark {ComPtr<ID3D12Fence> fence;UINT64 value;bool Done(){auto v=fence->GetCompletedValue();if(v==UINT64_MAX)throw std::runtime_error("Garment device removed");return v>=value;}};
 struct Recording {std::array<std::shared_ptr<Upload>,4> uploads{};std::vector<std::shared_ptr<Upload>> retained;std::map<void*,Mark> marks;};
 struct Queue {ComPtr<ID3D12Fence> fence;UINT64 next=0;};
@@ -82,12 +87,13 @@ auto* recordings=new std::map<void*,Recording>;auto* retired=new std::vector<Rec
 std::atomic<std::uint64_t> counted{0};
 void HR(HRESULT r){if(FAILED(r))throw std::runtime_error("Garment HRESULT "+std::to_string(r));}
 void Collect(){for(auto i=retired->begin();i!=retired->end();){bool done=!i->marks.empty();for(auto& m:i->marks)done&=m.second.Done();if(done)i=retired->erase(i);else ++i;}}
-ComPtr<ID3D12Resource> Buffer(ID3D12Device* device,const void* bytes,std::size_t size,std::size_t padding=0){
+ComPtr<ID3D12Resource> Buffer(ID3D12Device* device,const void* bytes,std::size_t size,std::size_t padding=0,const std::array<float,12>* frame=nullptr){
+ if(frame&&padding<sizeof(*frame))throw std::invalid_argument("Rigid world frame leaves upload tail");
  D3D12_HEAP_PROPERTIES heap{};heap.Type=D3D12_HEAP_TYPE_UPLOAD;D3D12_RESOURCE_DESC d{};d.Dimension=D3D12_RESOURCE_DIMENSION_BUFFER;d.Width=size+padding;d.Height=1;d.DepthOrArraySize=1;d.MipLevels=1;d.SampleDesc.Count=1;d.Layout=D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
- ComPtr<ID3D12Resource> out;HR(device->CreateCommittedResource(&heap,D3D12_HEAP_FLAG_NONE,&d,D3D12_RESOURCE_STATE_GENERIC_READ,nullptr,IID_PPV_ARGS(&out)));void* p;D3D12_RANGE none{0,0};HR(out->Map(0,&none,&p));std::memcpy(p,bytes,size);if(padding)std::memset(static_cast<unsigned char*>(p)+size,0,padding);D3D12_RANGE written{0,size+padding};out->Unmap(0,&written);return out;
+ ComPtr<ID3D12Resource> out;HR(device->CreateCommittedResource(&heap,D3D12_HEAP_FLAG_NONE,&d,D3D12_RESOURCE_STATE_GENERIC_READ,nullptr,IID_PPV_ARGS(&out)));void* p;D3D12_RANGE none{0,0};HR(out->Map(0,&none,&p));std::memcpy(p,bytes,size);if(padding)std::memset(static_cast<unsigned char*>(p)+size,0,padding);if(frame)std::memcpy(static_cast<unsigned char*>(p)+size+padding-sizeof(*frame),frame->data(),sizeof(*frame));D3D12_RANGE written{0,size+padding};out->Unmap(0,&written);return out;
 }
 void SaveLayout(Pipeline& p,const D3D12_INPUT_LAYOUT_DESC& d){for(unsigned i=0;i<d.NumElements;i++){p.names.push_back(d.pInputElementDescs[i].SemanticName);p.elements.push_back(d.pInputElementDescs[i]);}for(unsigned i=0;i<p.elements.size();i++)p.elements[i].SemanticName=p.names[i].c_str();}
-void Clone(Pipeline& p){if(p.replacement)return;ComPtr<ID3D12Device> device;HR(p.original->GetDevice(IID_PPV_ARGS(&device)));Layout layout({p.elements.data(),UINT(p.elements.size())});creating=true;
+void Clone(Pipeline& p){if(p.replacement)return;ComPtr<ID3D12Device> device;HR(p.original->GetDevice(IID_PPV_ARGS(&device)));Layout layout({p.elements.data(),UINT(p.elements.size())});p.instanceSlot=layout.instanceSlot;creating=true;
  try{if(p.stream.empty()){auto d=p.desc;d.InputLayout=layout.View();d.CachedPSO={};HR(device->CreateGraphicsPipelineState(&d,IID_PPV_ARGS(&p.replacement)));}
  else{auto copy=p.stream;*reinterpret_cast<D3D12_INPUT_LAYOUT_DESC*>(copy.data()+p.layout)=layout.View();if(p.cache!=SIZE_MAX)*reinterpret_cast<D3D12_CACHED_PIPELINE_STATE*>(copy.data()+p.cache)={};ComPtr<ID3D12Device2> d;HR(device.As(&d));D3D12_PIPELINE_STATE_STREAM_DESC s{copy.size(),copy.data()};HR(d->CreatePipelineState(&s,IID_PPV_ARGS(&p.replacement)));}creating=false;}catch(...){creating=false;throw;}
 }
@@ -132,8 +138,8 @@ bool GarmentDraw(void* pointer,void* original,const std::array<D3D12_VERTEX_BUFF
  if(diagnostic)diagnostic->latestSequence=packet->input->serial;
  auto selected=SelectDrawFrame();packet=selected.garment;if(!packet||!packet->input)return true;if(diagnostic)diagnostic->frameSequence=packet->input->serial;
  auto input=packet->input;
- auto* list=static_cast<ID3D12GraphicsCommandList*>(pointer);bool bound=false;
- try{std::unique_lock<std::mutex> lock(mutex);Collect();auto found=pipelines->find(original);if(found==pipelines->end()){flags.fetch_or(2);return true;}if(retired->size()>128)throw std::runtime_error("Garment retirement backlog");auto pipeline=found->second;Clone(*pipeline);auto& record=(*recordings)[pointer];auto upload=record.uploads[kind];if(diagnostic&&upload)diagnostic->recordingSequence=upload->packet->input->serial;if(upload&&upload->packet!=packet){record.retained.push_back(std::move(record.uploads[kind]));upload.reset();}
+ auto* list=static_cast<ID3D12GraphicsCommandList*>(pointer);bool bound=false;unsigned instanceSlot=~0u;
+ try{std::unique_lock<std::mutex> lock(mutex);Collect();auto found=pipelines->find(original);if(found==pipelines->end()){flags.fetch_or(2);return true;}if(retired->size()>128)throw std::runtime_error("Garment retirement backlog");auto pipeline=found->second;Clone(*pipeline);instanceSlot=pipeline->instanceSlot;auto& record=(*recordings)[pointer];auto upload=record.uploads[kind];if(diagnostic&&upload)diagnostic->recordingSequence=upload->packet->input->serial;if(upload&&upload->packet!=packet){record.retained.push_back(std::move(record.uploads[kind]));upload.reset();}
   if(!upload){upload=std::make_shared<Upload>();upload->packet=packet;const auto& mesh=packet->input->output.mesh;std::vector<Vertex> vertices;vertices.reserve(mesh.vertices.size());const auto& r=resources[kind];
    auto half=[](float value){return unsigned(DirectX::PackedVector::XMConvertFloatToHalf(value));};
    for(const auto& v:mesh.vertices){Vertex out{};for(unsigned a=0;a<3;a++){out.p[a]=float((v.position[a]-packet->origin[a]-r.bias[a])/r.scale[a]);if(!std::isfinite(out.p[a]))throw std::runtime_error("Nonfinite garment vertex");}
@@ -147,10 +153,19 @@ bool GarmentDraw(void* pointer,void* original,const std::array<D3D12_VERTEX_BUFF
    // even if the individual fields fit. Pad the allocation, not the source
    // mesh, and expose exactly the same vertex count in every stream.
    const UINT vertexBytes=UINT(vertices.size()*sizeof(Vertex));
-   upload->vertices=Buffer(device.Get(),vertices.data(),vertexBytes,24);upload->indices=Buffer(device.Get(),topology.data(),topology.size()*4);auto address=upload->vertices->GetGPUVirtualAddress();const unsigned offsets[4]={0,20,12,24};for(unsigned i=0;i<4;i++)upload->views[i]={address+offsets[i],vertexBytes,sizeof(Vertex)};upload->index={upload->indices->GetGPUVirtualAddress(),UINT(topology.size()*4),DXGI_FORMAT_R32_UINT};record.uploads[kind]=upload;
+   // World-space garment data must not inherit the independently delayed
+   // entity transform. Preserve the carrier for culling, but give the native
+   // rigid vertex shader this immutable packet's exact origin. Stride zero
+   // repeats the same three rows for every instance/firstInstance value.
+   const auto rows=rigid_world::Rows(packet->origin);
+   // Keep the original 24-byte last-vertex padding, then align the constant
+   // rows to 16 bytes. Sharing the existing upload adds no resource allocation
+   // and also supports reuse across pipelines with/without instance inputs.
+   upload->vertices=Buffer(device.Get(),vertices.data(),vertexBytes,32+sizeof(rows),&rows);upload->indices=Buffer(device.Get(),topology.data(),topology.size()*4);auto address=upload->vertices->GetGPUVirtualAddress();
+   upload->instanceView={address+vertexBytes+32,UINT(sizeof(rows)),0};const unsigned offsets[4]={0,20,12,24};for(unsigned i=0;i<4;i++)upload->views[i]={address+offsets[i],vertexBytes,sizeof(Vertex)};upload->index={upload->indices->GetGPUVirtualAddress(),UINT(topology.size()*4),DXGI_FORMAT_R32_UINT};record.uploads[kind]=upload;
   }
-  const unsigned first=0,count=upload->count;if(!count)return true;lock.unlock();list->SetPipelineState(pipeline->replacement.Get());list->IASetVertexBuffers(0,4,upload->views.data());list->IASetIndexBuffer(&upload->index);bound=true;draw(count,first);if(diagnostic&&PositionCapturePending()){auto capture=*diagnostic;capture.cloth=true;capture.garment=upload->packet->input;capture.epoch=capture.garment->epoch;capture.sequence=capture.garment->serial;capture.presentationSerial=0;capture.kind=kind;capture.origin=upload->packet->origin;capture.scale=resources[kind].scale;capture.bias=resources[kind].bias;capture.uploadViews=upload->views;capture.uploadIndices=upload->index;capture.indexCount=count;capture.indexFirst=first;capture.normalizedFirst=first;capture.baseVertex=0;PositionCaptureInsideDraw(pointer,original,pipeline->replacement.Get(),std::move(capture),[&]{draw(count,first);});}list->IASetIndexBuffer(&indices);list->IASetVertexBuffers(0,4,saved.data());list->SetPipelineState(static_cast<ID3D12PipelineState*>(original));bound=false;flags.fetch_or(4|(8u<<kind));auto serial=upload->packet->input->serial,previous=counted.load();while(serial>previous){if(counted.compare_exchange_weak(previous,serial)){publications.fetch_add(1);break;}}return true;
- }catch(...){if(bound){list->IASetIndexBuffer(&indices);list->IASetVertexBuffers(0,4,saved.data());list->SetPipelineState(static_cast<ID3D12PipelineState*>(original));}flags.fetch_or(128);return true;}
+  const unsigned first=0,count=upload->count;if(!count)return true;lock.unlock();list->SetPipelineState(pipeline->replacement.Get());list->IASetVertexBuffers(0,4,upload->views.data());if(instanceSlot<saved.size())list->IASetVertexBuffers(instanceSlot,1,&upload->instanceView);list->IASetIndexBuffer(&upload->index);bound=true;draw(count,first);if(diagnostic&&PositionCapturePending()){auto capture=*diagnostic;capture.cloth=true;capture.garment=upload->packet->input;capture.epoch=capture.garment->epoch;capture.sequence=capture.garment->serial;capture.presentationSerial=0;capture.kind=kind;capture.origin=upload->packet->origin;capture.scale=resources[kind].scale;capture.bias=resources[kind].bias;capture.uploadViews=upload->views;capture.uploadIndices=upload->index;capture.indexCount=count;capture.indexFirst=first;capture.normalizedFirst=first;capture.baseVertex=0;PositionCaptureInsideDraw(pointer,original,pipeline->replacement.Get(),std::move(capture),[&]{draw(count,first);});}list->IASetIndexBuffer(&indices);list->IASetVertexBuffers(0,4,saved.data());if(instanceSlot<saved.size())list->IASetVertexBuffers(instanceSlot,1,&saved[instanceSlot]);list->SetPipelineState(static_cast<ID3D12PipelineState*>(original));bound=false;flags.fetch_or(4|(8u<<kind));auto serial=upload->packet->input->serial,previous=counted.load();while(serial>previous){if(counted.compare_exchange_weak(previous,serial)){publications.fetch_add(1);break;}}return true;
+ }catch(...){if(bound){list->IASetIndexBuffer(&indices);list->IASetVertexBuffers(0,4,saved.data());if(instanceSlot<saved.size())list->IASetVertexBuffers(instanceSlot,1,&saved[instanceSlot]);list->SetPipelineState(static_cast<ID3D12PipelineState*>(original));}flags.fetch_or(128);return true;}
 }
 void GarmentDrawSubmitted(void* pointer,unsigned count,void* const* lists){try{std::lock_guard<std::mutex> lock(mutex);Collect();bool used=false;for(unsigned i=0;i<count;i++)used|=recordings->count(lists[i])!=0;if(!used)return;auto* queue=static_cast<ID3D12CommandQueue*>(pointer);auto& q=(*queues)[pointer];if(!q.fence){ComPtr<ID3D12Device> device;HR(queue->GetDevice(IID_PPV_ARGS(&device)));HR(device->CreateFence(0,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&q.fence)));}auto value=++q.next;HR(queue->Signal(q.fence.Get(),value));for(unsigned i=0;i<count;i++){auto r=recordings->find(lists[i]);if(r!=recordings->end())r->second.marks[pointer]={q.fence,value};}}catch(...){flags.fetch_or(128);}}
 void GarmentDrawReset(void* pointer){try{std::lock_guard<std::mutex> lock(mutex);auto i=recordings->find(pointer);if(i!=recordings->end()){if(!i->second.marks.empty())retired->push_back(std::move(i->second));recordings->erase(i);}Collect();}catch(...){flags.fetch_or(128);}}
