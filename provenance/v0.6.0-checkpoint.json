@@ -1,0 +1,16 @@
+{
+  "tag": "v0.6.0",
+  "url": "https://github.com/gkoogz/TheWitcher3MaleMod/releases/tag/v0.6.0",
+  "id": 425564712,
+  "publishedAt": "2026-10-27T14:26:25Z",
+  "latestVerified": true,
+  "assetDigestsVerified": true,
+  "sourceCommit": "8b82b90aa9ef6b58b54fb909cc2e273a05eab253",
+  "installedPayloadPreserved": "v2/build/installation/prepared-1793093168045713100/payload",
+  "installedFilesVerified": 74,
+  "schema": "malemod.witcher-v2-release-checkpoint/1",
+  "runtimeSHA256": "44ef0e073920b0fc6ab9c4d1fb99a38ef1854290a729ac5152f603a6ea6b676c",
+  "publicPayload": "Source and native code only; private game-derived assets and audio excluded",
+  "preserveLocalPayload": true,
+  "knownIssue": "User reports waistband lag and body clipping while running; checkpoint deliberately predates the fix."
+}

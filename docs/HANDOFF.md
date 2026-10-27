@@ -1,3 +1,25 @@
+## October 27 - User checkpoint published before running-waistband fix
+
+User reports the jockstrap waistband lags/clips into Geralt while RUNNING.
+Previous gates forced walking and do not establish running acceptance. Installed
+44ef remains unchanged; do not describe this report as fixed or dismiss it based
+on old matrix/serial checks. Current investigation is read-only/private probes.
+
+Before any fix, user explicitly requested preserving this exact version and
+publishing it as latest. GitHub release v0.6.0 is published, latest endpoint and
+all three asset SHA-256 digests verified. Tag pins source8b82b90aa9ef6b58b54fb909cc2e273a05eab253;
+Base extensions remain0a5457a945d7e65f86efad9741b0aa57e9e521f3.
+Public source/native-code release excludes private game-derived assets/audio,
+and is explicitly not a standalone installer. See provenance/v0.6.0-checkpoint.json.
+
+PRESERVE v2/build/installation/prepared-1793093168045713100/payload: all74 files
+were rehashed against both the prepared inventory and current actual installation.
+This is the exact complete private v0.6.0 restore point, distinct from its rollback
+folder (which preserves v1). Do not reuse or clean this prepared directory while
+fixing or installing the next version. Public release notes retain the running
+issue and make no absolute FPS parity claim. No runtime/mesh/settings changes
+were made to publish this checkpoint.
+
 ## October 27 - V2 installed, native acceptance closed, grey room default active
 
 Current installed DLL: 44ef0e073920b0fc6ab9c4d1fb99a38ef1854290a729ac5152f603a6ea6b676c.
