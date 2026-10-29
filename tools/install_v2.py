@@ -129,12 +129,28 @@ def payload_inventory(rows, contract, private_assets=None):
 
 
 def private_sources():
-    source=Path('C:/Games/X-Men Origins Wolverine/Binaries')
-    paths=[source/'TeachingFluid.ini']
-    for folder,count in [('TeachingAudio/Phase1',13),('TeachingAudio/Phase2',11),('WolverineIdle',22)]:
-        clips=sorted((source/folder).glob('*.wav'))
-        if len(clips)!=count:raise ValueError('Review changed local audio inventory: '+folder)
-        paths+=clips
+    # Audio approval is explicit. Never refill rejected Geralt assets from
+    # Wolverine's pools merely because those local source files still exist.
+    profile=read_json(ROOT/'v2/voice-profile.json')
+    if profile.get('schema')!='malemod.witcher-voice-profile/1' or profile.get('character_id')!='geralt':
+        raise ValueError('Expected explicit Geralt voice policy')
+    if profile.get('state')=='needs_recording':
+        source=Path('C:/Games/X-Men Origins Wolverine/Binaries')
+        return source,[source/'TeachingFluid.ini']
+    if profile.get('state')!='approved':raise ValueError('Unknown voice approval state; no legacy fallback')
+    pointer=read_json(ROOT/'local/v2-voice-pack.json');manifest=Path(pointer['manifest']).resolve()
+    if not manifest.is_relative_to((ROOT/'v2/build/voice-packs').resolve())or digest(manifest)!=pointer['sha256']:
+        raise ValueError('Expected owned reviewed voice pack')
+    pack=read_json(manifest);source=Path(pack['root']).resolve()
+    expected={'TeachingFluid.ini',*profile['bindings'].values()}
+    if (pack.get('schema')!='malemod.witcher-voice-pack/1'or pack.get('character_id')!='geralt'
+            or source!=manifest.parent or len(pack['files'])!=len(expected)
+            or {r['path']for r in pack['files']}!=expected):raise ValueError('Voice pack changes the ID binding contract')
+    paths=[]
+    for row in pack['files']:
+        path=target(source,row['path'])
+        if path.is_symlink()or digest(path)!=row['sha256']:raise ValueError('Approved private voice recording changed')
+        paths.append(path)
     return source,paths
 
 

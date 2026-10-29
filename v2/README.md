@@ -1,3 +1,14 @@
+## October 29 voice reset and executable qualification
+
+The current voice assets have been removed at the user's request. The numbered
+24-line replacement script is [voice-lines-geralt.csv](voice-lines-geralt.csv).
+The build waits for approved new recordings and does not reuse Wolverine audio.
+The previously tested geometry/runtime files are unchanged. Separately, the
+installed game executable changed after the October28 qualification; current
+native gameplay and the grey-room entry require requalification. See
+[voice reset and pipeline](docs/VOICE-RESET-20261029.md). Earlier acceptance claims
+below describe the October28 executable, not a fresh pass against today's file.
+
 # Wolverine-parity rebuild
 
 The user requests the same anatomy and behavior as Wolverine, with only the

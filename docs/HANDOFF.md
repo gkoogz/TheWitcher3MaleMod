@@ -1,4 +1,35 @@
-## October 28 — visual repairs installed and accepted (authoritative current state)
+## October 29 — voice reset complete; changed executable requires qualification
+
+Current user request: present Geralt CSV, delete rejected voice recordings, give
+permanent reusable IDs and add the voice pipeline to Core. Delivered 24 exact
+source lines as v2/voice-lines-geralt.csv, MM-VOICE-0001 through MM-VOICE-0024.
+All need new recordings. Deleted192 Geralt candidate MP3s and46 installed Witcher
+WAVs plus46 active-preview copies. Preserved the source scripts/metadata, raw
+reference audio, Wolverine's own recording files and historical release restores.
+All28 remaining managed files retain their hashes; no native/runtime/physics or
+geometry file changed. Core owns the ID catalog/lock, character CSV scaffold,
+PCM/approval validator and hash-bound delivery manifest. The Witcher adapter owns
+ID-to-native bindings and a pack staging tool; its build no longer falls back to
+the rejected Wolverine pools. No native audio acceptance gate was weakened.
+See v2/docs/VOICE-RESET-20261029.md for workflow and exact evidence.
+Deletion receipt: D:/MaleMod/TheWitcher3MaleMod/v2/build/voice-reset/reset-1793293789254565400/receipt.json.
+
+IMPORTANT PRE-EXISTING CHANGE: actual game EXE SHA256 is now
+05948d7238e1c9620a1cb9b3125520f1c143ce04a8e5718a3735120c37d7bae0, versus the October28 qualified
+2df765398a3d1f165db418271be7200178320a4466817379f2fa0dc0001fb101.
+Actual code/data sections and entry point differ. No game/preview EXE was edited
+and no new native session was launched. Current native gameplay, active preview
+and grey-room launch require fresh executable qualification/acceptance; do not
+carry old native visual/FPS/control claims onto this executable or bypass guards.
+Current voice reset is verified on disk. The current preview pointer records its
+new manifest plus executableRequalificationRequired=true. Old native acceptance
+and restore receipts remain immutable, and audio is intentionally absent pending
+the user's new recordings. The following October28 full-native claims apply only
+to that older executable and are historical qualification evidence.
+
+---
+
+## October 28 â€” visual repairs installed and accepted (authoritative current state)
 
 All three requested repairs are finished: body-matched reflectance/color, complete
 complementary donor domain for smooth thighs, and bounded diffuse atlas-gap repair
@@ -314,7 +345,7 @@ for bounds and all other instance attributes are untouched. 48B rows share the
 existing vertex upload tail atvertexBytes+32, stride0, total80B padding. Original
 AMD24B vertex guard remains; no extra resource allocation. Same upload/bundle/
 fence lifetime retains rows; exact old IA slot+PSO restored normal/exception.
-All uploads contain rows, including fake/noninstancedÃ¢â€ â€™instanced cache transitions.
+All uploads contain rows, including fake/noninstancedÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢instanced cache transitions.
 No source geometry, fitting, offsets, topology, canonical solver/cadence changed.
 
 Tests:16 CPU checks +tailbounds pass(v2/build/rigid-world-frame-01). Actual AMD
@@ -475,7 +506,7 @@ textures, garment construction/offsets and runtime algorithms stay unchanged.
 Prepared receipt59ae8201aac8712edd4f729cf754e9f4b59852f11e07614d6ca89c482f020c6e
 binds package-with-shaders e288193838518006f640bd354a60c67cf2acaf425a97d6d1141c64553f669b93.
 New B04 is9725f35b76554213daf4c884dc0374701fa501bcdd14b3028d807ab476ca819c.
-Official lower bufferd9221e49... has only the approved local52Ã¢â€ â€™63 LOD1 stock
+Official lower bufferd9221e49... has only the approved local52ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢63 LOD1 stock
 retessellation; source/LOD0 geometry/UV/skin/N/color and all839 outside stock
 faces preserve their existing data. WCC regenerated38 old packedT words;
 explicit typed B04 calibration restores them from frozen350c. New34 top rows
@@ -510,7 +541,7 @@ shape distances are not continuous Hausdorff bounds. Upper remap91poses3.815um.
 
 one-ring-split-full-contact-proof.json PASSES18jockposes bothbanks: no expansion
 of FULL BODY baseline contacted bandface set; outervisibleband ZEROcrossings,
-minimum exact triangle-triangle outerclearance2.233mm (cases2.23Ã¢â‚¬â€œ3.60mm).
+minimum exact triangle-triangle outerclearance2.233mm (cases2.23ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“3.60mm).
 Innercloth5704/5705 already intersect UNCHANGEDupperface1058[76570,76571,76565];
 newlowerface13 continues that existing contact over formerly open waist. Do not
 misreport globalzero or require needless source-garment inflation. Initial free
@@ -661,7 +692,7 @@ epoch1/sequence1596/pose3410, while requested/latest was1597. No source fit,
 canonical solver, assets, feed-selection or installation changes in this build.
 
 Actual GPU cloth matches selected immutable CPU cloth to micrometres. Actual
-GPU body differs from the matching selected CPU pose by2Ã¢â‚¬â€œ9mm. Re-skinning the
+GPU body differs from the matching selected CPU pose by2ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“9mm. Re-skinning the
 same selected1596 body-input with the existing next1597/pose3412 collapses the
 body residual to micrometres (P99 upper/lower6.74um; anatomy10.16um). Thus the
 engine renders current skeletal pose while our rigid cloth uses the previous
@@ -1184,7 +1215,7 @@ under anatomy-01, and `materials/anatomy-vs-audit/emitted-cache/audit.json`.
 B04 lower-body visibility now updates only on an active source anatomy section;
 stock skin alone cannot enable controls/physics. Legacy B03 and upper visibility
 and all-section publication/LOD masks are preserved. Fifteen actual FloatDraw
-cases pass on WARP and AMD, including stock-onlyÃ¢â€ â€™anatomy eligibility, state
+cases pass on WARP and AMD, including stock-onlyÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢anatomy eligibility, state
 selection, frame coherence and color/depth coverage. Native hidden-state review
 remains required. All compiler/game processes from this work are closed.
 

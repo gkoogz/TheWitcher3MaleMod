@@ -6,26 +6,29 @@
   "workerSHA256": "723865a6b294ded67146531f7056b0657da80332c40f7c321250597d1971715a",
   "sourceAnatomyUnchanged": true,
   "perVisibleSDKTickServiceObserved": true,
-  "fullNativeMenuPassed": true,
+  "fullNativeMenuPassed": false,
   "anatomyVisibleInNativeViews": true,
   "garmentVisibleInCapturedDefaultPoses": true,
-  "fullAttachmentGatePassed": true,
+  "fullAttachmentGatePassed": false,
   "performanceParityPassed": false,
   "materialAccepted": true,
   "installed": true,
   "closed": true,
   "originalSavesVerified": 24,
-  "openIssues": [],
+  "openIssues": [
+    "Game executable changed after the October28 native qualification; fresh current-game native acceptance is required."
+  ],
   "performanceComparisonReviewed": true,
   "nativeFPSParityClaimed": false,
-  "installedRoomAcceptance": "D:\\MaleMod\\Work\\witcher\\build\\probe\\sealed-session-20261028-204219\\v2-room-acceptance.json",
-  "defaultGreyRoomActive": true,
+  "installedRoomAcceptance": null,
+  "defaultGreyRoomActive": false,
   "knownLimitations": [
     "Absolute frame-rate equivalence across engines is not established; measured frame costs differ.",
     "Geralt retains native idle motion; Wolverine head/neck overlays and UE3 FaceFX are not retargeted.",
     "Witcher outfit fitting is deferred by user request.",
     "Original extreme source folds, angular/dark pouch underside and slightly scalloped rear garment edges remain.",
-    "Fine muted midline creases remain after removal of the broad opaque pale atlas-gap bands."
+    "Fine muted midline creases remain after removal of the broad opaque pale atlas-gap bands.",
+    "Custom sequence and idle recordings were removed at user request and await approved replacements."
   ],
   "installedRuntimeSHA256": "8eb7ea3638ef2a20503d52427783dcb1106edad6937e5dc7a754c2154ee40a66",
   "runningGPUCurrentPosePassed": true,
@@ -46,5 +49,16 @@
   "rollback": "D:\\MaleMod\\Work\\witcher-v2\\build\\installation\\prepared-1793233602587142800\\rollback",
   "currentPhotoOriginalsVerified": 922,
   "sourceTestsPassed": 66,
-  "sourceTestScope": "focused visual/domain/material and screenshot-preservation tests"
+  "sourceTestScope": "focused visual/domain/material and screenshot-preservation tests",
+  "voiceState": "needs_recording",
+  "voiceLineCSV": "v2/voice-lines-geralt.csv",
+  "voiceResetReceipt": "D:\\MaleMod\\TheWitcher3MaleMod\\v2\\build\\voice-reset\\reset-1793293789254565400\\receipt.json",
+  "currentVoiceWavCount": 0,
+  "installedManagedFileCount": 28,
+  "requiresNativeRequalification": true,
+  "currentGameExecutableSHA256": "05948d7238e1c9620a1cb9b3125520f1c143ce04a8e5718a3735120c37d7bae0",
+  "observationsApplyToExecutableSHA256": "2df765398a3d1f165db418271be7200178320a4466817379f2fa0dc0001fb101",
+  "previousExecutableAttachmentGatePassed": true,
+  "historicalInstalledRoomAcceptance": "D:\\MaleMod\\Work\\witcher\\build\\probe\\sealed-session-20261028-204219\\v2-room-acceptance.json",
+  "voiceResetDetails": "v2/docs/VOICE-RESET-20261029.md"
 }
