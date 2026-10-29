@@ -32,7 +32,31 @@ def nearest_triangle(points,vertices,faces):
     return faces[ids],weights,distances[np.arange(len(points)),choice]
 
 
-def bind(cooked=None,output=None,material_contract=None,source_lighting=False,source_lighting_cases=None,authoritative_lighting_aliases=False,waist_join=None):
+def complete_body_domain(source,face_parts):
+    """Join both canonical native body allocations without welding their rows.
+
+    These are complementary body parts, not interchangeable LODs. In
+    particular, the first allocation has no left inner-thigh surface. Keep
+    each part's actual bank index so runtime motion and lighting come from the
+    same canonical part. Discard only zero-area triangles, which cannot define
+    a barycentric surface donor.
+    """
+    if len(source)!=2 or len(face_parts)!=2:
+        raise ValueError('Both canonical body parts are required')
+    vertices=[];faces=[];first=0
+    for part,triangles in zip(source,face_parts):
+        p=np.asarray(part,dtype=float);f=np.asarray(triangles,dtype=np.int64)
+        if p.ndim!=2 or p.shape[1]!=3 or f.ndim!=2 or f.shape[1]!=3 or not np.isfinite(p).all() or not len(f) or f.min()<0 or f.max()>=len(p):
+            raise ValueError('Invalid canonical body-part topology')
+        tri=p[f];twice_area=np.linalg.norm(np.cross(tri[:,1]-tri[:,0],tri[:,2]-tri[:,0]),axis=1)
+        # A nonzero source triangle is retained regardless of its size.
+        valid=twice_area>0
+        if not valid.any():raise ValueError('Canonical body part has no surface triangles')
+        vertices.append(p);faces.append(f[valid]+first);first+=len(p)
+    return np.vstack(vertices),np.vstack(faces)
+
+
+def bind(cooked=None,output=None,material_contract=None,source_lighting=False,source_lighting_cases=None,authoritative_lighting_aliases=False,waist_join=None,all_source_body_parts=True):
     r=ROOT/'v2/build';out=Path(output)if output is not None else r/'runtime-binding';out.mkdir(exist_ok=True,parents=True)
     fit=read_json(r/'fitted-geralt/manifest.json')
     if digest(r/'fitted-geralt/geralt-wolverine.fbx')!=fit['fbxSHA256']:raise ValueError('Fit source changed')
@@ -53,6 +77,9 @@ def bind(cooked=None,output=None,material_contract=None,source_lighting=False,so
         source_normals.append(raw[:,16:19].astype('<f4')/np.float32(127.5)-np.float32(1))
         source_tangents.append(raw[:,12:15].astype('<f4')/np.float32(127.5)-np.float32(1))
     bank=np.vstack(source);body=np.load(r/'source-body0.npz')
+    body_vertices=source[1];body_faces=body['faces']
+    if all_source_body_parts:
+        body_vertices,body_faces=complete_body_domain(source[1:],[body['faces'],np.load(r/'source-body1.npz')['faces']])
     lower=np.load(r/'fitted-geralt/lod0.npz');rotation=lower['rotation'];root=lower['sourceRoot'];target=lower['targetRoot']
     rigpath=r/'geralt-base/player-rig.json';rig=read_json(rigpath)['_chunks']['CSkeleton #0']['_vars'];bone_names=[x['_vars']['name']['_value']for x in rig['bones']['_elements']]
     if len(bone_names)!=94 or bone_names[9]!='pelvis':raise ValueError('Stock rig identity differs')
@@ -97,7 +124,7 @@ def bind(cooked=None,output=None,material_contract=None,source_lighting=False,so
                 distance,rows=cKDTree(points*.01).query(native)
                 if distance.max()>3e-5:raise ValueError('Native vertex leaves fitted source')
                 matrix=csr_matrix((authored['module_data'],authored['module_indices'],authored['module_indptr']),shape=tuple(authored['module_shape']))
-                donors,weights,surface_distance=nearest_triangle((points-target)@rotation+root,source[1],body['faces'])
+                donors,weights,surface_distance=nearest_triangle((points-target)@rotation+root,body_vertices,body_faces)
                 donors+=len(source[0])
                 # Both sides of the sewn opening use identical exact source
                 # anatomy lineage, including barycentric boundary refinement.
@@ -116,7 +143,7 @@ def bind(cooked=None,output=None,material_contract=None,source_lighting=False,so
                 donors=donors[rows];weights=weights[rows];surface_distance=surface_distance[rows]
                 binding_errors.append(float(distance.max()))
             else:
-                donors,weights,surface_distance=nearest_triangle((native*100-target)@rotation+root,source[1],body['faces']);donors+=len(source[0])
+                donors,weights,surface_distance=nearest_triangle((native*100-target)@rotation+root,body_vertices,body_faces);donors+=len(source[0])
                 binding_errors.append(0.)
             surface_distances.append(float(surface_distance.max()))
             # Position/bones/weights and packed lighting baseline exactly match
@@ -167,6 +194,8 @@ def bind(cooked=None,output=None,material_contract=None,source_lighting=False,so
     if precision is not None:report.update(sourcePrecision=precision,sourcePrecisionReceiptSHA256=digest(out/'source-precision.json'))
     if lighting is not None:report.update(sourceLighting=lighting,sourceLightingReceiptSHA256=digest(out/'source-lighting.json'))
     if waist_report is not None:report.update(sourceWaist=waist_report,sourceWaistReceiptSHA256=digest(out/'source-waist.json'))
+    if all_source_body_parts:
+        report['canonicalBodyDomain']=dict(parts=[dict(bankFirstVertex=17528,vertices=len(source[1]),topologySHA256=digest(r/'source-body0.npz')),dict(bankFirstVertex=17528+len(source[1]),vertices=len(source[2]),topologySHA256=digest(r/'source-body1.npz'))],surfaceTriangles=len(body_faces),bothComplementaryParts=True,sourceNumericsModified=False)
     write_json(out/'manifest.json',report);print(json.dumps(report,indent=2))
     return report
 
@@ -178,4 +207,7 @@ if __name__=='__main__':
     parser.add_argument('--source-lighting-cases',type=Path,help='Actual captured source checkpoint directory required before correcting close frame-donor aliases')
     parser.add_argument('--source-lighting-authoritative-aliases',action='store_true',help='Use exact authored UV/topology for all near-position lighting aliases; requires changing-case proof and native review')
     parser.add_argument('--waist-join',type=Path,help='Explicit hash-closed LOD1 stock-waist authoring receipt; default OFF')
-    args=parser.parse_args();bind(args.cooked,args.output,args.material_contract,args.source_lighting,args.source_lighting_cases,args.source_lighting_authoritative_aliases,args.waist_join)
+    parser.set_defaults(all_source_body_parts=True)
+    parser.add_argument('--all-source-body-parts',action='store_true',help='Use both complementary canonical body allocations for Geralt body donors (default)')
+    parser.add_argument('--legacy-body0-only',dest='all_source_body_parts',action='store_false',help='Reproduce the historical incomplete body0-only donor domain; do not use for a new candidate')
+    args=parser.parse_args();bind(args.cooked,args.output,args.material_contract,args.source_lighting,args.source_lighting_cases,args.source_lighting_authoritative_aliases,args.waist_join,args.all_source_body_parts)

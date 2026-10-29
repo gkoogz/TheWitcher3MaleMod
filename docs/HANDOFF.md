@@ -1,3 +1,201 @@
+## October 28 — visual repairs installed and accepted (authoritative current state)
+
+All three requested repairs are finished: body-matched reflectance/color, complete
+complementary donor domain for smooth thighs, and bounded diffuse atlas-gap repair
+for the broad pale front patch. Fine muted central creases remain. No numerical
+physics, menu, control, anatomy/garment topology or Wolverine source change.
+
+Installed runtime 8eb7ea3638ef2a20503d52427783dcb1106edad6937e5dc7a754c2154ee40a66.
+Canonical worker 723865a6b294ded67146531f7056b0657da80332c40f7c321250597d1971715a unchanged.
+All 74 installed files verified. Strict aggregate:
+v2/build/acceptance/body-visual-05-aggregate.json. Source checks: 66 PASS, official
+native build/cache PASS, complete features, production90+LOD1 90 reviewed cases,
+running/sprinting/turning/stopping+seven-component actual GPU pose, quiet6
+performance, ordinary campaign save/load, actual installed showroom9/motion20/
+finalroom9 views PASS. Physics serviced every visible SDK update. Absolute engine
+FPS equivalence remains unestablished; preserve that distinction.
+
+Actual installed room acceptance:
+build/probe/sealed-session-20261028-204219/v2-room-acceptance.json.
+local/grey-room-launch.json now points to this accepted installed runtime. The
+supported private preview rebase produced preview-1793234672056935200.json;
+v2/build/grey-fit/preview-path.json selects it. Historical manifests are immutable.
+Delivery and exact reviews: v2/build/materials/body-visual-05/delivery-closeout.json.
+Install/rollback: v2/build/installation/prepared-1793233602587142800/rollback.
+Previous4c complete payload and GitHub v0.6.0 remain intact. No new release/tag.
+
+Every final owned session closed normally, verified 24 saves/922 CURRENT photos,
+restored scoped audio and removed temporary world files. No host input/focus
+was used. Two old photo hashes remain unrecovered in preserved records; do not
+ask the user about them again or claim recovery.03's two unexplained FD exits
+and04's shader-type failure remain historical rejected evidence; neither was
+installed. New05 required native runs passed without a debugger. No cause of
+the old FD exits is claimed. Source and final evidence details:
+v2/docs/VISUAL-REPAIR-20261028.md and v2/preview-status.json.
+
+The entries below are preserved historical working notes; their pending tasks,
+runtime IDs and active process/session IDs are superseded by this closeout.
+
+---
+
+## October 28 - Candidate05 build active; source checks66 PASS
+
+Root owns all source now. Raphe helper and integration are implemented. Source:
+tools/v2_raphe_diffuse.py, tests/test_v2_raphe_diffuse.py, physical material inspector.
+66 focused tests PASS. Read v2/docs/RAPHE-DIFFUSE-SAMPLING.md for the source proof.
+
+Candidate04 failed actual DX12 shader-cache compilation because native custom
+outputs force float4 while the UV helper returned float2. It NEVER reached staging
+or installation. Preserve its failed records; the baseline calibration message was
+secondary to the current compiler exit, not evidence of changed baseline inputs.
+Candidate05 fixes the output contract and tests both declared/native-shaped HLSL.
+Authored graphSHA0ca32c48f320e4b626f923db55ed27c1e196a60d78b4eea0e8a5ebf57764fbf0.
+
+ACTIVE ROOT EXEC SESSION83725: task/work/build_body_visual05.py runs official resave,
+fresh package based on03, native cache, prepare bindings, closed stage and short
+native room review. Do not rerun it into existing logs. Poll/resume the existing
+session; if stopped, inspect per-step logs and resume missing steps deliberately.
+Job v2/build/materials/body-visual-05. Once staged read private-candidate.json and
+v2/build/grey-fit/preview-path.json dynamically for the new runtime/preview identity.
+The short native output will be v2/build/skin-review-03/raphe05-initial/review.json.
+No05 native acceptance or installation is claimed yet. Installed4c is untouched.
+
+Then: review new pale-strip correction in native front/side/oblique, run fresh
+fullfeatures, build fresh same-package LOD metadata probe, full90+90 matrices,
+new motion/GPU pose, quiet6 performance, campaignLAST, strict aggregate, prepare/
+install, actual installed room+motion, accept room/update launcher, rebase preview,
+update final docs and commit/push source. Previous caec gates do not transfer.
+No user confirmation is needed; user expressly asked autonomous resolution.
+
+## October 28 - Raphe cause proven; replacement not installed
+
+The installed runtime remains 4c85016d157e84307599e20be284323299d4baec093484b9c1146cb0e48587d8,
+with all 74 managed files verified unchanged. v0.6.0 and protected restore payloads remain intact.
+No new release or installation has been performed.
+
+The caec body-visual-03 intermediate remains frozen and unaccepted. It corrected the
+thigh donor error and blue-white specular glare, but retained pale midline stripes.
+The former attribution to authored raphe fold detail was an unproven visual inference
+and is retracted. A fresh exact unlit UV raster reproduces the stripes in diffuse alone:
+canonical original faces 30189 and 29795 sample flat atlas filler RGBA(173,121,82,255),
+with physical seamBlend=0. Nearby textured tissue is darker. Thus generated graft rows,
+new root weights and normal shading do not explain the stripe. Original maps/UVs are
+still unchanged. Detailed source proof and alias audit are task/work/raphe-channel-audit/.
+An adapter-only bounded diffuse sampling correction is being designed for candidate04;
+no implementation or native acceptance of04 is yet claimed.
+
+New same-caec observed gates (exact full hash above in runtime reports):
+- body-visual-03-lod1-debug-01: all90 cases,93 valid PNGs, mask10, zero runtime errors.
+- body-visual-03-production-debug-01: all90 cases,93 valid PNGs, mask5, zero runtime errors.
+- native-position-20261028-174243:20 valid motion photos; all7 actual GPU components and
+  selected CPU/GPU pose proof PASS. Independently reviewed run/sprint/turn/stop: thighs and
+  waistband stay attached. Existing pouch creases/scalloped edges remain qualified.
+- raphe-gbuffer-1793227868163164500: unchanged native runtime, short268frames/9photos,
+  coherent stock/source5-target pair atCP0, un-debugged exit0. Inspect actual channel data.
+
+The two earlier FD exits remain unexplained and their evidence is preserved. Read-only
+watchers completed the new production/LOD1/motion runs without an FD event or dump.
+No matching system event/dump was found. Per-app passive LocalDumps setup was attempted
+but CreateKeyEx failed WinError5 before mutation or launch; no registry setting changed.
+Do not claim the earlier failure cause was fixed. Candidate03 is not being installed.
+Any new candidate requires fresh native gates and review; old caec passes do not transfer.
+
+Photo preservation was resolved autonomously per user direction: all922 CURRENT files
+are restored and verified after each session, with old mismatch records/current versions
+preserved. Two earlier recorded hashes remain unrecovered; do not claim otherwise or ask
+the user to adjudicate the old files again. See observed-baseline-closeout.json under
+v2/build/screenshot-transactions/private-1793215882609976200/.
+
+## October 28 - RELEASE BLOCKED: stack overflow in caec native tests; installed4c untouched
+
+Finalcandidatecaecb6cf remains FROZEN/UNINSTALLED.03fullfeatures1879frames PASS,
+independent33full+33pelvic+9floorviews PASS687cce34... .03initial9closeviews PASS.
+03b-production90views PASS/numeric; independentmatrixvisualreviewstillpending.
+Original03-productionall90CP/93images/zeroerrors failedstrictphoto pairing at58
+(onewrite3.23s afterCP>2s bound); keepthatbankunaccepted, do notweakenwindow.
+
+03b-forcedLOD1 CRASHED attransitionCP74->75, maxjock100/100, exit0xC00000FD.
+Zero loggedrenderer/physics failures before1753completedservices;11successful
+maxjockframes beforecrash. SourceBinding evaluatesBOTHLODs everyframe; CPUreplay
+ofe9e94binding+failedCP74/prodCP75-77 allfinite78348rows. No precise cause found.
+Source/runtimedata audits do NOT close this failednativegate. Need actualstack.
+No WER/ApplicationError/LocalDump forPID20348(start16:55:50), onlyold1412dump.
+
+A SECOND normal-detail run+GPUpositioncapture also exited0xC00000FD:
+v2/build/materials/native-position-20261028-171358, receiptbuild/probe/
+sealed-session-20261028-171410/receipt.json, PID17620. NotLOD1/max-only.
+Both runs CLOSED normallybyownershipreceipts, scoped audio/saves/922CURRENT
+photos restored; LOD metadata restored toproduction. Installed4c unchanged.
+Lastclosednormalpreview171410 matchescurrentrestoredproductionmanifest, so
+LODstage closed-lineage can now proceed fordiagnosis withouta throwawayrun.
+
+Skinagent isbuilding standalone READONLY debuggerwatcher inTASK/work toattach
+ONLY verifiedfuture privatePID+creationtime, dumpSTACK_OVERFLOW+80frameunwind
+(module!RVA,local-onlysymbols) andforwardexceptionsnormally. NO furtherblind
+reruns; rootownsnextLOD1-onlydiagnostic wrapper+watcherlaunchafterreceipt.
+Currentno game process. Do NOT install/unfreeze/addspeculativefixes untilstack.
+Remainingperformance/campaign/actualinstallation gates NOT RUN. Rootprivate
+run_body_visual_performance.py andotherhelpersready. Current180pair03bpassedfalse;
+prod90canbereviewedindependently butLOD1incomplete75CP cannotbeaccepted.
+
+## October 28 - Skin/thigh correction frozen; final native gates active
+
+User reports excess shine, distorted neighboring thigh polygons and a white
+front-midline patch. Installed runtime4c85016 remains unchanged. v0.6.0 and both
+prior74-file restore payloads remain protected. Do not publish/replace that tag.
+
+FINAL PRIVATE CANDIDATE:caecb6cf3522b7bd7340cac13d84a9b7a13d00404aebd4d85884d4a3162f599f.
+Source/numerical worker723865a6 unchanged. B04e9e94d6c; original anatomy rows,
+stock baseline/skin/lighting, original maps, geometry buffers, garment binding,
+coverage and clinical topology remain exact. The binder now uses BOTH original
+complementary Wolverine body allocations; old body0-only projection attached
+some left-thigh vertices to distant opposite-side points. No new deformation
+field, topology, runtime format or physics law was introduced.
+
+Material03 adds measured Geralt color adaptation and native stock SSS to the
+body-matched F0/roughness/second-lobe variant. Graphc22bc504. Source texture
+detail/state differences remain; fixed linear gains(.906085902,1.357361928,
+3.064346922). The reflectance-only02 candidate2c0c was rejected as orange/brown.
+Do not install/reuse02. 03job:v2/build/materials/body-visual-03; source/code
+documentation:v2/docs/BODY-MATCHED-REFLECTANCE.md and COMPLEMENTARY-BODY-DONORS.md.
+
+03short actual native review:v2/build/skin-review-03/initial/review.json;
+receiptbuild/probe/sealed-session-20261028-162840/receipt.json;276frames,9photos.
+Root viewed front/side/oblique+naked/jock; independent all9full+9pelvic review
+0abd093dfc202546b4e90f231362de131ec79e44649ac49b403461e1f47612cf.
+Skin pink/gray matches Geralt, blue-white glints/isolated white patch absent;
+original pale pink/tan raphe fold striping remains. No perfect-all-pose claim.
+All24saves/922 CURRENT baseline photos/settings/audio restored normally.
+
+03full features CLOSED/PASS:v2/build/features/native-20261028-163153/review.json;
+1879frames,31CP,all21rows/keys/idle,zeroerrors,everyvisibleSDKtick serviced.
+Root generated full checkpoint-rich paired-views and all33 image review sheets;
+independent feature visual review is in progress. Runtime/materials FROZEN.
+Fresh distance-only LOD probe built from03 atlod-metadata-probe-1793220072288562900.
+180view production+LOD1 pair ACTIVE labelbody-visual-03 (tool session6630).
+Next: independent90+90views, running capture/sourcepose check, quiet6performance,
+LASTcampaignsave/load, strictaggregate, transactionalinstall, ACTUALinstalled
+showroom/running acceptance+defaultroomlauncher, sourcebackup/finalimage.
+Use existing task work/ helpers; all native commands need the already-authorized
+elevated execution because restricted WCC/tasklist calls hang/fail. No host UI.
+
+File-preservation incident resolved independently per user's direction to solve
+it without further questions. An aborted PRE-launch screenshot transaction found
+two older PNGs differing from recorded hashes. No game/save/room launch occurred.
+Both observed versions and original records were preserved; exact recovery was
+not established. Gallery returned in full; explicit observed-baseline closeout:
+v2/build/screenshot-transactions/private-1793215882609976200/observed-baseline-closeout.json.
+It verifies920 unchanged original hashes and retains2 unrecovered prior hashes;
+never claim those2 hashes recovered. All later sessions verify all922 CURRENT
+baseline files exactly. New Windows read leases deny concurrent writes during
+tests; brief owned-directory moves release/reacquire with unchanged full hash
+checks.12lease/transactiontests pass. No validation weakening/old receipt edits.
+
+Taskcwdwork has private helper scripts, recovery proof and orchestration. No
+source commit/push/install yet in this turn. Current source has adapter/body
+donor/material/color/filelease edits and tests/docs; preserve unrelated Base and
+Wolverine work. Update this header once gates and actual installation close.
+
 ## October 27 - Running waistband correction INSTALLED and accepted; room default active
 
 Final installed DLL:4c85016d157e84307599e20be284323299d4baec093484b9c1146cb0e48587d8.
@@ -116,7 +314,7 @@ for bounds and all other instance attributes are untouched. 48B rows share the
 existing vertex upload tail atvertexBytes+32, stride0, total80B padding. Original
 AMD24B vertex guard remains; no extra resource allocation. Same upload/bundle/
 fence lifetime retains rows; exact old IA slot+PSO restored normal/exception.
-All uploads contain rows, including fake/noninstanced→instanced cache transitions.
+All uploads contain rows, including fake/noninstancedÃ¢â€ â€™instanced cache transitions.
 No source geometry, fitting, offsets, topology, canonical solver/cadence changed.
 
 Tests:16 CPU checks +tailbounds pass(v2/build/rigid-world-frame-01). Actual AMD
@@ -277,7 +475,7 @@ textures, garment construction/offsets and runtime algorithms stay unchanged.
 Prepared receipt59ae8201aac8712edd4f729cf754e9f4b59852f11e07614d6ca89c482f020c6e
 binds package-with-shaders e288193838518006f640bd354a60c67cf2acaf425a97d6d1141c64553f669b93.
 New B04 is9725f35b76554213daf4c884dc0374701fa501bcdd14b3028d807ab476ca819c.
-Official lower bufferd9221e49... has only the approved local52→63 LOD1 stock
+Official lower bufferd9221e49... has only the approved local52Ã¢â€ â€™63 LOD1 stock
 retessellation; source/LOD0 geometry/UV/skin/N/color and all839 outside stock
 faces preserve their existing data. WCC regenerated38 old packedT words;
 explicit typed B04 calibration restores them from frozen350c. New34 top rows
@@ -312,7 +510,7 @@ shape distances are not continuous Hausdorff bounds. Upper remap91poses3.815um.
 
 one-ring-split-full-contact-proof.json PASSES18jockposes bothbanks: no expansion
 of FULL BODY baseline contacted bandface set; outervisibleband ZEROcrossings,
-minimum exact triangle-triangle outerclearance2.233mm (cases2.23–3.60mm).
+minimum exact triangle-triangle outerclearance2.233mm (cases2.23Ã¢â‚¬â€œ3.60mm).
 Innercloth5704/5705 already intersect UNCHANGEDupperface1058[76570,76571,76565];
 newlowerface13 continues that existing contact over formerly open waist. Do not
 misreport globalzero or require needless source-garment inflation. Initial free
@@ -463,7 +661,7 @@ epoch1/sequence1596/pose3410, while requested/latest was1597. No source fit,
 canonical solver, assets, feed-selection or installation changes in this build.
 
 Actual GPU cloth matches selected immutable CPU cloth to micrometres. Actual
-GPU body differs from the matching selected CPU pose by2–9mm. Re-skinning the
+GPU body differs from the matching selected CPU pose by2Ã¢â‚¬â€œ9mm. Re-skinning the
 same selected1596 body-input with the existing next1597/pose3412 collapses the
 body residual to micrometres (P99 upper/lower6.74um; anatomy10.16um). Thus the
 engine renders current skeletal pose while our rigid cloth uses the previous
@@ -986,7 +1184,7 @@ under anatomy-01, and `materials/anatomy-vs-audit/emitted-cache/audit.json`.
 B04 lower-body visibility now updates only on an active source anatomy section;
 stock skin alone cannot enable controls/physics. Legacy B03 and upper visibility
 and all-section publication/LOD masks are preserved. Fifteen actual FloatDraw
-cases pass on WARP and AMD, including stock-only→anatomy eligibility, state
+cases pass on WARP and AMD, including stock-onlyÃ¢â€ â€™anatomy eligibility, state
 selection, frame coherence and color/depth coverage. Native hidden-state review
 remains required. All compiler/game processes from this work are closed.
 

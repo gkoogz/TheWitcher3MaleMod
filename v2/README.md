@@ -4,7 +4,7 @@ The user requests the same anatomy and behavior as Wolverine, with only the
 small pelvic fit changes Geralt requires. This replaces the entire v1 repair
 direction. The grey test room is retained.
 
-V2 is installed and accepted in the actual installed game (October 27). The
+V2 is installed and accepted in the actual installed game (October 28). The
 original Wolverine anatomy and numerical worker use the stock bare Geralt body
 with a measured small pelvic fit. The original jockstrap, 21-row menu, sliders,
 controls, teaching sequence, throb, fluids/deposits and private audio are present.
@@ -23,9 +23,13 @@ original Wolverine cadence (every update bare; alternate updates in jockstrap).
 Absolute FPS equivalence across the two engines is not established. Geralt's
 native idle motion is retained; Wolverine FaceFX/head overlays are not retargeted.
 
-The running waistband correction is now installed and verified in the actual
-game. It changes only rigid garment rendering: the original model, pelvic fit,
-physics, controls and other 73 installed files remain exact. Actual installed
+The running waistband correction remains installed and verified in the actual
+game. The October 28 repair additionally matches skin reflectance/color to the
+body, corrects thigh donor selection and removes pale front atlas-gap bands.
+Original anatomy, numerical physics, garment geometry and controls remain exact.
+Fresh production/LOD1 matrices, complete features, motion/GPU pose, performance,
+campaign and actual installed-room checks passed. See
+`docs/VISUAL-REPAIR-20261028.md` for exact evidence and rollback. Actual installed
 walking/running/sprinting/turning/stopping views passed, followed by the normal
 grey-room launch check. See `docs/RIGID-CARRIER-FRAME.md` for the measured cause.
 The pre-fix version is preserved as GitHub release `v0.6.0` and as a complete
@@ -66,7 +70,7 @@ quaternion overlays and UE3 FaceFX are not retargeted; this is an explicit engin
 adaptation, not identical facial animation. Actual autonomous in-game playback passed the closed combined feature run.
 
 Final runtime SHA-256:
-`4c85016d157e84307599e20be284323299d4baec093484b9c1146cb0e48587d8`.
+`8eb7ea3638ef2a20503d52427783dcb1106edad6937e5dc7a754c2154ee40a66`.
 Installed inventory contains 74 exact files; rollback preserves the previous
 installation. Installation, native acceptance, and performance evidence remain
 separate records rather than an assertion of identical engine frame rates.

@@ -1,8 +1,8 @@
 {
   "schema": "malemod.witcher-v2-preview-status/1",
-  "candidate": "installed-rigid-carrier-frame-4c85016",
-  "nativeReview": "v2/build/acceptance/run-frame-final-aggregate.json",
-  "runtimeSHA256": "4c85016d157e84307599e20be284323299d4baec093484b9c1146cb0e48587d8",
+  "candidate": "body-visual-05-installed-accepted",
+  "nativeReview": "v2/build/acceptance/body-visual-05-aggregate.json",
+  "runtimeSHA256": "8eb7ea3638ef2a20503d52427783dcb1106edad6937e5dc7a754c2154ee40a66",
   "workerSHA256": "723865a6b294ded67146531f7056b0657da80332c40f7c321250597d1971715a",
   "sourceAnatomyUnchanged": true,
   "perVisibleSDKTickServiceObserved": true,
@@ -18,18 +18,33 @@
   "openIssues": [],
   "performanceComparisonReviewed": true,
   "nativeFPSParityClaimed": false,
-  "installedRoomAcceptance": "D:/MaleMod/Work/witcher/build/probe/sealed-session-20261027-120406/v2-room-acceptance.json",
+  "installedRoomAcceptance": "D:\\MaleMod\\Work\\witcher\\build\\probe\\sealed-session-20261028-204219\\v2-room-acceptance.json",
   "defaultGreyRoomActive": true,
   "knownLimitations": [
     "Absolute frame-rate equivalence across engines is not established; measured frame costs differ.",
     "Geralt retains native idle motion; Wolverine head/neck overlays and UE3 FaceFX are not retargeted.",
     "Witcher outfit fitting is deferred by user request.",
-    "Original extreme source folds, angular motion creases and slightly scalloped unstriped garment edges remain; this change fixes carrier tracking."
+    "Original extreme source folds, angular/dark pouch underside and slightly scalloped rear garment edges remain.",
+    "Fine muted midline creases remain after removal of the broad opaque pale atlas-gap bands."
   ],
-  "installedRuntimeSHA256": "4c85016d157e84307599e20be284323299d4baec093484b9c1146cb0e48587d8",
+  "installedRuntimeSHA256": "8eb7ea3638ef2a20503d52427783dcb1106edad6937e5dc7a754c2154ee40a66",
   "runningGPUCurrentPosePassed": true,
-  "runningVisualReview": "v2/build/materials/native-position-20261027-111209/independent-visual-review/review.json",
-  "defaultGreyRoomRuntimeSHA256": "4c85016d157e84307599e20be284323299d4baec093484b9c1146cb0e48587d8",
-  "installedMotionReview": "v2/build/installed-run-frame/motion/independent-visual-review/review.json",
-  "releaseCheckpoint": "https://github.com/gkoogz/TheWitcher3MaleMod/releases/tag/v0.6.0"
+  "runningVisualReview": "v2/build/materials/native-position-20261028-195827/independent-visual-review/review.json",
+  "defaultGreyRoomRuntimeSHA256": "8eb7ea3638ef2a20503d52427783dcb1106edad6937e5dc7a754c2154ee40a66",
+  "installedMotionReview": "v2/build/installed-run-frame/body-visual-05-motion/independent-visual-review/review.json",
+  "releaseCheckpoint": "https://github.com/gkoogz/TheWitcher3MaleMod/releases/tag/v0.6.0",
+  "installedBuildUnchanged": false,
+  "installedHistoricalAcceptance": "v2/build/acceptance/run-frame-final-aggregate.json",
+  "candidateDescription": "v2/docs/VISUAL-REPAIR-20261028.md",
+  "currentPhotoPreservationResolved": true,
+  "nativeProcessFailureHistory": [
+    "v2/build/acceptance/body-visual-03b-lod1/review.json",
+    "v2/build/materials/native-position-20261028-171358/observation.json"
+  ],
+  "installedCurrentAcceptance": "v2/build/acceptance/body-visual-05-aggregate.json",
+  "deliveryCloseout": "v2/build/materials/body-visual-05/delivery-closeout.json",
+  "rollback": "D:\\MaleMod\\Work\\witcher-v2\\build\\installation\\prepared-1793233602587142800\\rollback",
+  "currentPhotoOriginalsVerified": 922,
+  "sourceTestsPassed": 66,
+  "sourceTestScope": "focused visual/domain/material and screenshot-preservation tests"
 }

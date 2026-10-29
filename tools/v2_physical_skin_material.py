@@ -327,11 +327,23 @@ def author(source,job,world_position_donor,original_maps):
     return proof
 
 
-def validate_custom_functions():
+def validate_custom_functions(*, body_matched=False, body_color_matched=False, raphe_diffuse=False):
     """Bounded actual compiler syntax check; no device or native game process."""
     import ctypes
     from v2_physical_skin_normal import NORMAL_CODE
-    source='\n'.join([DIFFUSE_CODE,SPECULAR_CODE,AMBIENT_CODE,LEGACY_COLOR_CODE,ONE_CODE,WEIGHT_CODE,NORMAL_CODE])
+    specular,ambient,diffuse=SPECULAR_CODE,AMBIENT_CODE,DIFFUSE_CODE
+    if body_matched:
+        from v2_skin_reflectance import SPECULAR_CODE as specular,AMBIENT_CODE as ambient
+    extra=''
+    if body_color_matched:
+        if not body_matched:raise ValueError('Body-color adaptation requires body-matched reflectance')
+        from v2_skin_color_match import DIFFUSE_CODE as diffuse,SSS_CODE
+        extra=SSS_CODE
+    if raphe_diffuse:
+        if not body_color_matched:raise ValueError('Raphe diffuse repair requires complete body color')
+        from v2_raphe_diffuse import CODES
+        extra+='\n'+'\n'.join(CODES.values())
+    source='\n'.join([diffuse,specular,ambient,LEGACY_COLOR_CODE,ONE_CODE,WEIGHT_CODE,NORMAL_CODE,extra])
     source+='\nfloat4 main(float4 p:SV_Position):SV_Target { float w=physicalSkinDecodeWeight(p.x,p,p); return physicalSkinDiffuse(w,p,p)+physicalSkinSpecular(w,p,p)+physicalSkinAmbient(w,p,p)+physicalSkinLegacyColor(w,p,p)+physicalSkinNormalTransport(p,p,w,p.xyz,p.xy,float3(1,0,0),float3(0,1,0),float3(0,0,1)); }'
     data=source.encode()
     compile_=ctypes.WinDLL('d3dcompiler_47.dll').D3DCompile
@@ -364,7 +376,12 @@ def resave(job):
     if hashlib.sha256(graph.read_bytes()).hexdigest()!=authored['inspection']['SHA256']or(job/'graph-compiled.json').exists():
         raise ValueError('Physical graph changed or already compiled')
     before=PhysicalGraph(graph);inspection=inspect(graph)
-    syntax=validate_custom_functions()
+    syntax=validate_custom_functions(body_matched=inspection.get('bodyMatchedReflectance',False),
+                                     body_color_matched=inspection.get('bodyMatchedColor',False),
+                                     raphe_diffuse=inspection.get('rapheDiffuseRepair',False))
+    if inspection.get('rapheDiffuseRepair'):
+        from v2_raphe_diffuse import validate_custom_functions as validate_raphe
+        syntax['rapheSampling']=validate_raphe()
     shutil.copy2(graph,job/'authored-skin.w2mg')
     cfg=mod.settings();cfg['depot']=complete_depot(cfg)
     isolated=mod.ROOT/'v2/build/materials/anatomy-01/build/shaders-05/runtime/bin/x64_RedKit/wcc_lite.exe'
@@ -398,6 +415,12 @@ def inspect(path, require_complete=True):
     root=next(i for i,o in enumerate(g.objects) if o[0]=='CMaterialGraph')
     output=next(i for i,o in enumerate(g.objects) if o[0]=='CMaterialBlockOutputColorSkin')
     active=g.dependencies(output)
+    from v2_skin_color_match import DIFFUSE_CODE as body_diffuse,SSS_CODE as body_sss,LINEAR_GAINS
+    body_color=any(o[2].get('customCode')==('String',encoded_string(body_diffuse))for o in g.objects)
+    from v2_raphe_diffuse import inspect_graph as inspect_raphe
+    raphe=inspect_raphe(g)
+    if raphe['rapheDiffuseRepair'] and not body_color:
+        raise ValueError('Raphe diffuse repair requires complete body-color adaptation')
     functions={}
     for obj in g.objects:
         if 'customCode'not in obj[2]:continue
@@ -407,7 +430,10 @@ def inspect(path, require_complete=True):
             label=match[1].decode()
             if label in functions:raise ValueError('Duplicate native material function: '+label)
             functions[label]=hashlib.sha256(raw).hexdigest()
-    if any(functions.get(label)!=expected for label,expected in NATIVE_FUNCTIONS.items()):
+    expected_functions=dict(NATIVE_FUNCTIONS)
+    if body_color:
+        expected_functions['sourceSubsurface']=hashlib.sha256(encoded_string(body_sss)).hexdigest()
+    if any(functions.get(label)!=expected for label,expected in expected_functions.items()):
         raise ValueError('Original native material function source changed')
     if g.objects[root][2].get('canUseOnCollapsableObjects')!=('Bool',b'\1'):
         raise ValueError('Physical R8 variant changed native collapse capability')
@@ -419,8 +445,16 @@ def inspect(path, require_complete=True):
             raise ValueError('Physical stock dependency does not use untiled UV1')
     if g.parameter('Ambient')in active or g.sampler(g.parameter('Ambient'))in active:
         raise ValueError('Old UV0-baked Ambient still reaches native output')
-    signatures=[('physicalSkinDiffuse(',DIFFUSE_CODE),('physicalSkinSpecular(',SPECULAR_CODE),
-                ('physicalSkinAmbient(',AMBIENT_CODE)]
+    # Historical source-Phong candidates remain strictly inspectable. The
+    # body-matched adaptation is a separately recognized pair of exact sources;
+    # mixed/partially edited channel variants cannot be adopted.
+    from v2_skin_reflectance import SPECULAR_CODE as body_specular,AMBIENT_CODE as body_ambient
+    body_matched=any(o[2].get('customCode')==('String',encoded_string(body_specular))for o in g.objects)
+    if body_color and not body_matched:
+        raise ValueError('Body-color adaptation requires complete body-matched reflectance')
+    signatures=[('physicalSkinDiffuse(',body_diffuse if body_color else DIFFUSE_CODE),
+                ('physicalSkinSpecular(',body_specular if body_matched else SPECULAR_CODE),
+                ('physicalSkinAmbient(',body_ambient if body_matched else AMBIENT_CODE)]
     nodes={}
     for signature,code in signatures:
         found=[i for i in active if signature.encode()in g.objects[i][2].get('customCode',('',b''))[1]]
@@ -430,14 +464,15 @@ def inspect(path, require_complete=True):
     legacy=[i for i,o in enumerate(g.objects) if b'physicalSkinLegacyColor('in o[2].get('customCode',('',b''))[1]]
     if len(legacy)!=1 or g.objects[legacy[0]][2]['customCode']!=('String',encoded_string(LEGACY_COLOR_CODE)):
         raise ValueError('Legacy color R/A values are not protected')
-    diffuse=g.sampler(g.parameter('Diffuse'))
+    diffuse=raphe['originalSampler'] if raphe['rapheDiffuseRepair'] else g.sampler(g.parameter('Diffuse'))
     # Unconnected native sampler UV is the observed UV0 default.
     if g.ids(g.socket(diffuse,'UV'),'connections'):
         uv0=g.ptr(g.upstream(g.socket(diffuse,'UV')),'block')
         if g.objects[uv0][0]!='CMaterialBlockTexCoords' or g.objects[uv0][2].get('coordinatesIndex',('Int32',bytes(4)))!=('Int32',bytes(4)):
             raise ValueError('Original source diffuse coordinates are no longer UV0')
-    if g.upstream(g.socket(nodes['physicalSkinDiffuse('],'albedo'))!=g.socket(diffuse,'Color'):
-        raise ValueError('Physical source diffuse no longer samples original UV0')
+    expected_diffuse=raphe['repairOutput'] if raphe['rapheDiffuseRepair'] else g.socket(diffuse,'Color')
+    if g.upstream(g.socket(nodes['physicalSkinDiffuse('],'albedo'))!=expected_diffuse:
+        raise ValueError('Physical source diffuse lost its verified UV0 route')
     stock=g.sampler(g.parameter(MARKER))
     if g.upstream(g.socket(nodes['physicalSkinDiffuse('],'blendColor'))!=g.socket(stock,'Color'):
         raise ValueError('Physical source diffuse lacks stock UV1 target')
@@ -448,7 +483,18 @@ def inspect(path, require_complete=True):
     sss=[i for i in active if b'sourceSubsurface('in g.objects[i][2].get('customCode',('',b''))[1]]
     if len(sss)!=1 or g.upstream(g.socket(sss[0],'offset'))!=weight or g.upstream(g.socket(sss[0],'albedo'))!=g.socket(diffuse,'Color'):
         raise ValueError('Physical SSS lost original source decode or geometric weight')
-    if set(g.destinations(g.socket(diffuse,'Color')))!={g.socket(sss[0],'albedo'),g.socket(nodes['physicalSkinDiffuse('],'albedo')}:
+    if body_color:
+        # Native stock SSS is the detail-bleed color multiplied by itself;
+        # preserve that actual branch, including alpha. It is independent of
+        # diffuse. Do not replace it with a guessed albedo-dependent law.
+        blend=g.ptr(g.upstream(g.socket(sss[0],'blendColor')),'block')
+        if g.objects[blend][0]!='CMaterialBlockMathMultiply':
+            raise ValueError('Body-color SSS lost native detail-bleed multiply')
+        expected=g.socket(g.parameter('SSS_DetailColorBleed'),'Color')
+        if any(g.upstream(g.socket(blend,c))!=expected for c in ['A','B']):
+            raise ValueError('Body-color SSS no longer follows actual native detail-bleed color')
+    diffuse_destination=raphe['repairOriginalInput'] if raphe['rapheDiffuseRepair'] else g.socket(nodes['physicalSkinDiffuse('],'albedo')
+    if set(g.destinations(g.socket(diffuse,'Color')))!={g.socket(sss[0],'albedo'),diffuse_destination}:
         raise ValueError('An original diffuse channel bypasses the physical blend')
     if g.objects[g.parameter('DetailPower')][2].get('scalar')!=('Float',struct.pack('<f',.5)):
         raise ValueError('Physical skin lost native stock detail strength')
@@ -507,12 +553,19 @@ def inspect(path, require_complete=True):
                 physicalVariant=True,normalComplete=len(normal)==1,bakedAmbientActive=False,
                 sourceUV0Preserved=True,targetUVIndex=1,nativeObjectCollapse=True,physicalAlphaPreserved=True,
                 diffuseSourceDecode='Preserved native pow2.2',diffuseStockDecode='Native pow2.2',
-                specularStrength=[1,1.5,2],sourceRoughness=SOURCE_ROUGHNESS,
+                specularStrength=None if body_matched else [1,1.5,2],sourceRoughness=None if body_matched else SOURCE_ROUGHNESS,
+                bodyMatchedReflectance=body_matched,
+                bodyMatchedColor=body_color,rapheDiffuseRepair=raphe['rapheDiffuseRepair'],
+                rapheDiffuseScope=({key:raphe[key]for key in ['mask','originalTextureParameter','donorInsetPixels','originalAlphaPreserved','otherMaterialChannelsChanged']}if raphe['rapheDiffuseRepair']else None),
+                diffuseLinearGains=list(LINEAR_GAINS)if body_color else[1,1,1],
+                subsurfaceMode='native-stock-detail-bleed-color'if body_color else'legacy-source-color-interior',
+                reflectanceMode='native-stock-F0-roughness-second-lobe-with-normalized-source-detail'if body_matched else'legacy-source-Phong-amplitude',
                 runtimeParameters=params,physicalWeightEncoding='COLOR0.R UNORM8; A255 preserved',
                 stockSeamDetail=dict(uvIndex=1,detailPower=.5,detailTile=[25,25],detailMaskInputs=3,
                                      detailMask='StockSeamAmbient.R(UV1)*physicalWeight'),
                 detailMode='physical-stock-uv1',flatDetailNormal=False,
-                sourceSpecularSRGBDecoded=True,sourceSubsurfaceSRGBDecoded=True,
+                sourceSpecularSRGBDecoded=True,sourceSubsurfaceSRGBDecoded=not body_color,
+                subsurfaceInputDecode='native stock Color times Color'if body_color else'IEC sRGB source diffuse',
                 nativeGameplayObserved=False)
 
 
