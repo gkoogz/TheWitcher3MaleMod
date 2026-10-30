@@ -2,10 +2,10 @@
   "schema": "malemod.voice-pipeline-lock/1",
   "repository": "https://github.com/gkoogz/MaleModBase",
   "coreRoot": "../MaleMod",
-  "revision": "16bf1a1d16baa0d2a3574b040f79858bc5377846",
+  "revision": "b24483bec1ceb7062334b2fe50839ab35c12235f",
   "scope": "Voice tooling and catalog only; numerical runtime dependency is unchanged.",
   "files": {
-    "malemod_base/voice_pipeline.py": "e12c8aa127b1d21fe0ebd1dff1da94044ccb17501cc97f8bb9d422cc8c4488d6",
+    "malemod_base/voice_pipeline.py": "17e822f9a23d0b0d04a43a1fe317f28ae218c1dc486d4f70d8064760246f5201",
     "tools/voice_pipeline.py": "e8f5acf0d3e24ef836c299054917af508f578634819b26525eb51c8b277046e8",
     "profiles/voice-lines.json": "a34a75c0be6d628d8a6eb3b26c436e64c912db58b33d758b654ed4781b584007",
     "profiles/voice-lines.lock.json": "6692b8ba65c27d73f58e549c36fde14c6e202b50eb1c21a734e3a0344b0320c1"

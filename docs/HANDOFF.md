@@ -1,3 +1,19 @@
+## October 30 — matching numeric voice tags
+
+Geralt's project CSV now has a leading `tag` column numbered1–24 continuously
+across both phases. The same line keeps its number in Core's
+profiles/voice-lines-template.csv and Wolverine's docs/voice-lines-wolverine.csv.
+Permanent MM-VOICE IDs and each character's original text remain intact.
+The open task-output Geralt CSV was locked by another application; its updated
+user-facing replacement is outputs/geralt-voice-lines-numbered.csv in this chat's
+workspace. The original locked file was preserved. The project copy is updated
+in place at v2/voice-lines-geralt.csv.
+
+Core validates the numeric tag/ID mapping and still reads earlier eight-column
+scripts. Its blank-character scaffold now includes tags. This is a development
+CSV/schema update only; no runtime, installed recordings or native qualification
+changed. The October29 executable qualification issue below is still unresolved.
+
 ## October 29 — voice reset complete; changed executable requires qualification
 
 Current user request: present Geralt CSV, delete rejected voice recordings, give
