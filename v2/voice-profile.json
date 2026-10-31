@@ -1,7 +1,7 @@
 {
   "schema": "malemod.witcher-voice-profile/1",
   "character_id": "geralt",
-  "state": "needs_recording",
+  "state": "approved",
   "script": "v2/voice-lines-geralt.csv",
   "core_catalog": "../MaleMod/profiles/voice-lines.json",
   "rejectLegacyFallback": true,
